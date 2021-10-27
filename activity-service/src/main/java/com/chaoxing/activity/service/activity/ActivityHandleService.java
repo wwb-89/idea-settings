@@ -5,10 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
-import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.event.ActivityWebTemplateChangeEventOrigin;
 import com.chaoxing.activity.dto.manager.group.GroupCreateParamDTO;
 import com.chaoxing.activity.dto.manager.group.GroupCreateResultDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
@@ -33,7 +34,8 @@ import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
-import com.chaoxing.activity.service.event.ActivityChangeEventService;
+import com.chaoxing.activity.service.event.ActivityDataChangeEventService;
+import com.chaoxing.activity.service.event.ActivityStatusChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.GroupApiService;
@@ -41,10 +43,9 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
-import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
-import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
-import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
+import com.chaoxing.activity.service.queue.event.ActivityWebTemplateChangeEventQueue;
 import com.chaoxing.activity.util.ApplicationContextHolder;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
@@ -59,6 +60,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -96,21 +98,17 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityStatusService activityStatusService;
 	@Resource
-	private ActivityChangeEventService activityChangeEventService;
+	private ActivityDataChangeEventService activityChangeEventService;
 	@Resource
 	private ActivityManagerService activityManagerService;
 	@Resource
-	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
+	private ActivityWebTemplateChangeEventQueue activityWebTemplateChangeEventQueue;
 	@Resource
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
-	@Resource
-	private ActivityInspectionResultDecideQueueService activityInspectionResultDecideQueueService;
 	@Resource
 	private InspectionConfigHandleService inspectionConfigHandleService;
 	@Resource
 	private ActivityComponentValueService activityComponentValueService;
-	@Resource
-	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
 	@Resource
 	private ActivityMenuService activityMenuService;
 	@Resource
@@ -139,6 +137,8 @@ public class ActivityHandleService {
 	private GroupApiService groupApiService;
 	@Resource
 	private CloudApiService cloudApiService;
+	@Resource
+	private ActivityStatusChangeEventService activityStatusChangeEventService;
 
 	/**
 	 * @Description
@@ -481,7 +481,7 @@ public class ActivityHandleService {
 					.set(Activity::getStatus, activity.getStatus())
 			);
 			// 活动状态改变
-			activityChangeEventService.statusChange(activity, oldStatus);
+			activityStatusChangeEventService.statusChange(activity, oldStatus);
 		}
 		activityMarketService.remove(activityId, marketId, isCreateMarket);
 	}
@@ -537,7 +537,11 @@ public class ActivityHandleService {
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
 				.set(Activity::getWebsiteId, null)
 		);
-		activityWebsiteIdSyncQueueService.add(activityId);
+		ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
+				.activityId(activityId)
+				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+				.build();
+		activityWebTemplateChangeEventQueue.push(eventOrigin);
 	}
 
 	/**创建模块
@@ -777,28 +781,6 @@ public class ActivityHandleService {
 		return CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity" + CacheConstant.CACHE_KEY_SEPARATOR + activityId;
 	}
 
-	/**同步活动websiteId
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-05-10 15:28:53
-	 * @param activityId
-	 * @return void
-	 */
-	public void syncActivityWebsiteId(Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
-		if (activity != null) {
-			Integer pageId = activity.getPageId();
-			if (pageId != null) {
-				Integer websiteId = mhApiService.getWebsiteIdByPageId(pageId);
-				activityMapper.update(null, new UpdateWrapper<Activity>()
-						.lambda()
-						.eq(Activity::getId, activityId)
-						.set(Activity::getWebsiteId, websiteId)
-				);
-			}
-		}
-	}
-
 	/**更新机构创建的活动（没有活动市场id）的分类id
 	 * @Description
 	 * @author wwb
@@ -997,22 +979,6 @@ public class ActivityHandleService {
 		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(targetActivity.getName()).build();
 		// 将克隆的活动保存
 		ApplicationContextHolder.getBean(ActivityHandleService.class).add(targetActivity, signCreateParam, releaseScopes, loginUser);
-	}
-
-	/**更新活动的作品征集信息
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-09-13 15:42:32
-	 * @param activityId
-	 * @return void
-	*/
-	public void updateWorkInfo(Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
-		if (activity == null) {
-			return;
-		}
-		Integer workId = activity.getWorkId();
-		workApiService.updateWorkInfo(workId, activity.getName(), activity.getStartTime(), activity.getEndTime(), activity.getCreateUid());
 	}
 
 }

@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.queue.activity.ActivityIntegralChangeQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityIntegralChangeQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class ActivityIntegralChangeTask {
 
 	@Resource
-	private ActivityIntegralChangeQueueService activityIntegralChangeQueueService;
+	private ActivityIntegralChangeQueue activityIntegralChangeQueue;
 	@Resource
 	private SignApiService signApiService;
 
@@ -34,7 +34,7 @@ public class ActivityIntegralChangeTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void notice() throws InterruptedException {
-		Integer signId = activityIntegralChangeQueueService.pop();
+		Integer signId = activityIntegralChangeQueue.pop();
 		if (signId == null) {
 			return;
 		}
@@ -43,7 +43,7 @@ public class ActivityIntegralChangeTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("通知报名签到:{} 第二课堂积分已变更error:{}", signId, e.getMessage());
-			activityIntegralChangeQueueService.push(signId);
+			activityIntegralChangeQueue.push(signId);
 		}
 	}
 

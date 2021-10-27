@@ -6,8 +6,8 @@ import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.UserSignedUpNoticeHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.UserSignedUpNoticeHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionValidateService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -179,8 +178,6 @@ public class ActivityApiController {
 		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
 		if (uid != null) {
 			activityCollectionHandleService.collect(activity.getId(), uid);
-			// 通知已收藏
-			activityStartNoticeHandleService.noticeCollected(activity, new ArrayList(){{add(uid);}});
 			return RestRespDTO.success();
 		}
 		return RestRespDTO.fail();

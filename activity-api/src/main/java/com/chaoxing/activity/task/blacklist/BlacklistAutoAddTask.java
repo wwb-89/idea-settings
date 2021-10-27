@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.blacklist;
 
-import com.chaoxing.activity.service.blacklist.BlacklistHandleService;
-import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
+import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueue;
+import com.chaoxing.activity.service.queue.blacklist.handler.BlacklistAutoAddQueueService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,21 +19,21 @@ import javax.annotation.Resource;
 public class BlacklistAutoAddTask {
 
     @Resource
-    private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
+    private BlacklistAutoAddQueue blacklistAutoAddQueue;
     @Resource
-    private BlacklistHandleService blacklistHandleService;
+    private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
 
     @Scheduled(fixedDelay = 1L)
     public void handle() throws InterruptedException {
-        BlacklistAutoAddQueueService.QueueParamDTO queueParamDto = blacklistAutoAddQueueService.pop();
+        BlacklistAutoAddQueue.QueueParamDTO queueParamDto = blacklistAutoAddQueue.pop();
         if (queueParamDto == null) {
             return;
         }
         try {
-            blacklistHandleService.activityEndHandleBlacklist(queueParamDto.getActivityId());
+            blacklistAutoAddQueueService.handle(queueParamDto.getActivityId());
         } catch (Exception e) {
             e.printStackTrace();
-            blacklistAutoAddQueueService.push(queueParamDto);
+            blacklistAutoAddQueue.push(queueParamDto);
         }
 
     }

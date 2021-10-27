@@ -2,7 +2,7 @@ package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.user.UserResultQualifiedQueueService;
+import com.chaoxing.activity.service.queue.user.UserResultQualifiedQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class UserResultQualifiedChangeEventService {
 
     @Resource
-    private UserResultQualifiedQueueService userResultQualifiedQueueService;
+    private UserResultQualifiedQueue userResultQualifiedQueueService;
     @Resource
     private ActivityQueryService activityQueryService;
 
@@ -29,7 +29,7 @@ public class UserResultQualifiedChangeEventService {
         Activity activity = activityQueryService.getById(activityId);
         Integer signId = activity.getSignId();
         if (signId != null) {
-            userResultQualifiedQueueService.push(new UserResultQualifiedQueueService.QueueParamDTO(uid, signId));
+            userResultQualifiedQueueService.push(new UserResultQualifiedQueue.QueueParamDTO(uid, signId));
         }
     }
 

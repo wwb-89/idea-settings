@@ -1,15 +1,19 @@
 package com.chaoxing.activity.api.controller;
 
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.event.*;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
-import com.chaoxing.activity.service.queue.activity.*;
+import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
+import com.chaoxing.activity.service.queue.event.*;
+import com.chaoxing.activity.util.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**队列api服务
@@ -25,33 +29,46 @@ import java.util.List;
 public class QueueApiController {
 
 	@Resource
-	private ActivityStatQueueService activityStatQueueService;
+	private ActivityStatQueue activityStatQueueService;
 	@Resource
-	private ActivityIsAboutToStartQueueService activityIsAboutToStartQueueService;
+	private ActivityStartTimeReachEventQueue activityStartTimeReachEventQueue;
 	@Resource
-	private ActivityStatusUpdateQueueService activityStatusUpdateQueueService;
+	private ActivityEndTimeReachEventQueue activityEndTimeReachEventQueue;
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
 	@Resource
-	private ActivityCoverUrlSyncQueueService activityCoverUrlSyncQueueService;
+	private ActivityWebTemplateChangeEventQueue activityWebTemplateChangeEventQueue;
 	@Resource
-	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
+	private ActivityCoverChangeEventQueue activityCoverChangeEventQueue;
 
-	/**初始化签到的开始结束时间队列
+	@Resource
+	private ActivityAboutStartEventQueue activityAboutStartEventQueue;
+
+	/**初始化活动即将开始/结束的通知事件
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-25 20:16:34
 	 * @param
 	 * @return com.chaoxing.sign.dto.RestRespDTO
 	 */
-	@RequestMapping("init/activity-is-about-to-start")
+	@RequestMapping("init/activity-start-end-event")
 	public RestRespDTO initActivityIsAboutToStartQueue() {
 		List<Activity> activities = activityQueryService.list();
 		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 			for (Activity activity : activities) {
-				activityIsAboutToStartQueueService.pushNoticeSignedUp(new ActivityIsAboutToStartQueueService.QueueParamDTO(activity.getId(), activity.getStartTime()), false);
+				// 活动即将开始
+				ActivityAboutStartEventOrigin activityAboutStartEventOrigin = ActivityAboutStartEventOrigin.builder()
+						.activityId(activity.getId())
+						.marketId(activity.getMarketId())
+						.startTime(activity.getStartTime())
+						.timestamp(timestamp)
+						.build();
+				activityAboutStartEventQueue.push(activityAboutStartEventOrigin);
+				// 活动即将结束
+
 			}
 		}
 		return RestRespDTO.success();
@@ -68,8 +85,21 @@ public class QueueApiController {
 	public RestRespDTO initActivityStatusQueue() {
 		List<Activity> activities = activityQueryService.list();
 		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 			for (Activity activity : activities) {
-				activityStatusUpdateQueueService.push(activity);
+				Integer activityId = activity.getId();
+				ActivityStartTimeReachEventOrigin activityStartTimeReachEventOrigin = ActivityStartTimeReachEventOrigin.builder()
+						.activityId(activityId)
+						.startTime(activity.getStartTime())
+						.timestamp(timestamp)
+						.build();
+				activityStartTimeReachEventQueue.push(activityStartTimeReachEventOrigin);
+				ActivityEndTimeReachEventOrigin activityEndTimeReachEventOrigin = ActivityEndTimeReachEventOrigin.builder()
+						.activityId(activityId)
+						.endTime(activity.getEndTime())
+						.timestamp(timestamp)
+						.build();
+				activityEndTimeReachEventQueue.push(activityEndTimeReachEventOrigin);
 			}
 		}
 		return RestRespDTO.success();
@@ -112,7 +142,11 @@ public class QueueApiController {
 		List<Activity> activities = activityQueryService.listEmptyCoverUrl();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
-				activityCoverUrlSyncQueueService.push(activity.getId());
+				ActivityCoverChangeEventOrigin eventOrigin = ActivityCoverChangeEventOrigin.builder()
+						.activityId(activity.getId())
+						.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+						.build();
+				activityCoverChangeEventQueue.push(eventOrigin);
 			}
 		}
 		return RestRespDTO.success();
@@ -129,13 +163,16 @@ public class QueueApiController {
 	public RestRespDTO activityWebsiteIdSync() {
 		List<Integer> activityIds = activityQueryService.listEmptyWebsiteIdActivityId();
 		if (CollectionUtils.isNotEmpty(activityIds)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 			for (Integer activityId : activityIds) {
-				activityWebsiteIdSyncQueueService.add(activityId);
+				ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
+						.activityId(activityId)
+						.timestamp(timestamp)
+						.build();
+				activityWebTemplateChangeEventQueue.push(eventOrigin);
 			}
 		}
 		return RestRespDTO.success();
 	}
-
-
 
 }

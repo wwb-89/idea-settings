@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.UserActionRecordMapper;
 import com.chaoxing.activity.model.UserActionRecord;
-import com.chaoxing.activity.service.queue.user.UserActionQueueService;
-import com.chaoxing.activity.service.queue.user.UserResultQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionQueue;
+import com.chaoxing.activity.service.queue.user.UserResultQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class UserActionRecordHandleService {
 	@Resource
 	private UserActionRecordMapper userActionRecordMapper;
 	@Resource
-	private UserResultQueueService userResultQueueService;
+	private UserResultQueue userResultQueueService;
 
 	/**新增用户行为记录
 	 * @Description 记录完用户行为后需要通知计算用户的成绩（中的得分信息）
@@ -39,7 +39,7 @@ public class UserActionRecordHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void addUserActionRecord(UserActionQueueService.QueueParamDTO queueParam) {
+	public void addUserActionRecord(UserActionQueue.QueueParamDTO queueParam) {
 		Integer uid = queueParam.getUid();
 		Integer activityId = queueParam.getActivityId();
 		UserActionRecord userActionRecord = UserActionRecord.builder()
@@ -52,7 +52,7 @@ public class UserActionRecordHandleService {
 				.createTime(queueParam.getTime())
 				.build();
 		userActionRecordMapper.insert(userActionRecord);
-		userResultQueueService.push(new UserResultQueueService.QueueParamDTO(uid, activityId));
+		userResultQueueService.push(new UserResultQueue.QueueParamDTO(uid, activityId));
 	}
 
 	/**使用户行为记录有效
@@ -108,7 +108,7 @@ public class UserActionRecordHandleService {
 		);
 		if (affectiveCount > 0) {
 			for (UserActionRecord userActionRecord : userActionRecords) {
-				userResultQueueService.push(new UserResultQueueService.QueueParamDTO(userActionRecord.getUid(), activityId));
+				userResultQueueService.push(new UserResultQueue.QueueParamDTO(userActionRecord.getUid(), activityId));
 			}
 		}
 	}

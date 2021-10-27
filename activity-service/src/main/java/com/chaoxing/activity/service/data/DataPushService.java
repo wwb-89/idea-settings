@@ -1,9 +1,10 @@
 package com.chaoxing.activity.service.data;
 
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
-import com.chaoxing.activity.service.queue.DataPushQueueService;
+import com.chaoxing.activity.service.queue.DataPushQueue;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class DataPushService {
     @Resource
     private ActivityDataFormPushService activityDataFormPushService;
     @Resource
-    private DataPushQueueService dataPushQueueService;
+    private DataPushQueue dataPushQueueService;
 
     /**数据推送
      * @Description 
@@ -85,6 +86,7 @@ public class DataPushService {
     }
 
     @Data
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DataPushParamDTO {
@@ -95,8 +97,6 @@ public class DataPushService {
         private OrgDataRepoConfigDetail.DataTypeEnum dataType;
         /** 主键标识 */
         private String identify;
-        /** 附加附件标识 */
-        private String additionalIdentify;
     }
 
 }

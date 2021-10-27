@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.user;
 
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.queue.user.UserRatingQueueService;
+import com.chaoxing.activity.service.queue.user.UserRatingQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class UserRatingTask {
 
 	@Resource
-	private UserRatingQueueService userRatingQueueService;
+	private UserRatingQueue userRatingQueueService;
 	@Resource
 	private SignApiService signApiService;
 
@@ -34,7 +34,7 @@ public class UserRatingTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void notice() throws InterruptedException {
-		UserRatingQueueService.QueueParamDTO queueParam = userRatingQueueService.pop();
+		UserRatingQueue.QueueParamDTO queueParam = userRatingQueueService.pop();
 		if (queueParam == null) {
 			return;
 		}

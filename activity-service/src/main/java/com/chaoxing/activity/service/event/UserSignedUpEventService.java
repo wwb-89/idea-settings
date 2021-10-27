@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Optional;
 
 /**用户报名成功事件
@@ -26,7 +25,6 @@ public class UserSignedUpEventService {
 
     public void handle(Activity activity, Integer uid) {
         // 活动即将开始通知
-        activityIsAboutStartHandleService.sendSignedUpActivityIsAboutStartNotice(activity, new ArrayList(){{add(uid);}});
         // 报名成功通知
         Boolean signedUpNotice = Optional.ofNullable(activity.getSignedUpNotice()).orElse(false);
         if (signedUpNotice) {

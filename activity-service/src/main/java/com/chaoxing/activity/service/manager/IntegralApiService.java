@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.IntegralPushScopeMapper;
 import com.chaoxing.activity.model.IntegralPushScope;
-import com.chaoxing.activity.service.queue.IntegralPushQueueService;
+import com.chaoxing.activity.service.queue.IntegralPushQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -59,7 +59,7 @@ public class IntegralApiService {
 	 * @param integralPush
 	 * @return void
 	*/
-	public void pushIntegral(IntegralPushQueueService.IntegralPushDTO integralPush) {
+	public void pushIntegral(IntegralPushQueue.IntegralPushDTO integralPush) {
 		Integer uid = integralPush.getUid();
 		Integer fid = integralPush.getFid();
 		Integer type = integralPush.getType();

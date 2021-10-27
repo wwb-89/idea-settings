@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.activity.ActivityMarketService;
-import com.chaoxing.activity.service.queue.OrgAssociateActivityQueueService;
+import com.chaoxing.activity.service.queue.OrgAssociateActivityQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,13 +21,13 @@ import javax.annotation.Resource;
 public class OrgAssociateActivityTask {
 
     @Resource
-    private OrgAssociateActivityQueueService orgAssociateActivityQueueService;
+    private OrgAssociateActivityQueue orgAssociateActivityQueueService;
     @Resource
     private ActivityMarketService activityMarketService;
 
     @Scheduled(fixedDelay = 1L)
     public void handle() throws InterruptedException {
-        OrgAssociateActivityQueueService.QueueParamDTO queueParamDto = orgAssociateActivityQueueService.pop();
+        OrgAssociateActivityQueue.QueueParamDTO queueParamDto = orgAssociateActivityQueueService.pop();
         if (queueParamDto == null) {
             return;
         }

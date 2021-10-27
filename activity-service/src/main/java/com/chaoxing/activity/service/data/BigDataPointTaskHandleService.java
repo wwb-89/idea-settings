@@ -4,8 +4,8 @@ import com.chaoxing.activity.model.BigDataPointPushRecord;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.BigDataPointPushRecordService;
 import com.chaoxing.activity.service.manager.bigdata.BigDataPointApiService;
-import com.chaoxing.activity.service.queue.BigDataPointQueueService;
-import com.chaoxing.activity.service.queue.BigDataPointTaskQueueService;
+import com.chaoxing.activity.service.queue.BigDataPointQueue;
+import com.chaoxing.activity.service.queue.BigDataPointTaskQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class BigDataPointTaskHandleService {
     private UserStatSummaryQueryService userStatSummaryQueryService;
 
     @Resource
-    private BigDataPointQueueService bigDataPointQueueService;
+    private BigDataPointQueue bigDataPointQueueService;
 
     /**处理任务
      * @Description 
@@ -50,8 +50,8 @@ public class BigDataPointTaskHandleService {
      * @param queueParam
      * @return void
     */
-    public void handleTask(BigDataPointTaskQueueService.QueueParamDTO queueParam) {
-        Integer createFid = Optional.ofNullable(queueParam).map(BigDataPointTaskQueueService.QueueParamDTO::getCreateFid).orElse(null);
+    public void handleTask(BigDataPointTaskQueue.QueueParamDTO queueParam) {
+        Integer createFid = Optional.ofNullable(queueParam).map(BigDataPointTaskQueue.QueueParamDTO::getCreateFid).orElse(null);
         if (createFid == null) {
             return;
         }
@@ -64,7 +64,7 @@ public class BigDataPointTaskHandleService {
             // 新增积分
             List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(activityId);
             for (UserStatSummary userStatSummary : userStatSummaries) {
-                BigDataPointQueueService.QueueParamDTO param = new BigDataPointQueueService.QueueParamDTO(userStatSummary.getUid(), createFid, userStatSummary.getActivityId(), calPointType(userStatSummary).getValue());
+                BigDataPointQueue.QueueParamDTO param = new BigDataPointQueue.QueueParamDTO(userStatSummary.getUid(), createFid, userStatSummary.getActivityId(), calPointType(userStatSummary).getValue());
                 bigDataPointQueueService.push(param);
             }
         } else {
@@ -76,7 +76,7 @@ public class BigDataPointTaskHandleService {
                     if (pointTypeEnum == null) {
                         continue;
                     }
-                    BigDataPointQueueService.QueueParamDTO param = new BigDataPointQueueService.QueueParamDTO(bigDataPointPushRecord.getUid(), createFid, activityId, pointTypeEnum.getReverseValue());
+                    BigDataPointQueue.QueueParamDTO param = new BigDataPointQueue.QueueParamDTO(bigDataPointPushRecord.getUid(), createFid, activityId, pointTypeEnum.getReverseValue());
                     bigDataPointQueueService.push(param);
                 }
             }
@@ -105,7 +105,7 @@ public class BigDataPointTaskHandleService {
         }
     }
 
-    public void dataPush(BigDataPointQueueService.QueueParamDTO queueParam) {
+    public void dataPush(BigDataPointQueue.QueueParamDTO queueParam) {
         Integer uid = queueParam.getUid();
         Integer activityId = queueParam.getActivityId();
         Integer pointType = queueParam.getPointType();

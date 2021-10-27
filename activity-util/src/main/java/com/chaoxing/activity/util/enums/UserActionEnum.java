@@ -23,6 +23,13 @@ public enum UserActionEnum {
 	CANCEL_SIGNED_IN("取消签到", "cancel_signed_in", "取消签到扣除", UserActionTypeEnum.SIGN_IN, true, true),
 	NOT_SIGNED_IN("未签", "not_signed_in", "每次未签扣除", UserActionTypeEnum.SIGN_IN, true, true),
 	LEAVE_SIGNED_IN("请假", "leave_signed_in", "每次请假扣除", UserActionTypeEnum.SIGN_IN, true, true),
+
+	SIGNED_OUT("签退", "signed_out", "每次签退获得", UserActionTypeEnum.SIGN_OUT, true, true),
+	CANCEL_SIGNED_OUT("取消签退", "cancel_signed_out", "取消签退扣除", UserActionTypeEnum.SIGN_OUT, true, true),
+	NOT_SIGNED_OUT("未签", "not_signed_out", "每次未签扣除", UserActionTypeEnum.SIGN_OUT, true, true),
+	LEAVE_SIGNED_OUT("请假", "leave_signed_out", "每次请假扣除", UserActionTypeEnum.SIGN_OUT, true, true),
+
+
 	RATING("评价", "rating", "提交评价获得", UserActionTypeEnum.RATING, false, false),
 	NOT_RATING("未评价", "not_rating", "未评价扣除", UserActionTypeEnum.RATING, false, false),
 	DELETE_RATING("删除评价", "delete_rating", "删除评价扣除", UserActionTypeEnum.RATING, false, false),

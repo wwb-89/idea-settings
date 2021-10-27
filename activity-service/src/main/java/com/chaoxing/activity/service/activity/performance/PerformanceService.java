@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.activity.performance;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.PerformanceMapper;
 import com.chaoxing.activity.model.Performance;
-import com.chaoxing.activity.service.queue.user.UserActionQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionQueue;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import com.google.common.collect.Lists;
@@ -32,7 +32,7 @@ public class PerformanceService {
 	private PerformanceMapper performanceMapper;
 
 	@Resource
-	private UserActionQueueService userActionQueueService;
+	private UserActionQueue userActionQueueService;
 	/***新增活动表现
 	* @Description
 	* @author huxiaolong
@@ -47,7 +47,7 @@ public class PerformanceService {
 		performance.setUpdateTime(now);
 		performanceMapper.insert(performance);
 		userActionQueueService.push(
-				new UserActionQueueService.QueueParamDTO(performance.getUid(),
+				new UserActionQueue.QueueParamDTO(performance.getUid(),
 						performance.getActivityId(),
 						UserActionTypeEnum.PERFORMANCE,
 						UserActionEnum.PERFORMANCE,

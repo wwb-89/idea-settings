@@ -1,8 +1,8 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.data.BigDataPointTaskHandleService;
-import com.chaoxing.activity.service.queue.BigDataPointQueueService;
-import com.chaoxing.activity.service.queue.BigDataPointTaskQueueService;
+import com.chaoxing.activity.service.queue.BigDataPointQueue;
+import com.chaoxing.activity.service.queue.BigDataPointTaskQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,9 +22,9 @@ import javax.annotation.Resource;
 public class BigDataPointTask {
 
     @Resource
-    private BigDataPointTaskQueueService bigDataPointTaskQueueService;
+    private BigDataPointTaskQueue bigDataPointTaskQueueService;
     @Resource
-    private BigDataPointQueueService bigDataPointQueueService;
+    private BigDataPointQueue bigDataPointQueueService;
 
     @Resource
     private BigDataPointTaskHandleService bigDataPointTaskHandleService;
@@ -38,7 +38,7 @@ public class BigDataPointTask {
     */
     @Scheduled(fixedDelay = 1L)
     public void handleTask() throws InterruptedException {
-        BigDataPointTaskQueueService.QueueParamDTO queueParam = bigDataPointTaskQueueService.pop();
+        BigDataPointTaskQueue.QueueParamDTO queueParam = bigDataPointTaskQueueService.pop();
         if (queueParam == null) {
             return;
         }
@@ -59,7 +59,7 @@ public class BigDataPointTask {
     */
     @Scheduled(fixedDelay = 1L)
     public void handleDataPush() throws InterruptedException {
-        BigDataPointQueueService.QueueParamDTO queueParam = bigDataPointQueueService.pop();
+        BigDataPointQueue.QueueParamDTO queueParam = bigDataPointQueueService.pop();
         if (queueParam == null) {
             return;
         }

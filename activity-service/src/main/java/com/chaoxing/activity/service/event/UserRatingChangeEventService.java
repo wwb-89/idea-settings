@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.model.ActivityRatingDetail;
-import com.chaoxing.activity.service.queue.user.UserActionQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
@@ -26,7 +26,7 @@ public class UserRatingChangeEventService {
 	@Resource
 	private UserStatSummaryHandleService userStatSummaryService;
 	@Resource
-	private UserActionQueueService userActionQueueService;
+	private UserActionQueue userActionQueue;
 
 	/**用户评价变更
 	 * @Description
@@ -51,7 +51,7 @@ public class UserRatingChangeEventService {
 			userAction = UserActionEnum.RATING;
 		}
 		LocalDateTime updateTime = activityRatingDetail.getUpdateTime();
-		userActionQueueService.push(new UserActionQueueService.QueueParamDTO(scorerUid, activityId, UserActionTypeEnum.RATING, userAction, String.valueOf(activityRatingDetail.getId()), updateTime));
+		userActionQueue.push(new UserActionQueue.QueueParamDTO(scorerUid, activityId, UserActionTypeEnum.RATING, userAction, String.valueOf(activityRatingDetail.getId()), updateTime));
 	}
 
 }

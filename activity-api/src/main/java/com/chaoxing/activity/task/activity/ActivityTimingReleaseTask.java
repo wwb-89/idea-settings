@@ -2,8 +2,7 @@ package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueue;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,15 +24,13 @@ import javax.annotation.Resource;
 public class ActivityTimingReleaseTask {
 
 	@Resource
-	private ActivityTimingReleaseQueueService activityTimingReleaseQueueService;
+	private ActivityTimingReleaseQueue activityTimingReleaseQueue;
 	@Resource
 	private ActivityHandleService activityHandleService;
-	@Resource
-	private ActivityQueryService activityQueryService;
 
 	@Scheduled(fixedDelay = 1L)
-	public void release() throws InterruptedException {
-		ActivityTimingReleaseQueueService.QueueParamDTO queueParam = activityTimingReleaseQueueService.pop();
+	public void handle() throws InterruptedException {
+		ActivityTimingReleaseQueue.QueueParamDTO queueParam = activityTimingReleaseQueue.pop();
 		if (queueParam == null) {
 			return;
 		}
@@ -44,7 +41,7 @@ public class ActivityTimingReleaseTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (!isIgnoreException(e)) {
-				activityTimingReleaseQueueService.push(queueParam);
+				activityTimingReleaseQueue.push(queueParam);
 			}
 		}
 	}

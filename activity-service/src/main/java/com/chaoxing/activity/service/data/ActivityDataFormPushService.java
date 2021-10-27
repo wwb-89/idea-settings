@@ -81,11 +81,10 @@ public class ActivityDataFormPushService {
         }
         String identify = String.valueOf(activityId);
         DataPushRecord dataPushRecord = dataPushRecordQueryService.get(identify, repoType.getValue(), dataType.getValue());
-        Integer status = activity.getStatus();
         Integer formId = Integer.parseInt(repo);
         // 是否需要删除数据
-        boolean delete = Objects.equals(Activity.StatusEnum.DELETED.getValue(), status);
-        if (delete) {
+        boolean deleted = Objects.equals(Activity.StatusEnum.DELETED.getValue(), activity.getStatus());
+        if (deleted) {
             if (dataPushRecord != null) {
                 dataPushRecordHandleService.delete(dataPushRecord.getId());
                 Integer formUserId = Integer.parseInt(dataPushRecord.getRecord());

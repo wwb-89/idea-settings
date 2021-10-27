@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
-import com.chaoxing.activity.service.queue.notice.XxtNoticeQueueService;
+import com.chaoxing.activity.service.queue.notice.XxtNoticeQueue;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ public class XxtNoticeApiService {
 	private RestTemplate restTemplate;
 
 	@Resource
-	private XxtNoticeQueueService xxtNoticeQueueService;
+	private XxtNoticeQueue xxtNoticeQueueService;
 
 	/**发送通知
 	 * @Description 单次发送的接受者数量不要超过200

@@ -14,7 +14,7 @@ import com.chaoxing.activity.model.ExportRecord;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
-import com.chaoxing.activity.service.queue.ExportQueueService;
+import com.chaoxing.activity.service.queue.ExportQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.FileUtils;
@@ -53,7 +53,7 @@ public class ExportRecordHandleService {
     @Resource
     private ExportService exportService;
     @Resource
-    private ExportQueueService exportQueueService;
+    private ExportQueue exportQueueService;
     @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
     @Resource

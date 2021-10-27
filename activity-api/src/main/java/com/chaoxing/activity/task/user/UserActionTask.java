@@ -3,12 +3,12 @@ package com.chaoxing.activity.task.user;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.event.UserSignedUpEventService;
-import com.chaoxing.activity.service.queue.IntegralPushQueueService;
-import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
-import com.chaoxing.activity.service.queue.user.UserActionQueueService;
-import com.chaoxing.activity.service.queue.user.UserActionRecordQueueService;
-import com.chaoxing.activity.service.queue.user.UserRatingQueueService;
-import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.IntegralPushQueue;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
+import com.chaoxing.activity.service.queue.user.UserActionQueue;
+import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
+import com.chaoxing.activity.service.queue.user.UserRatingQueue;
+import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
 import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
@@ -32,17 +32,17 @@ import java.util.Objects;
 public class UserActionTask {
 
     @Resource
-    private ActivityStatSummaryQueueService activityStatSummaryQueueService;
+    private ActivityStatSummaryQueue activityStatSummaryQueue;
     @Resource
-    private UserStatSummaryQueueService userStatSummaryQueueService;
+    private UserStatSummaryQueue userStatSummaryQueue;
     @Resource
-    private UserActionQueueService userActionQueueService;
+    private UserActionQueue userActionQueue;
     @Resource
-    private UserActionRecordQueueService userActionRecordQueueService;
+    private UserActionRecordQueue userActionRecordQueue;
     @Resource
-    private IntegralPushQueueService integralPushQueueService;
+    private IntegralPushQueue integralPushQueue;
     @Resource
-    private UserRatingQueueService userRatingQueueService;
+    private UserRatingQueue userRatingQueue;
     @Resource
     private UserSignedUpEventService userSignedUpEventService;
 
@@ -58,7 +58,7 @@ public class UserActionTask {
     */
     @Scheduled(fixedDelay = 1L)
     public void handleUserAction() throws InterruptedException {
-        UserActionQueueService.QueueParamDTO queueParam = userActionQueueService.pop();
+        UserActionQueue.QueueParamDTO queueParam = userActionQueue.pop();
         if (queueParam == null) {
             return;
         }
@@ -72,25 +72,25 @@ public class UserActionTask {
         switch (userActionType) {
             case SIGN_UP:
                 // 活动统计汇总中的报名数量需要更新
-                activityStatSummaryQueueService.push(activityId);
+                activityStatSummaryQueue.push(activityId);
                 // 用户活动汇总统计中的报名签到信息需要更新
-                userStatSummaryQueueService.pushUserSignStat(new UserStatSummaryQueueService.QueueParamDTO(uid, activityId));
+                userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
                 if (Objects.equals(UserActionEnum.SIGNED_UP, queueParam.getUserAction())) {
                     // 报名成功
                     userSignedUpEventService.handle(activity, uid);
                     // 推送积分
-                    integralPushQueueService.push(new IntegralPushQueueService.IntegralPushDTO(uid, activity.getCreateFid(), IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activity.getName()));
+                    integralPushQueue.push(new IntegralPushQueue.IntegralPushDTO(uid, activity.getCreateFid(), IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activity.getName()));
                 }
                 break;
             case SIGN_IN:
-                // 活动统计汇总中的报名数量需要更新
-                activityStatSummaryQueueService.push(activityId);
+                // 活动统计汇总中的签到数量需要更新
+                activityStatSummaryQueue.push(activityId);
                 // 用户活动汇总统计中的报名签到信息需要更新
-                userStatSummaryQueueService.pushUserSignStat(new UserStatSummaryQueueService.QueueParamDTO(uid, activityId));
+                userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
                 break;
             case RATING:
                 // 通知报名签到用户评价了活动
-                userRatingQueueService.push(new UserRatingQueueService.QueueParamDTO(uid, activity.getSignId()));
+                userRatingQueue.push(new UserRatingQueue.QueueParamDTO(uid, activity.getSignId()));
                 break;
             case DISCUSS:
                 break;
@@ -100,15 +100,15 @@ public class UserActionTask {
                 break;
             case QUALIFIED:
                 // 活动汇总统计中合格的数量需要更新
-                activityStatSummaryQueueService.push(activityId);
+                activityStatSummaryQueue.push(activityId);
                 // 用户活动汇总统计中的是否合格信息需要更新
-                userStatSummaryQueueService.pushUserResultStat(new UserStatSummaryQueueService.QueueParamDTO(uid, activityId));
+                userStatSummaryQueue.pushUserResultStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
                 break;
             default:
                 // 其他未知的用户行为
         }
         // 记录用户行为
-        userActionRecordQueueService.push(queueParam);
+        userActionRecordQueue.push(queueParam);
     }
 
 }

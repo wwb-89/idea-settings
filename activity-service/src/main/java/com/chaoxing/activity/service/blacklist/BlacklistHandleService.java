@@ -14,7 +14,7 @@ import com.chaoxing.activity.model.BlacklistRecord;
 import com.chaoxing.activity.model.BlacklistRule;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoRemoveQueueService;
+import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoRemoveQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class BlacklistHandleService {
     @Resource
     private BlacklistQueryService blacklistQueryService;
     @Resource
-    private BlacklistAutoRemoveQueueService blacklistAutoRemoveQueueService;
+    private BlacklistAutoRemoveQueue blacklistAutoRemoveQueueService;
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
@@ -211,7 +211,7 @@ public class BlacklistHandleService {
         // 通知到时间后自动移除
         LocalDateTime removeTime = LocalDateTime.now().plusHours(autoRemoveHours);
         for (Blacklist blacklist : blacklists) {
-            blacklistAutoRemoveQueueService.push(new BlacklistAutoRemoveQueueService.QueueParamDTO(blacklist.getMarketId(), blacklist.getUid(), removeTime));
+            blacklistAutoRemoveQueueService.push(new BlacklistAutoRemoveQueue.QueueParamDTO(blacklist.getMarketId(), blacklist.getUid(), removeTime));
         }
     }
 
