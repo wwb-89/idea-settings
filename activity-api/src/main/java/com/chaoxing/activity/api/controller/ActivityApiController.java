@@ -2,6 +2,7 @@ package com.chaoxing.activity.api.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.annotation.SignatureValid;
 import com.chaoxing.activity.api.vo.ActivityStatSummaryVO;
 import com.chaoxing.activity.api.vo.UserResultVO;
 import com.chaoxing.activity.api.vo.UserSignUpStatusVo;
@@ -365,6 +366,7 @@ public class ActivityApiController {
 	* @return
 	*/
 	@RequestMapping("stat/summary")
+	@SignatureValid
 	public RestRespDTO pageActivityStatResult(HttpServletRequest request, ActivityStatSummaryQueryDTO statSummaryQueryItem) {
 		Page page = HttpServletRequestUtils.buid(request);
 		page = activityStatSummaryQueryService.activityStatSummaryPage(page, statSummaryQueryItem);
@@ -388,6 +390,7 @@ public class ActivityApiController {
 	* @return
 	*/
 	@RequestMapping("{activityId}/result")
+	@SignatureValid
 	public RestRespDTO pageActivityUserResult(HttpServletRequest request, @PathVariable Integer activityId) {
 		Page page = HttpServletRequestUtils.buid(request);
 		page = userResultQueryService.pageUserResult(page, UserResultQueryDTO.builder().activityId(activityId).build());
@@ -413,6 +416,7 @@ public class ActivityApiController {
 	* @return
 	*/
 	@RequestMapping("user/stat")
+	@SignatureValid
 	public RestRespDTO pageUserStatResult(HttpServletRequest request, Integer fid, Integer marketId, String uids) {
 		Page page = HttpServletRequestUtils.buid(request);
 		page = userStatSummaryQueryService.pageUserStatResult(page, fid, marketId, uids);
@@ -436,6 +440,7 @@ public class ActivityApiController {
 	* @return
 	*/
 	@RequestMapping("{activityId}/user/sign-up")
+	@SignatureValid
 	public RestRespDTO pageActivityUserSignUpResult(@PathVariable Integer activityId, String uids) {
 		Activity activity = activityQueryService.getById(activityId);
 		List<Integer> uidList = Lists.newArrayList();
