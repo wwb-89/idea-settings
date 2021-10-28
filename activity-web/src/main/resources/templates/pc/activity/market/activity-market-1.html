@@ -35,7 +35,7 @@
 				<label>类型</label>
 				<div class="option-list">
 					<ul>
-						<li :class="{'active': item.selected}" v-for="(item, index) of activityTypes" @click="changeActivityTypesSelected(index)">{{item.name}}</li>
+						<li :class="{'active': item.selected}" v-for="(item, index) of activityTypes" v-if="item.value != 'other' || showOtherActivityType" @click="changeActivityTypesSelected(index)">{{item.name}}</li>
 					</ul>
 				</div>
 				<div class="clear"></div>
@@ -80,6 +80,7 @@
 								<p class="tips color3" v-if="item.status == 4">已结束</p>
 								<p class="tips color5" v-if="item.status == 2">活动预告</p>
 							</div>
+							<p class="num" v-if="item.openSignUp"><i></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
 							<div class="js-crop-img" @click="detail(index)">
 								<img :src="item | getCloudImgUrl">
 							</div>
@@ -133,7 +134,8 @@
 				hideFilter: [[${hideFilter}]],
 				topFid: [[${topFid}]],
                 // 是否查询能报名的活动
-                signUpAble: [[${signUpAble}]]
+                signUpAble: [[${signUpAble}]],
+				otherTypeMarketIds: []
 			},
 			created: function () {
 				var $this = this;
@@ -195,9 +197,16 @@
 				$this.activityTypes = [
 					{name: '全部', value: '', selected: true},
 					{name: '线上', value: 'online', selected: false},
-					{name: '线下', value: 'offline', selected: false}
+					{name: '线下', value: 'offline', selected: false},
+					{name: '其他', value: 'other', selected: false}
 				];
 				$this.loadData();
+			},
+			computed: {
+				showOtherActivityType: function () {
+					var $this = this;
+					return $this.otherTypeMarketIds.indexOf([[${marketId}]]) != -1;
+				}
 			},
 			methods: {
 				//改变选中状态

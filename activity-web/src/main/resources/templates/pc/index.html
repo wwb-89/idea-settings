@@ -32,7 +32,7 @@
             <div class="typeItem" v-show="showFilter('activityType')">
                 <span class="title">类型</span>
                 <ul>
-                    <li :class="{'active': item.selected}" v-for="(item, index) of activityTypes" @click="changeActivityTypesSelected(index)">{{item.name}}</li>
+                    <li :class="{'active': item.selected}" v-for="(item, index) of activityTypes" v-if="item.value != 'other' || showOtherActivityType" @click="changeActivityTypesSelected(index)">{{item.name}}</li>
                 </ul>
             </div>
             <div class="typeItem" v-show="showFilter('activityClassify')">
@@ -132,7 +132,8 @@
                 searchShadeShow: false,
                 topFid: [[${topFid}]],
                 // 是否查询能报名的活动
-                signUpAble: [[${signUpAble}]]
+                signUpAble: [[${signUpAble}]],
+                otherTypeMarketIds: []
             },
             created: function () {
                 var $this = this;
@@ -163,7 +164,8 @@
                 $this.activityTypes = [
                     {name: '全部', value: '', selected: true},
                     {name: '线上', value: 'online', selected: false},
-                    {name: '线下', value: 'offline', selected: false}
+                    {name: '线下', value: 'offline', selected: false},
+                    {name: '其他', value: 'other', selected: false}
                 ];
                 //状态
                 $this.statuses = [
@@ -199,6 +201,12 @@
                     }
                 }
                 $this.loadData();
+            },
+            computed: {
+                showOtherActivityType: function () {
+                    var $this = this;
+                    return $this.otherTypeMarketIds.indexOf([[${marketId}]]) != -1;
+                }
             },
             methods: {
                 //改变选中状态

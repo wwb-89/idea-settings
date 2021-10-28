@@ -67,7 +67,7 @@ html{
     border-top-color: #fafafa;
     position: absolute;
     bottom: -20px;
-    left: calc(67% - 10px);
+    left: calc(64% - 10px);
 }
 .tooltip .menu-item {
     padding: 5px 5px;

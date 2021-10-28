@@ -45,7 +45,7 @@
 <!--                        <span v-if="activity.hasSignUp && signUpAble" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>{{activity.signUpStatusDescribe}}</span>-->
                         <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
                     </div>
-                    <!--<p class="num"><i></i>1028</p>-->
+                    <p class="num" v-if="activity.openSignUp"><i></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
                 </div>
                 <div class="info">
                     <h2 class="title"><span class="info-top" v-show="activity.top">置顶</span>{{activity.name}}</h2>
@@ -74,7 +74,7 @@
                 <div class="list-item" v-show="showFilter('activityType')">
                     <div class="title">类型</div>
                     <ul>
-                        <li :class="{'active': activityType.selected}" v-for="(activityType, index) of activityTypes" :key="'activity-type' + index" @click="changeActivityType(index)">{{activityType.name}}</li>
+                        <li :class="{'active': activityType.selected}" v-for="(activityType, index) of activityTypes" :key="'activity-type' + index" v-if="activityType.value != 'other' || showOtherActivityType" @click="changeActivityType(index)">{{activityType.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
@@ -162,6 +162,7 @@
                             ]
                         }
                     },
+                    otherTypeMarketIds: []
                 },
                 created: function () {
                     var $this = this;
@@ -201,7 +202,8 @@
                     $this.activityTypes = [
                         {name: '全部', value: '', selected: true},
                         {name: '线上', value: 'online', selected: false},
-                        {name: '线下', value: 'offline', selected: false}
+                        {name: '线下', value: 'offline', selected: false},
+                        {name: '其他', value: 'other', selected: false}
                     ];
                     // 状态
                     $this.statuses = [
@@ -240,6 +242,10 @@
                         return !activityApp.isEmpty($this.queryParams.activityClassifyName) ||
                                 !activityApp.isEmpty($this.queryParams.dateScope) ||
                                 !activityApp.isEmpty($this.queryParams.status);
+                    },
+                    showOtherActivityType: function () {
+                        var $this = this;
+                        return $this.otherTypeMarketIds.indexOf([[${marketId}]]) != -1;
                     }
                 },
                 methods: {

@@ -202,6 +202,9 @@ public class Activity {
     /** 是否有报名 */
     @TableField(exist = false)
     private Boolean hasSignUp = false;
+    /** 是否开启报名 */
+    @TableField(exist = false)
+    private Boolean openSignUp;
     /** 报名状态 */
     @TableField(exist = false)
     private Integer signUpStatus;
@@ -241,7 +244,8 @@ public class Activity {
 
         /** 线上举办 */
         ONLINE("线上举办", "online"),
-        OFFLINE("线下举办", "offline");
+        OFFLINE("线下举办", "offline"),
+        OTHER("其他", "other");
 
         private final String name;
         private final String value;
