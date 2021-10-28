@@ -1019,7 +1019,7 @@ public class SignApiService {
 	public Integer getSignIdByWfwFormId(Integer wfwFormId) {
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		params.add("wfwFormId", wfwFormId);
-		String result = restTemplate.postForObject(USER_SIGN_UP_ABLE_SIGN_URL, params, String.class);
+		String result = restTemplate.postForObject(GET_SIGN_ID_BY_WFW_FORM_ID_URL, params, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
 			throw new BusinessException(message);
