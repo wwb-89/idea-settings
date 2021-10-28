@@ -7,12 +7,13 @@ import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
+import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
-import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
@@ -27,7 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**门户活动接口服务
  * @author wwb
@@ -52,7 +56,7 @@ public class ActivityMhV2ApiController {
 	@Resource
 	private ActivityFlagValidateService activityFlagValidateService;
 	@Resource
-	private GroupApiService groupApiService;
+	private WorkApiService workApiService;
 
 	/**活动信息
 	 * @Description 
@@ -80,9 +84,11 @@ public class ActivityMhV2ApiController {
 	@RequestMapping("activity/{activityId}/info")
 	public RestRespDTO activityInfo(@PathVariable Integer activityId, @RequestBody(required = false) String data) {
 		Integer uid = null;
+		Integer wfwfid = null;
 		if (StringUtils.isNotBlank(data)) {
 			JSONObject params = JSON.parseObject(data);
 			uid = params.getInteger("uid");
+			wfwfid = params.getInteger("wfwfid");
 		}
 		Activity activity = activityQueryService.getById(activityId);
 		Map<String, String> fieldCodeNameRelation = activityQueryService.getFieldCodeNameRelation(activity);
@@ -126,9 +132,15 @@ public class ActivityMhV2ApiController {
 				hashMap.put("107", buildField("报名人数链接", signUpListUrl, "107"));
 			}
 			// 通过报名签到获取按钮列表
-			btns = packageBtns(activity, signId, uid, availableFlags);
+			btns = packageBtns(activity, signId, uid, wfwfid, availableFlags);
 			btns.forEach(v -> hashMap.put(v.getFlag(), v));
 		}else{
+			Integer workId = activity.getWorkId();
+			if (workId != null) {
+				// 作品征集定制
+				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> workBtns = listWorkBtn(uid, wfwfid, workId, availableFlags, true);
+				workBtns.forEach(v -> hashMap.put(v.getFlag(), v));
+			}
 			// 是不是管理员
 			if (activityValidationService.isManageAble(activity, uid)) {
 				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> manageBtns = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
@@ -186,10 +198,11 @@ public class ActivityMhV2ApiController {
 	 * @param activity
 	 * @param signId
 	 * @param uid
+	 * @param fid
 	 * @param availableFlags
 	 * @return java.util.List<com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>
 	*/
-	private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> packageBtns(Activity activity, Integer signId, Integer uid, List<Integer> availableFlags) {
+	private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> packageBtns(Activity activity, Integer signId, Integer uid, Integer fid, List<Integer> availableFlags) {
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> result = Lists.newArrayList();
 		Integer status = activity.getStatus();
 		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
@@ -236,9 +249,6 @@ public class ActivityMhV2ApiController {
 				if (CollectionUtils.isNotEmpty(signInIds)) {
 					result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 				}
-				if (openWork && workId != null && !isManager) {
-					result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
-				}
 				existSignUpInfo = true;
 			} else {
 				signedUp = false;
@@ -277,16 +287,15 @@ public class ActivityMhV2ApiController {
 			if (CollectionUtils.isNotEmpty(signInIds)) {
 				result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 			}
-			if (openWork && workId != null && !isManager) {
-				result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
-			}
+		}
+		// 作品征集按钮
+		if (openWork && workId != null) {
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> workBtns = listWorkBtn(uid, fid, workId, availableFlags, signedUp);
+			workBtns.forEach(v -> result.add(v));
 		}
 		// 是不是管理员
 		if (isManager) {
 			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
-			if (openWork && workId != null) {
-				btns.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
-			}
 			btns.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
 			for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn : btns) {
 				result.add(btn);
@@ -306,6 +315,34 @@ public class ActivityMhV2ApiController {
 			result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
 		}
 		return result;
+	}
+
+	private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> listWorkBtn(Integer uid, Integer fid, Integer workId, List<Integer> availableFlags, boolean signedUp) {
+		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
+		List<WorkBtnDTO> workBtnDtos = workApiService.listErdosBtns(workId, uid, fid);
+		if (CollectionUtils.isNotEmpty(workBtnDtos)) {
+			for (WorkBtnDTO workBtnDto : workBtnDtos) {
+				String flag = getFlag(availableFlags);
+				Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
+				Boolean needValidate = Optional.ofNullable(workBtnDto.getNeedValidate()).orElse(false);
+				if (needValidate && !signedUp) {
+					continue;
+				}
+				btns.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+						.key(workBtnDto.getButtonName())
+						.value(workBtnDto.getLinkUrl())
+						.flag(flag)
+						.build());
+				Integer intFlag = Integer.parseInt(flag);
+				if (intFlag.compareTo(MULTI_BTN_MAX_FLAG) < 0) {
+					btns.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+							.value(enable ? "1" : "0")
+							.flag(String.valueOf(intFlag + 1))
+							.build());
+				}
+			}
+		}
+		return btns;
 	}
 
 	/**获取双选会主页地址

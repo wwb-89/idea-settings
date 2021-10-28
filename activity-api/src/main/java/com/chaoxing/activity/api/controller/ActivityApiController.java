@@ -206,6 +206,20 @@ public class ActivityApiController {
 		return RestRespDTO.success(activity);
 	}
 
+	/**根据报名的万能表单id查询相应的活动信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-28 12:45:47
+	 * @param wfwFormId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("")
+	public RestRespDTO getActivityBySignUpWfwFormId(Integer wfwFormId) {
+		Integer signId = signApiService.getSignIdByWfwFormId(wfwFormId);
+		Activity activity = activityQueryService.getBySignId(signId);
+		return RestRespDTO.success(activity);
+	}
+
 	/**根据报名签到id查询活动定制登录url
 	 * @Description 
 	 * @author wwb

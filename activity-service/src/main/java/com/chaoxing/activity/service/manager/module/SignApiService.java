@@ -148,6 +148,9 @@ public class SignApiService {
 	/** 根据uid、signIds查询用户能报名的 */
 	private static final String USER_SIGN_UP_ABLE_SIGN_URL = SIGN_API_DOMAIN + "/sign/sign-up-able";
 
+	/** 根据万能表单id查询报名签到id */
+	private static final String GET_SIGN_ID_BY_WFW_FORM_ID_URL = SIGN_API_DOMAIN + "/sign/id/from-wfw-form-id";
+
 	@Resource
 	private RestTemplate restTemplate;
 
@@ -1005,4 +1008,22 @@ public class SignApiService {
 			throw new BusinessException(message);
 		});
     }
+
+	/**根据万能表单id查询报名签到id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-28 12:43:44
+	 * @param wfwFormId
+	 * @return java.lang.Integer
+	*/
+	public Integer getSignIdByWfwFormId(Integer wfwFormId) {
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("wfwFormId", wfwFormId);
+		String result = restTemplate.postForObject(USER_SIGN_UP_ABLE_SIGN_URL, params, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
 }

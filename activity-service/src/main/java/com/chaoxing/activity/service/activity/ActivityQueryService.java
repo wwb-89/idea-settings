@@ -501,6 +501,9 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity getBySignId(Integer signId) {
+		if (signId == null) {
+			return null;
+		}
 		return activityMapper.getBySignId(signId);
 	}
 
