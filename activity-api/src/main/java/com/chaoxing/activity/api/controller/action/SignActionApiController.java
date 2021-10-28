@@ -1,14 +1,14 @@
 package com.chaoxing.activity.api.controller.action;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.event.SignInAddEventOrigin;
-import com.chaoxing.activity.dto.event.SignInDeletedEventOrigin;
-import com.chaoxing.activity.dto.event.SignUpAddEventOrigin;
-import com.chaoxing.activity.dto.event.SignUpDeletedEventOrigin;
-import com.chaoxing.activity.service.queue.event.SignInAddEventQueue;
-import com.chaoxing.activity.service.queue.event.SignInDeletedEventQueue;
-import com.chaoxing.activity.service.queue.event.SignUpAddEventQueue;
-import com.chaoxing.activity.service.queue.event.SignUpDeletedEventQueue;
+import com.chaoxing.activity.dto.event.sign.SignInAddEventOrigin;
+import com.chaoxing.activity.dto.event.sign.SignInDeletedEventOrigin;
+import com.chaoxing.activity.dto.event.sign.SignUpAddEventOrigin;
+import com.chaoxing.activity.dto.event.sign.SignUpDeletedEventOrigin;
+import com.chaoxing.activity.service.queue.event.sign.SignInAddEventQueue;
+import com.chaoxing.activity.service.queue.event.sign.SignInDeletedEventQueue;
+import com.chaoxing.activity.service.queue.event.sign.SignUpAddEventQueue;
+import com.chaoxing.activity.service.queue.event.sign.SignUpDeletedEventQueue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

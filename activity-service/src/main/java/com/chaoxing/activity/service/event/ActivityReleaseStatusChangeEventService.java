@@ -1,11 +1,11 @@
 package com.chaoxing.activity.service.event;
 
-import com.chaoxing.activity.dto.event.ActivityCancelReleaseEventOrigin;
-import com.chaoxing.activity.dto.event.ActivityReleaseEventOrigin;
+import com.chaoxing.activity.dto.event.activity.ActivityCancelReleaseEventOrigin;
+import com.chaoxing.activity.dto.event.activity.ActivityReleaseEventOrigin;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.queue.activity.ActivityReleaseScopeChangeQueue;
-import com.chaoxing.activity.service.queue.event.ActivityCancelReleaseEventQueue;
-import com.chaoxing.activity.service.queue.event.ActivityReleaseEventQueue;
+import com.chaoxing.activity.service.queue.event.activity.ActivityCancelReleaseEventQueue;
+import com.chaoxing.activity.service.queue.event.activity.ActivityReleaseEventQueue;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

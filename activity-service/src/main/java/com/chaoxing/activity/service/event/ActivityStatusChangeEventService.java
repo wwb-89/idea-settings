@@ -1,10 +1,10 @@
 package com.chaoxing.activity.service.event;
 
-import com.chaoxing.activity.dto.event.ActivityDeletedEventOrigin;
-import com.chaoxing.activity.dto.event.ActivityEndEventOrigin;
+import com.chaoxing.activity.dto.event.activity.ActivityDeletedEventOrigin;
+import com.chaoxing.activity.dto.event.activity.ActivityEndEventOrigin;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.queue.event.ActivityDeletedEventQueue;
-import com.chaoxing.activity.service.queue.event.ActivityEndEventQueue;
+import com.chaoxing.activity.service.queue.event.activity.ActivityDeletedEventQueue;
+import com.chaoxing.activity.service.queue.event.activity.ActivityEndEventQueue;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

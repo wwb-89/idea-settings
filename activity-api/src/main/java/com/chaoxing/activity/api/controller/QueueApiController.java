@@ -1,12 +1,12 @@
 package com.chaoxing.activity.api.controller;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.event.*;
+import com.chaoxing.activity.dto.event.activity.*;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
-import com.chaoxing.activity.service.queue.event.*;
+import com.chaoxing.activity.service.queue.event.activity.*;
 import com.chaoxing.activity.util.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;

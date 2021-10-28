@@ -1,10 +1,10 @@
 package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.event.*;
+import com.chaoxing.activity.dto.event.activity.*;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueue;
-import com.chaoxing.activity.service.queue.event.*;
+import com.chaoxing.activity.service.queue.event.activity.*;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
