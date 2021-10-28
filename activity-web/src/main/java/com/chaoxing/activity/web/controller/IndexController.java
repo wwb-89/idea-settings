@@ -293,7 +293,7 @@ public class IndexController {
 		model.addAttribute("hideFilter", hideFilter);
 		model.addAttribute("signUpAble", Objects.equals(1, strict));
 		if (UserAgentUtils.isMobileAccess(request)) {
-			return "mobile/index";
+			return "mobile/index-" + style;
 		}else {
 			if (StringUtils.isEmpty(style)) {
 				return "pc/index";
