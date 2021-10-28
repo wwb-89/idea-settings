@@ -319,7 +319,7 @@ public class ActivityMhV2ApiController {
 
 	private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> listWorkBtn(Integer uid, Integer fid, Integer workId, List<Integer> availableFlags, boolean signedUp) {
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
-		List<WorkBtnDTO> workBtnDtos = workApiService.listErdosBtns(workId, uid, fid);
+		List<WorkBtnDTO> workBtnDtos = workApiService.listBtns(workId, uid, fid);
 		if (CollectionUtils.isNotEmpty(workBtnDtos)) {
 			for (WorkBtnDTO workBtnDto : workBtnDtos) {
 				String flag = getFlag(availableFlags);
@@ -386,6 +386,9 @@ public class ActivityMhV2ApiController {
 	}
 	private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> buildBtnField(String value, String flag, String url, String type) {
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> result = Lists.newArrayList();
+		if (StringUtils.isBlank(flag)) {
+			return result;
+		}
 		result.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key(value)
 				.value(url)
