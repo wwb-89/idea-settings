@@ -335,6 +335,8 @@ public class WfwFormApprovalApiService {
             signUp.setDeleted(false);
             String signUpOpenAudit = FormUtils.getValue(formData, "sign_up_open_audit");
             signUp.setOpenAudit(Objects.equals(YES, signUpOpenAudit));
+            String signUpOnSite = FormUtils.getValue(formData, "on_site_sign_up");
+            signUp.setOnSiteSignUp(Objects.equals(YES, signUpOnSite));
             TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formData, "sign_up_time");
             LocalDateTime startTime = Optional.ofNullable(signUpTimeScope.getStartTime()).orElse(LocalDateTime.now());
             LocalDateTime endTime = Optional.ofNullable(signUpTimeScope.getEndTime()).orElse(startTime.plusMonths(1));
