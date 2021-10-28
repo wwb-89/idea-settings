@@ -33,6 +33,7 @@ import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.event.ActivityDataChangeEventService;
 import com.chaoxing.activity.service.event.ActivityStatusChangeEventService;
@@ -130,6 +131,8 @@ public class ActivityHandleService {
 	@Resource
 	private TemplateQueryService templateQueryService;
 	@Resource
+	private TemplateComponentService templateComponentService;
+	@Resource
 	private ClassifyHandleService classifyHandleService;
 	@Resource
 	private WorkApiService workApiService;
@@ -189,11 +192,12 @@ public class ActivityHandleService {
 		bindWebTemplate(activity, activityCreateParamDto.getWebTemplateId(), loginUser);
 		// 考核配置
 		boolean openInspectionConfig = Optional.ofNullable(activityCreateParamDto.getOpenInspectionConfig()).orElse(false);
+		boolean existInspectionConfigCp = templateComponentService.existTemplateComponent(activity.getTemplateId(), "inspection_config");
 		List<String> defaultMenus = activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
 		if (!openInspectionConfig || activityCreateParamDto.getInspectionConfigId() == null) {
 			inspectionConfigHandleService.initInspectionConfig(activityId);
-			if (!openInspectionConfig) {
-				// 未开启考核配置，关闭默认考核管理菜单勾选
+			if (existInspectionConfigCp && !openInspectionConfig) {
+				// 模板存在考核管理但未开启考核配置，关闭默认考核管理菜单勾选
 				defaultMenus = defaultMenus.stream().filter(v -> !Objects.equals(v, ActivityMenuEnum.RESULTS_MANAGE.getValue())).collect(Collectors.toList());
 			}
 		}

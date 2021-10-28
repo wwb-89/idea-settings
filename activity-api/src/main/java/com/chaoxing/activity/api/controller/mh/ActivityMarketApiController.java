@@ -138,6 +138,13 @@ public class ActivityMarketApiController {
 				endTime.put("value", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()));
 				fields.add(endTime);
 
+				// 活动状态
+				JSONObject status = new JSONObject();
+				endTime.put("flag", "100");
+				endTime.put("key", "状态");
+				endTime.put("value", Activity.getStatusDescription(record.getStatus()));
+				fields.add(status);
+
 				// 地点
 				JSONObject address = new JSONObject();
 				address.put("flag", "102");
@@ -281,8 +288,6 @@ public class ActivityMarketApiController {
 		if (wfwfid == null) {
 			wfwfid = params.getInteger("wfwfid");
 		}
-		List<Integer> wfwfids = Lists.newArrayList();
-		wfwfids.add(wfwfid);
 		String preParams = params.getString("preParams");
 		JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
 		// marketId
@@ -293,11 +298,54 @@ public class ActivityMarketApiController {
 			// 根据flag找活动市场id
 			marketId = marketQueryService.getMarketIdByFlag(wfwfid, flag);
 		}
+		return RestRespDTO.success(searchAndPackageClassifies(wfwfid, marketId));
+	}
+
+	/**查询分类，仅根据填写的fid或marketId进行分类查询，marketId优先
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-26 15:42:17
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("classifies/with-extra-params")
+	public RestRespDTO listClassify(@RequestBody String data) {
+		JSONObject params = JSON.parseObject(data);
+		Integer wfwfid = params.getInteger("wfwfid");
+		String preParams = params.getString("preParams");
+		JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+		// marketId、fid
+		Integer marketId = urlParams.getInteger("marketId");
+		Integer fid = urlParams.getInteger("fid");
+		// flag
+		String flag = urlParams.getString("flag");
+		if (marketId == null && StringUtils.isNotBlank(flag)) {
+			// 根据flag找活动市场id
+			marketId = marketQueryService.getMarketIdByFlag(Optional.ofNullable(fid).orElse(wfwfid), flag);
+		}
+		if (fid == null && marketId == null) {
+			JSONObject jsonObject = new JSONObject();
+			JSONArray activityClassifyJsonArray = new JSONArray();
+			jsonObject.put("classifies", activityClassifyJsonArray);
+			return RestRespDTO.success(jsonObject);
+		}
+		return RestRespDTO.success(searchAndPackageClassifies(fid, marketId));
+	}
+
+	/**查询并封装门户所需分类数据
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-26 15:40:15
+	 * @param fid
+	 * @param marketId
+	 * @return com.alibaba.fastjson.JSONObject
+	 */
+	private  JSONObject searchAndPackageClassifies(Integer fid, Integer marketId) {
 		List<Classify> classifies;
 		if (marketId != null) {
 			classifies = classifyQueryService.listMarketClassifies(marketId);
 		} else {
-			classifies = classifyQueryService.listByFids(wfwfids);
+			classifies = classifyQueryService.listByFids(Lists.newArrayList(fid));
 		}
 
 		JSONObject jsonObject = new JSONObject();
@@ -311,7 +359,7 @@ public class ActivityMarketApiController {
 				activityClassifyJsonArray.add(item);
 			}
 		}
-		return RestRespDTO.success(jsonObject);
+		return jsonObject;
 	}
 
 }

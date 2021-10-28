@@ -99,7 +99,7 @@ public class ActivityMhDataCenterApiController {
         result.add(MhMarketDataCenterDTO.builder()
                 .name("我的活动")
                 .divUrl(UrlConstant.API_DOMAIN + "/mh/data-center/my")
-                .searchClassifyUrl(UrlConstant.API_DOMAIN + "/mh/activity-market/classifies")
+                .searchClassifyUrl(UrlConstant.API_DOMAIN + "/mh/activity-market/classifies/with-extra-params")
                 .build());
         return RestRespDTO.success(result);
     }

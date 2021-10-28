@@ -103,6 +103,22 @@ public class TemplateComponentService {
     }
 
 
+    /**根据模板id和组件code查询模板是否关联组件
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-27 10:31:58
+     * @param templateId
+     * @param componentCode
+     * @return boolean
+     */
+    public boolean existTemplateComponent(Integer templateId, String componentCode) {
+        if (templateId == null || StringUtils.isBlank(componentCode)) {
+            return false;
+        }
+        int count = templateComponentMapper.countTemplateComponentByCode(templateId, componentCode);
+        return count > 0;
+    }
+
     /**根据code获取系统组件在模板下的模板组件id
      * @Description
      * @author huxiaolong

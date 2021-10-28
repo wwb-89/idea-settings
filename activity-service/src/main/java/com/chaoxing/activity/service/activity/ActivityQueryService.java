@@ -400,11 +400,6 @@ public class ActivityQueryService {
 			activity.setRateScore(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getRateScore).orElse(new BigDecimal(0)));
 			activity.setQualifiedNum(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getQualifiedNum).orElse(0));
 		}
-
-
-
-
-
 	}
 
 	/**封装管理者（管理员）
@@ -501,6 +496,9 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity getBySignId(Integer signId) {
+		if (signId == null) {
+			return null;
+		}
 		return activityMapper.getBySignId(signId);
 	}
 

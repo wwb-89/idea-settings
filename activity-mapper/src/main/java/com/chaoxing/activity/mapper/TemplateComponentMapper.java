@@ -45,4 +45,14 @@ public interface TemplateComponentMapper extends BaseMapper<TemplateComponent> {
     * @return int
     */
     int countTemplateSignUp(@Param("templateId") Integer templateId);
+
+    /**根据模板id和组件code查询模板是否关联组件
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-27 10:30:22
+     * @param templateId
+     * @param componentCode
+     * @return int
+     */
+    int countTemplateComponentByCode(@Param("templateId") Integer templateId, @Param("componentCode") String componentCode);
 }
