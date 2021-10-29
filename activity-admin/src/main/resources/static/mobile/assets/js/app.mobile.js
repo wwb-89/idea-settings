@@ -1130,6 +1130,27 @@
         B.postNotification(cmd, {'multiple':true,'chooseDept':false,'choosePerson':true,'deptType':0});
     };
 
+    /**
+     * 打开发通知页面
+     * @param users
+     * @param title
+     */
+    app.prototype.openSendNotice = function (users, title) {
+        var cmd = "CLIENT_OPEN_SEND_NOTICE";
+        var uids = [];
+        $(users).each(function () {
+            uids.push({
+                uid: this.uid,
+                name: this.name
+            });
+        });
+        var params = {
+            showType: 0,
+            send_type: 0,
+            uids: uids,
+        };
+        B.postNotification(cmd, params);
+    };
     W['app'] = new app();
 })(window, jQuery, JSON, jsBridge);
 Array.prototype.remove = function(val) {

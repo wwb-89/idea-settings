@@ -1,234 +1,263 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
-    <meta charset="UTF-8">
-    <title>活动首页</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
-    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
-    <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
-    <style type="text/css">
+	<title>活动市场</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/activity-market.css" th:href="@{/pc/assets/css/activity-market.css}">
+	<link rel="stylesheet" href="/static/assets/lib/mescroll/mescroll.css" th:href="@{/assets/lib/mescroll/mescroll.css}">
+	<style type="text/css">
         [v-cloak] {
             display: none;
         }
-    </style>
+	</style>
 </head>
-
 <body>
-<div class="page" id="activity-vue" v-cloak>
-    <div class="banner" th:if="${banner eq 1}">
-        <img class="jqthumbImg" src="/static/pc/assets/images/banner.png" th:src="@{/pc/assets/images/banner.png}">
-    </div>
-    <div class="content">
-        <div class="search">
-            <input type="text" id="search-input" v-model.trim="sw" placeholder="搜索标题、主办方" @keyup.enter="search">
-            <div class="search-foot" @click="search">
-                <div class="img">
-                    <img src="/static/pc/assets/images/search.png" th:src="@{/pc/assets/images/search.png}">
-                </div>
-            </div>
-        </div>
-        <div class="type-box">
-            <div class="typeItem" v-show="levelFilter">
-                <span class="title">级别</span>
-                <ul>
-                    <li :class="{'active': item.selected}" v-for="(item, index) of levels" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
-                </ul>
-            </div>
-            <!--<div class="typeItem" >
-                <span class="title">类型</span>
-                <ul>
-                    <li :class="{'active': item.selected}" v-for="(item, index) of classifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
-                </ul>
-            </div>-->
-        </div>
-        <div class="item-box">
-            <div class="head">
-                <!--<ul>
-                    <li class="active1">最新</li>
-                    <li>热门</li>
-                    <li>推荐</li>
-                </ul>-->
-                <div class="count">共<span>{{total}}</span>个活动</div>
-            </div>
-            <div style="min-height: 696px;">
-                <div v-show="activities.length > 0">
-                    <div class="c-item">
-                        <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
-                            <div class="img-box">
-                                <img class="jqthumbImg" :src="item | getCloudImgUrl">
-                                <div class="tag" v-if="item.status == 2">活动预告</div>
-                                <div class="tag green" v-if="item.status == 3">进行中</div>
-                                <div class="tag black" v-if="item.status == 4">已结束</div>
-                            </div>
-                            <div class="font-box">
-                                <p class="title1" >{{item.name}}</p>
-                                <p>活动时间：{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
-                                <p>{{item.activityFlag == 'class' ? '班级活动' : (item.activityFlag == 'school' ? '学校活动' : '区域活动')}}</p>
-                                <p v-if="item.activityFlag != 'class'">{{item.createOrgName}}</p>
-                                <p v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <el-pagination style="text-align: center;" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
-                </div>
-                <!-- 当列表为空时展示 -->
-                <div class="empty-box" v-show="total < 1 && loaded">
-                    <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
-                    <p>无结果～</p>
-                </div>
-            </div>
-    </div>
-</div>
+<div class="activity-market2" id="activity-vue" v-cloak>
+	<div class="header-con">
+		<div class="header-inner-content">
+			<div class="searchDiv fl">
+				<input type="text" placeholder="搜索标题" class="inputValue" v-model.trim="sw" @keyup.enter="search">
+				<i class="icon-delete1" v-show="sw" @click="clearSearch"></i>
+				<i class="icon-search1" @click="search"></i>
+			</div>
+<!--			<div class="user fr" th:if="${session._login_user_ != null}">-->
+<!--				<i class="icon-user"></i>-->
+<!--				<a href="javascript:" @click="my">我的活动</a>-->
+<!--			</div>-->
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="inner-content">
+		<div class="filter">
+			<div class="item">
+				<label>级别</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of levels" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="card-list" id="mescroll">
+			<ul>
+				<li v-for="(item, index) of activities" :key="'item-' + index">
+					<div class="inner">
+						<div class="img-box">
+							<div class="tips-box">
+								<!--报名状态-->
+<!--								<p v-if="item.hasSignUp && signUpAble" :class="{'tips sign': true, 'color6': (item.signUpStatus == 2), 'color2': (item.signUpStatus != 2)}"><span class="sign-dot"></span>{{item.signUpStatusDescribe}}</p>-->
+								<p class="tips color1" v-if="item.status == 3">进行中</p>
+								<p class="tips color3" v-if="item.status == 4">已结束</p>
+								<p class="tips color5" v-if="item.status == 2">活动预告</p>
+							</div>
+							<div class="js-crop-img" @click="detail(index)">
+								<img :src="item | getCloudImgUrl">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden1" @click="detail(index)"><span class="info-top" v-show="item.top">置顶</span>{{item.name}}</h2>
+							<p class="time overHidden1">{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
+							<div class="type-box">
+								<span class="type-item" v-for="(tag, index) of resolveActivityTags(item)" :key="'tag-' + index">{{tag}}</span>
+							</div>
+							<p class="address overHidden1">{{item.organisers}}</p>
+							<p class="address overHidden1"  v-show="item.address">{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
+						</div>
+					</div>
+				</li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+		<!-- 无数据 -->
+		<div class="noContent" v-show="activities.length < 1 && loaded">
+			<p>无结果</p>
+		</div>
+		<!-- 作为加载完成后占位显示没有更多-->
+		<div class="noMore"><span></span></div>
+	</div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-    <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
-    <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
-    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
-    <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
-    <script th:inline="javascript">
-        vm = new Vue({
-            el: '#activity-vue',
-            data: {
-                fids: [[${fids}]],
-                flag: [[${flag}]],
-                classifyNames: [[${classifyNames}]],
-                levels: [],
-                classifies: [],
-                pages: 0,
-                sw: "",
-                //筛选查询参数对象
-                queryParams: {},
-                activities: [],
-                loaded: false,
-                searchShow: false,
-                total: 0,
-                //分页
-                currentPage: 1,
-                filterWindowShow: false,
-                searchShadeShow: false,
-                topFid: [[${topFid}]],
-                levelFilter: [[${levelFilter}]]
-            },
-            created: function () {
-                var $this = this;
-                $this.classifies.push({name: "全部",value: "", selected: true});
-                $($this.classifyNames).each(function () {
-                    $this.classifies.push({name: this,value: this,selected: false});
-                });
-                //级别
-                $this.levels = [
-                    {name: '全部', value: '', selected: true},
-                    {name: '班级', value: 'class', selected: false},
-                    {name: '学校', value: 'school', selected: false},
-                    {name: '区域', value: 'region', selected: false}
-                ];
-                $this.resetQueryParams();
-            },
-            mounted:function() {
-                var $this = this;
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/assets/lib/mescroll/mescroll.js" th:src="@{/assets/lib/mescroll/mescroll.js}"></script>
+	<script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+	<script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
+	<script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+	<script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
+	<script th:inline="javascript">
+		vm = new Vue({
+			el: '#activity-vue',
+			data: {
+				fids: [[${fids}]],
+				flag: [[${flag}]],
+				classifyNames: [[${classifyNames}]],
+				levels: [],
+				areaCode: [[${areaCode}]],
+				sw: "",
+				//筛选查询参数对象
+				queryParams: {},
+				activities: [],
+				loaded: false,
+				topFid: [[${topFid}]],
+				levelFilter: [[${levelFilter}]],
+				mescroll: null
+			},
+			created: function () {
+				var $this = this;
+                // 解决跨域
                 document.domain = "chaoxing.com";
-                $(".jqthumbImg").jqthumb({
-                    width:'100%',
-                    height:'100%'
-                });
-                $this.resetQueryParams();
-                $this.loadData();
-            },
-            methods: {
-                changeActivityLevelSelected: function (index) {
-                    var $this = this;
-                    $($this.levels).each(function (i) {
-                        $this.$set($this.levels[i], "selected", i == index);
-                    });
-                    $this.queryParams.levelType = $this.levels[index].value;
-                    $this.queryParams.pageNum = 1;
-                    $this.loadData();
-                },
-                //改变选中状态
-                changeActivityClassifySelected: function(index){
-                    var $this = this;
-                    $($this.classifies).each(function (i) {
-                        $this.$set($this.classifies[i], "selected", i == index);
-                    });
-                    $this.queryParams.activityClassifyName = $this.classifies[index].value;
-                    $this.queryParams.pageNum = 1;
-                    $this.loadData();
-                },
-                //重置查询条件
-                resetQueryParams: function (){
-                    var $this = this;
-                    $this.queryParams = {
-                        pageNum: 1,
-                        pageSize: 9,
-                        sw: "",
-                        activityClassifyName: "",
-                        levelType: "",
-                        userClassId: [[${userClassId}]],
-                        flag: [[${flag}]],
-                        topFid: [[${topFid}]],
-                        marketId: [[${marketId}]],
-                    };
-                },
-                //数据加载渲染
-                loadData: function () {
-                    var $this = this;
-                    var url = ctx + "/api/activity/list/erdos/participate";
-                    var params = $this.queryParams;
-                    $this.loaded = false;
-                    $this.searchShow = false;
-                    app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
-                        $this.activities = [];
-                        $this.loaded = true;
-                        if (data.success) {
+				//级别
+				$this.levels = [
+					{name: '全部', value: '', selected: true},
+					{name: '班级', value: 'class', selected: false},
+					{name: '学校', value: 'school', selected: false},
+					{name: '区域', value: 'region', selected: false}
+				];
+				$this.resetQueryParams();
+			},
+			mounted:function() {
+				var $this = this;
+				document.domain = "chaoxing.com";
+				//图片高度根据尺寸等比例变化
+				$this.picHeight();
+				$(window).resize(function () {
+					$this.picHeight();
+				});
+				$this.resetQueryParams();
+				$this.initMescroll();
+			},
+			methods: {
+				changeActivityLevelSelected: function (index) {
+					var $this = this;
+					$($this.levels).each(function (i) {
+						$this.$set($this.levels[i], "selected", i == index);
+					});
+					$this.queryParams.levelType = $this.levels[index].value;
+					$this.activities = [];
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				//重置查询条件
+				resetQueryParams: function (){
+					var $this = this;
+					$this.queryParams = {
+						pageNum: 1,
+						pageSize: 18,
+						sw: "",
+						levelType: "",
+						userClassId: [[${userClassId}]],
+						flag: [[${flag}]],
+						topFid: [[${topFid}]],
+						marketId: [[${marketId}]],
+					};
+					$this.activities = [];
+				},
+				//数据加载渲染
+				loadData: function () {
+					var $this = this;
+					var url = ctx + "/api/activity/list/erdos/participate";
+					var params = $this.queryParams;
+					$this.loaded = false;
+					app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
+						if (data.success) {
                             $this.loaded = true;
-                            $this.activities = data.data.records
-                            $this.$nextTick(function () {
-                                $(".jqthumbImg").jqthumb({
-                                    width:'100%',
-                                    height:'100%'
-                                });
-                            });
-                            $this.pages = data.data.pages;
-                            $this.total = data.data.total;
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载活动列表失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        $this.activities = [];
-                        $this.loaded = true;
-                        app.showMsg("加载活动列表失败");
-                    });
-                },
-                search: function () {
-                    var $this = this;
-                    $this.queryParams.sw = $this.sw;
-                    $("#search-input").blur();
-                    $this.queryParams.pageNum = 1;
-                    $this.loadData();
-                },
-                currenClick:function (currentPage) {
-                    var $this = this;
-                    $this.queryParams.pageNum = currentPage;
-                    $this.loadData();
-                },
-                detail: function (index) {
-                    var $this = this;
-                    var activity = $this.activities[index];
-                    var previewUrl = activity.previewUrl;
-                    if (!activityApp.isEmpty(previewUrl)) {
-                        // 回收积分
-                        activityApp.integralPush(activity.id, activity.name);
-                        window.open(previewUrl);
-                    }
+                            $this.queryParams.pageNum++;
+							var activities = $this.activities;
+							$this.mescroll.endBySize(data.data.records.length, $this.signUpAble ? data.data.records.length : data.data.total);
+							if (data.data.records.length < 1) {
+								return;
+							}
+							$(data.data.records).each(function () {
+								activities.push(this);
+							});
+							$this.activities = [];
+							$this.activities = activities;
+							$this.$nextTick(function () {
+								cropImgFun("body");
+							});
+						} else {
+							var errorMessage = data.message;
+							if (activityApp.isEmpty(errorMessage)) {
+								errorMessage = "加载活动列表失败";
+							}
+							app.showMsg(errorMessage);
+						}
+					}, function () {
+						app.showMsg("加载活动列表失败");
+					});
+				},
+				clearSearch: function () {
+					var $this = this;
+					$this.sw = "";
+					if ($this.sw != $this.queryParams.sw) {
+						$this.search();
+					}
+				},
+				search: function () {
+					var $this = this;
+					$this.queryParams.sw = $this.sw;
+					$("#search-input").blur();
+					$this.queryParams.pageNum = 1;
+					$this.activities = [];
+					// 重载mescroll依旧会请求数据
+					$this.reloadMescoll();
+				},
+				// 重载mescroll依旧会请求数据
+				reloadMescoll: function () {
+					var $this = this;
+					if ($this.mescroll) {
+						$this.mescroll.destroy();
+						$this.mescroll = null;
+					}
+                    $this.initMescroll();
+				},
+				detail: function (index) {
+					var $this = this;
+					var activity = $this.activities[index];
+					var previewUrl = activity.previewUrl;
+					if (!activityApp.isEmpty(previewUrl)) {
+						// 回收积分
+						activityApp.integralPush(activity.id, activity.name);
+						window.open(previewUrl);
+					}
+				},
+				// 我的活动
+				my: function () {
+					var $this = this;
+					var url = ctx + "/my";
+					window.open(url);
+				},
+				picHeight:function (){
+					var widthPic = $(".card-list ul li:first-child").find(".js-crop-img").width();
+					var heightPic = 14/27*widthPic;
+					$(".card-list ul li").each(function () {
+						$(this).find(".js-crop-img").css('height', heightPic + 'px');
+						$(this).find(".img-box").css('height', heightPic + 'px');
+					});
+				},
+				initMescroll: function () {
+					var $this = this;
+					if ($this.mescroll != null) {
+						return;
+					}
+					$this.mescroll = new MeScroll("body", {
+						up: {
+							callback: function () {
+								$this.loadData();
+							},
+							noMoreSize: 5
+						}
+					});
+				},
+                resolveActivityTags: function (activity) {
+                    return activityApp.resolveActivityTags(activity);
                 }
-            }
-        })
-    </script>
+			}
+		})
+	</script>
 </div>
 </body>
 </html>

@@ -156,7 +156,7 @@ public class ActivityMhV2ApiController {
 		}
 		// 活动地点
 		String activityAddress = "";
-		if (Objects.equals(Activity.ActivityTypeEnum.OFFLINE.getValue(), activity.getActivityType())) {
+		if (!Objects.equals(Activity.ActivityTypeEnum.ONLINE.getValue(), activity.getActivityType())) {
 			activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
 		}
 		String activityAddressLink = "";

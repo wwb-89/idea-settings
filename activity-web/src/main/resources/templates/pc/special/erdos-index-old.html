@@ -29,36 +29,18 @@
             </div>
         </div>
         <div class="type-box">
-            <div class="typeItem" v-show="showFilter('activityType')">
-                <span class="title">类型</span>
+            <div class="typeItem" v-show="levelFilter">
+                <span class="title">级别</span>
                 <ul>
-                    <li :class="{'active': item.selected}" v-for="(item, index) of activityTypes" v-if="item.value != 'other' || showOtherActivityType" @click="changeActivityTypesSelected(index)">{{item.name}}</li>
+                    <li :class="{'active': item.selected}" v-for="(item, index) of levels" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
                 </ul>
             </div>
-            <div class="typeItem" v-show="showFilter('activityClassify')">
-                <span class="title">分类</span>
+            <!--<div class="typeItem" >
+                <span class="title">类型</span>
                 <ul>
                     <li :class="{'active': item.selected}" v-for="(item, index) of classifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
                 </ul>
-            </div>
-            <div class="typeItem" v-show="showFilter('time')">
-                <span class="title">时间</span>
-                <ul>
-                    <li :class="{'active': item.selected}" v-for="(item, index) of activityQueryDates" @click="changeActivityTimeSelected(index)">{{item.name}}</li>
-                </ul>
-            </div>
-            <div class="typeItem" v-show="showFilter('region') && regions.length > 0">
-                <span class="title">地区</span>
-                <ul>
-                    <li :class="{'active': item.selected}" v-for="(item, index) of regions" @click="changeActivityRegionsSelected(index)">{{item.name}}</li>
-                </ul>
-            </div>
-            <div class="typeItem" v-show="showFilter('status')">
-                <span class="title">状态</span>
-                <ul>
-                    <li :class="{'active':item.selected}" v-for="(item, index) of statuses" @click="changeActivityStatusSelected(index)">{{item.name}}</li>
-                </ul>
-            </div>
+            </div>-->
         </div>
         <div class="item-box">
             <div class="head">
@@ -75,8 +57,6 @@
                         <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
                             <div class="img-box">
                                 <img class="jqthumbImg" :src="item | getCloudImgUrl">
-                                <!--报名状态-->
-
                                 <div class="tag" v-if="item.status == 2">活动预告</div>
                                 <div class="tag green" v-if="item.status == 3">进行中</div>
                                 <div class="tag black" v-if="item.status == 4">已结束</div>
@@ -84,12 +64,13 @@
                             <div class="font-box">
                                 <p class="title1" >{{item.name}}</p>
                                 <p>活动时间：{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
-                                <p>主办单位：{{item.organisers}}</p>
+                                <p>{{item.activityFlag == 'class' ? '班级活动' : (item.activityFlag == 'school' ? '学校活动' : '区域活动')}}</p>
+                                <p v-if="item.activityFlag != 'class'">{{item.createOrgName}}</p>
                                 <p v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
                             </div>
                         </div>
                     </div>
-                    <el-pagination style="text-align: center;" v-if="!signUpAble" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
+                    <el-pagination style="text-align: center;" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
                 </div>
                 <!-- 当列表为空时展示 -->
                 <div class="empty-box" v-show="total < 1 && loaded">
@@ -106,18 +87,14 @@
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
     <script th:inline="javascript">
-        activityVue = new Vue({
+        vm = new Vue({
             el: '#activity-vue',
             data: {
                 fids: [[${fids}]],
+                flag: [[${flag}]],
                 classifyNames: [[${classifyNames}]],
-                activityQueryDates: [[${activityQueryDates}]],
+                levels: [],
                 classifies: [],
-                activityTypes: [],
-                regions: [[${regions}]],
-                areaCode: [[${areaCode}]],
-                hideFilter: [[${hideFilter}]],
-                statuses: [],
                 pages: 0,
                 sw: "",
                 //筛选查询参数对象
@@ -131,9 +108,7 @@
                 filterWindowShow: false,
                 searchShadeShow: false,
                 topFid: [[${topFid}]],
-                // 是否查询能报名的活动
-                signUpAble: [[${signUpAble}]],
-                otherTypeMarketIds: [293, 305]
+                levelFilter: [[${levelFilter}]]
             },
             created: function () {
                 var $this = this;
@@ -141,38 +116,12 @@
                 $($this.classifyNames).each(function () {
                     $this.classifies.push({name: this,value: this,selected: false});
                 });
-                $($this.activityQueryDates).each(function (i) {
-                    $this.$set($this.activityQueryDates[i], "selected", i == 0);
-                });
-                //地区
-                var regions = [];
-                if($this.regions.length >0){
-                    $($this.regions).each(function () {
-                        var region = this;
-                        region.value = this.code;
-                        region.selected = false;
-                        regions.push(region);
-                    });
-                    regions.splice(0, 0, {
-                        name: "全部",
-                        value: "",
-                        selected: true
-                    });
-                    $this.regions = regions;
-                }
-                // 活动类型
-                $this.activityTypes = [
+                //级别
+                $this.levels = [
                     {name: '全部', value: '', selected: true},
-                    {name: '线上', value: 'online', selected: false},
-                    {name: '线下', value: 'offline', selected: false},
-                    {name: '其他', value: 'other', selected: false}
-                ];
-                //状态
-                $this.statuses = [
-                    {name: "全部", value: "", selected: true},
-                    {name: "活动预告", value: "2", selected: false},
-                    {name: "进行中", value: "3", selected: false},
-                    {name: "已结束", value: "4", selected: false}
+                    {name: '班级', value: 'class', selected: false},
+                    {name: '学校', value: 'school', selected: false},
+                    {name: '区域', value: 'region', selected: false}
                 ];
                 $this.resetQueryParams();
             },
@@ -184,31 +133,18 @@
                     height:'100%'
                 });
                 $this.resetQueryParams();
-                // 如果topFid符合regions的manageFid那么选中
-                if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {
-                    var exist = false;
-                    var index = 0;
-                    $($this.regions).each(function (i) {
-                        if (this.manageFid == $this.topFid && $this.topFid != 2120) {
-                            exist = true;
-                            index = i;
-                            return false;
-                        }
-                    });
-                    if (exist) {
-                        $this.changeActivityRegionsSelected(index);
-                        return;
-                    }
-                }
                 $this.loadData();
             },
-            computed: {
-                showOtherActivityType: function () {
-                    var $this = this;
-                    return $this.otherTypeMarketIds.indexOf([[${marketId}]]) != -1;
-                }
-            },
             methods: {
+                changeActivityLevelSelected: function (index) {
+                    var $this = this;
+                    $($this.levels).each(function (i) {
+                        $this.$set($this.levels[i], "selected", i == index);
+                    });
+                    $this.queryParams.levelType = $this.levels[index].value;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
                 //改变选中状态
                 changeActivityClassifySelected: function(index){
                     var $this = this;
@@ -219,50 +155,6 @@
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
-                changeActivityTimeSelected: function(index){
-                    var $this = this;
-                    $($this.activityQueryDates).each(function (i) {
-                        $this.$set($this.activityQueryDates[i], "selected", i == index);
-                    });
-                    $this.queryParams.dateScope = $this.activityQueryDates[index].value;
-                    $this.queryParams.pageNum = 1;
-                    $this.loadData();
-                },
-                changeActivityRegionsSelected: function(index){
-                    var $this = this;
-                    $($this.regions).each(function (i) {
-                        $this.$set($this.regions[i], "selected", i == index);
-                    });
-                    $this.queryParams.areaCode = $this.regions[index].value;
-                    if (activityApp.isEmpty($this.queryParams.areaCode)) {
-                        $this.queryParams.areaCode = $this.areaCode;
-                    }
-                    $this.queryParams.pageNum = 1;
-                    $this.loadData();
-                },
-                changeActivityTypesSelected: function(index){
-                    var $this = this;
-                    $($this.activityTypes).each(function (i) {
-                        $this.$set($this.activityTypes[i], "selected", i == index);
-                    });
-                    $this.queryParams.activityType = $this.activityTypes[index].value;
-                    $this.activities = [];
-                    $this.queryParams.pageNum = 1;
-                    $this.loadData();
-                },
-                changeActivityStatusSelected: function(index){
-                    var $this = this;
-                    $($this.statuses).each(function (i) {
-                        $this.$set($this.statuses[i], "selected", i == index);
-                    });
-                    $this.queryParams.status = $this.statuses[index].value;
-                    $this.queryParams.pageNum = 1;
-                    $this.loadData();
-                },
-                showFilter: function (type) {
-                    var $this = this;
-                    return activityApp.isEmpty($this.hideFilter) || $this.hideFilter.indexOf(type) == -1;
-                },
                 //重置查询条件
                 resetQueryParams: function (){
                     var $this = this;
@@ -271,22 +163,17 @@
                         pageSize: 9,
                         sw: "",
                         activityClassifyName: "",
-                        dateScope: "",
-                        status: "",
-                        areaCode: $this.areaCode,
-                        activityType: "",
-                        scope: [[${scope}]],
+                        levelType: "",
+                        userClassId: [[${userClassId}]],
+                        flag: [[${flag}]],
                         topFid: [[${topFid}]],
                         marketId: [[${marketId}]],
-                        flag: [[${flag}]],
-                        // 是否只查询能报名的，如果是则不分页
-                        signUpAble: [[${signUpAble}]]
                     };
                 },
                 //数据加载渲染
                 loadData: function () {
                     var $this = this;
-                    var url = ctx + "/api/activity/list/participate";
+                    var url = ctx + "/api/activity/list/erdos/participate";
                     var params = $this.queryParams;
                     $this.loaded = false;
                     $this.searchShow = false;
@@ -322,7 +209,6 @@
                     $this.queryParams.sw = $this.sw;
                     $("#search-input").blur();
                     $this.queryParams.pageNum = 1;
-                    $this.activities = [];
                     $this.loadData();
                 },
                 currenClick:function (currentPage) {
@@ -337,9 +223,6 @@
                     if (!activityApp.isEmpty(previewUrl)) {
                         // 回收积分
                         activityApp.integralPush(activity.id, activity.name);
-                        // 浙江图书馆的需要使用统一的域名
-                        // var path = /http(?:s?):\/\/.*?(\/.*)/.exec(previewUrl)[1];
-                        // previewUrl = "https://share.zjlib.cn" + path;
                         window.open(previewUrl);
                     }
                 }
