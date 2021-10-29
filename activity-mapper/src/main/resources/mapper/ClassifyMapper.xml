@@ -43,5 +43,6 @@
                 <foreach collection="fids" index="key" item="value" open="(" close=")" separator=",">
                     #{value}
                 </foreach>
+        ORDER BY t1.sequence
     </select>
 </mapper>

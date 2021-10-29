@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>活动首页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page" id="activity-vue" v-cloak>
+    <div class="banner" th:if="${banner eq 1}">
+        <img class="jqthumbImg" src="/static/pc/assets/images/banner.png" th:src="@{/pc/assets/images/banner.png}">
+    </div>
+    <div class="content">
+        <div class="search">
+            <input type="text" id="search-input" v-model.trim="sw" placeholder="搜索标题、主办方" @keyup.enter="search">
+            <div class="search-foot" @click="search">
+                <div class="img">
+                    <img src="/static/pc/assets/images/search.png" th:src="@{/pc/assets/images/search.png}">
+                </div>
+            </div>
+        </div>
+        <div class="type-box">
+            <div class="typeItem" v-show="levelFilter">
+                <span class="title">级别</span>
+                <ul>
+                    <li :class="{'active': item.selected}" v-for="(item, index) of levels" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
+                </ul>
+            </div>
+            <!--<div class="typeItem" >
+                <span class="title">类型</span>
+                <ul>
+                    <li :class="{'active': item.selected}" v-for="(item, index) of classifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
+                </ul>
+            </div>-->
+        </div>
+        <div class="item-box">
+            <div class="head">
+                <!--<ul>
+                    <li class="active1">最新</li>
+                    <li>热门</li>
+                    <li>推荐</li>
+                </ul>-->
+                <div class="count">共<span>{{total}}</span>个活动</div>
+            </div>
+            <div style="min-height: 696px;">
+                <div v-show="activities.length > 0">
+                    <div class="c-item">
+                        <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
+                            <div class="img-box">
+                                <img class="jqthumbImg" :src="item | getCloudImgUrl">
+                                <div class="tag" v-if="item.status == 2">活动预告</div>
+                                <div class="tag green" v-if="item.status == 3">进行中</div>
+                                <div class="tag black" v-if="item.status == 4">已结束</div>
+                            </div>
+                            <div class="font-box">
+                                <p class="title1" >{{item.name}}</p>
+                                <p>活动时间：{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
+                                <p>{{item.activityFlag == 'class' ? '班级活动' : (item.activityFlag == 'school' ? '学校活动' : '区域活动')}}</p>
+                                <p v-if="item.activityFlag != 'class'">{{item.createOrgName}}</p>
+                                <p v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <el-pagination style="text-align: center;" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
+                </div>
+                <!-- 当列表为空时展示 -->
+                <div class="empty-box" v-show="total < 1 && loaded">
+                    <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
+                    <p>无结果～</p>
+                </div>
+            </div>
+    </div>
+</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
+    <script th:inline="javascript">
+        vm = new Vue({
+            el: '#activity-vue',
+            data: {
+                fids: [[${fids}]],
+                flag: [[${flag}]],
+                classifyNames: [[${classifyNames}]],
+                levels: [],
+                classifies: [],
+                pages: 0,
+                sw: "",
+                //筛选查询参数对象
+                queryParams: {},
+                activities: [],
+                loaded: false,
+                searchShow: false,
+                total: 0,
+                //分页
+                currentPage: 1,
+                filterWindowShow: false,
+                searchShadeShow: false,
+                topFid: [[${topFid}]],
+                levelFilter: [[${levelFilter}]]
+            },
+            created: function () {
+                var $this = this;
+                $this.classifies.push({name: "全部",value: "", selected: true});
+                $($this.classifyNames).each(function () {
+                    $this.classifies.push({name: this,value: this,selected: false});
+                });
+                //级别
+                $this.levels = [
+                    {name: '全部', value: '', selected: true},
+                    {name: '班级', value: 'class', selected: false},
+                    {name: '学校', value: 'school', selected: false},
+                    {name: '区域', value: 'region', selected: false}
+                ];
+                $this.resetQueryParams();
+            },
+            mounted:function() {
+                var $this = this;
+                document.domain = "chaoxing.com";
+                $(".jqthumbImg").jqthumb({
+                    width:'100%',
+                    height:'100%'
+                });
+                $this.resetQueryParams();
+                $this.loadData();
+            },
+            methods: {
+                changeActivityLevelSelected: function (index) {
+                    var $this = this;
+                    $($this.levels).each(function (i) {
+                        $this.$set($this.levels[i], "selected", i == index);
+                    });
+                    $this.queryParams.levelType = $this.levels[index].value;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                //改变选中状态
+                changeActivityClassifySelected: function(index){
+                    var $this = this;
+                    $($this.classifies).each(function (i) {
+                        $this.$set($this.classifies[i], "selected", i == index);
+                    });
+                    $this.queryParams.activityClassifyName = $this.classifies[index].value;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                //重置查询条件
+                resetQueryParams: function (){
+                    var $this = this;
+                    $this.queryParams = {
+                        pageNum: 1,
+                        pageSize: 9,
+                        sw: "",
+                        activityClassifyName: "",
+                        levelType: "",
+                        userClassId: [[${userClassId}]],
+                        flag: [[${flag}]],
+                        topFid: [[${topFid}]],
+                        marketId: [[${marketId}]],
+                    };
+                },
+                //数据加载渲染
+                loadData: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/list/erdos/participate";
+                    var params = $this.queryParams;
+                    $this.loaded = false;
+                    $this.searchShow = false;
+                    app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
+                        $this.activities = [];
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.loaded = true;
+                            $this.activities = data.data.records
+                            $this.$nextTick(function () {
+                                $(".jqthumbImg").jqthumb({
+                                    width:'100%',
+                                    height:'100%'
+                                });
+                            });
+                            $this.pages = data.data.pages;
+                            $this.total = data.data.total;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载活动列表失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        $this.activities = [];
+                        $this.loaded = true;
+                        app.showMsg("加载活动列表失败");
+                    });
+                },
+                search: function () {
+                    var $this = this;
+                    $this.queryParams.sw = $this.sw;
+                    $("#search-input").blur();
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                currenClick:function (currentPage) {
+                    var $this = this;
+                    $this.queryParams.pageNum = currentPage;
+                    $this.loadData();
+                },
+                detail: function (index) {
+                    var $this = this;
+                    var activity = $this.activities[index];
+                    var previewUrl = activity.previewUrl;
+                    if (!activityApp.isEmpty(previewUrl)) {
+                        // 回收积分
+                        activityApp.integralPush(activity.id, activity.name);
+                        window.open(previewUrl);
+                    }
+                }
+            }
+        })
+    </script>
+</div>
+</body>
+</html>

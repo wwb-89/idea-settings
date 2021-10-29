@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -161,7 +163,37 @@ public class ActivityApiController {
 
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.pageErdosParticipate(page, activityQuery);
+		List<Activity> result = Lists.newArrayList();
+		if (page.getCurrent() == 1) {
+			result.add(erdosDefaultActivity());
+		}
+		if (CollectionUtils.isNotEmpty(page.getRecords())) {
+			result.addAll(page.getRecords());
+		}
+		page.setRecords(result);
+		page.setSize(page.getSize() + 1);
+		page.setTotal(page.getTotal() + 1);
 		return RestRespDTO.success(page);
+	}
+
+	/**创建鄂尔多斯默认活动
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-10-28 18:31:23
+	* @param
+	* @return com.chaoxing.activity.model.Activity
+	*/
+	private Activity erdosDefaultActivity() {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		return Activity.builder()
+				.name("鄂尔多斯第七届师生共读活动")
+				.organisers("鄂尔多斯市教育局")
+				.startTime(LocalDateTime.parse("2021-05-31 00:00", dateTimeFormatter))
+				.endTime(LocalDateTime.parse("2022-07-01 23:59", dateTimeFormatter))
+				.status(3)
+				.coverUrl("https://tsjy.chaoxing.com/plaza/upload/general_course/banner-new/ed6a28781314715e6ca4d66dddd9a3f4.jpg")
+				.previewUrl("https://tsjy.chaoxing.com/plaza/x?courseId=218348567&classId=41447926")
+				.build();
 	}
 
 	/**根据pageId获取活动的经纬度
