@@ -137,19 +137,4 @@ public class ActivityAboutStartEventQueueService {
         return content;
     }
 
-    private String generateUserSignedUpNoticeTitle(Activity activity) {
-        return "成功报名活动 " + activity.getName();
-    }
-
-    private String generateUserSignedUpNoticeContent(Activity activity) {
-        String content = "您好，您已成功报名活动！\n";
-        content += "活动名称：" + activity.getName() + "\n";
-        String address = Optional.ofNullable(activity.getAddress()).filter(StringUtils::isNotBlank).orElse("") + Optional.ofNullable(activity.getDetailAddress()).filter(StringUtils::isNotBlank).orElse("");
-        if (StringUtils.isNotBlank(address)) {
-            content += "活动地点：" + address + "\n";
-        }
-        content += "会议时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
-        return content;
-    }
-
 }

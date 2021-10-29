@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.DataPushFormConfigMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.DataPushFormConfig">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="config_id" jdbcType="INTEGER" property="configId" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="form_field_label" jdbcType="VARCHAR" property="formFieldLabel" />
+        <result column="data_field" jdbcType="VARCHAR" property="dataField" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.config_id, t.market_id, t.form_field_label, t.data_field, t.create_time
+    </sql>
+</mapper>

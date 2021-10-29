@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-/**活动封面改变事件
+/**活动封面改变事件任务队列
  * @author wwb
  * @version ver 1.0
  * @className ActivityCoverChangeEventQueue

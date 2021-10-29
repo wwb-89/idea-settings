@@ -59,7 +59,7 @@ public class ActivityAboutEndEventQueueService {
         }
         String title = generateActivityEndNoticeTitle(activity);
         String content = generateActivityEndNoticeContent(activity);
-        String attachment = NoticeDTO.generateAttachment(title, activity.getPreviewUrl());
+        String attachment = NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl());
         xxtNoticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, noRateSignedUpUids);
     }
 

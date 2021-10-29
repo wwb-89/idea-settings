@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-/**
+/**报名签到
  * @author wwb
  * @version ver 1.0
  * @className SignChangeEventQueue

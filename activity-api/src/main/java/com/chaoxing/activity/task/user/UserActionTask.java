@@ -1,14 +1,16 @@
 package com.chaoxing.activity.task.user;
 
+import com.chaoxing.activity.dto.event.user.UserSignedUpEventOrigin;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.event.UserSignedUpEventService;
 import com.chaoxing.activity.service.queue.IntegralPushQueue;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
+import com.chaoxing.activity.service.queue.event.user.UserSignedUpEventQueue;
 import com.chaoxing.activity.service.queue.user.UserActionQueue;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
 import com.chaoxing.activity.service.queue.user.UserRatingQueue;
 import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
@@ -44,7 +46,7 @@ public class UserActionTask {
     @Resource
     private UserRatingQueue userRatingQueue;
     @Resource
-    private UserSignedUpEventService userSignedUpEventService;
+    private UserSignedUpEventQueue userSignedUpEventQueue;
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -77,7 +79,13 @@ public class UserActionTask {
                 userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
                 if (Objects.equals(UserActionEnum.SIGNED_UP, queueParam.getUserAction())) {
                     // 报名成功
-                    userSignedUpEventService.handle(activity, uid);
+                    UserSignedUpEventOrigin userSignedUpEventOrigin = UserSignedUpEventOrigin.builder()
+                            .activityId(queueParam.getActivityId())
+                            .signUpId(Integer.parseInt(queueParam.getIdentify()))
+                            .signedUpTime(queueParam.getTime())
+                            .timestamp(DateUtils.date2Timestamp(queueParam.getTime()))
+                            .build();
+                    userSignedUpEventQueue.push(userSignedUpEventOrigin);
                     // 推送积分
                     integralPushQueue.push(new IntegralPushQueue.IntegralPushDTO(uid, activity.getCreateFid(), IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activity.getName()));
                 }

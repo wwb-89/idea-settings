@@ -1,8 +1,8 @@
 package com.chaoxing.activity.task.activity;
 
-import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueue;
+import com.chaoxing.activity.service.queue.activity.handler.ActivityTimingReleaseQueueService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class ActivityTimingReleaseTask {
 	@Resource
 	private ActivityTimingReleaseQueue activityTimingReleaseQueue;
 	@Resource
-	private ActivityHandleService activityHandleService;
+	private ActivityTimingReleaseQueueService activityTimingReleaseQueueService;
 
 	@Scheduled(fixedDelay = 1L)
 	public void handle() throws InterruptedException {
@@ -34,11 +34,10 @@ public class ActivityTimingReleaseTask {
 		if (queueParam == null) {
 			return;
 		}
-		Integer activityId = queueParam.getActivityId();
-		LoginUserDTO loginUser = queueParam.getLoginUser();
 		try {
-			activityHandleService.release(activityId, loginUser);
+			activityTimingReleaseQueueService.handle(queueParam);
 		} catch (Exception e) {
+			log.error("根据参数:{} 处理活动定时发布error:{}", JSON.toJSONString(queueParam), e.getMessage());
 			e.printStackTrace();
 			if (!isIgnoreException(e)) {
 				activityTimingReleaseQueue.push(queueParam);
