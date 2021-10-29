@@ -179,4 +179,16 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
+	/**查询活动已报名用户信息
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-29 17:45:17
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@PostMapping("{activityId}/signed-up/users")
+	public RestRespDTO signedUpUsers(@PathVariable Integer activityId) {
+		return RestRespDTO.success(activityQueryService.listSignedUpUsers(activityId));
+	}
+
 }

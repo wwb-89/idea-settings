@@ -72,7 +72,8 @@
                 data: {
                     activity: [[${activity}]],
                     activityMenus: [[${activityMenus}]],
-                    signActivityManageIndex: [[${signActivityManageIndex}]]
+                    signActivityManageIndex: [[${signActivityManageIndex}]],
+                    loaded: true
                 },
                 methods: {
                     menuShow: function (menu) {
@@ -109,7 +110,37 @@
                     // 发通知
                     sendNotice: function () {
                         var $this = this;
+                        if (!$this.loaded) {
+                            return;
+                        }
                         var url = "https://reading.chaoxing.com/qd/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
+                        if (app.isChaoxingApp()) {
+                            $this.loaded = false;
+                            // 获取已报名人员信息
+                            url = ctx + "/api/activity/" + $this.activity.id + "/signed-up/users"
+                            app.ajaxPost(url, {}, function (data) {
+                                $this.loaded = true;
+                                if (data.success) {
+                                    var users = [];
+                                    if (data.data) {
+                                        $(data.data).each(function () {
+                                            users.push({uid: this.uid, name: this.realName})
+                                        });
+                                    }
+                                    app.openSendNotice(users, $this.activity.name)
+                                } else {
+                                    var errorMessage = data.message;
+                                    if (signApp.isEmpty(errorMessage)) {
+                                        errorMessage = "加载通知发送页面失败";
+                                    }
+                                    app.showMsg(errorMessage);
+                                }
+                            }, function () {
+                                $this.loaded = true;
+                                app.showMsg("加载通知发送页面失败");
+                            })
+                            return;
+                        }
                         app.openUrl(url);
                     }
                 }

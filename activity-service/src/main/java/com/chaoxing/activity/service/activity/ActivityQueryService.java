@@ -747,6 +747,25 @@ public class ActivityQueryService {
 			}
 		}
 		return uids;
+	}	
+	
+	/**根据活动id查询已报名的用户
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-29 17:28:21
+	 * @param activityId
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.PassportUserDTO>
+	 */
+	public List<PassportUserDTO> listSignedUpUsers(Integer activityId) {
+		Activity activity = getById(activityId);
+		List<Integer> uids = listSignedUpUid(activity);
+		List<PassportUserDTO> users = Lists.newArrayList();
+		uids.forEach(uid -> {
+			PassportUserDTO user = passportApiService.getByUid(uid);
+			users.add(user);
+		});
+		
+		return users;
 	}
 
 
