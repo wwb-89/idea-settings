@@ -129,7 +129,7 @@ public class ActivityMhV3ApiController {
         }
         // 地址
         String address = "";
-        if (Objects.equals(Activity.ActivityTypeEnum.OFFLINE.getValue(), activity.getActivityType())) {
+        if (!Objects.equals(Activity.ActivityTypeEnum.ONLINE.getValue(), activity.getActivityType())) {
             address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
         }
         if (StringUtils.isNotBlank(address)) {
