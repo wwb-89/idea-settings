@@ -35,4 +35,4 @@ INSERT INTO `activity_engine`.`t_component` (`id`, `pid`, `name`, `code`, `is_re
 
 
 -- 第二课堂系统模板增加现场报名组件
-INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (159, 28, 2, 42, '现场报名', '开启后，允许未报名人员扫签到码报名，忽略报名限制条件', 0, 21, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (205, 28, 2, 42, '现场报名', '开启后，允许未报名人员扫签到码报名，忽略报名限制条件', 0, 21, 0, NULL, NULL, NULL, NULL);
