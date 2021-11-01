@@ -80,7 +80,7 @@
 								<p class="tips color3" v-if="item.status == 4">已结束</p>
 								<p class="tips color5" v-if="item.status == 2">活动预告</p>
 							</div>
-							<p class="num" v-if="item.openSignUp"><i></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
+							<p class="num" v-if="item.openSignUp" style="font-size: 14px"><i style="height: 18px; line-height: 18px;"></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
 							<div class="js-crop-img" @click="detail(index)">
 								<img :src="item | getCloudImgUrl">
 							</div>
