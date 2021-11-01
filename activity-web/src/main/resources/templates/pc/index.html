@@ -133,7 +133,7 @@
                 topFid: [[${topFid}]],
                 // 是否查询能报名的活动
                 signUpAble: [[${signUpAble}]],
-                otherTypeMarketIds: [293, 305]
+                showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]])
             },
             created: function () {
                 var $this = this;
@@ -165,7 +165,7 @@
                     {name: '全部', value: '', selected: true},
                     {name: '线上', value: 'online', selected: false},
                     {name: '线下', value: 'offline', selected: false},
-                    {name: '其他', value: 'other', selected: false}
+                    {name: '线上+线下', value: 'other', selected: false}
                 ];
                 //状态
                 $this.statuses = [
@@ -201,12 +201,6 @@
                     }
                 }
                 $this.loadData();
-            },
-            computed: {
-                showOtherActivityType: function () {
-                    var $this = this;
-                    return $this.otherTypeMarketIds.indexOf([[${marketId}]]) != -1;
-                }
             },
             methods: {
                 //改变选中状态

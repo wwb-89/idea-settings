@@ -7,8 +7,11 @@
     <meta name="format-detection" content="telephone=no, email=no">
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/icomoon/style.css" th:href="@{/mobile/assets/icomoon/style.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/index.css" th:href="@{/mobile/assets/css/index.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/activity-list.css" th:href="@{/mobile/assets/css/activity-list.css}"/>
     <link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}" />
     <link rel="stylesheet" type="text/css" href="/static/mobile/assets/css/hover-button.css" th:href="@{/mobile/assets/css/hover-button.css}">
@@ -19,8 +22,7 @@
     </style>
 </head>
 <body>
-<div class="index" id="activity-vue" v-cloak>
-    <!-- 搜索 -->
+<div class="activity-list index" id="activity-list" v-cloak>
     <div class="topFixed">
         <div class="searchbefore" v-show="!searchShow" @click="showSearchInput"><i></i><span>搜索</span></div>
         <div class="searchDiv inputShow" v-show="searchShow">
@@ -34,35 +36,35 @@
         </div>
         <span class="Scancel" v-show="searchShow" @click="hideSearchInput">取消</span>
     </div>
-    <div class="activity-list">
-        <ul>
-            <li v-for="(activity, index) of activities" :key="'activity-' + activity.id" @click="detail(index)">
-                <div class="img-box">
-                    <div class="mask"></div>
-                    <img :src="activity | getCloudImgUrl" class="jqthumbImg">
-                    <div class="status-box">
-                        <!--报名状态-->
-                        <span v-if="activity.hasSignUp && signUpAble && activity.signUpStatus == 2" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>报名中</span>
-                            <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
+
+    <div class="tabContent">
+        <div class="card-list">
+            <ul>
+                <li class="list-item" data-type="0" v-for="(activity, index) of activities" :key="'activity-' + activity.id" @click="detail(index)">
+                    <div class="inner">
+                        <div class="img-box border">
+                            <div class="tips-box">
+                                <span v-if="activity.hasSignUp && signUpAble && activity.signUpStatus == 2" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>报名中</span>
+                                <p :class="{'tips': true, 'color2': (activity.status == 1), 'color5': (activity.status == 2), 'color1': (activity.status == 3), 'color3': (activity.status == 4) }">{{activity.status | activityStatusInstructions}}</p>
+                            </div>
+                            <p class="num" style="z-index: 1" v-if="activity.openSignUp"><i></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
+                            <div class="js-crop-img">
+                                <img :src="activity | getCloudImgUrl" class="jqthumbImg">                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h2 class="title overHidden2"><span class="info-top" v-show="activity.top">置顶</span>{{activity.name}}</h2>
+                            <p class="time"><i class="icon-clock"></i>{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
+                            <div class="type-box">
+                                <span class="type-item" v-for="(tag, index) of resolveActivityTags(activity)">{{tag}}</span>
+                            </div>
+                            <p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+                        </div>
                     </div>
-                    <p class="num" v-if="activity.openSignUp"><i></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
-                </div>
-                <div class="info">
-                    <h2 class="title"><span class="info-top" v-show="activity.top">置顶</span>{{activity.name}}</h2>
-                    <div class="time">
-                        <span>{{activity.startTime | timestampScopeFormat(activity.endTime)}}</span>
-                        <div class="clear"></div>
-                    </div>
-                    <div class="type-box">
-                        <span class="type-item" v-for="(tag, index) of resolveActivityTags(activity)">{{tag}}</span>
-                    </div>
-                    <p class="dec">{{activity.organisers}}</p>
-                    <p class="address" >{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
-                </div>
-            </li>
-        </ul>
+                </li>
+            </ul>
+        </div>
     </div>
-    <!-- 无结果 -->
+    <!-- 无数据 -->
     <div class="noContent" v-show="loaded && activities.length < 1">
         <p>无结果</p>
     </div>
@@ -118,51 +120,56 @@
     <vue-button v-show="!isApp" :menu-config="menuConfig"></vue-button>
 </div>
 </body>
+</html>
+
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/mobile/assets/component/hover-button.js" th:src="@{/mobile/assets/component/hover-button.js}"></script>
     <script th:inline="javascript">
         function ready() {
             vm = new Vue({
-                el: "#activity-vue",
-                data: {
-                    classifyNames: [[${classifyNames}]],
-                    activityQueryDates: [[${activityQueryDates}]],
-                    classifies: [],
-                    activityTypes: [],
-                    regions: [[${regions}]],
-                    areaCode: [[${areaCode}]],
-                    // 状态
-                    statuses: [],
-                    sw: "",
-                    queryParams: {},
-                    activities: [],
-                    loaded: false,
-                    mescroll: null,
-                    hideFilter: [[${hideFilter}]],
-                    filterWindowShow: false,
-                    searchShow: false,
-                    topFid: [[${topFid}]],
-                    defaultSelectedAreaCode: [[${areaCode}]],
-                    // 是否查询能报名的活动
-                    signUpAble: [[${signUpAble}]],
-                    isApp: app.isChaoxingApp(),
-                    menuConfig: {
-                        my: {
-                            show: true,
-                            name: "",
-                            children: [
-                                {
-                                    show: true,
-                                    name: '我的活动',
-                                    callback: "vm.my()"
-                                }
-                            ]
-                        }
-                    },
-                    otherTypeMarketIds: [293, 305]
+                el: '#activity-list',
+                data: function () {
+                    return {
+                        classifyNames: [[${classifyNames}]],
+                        activityQueryDates: [[${activityQueryDates}]],
+                        classifies: [],
+                        activityTypes: [],
+                        regions: [[${regions}]],
+                        areaCode: [[${areaCode}]],
+                        // 状态
+                        statuses: [],
+                        sw: "",
+                        queryParams: {},
+                        activities: [],
+                        loaded: false,
+                        mescroll: null,
+                        hideFilter: [[${hideFilter}]],
+                        filterWindowShow: false,
+                        searchShow: false,
+                        topFid: [[${topFid}]],
+                        defaultSelectedAreaCode: [[${areaCode}]],
+                        // 是否查询能报名的活动
+                        signUpAble: [[${signUpAble}]],
+                        isApp: app.isChaoxingApp(),
+                        menuConfig: {
+                            my: {
+                                show: true,
+                                name: "",
+                                children: [
+                                    {
+                                        show: true,
+                                        name: '我的活动',
+                                        callback: "vm.my()"
+                                    }
+                                ]
+                            }
+                        },
+                        showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]])
+                    }
                 },
                 created: function () {
                     var $this = this;
@@ -203,7 +210,7 @@
                         {name: '全部', value: '', selected: true},
                         {name: '线上', value: 'online', selected: false},
                         {name: '线下', value: 'offline', selected: false},
-                        {name: '其他', value: 'other', selected: false}
+                        {name: '线上+线下', value: 'other', selected: false}
                     ];
                     // 状态
                     $this.statuses = [
@@ -240,12 +247,8 @@
                     haveFilter: function () {
                         var $this = this;
                         return !activityApp.isEmpty($this.queryParams.activityClassifyName) ||
-                                !activityApp.isEmpty($this.queryParams.dateScope) ||
-                                !activityApp.isEmpty($this.queryParams.status);
-                    },
-                    showOtherActivityType: function () {
-                        var $this = this;
-                        return $this.otherTypeMarketIds.indexOf([[${marketId}]]) != -1;
+                            !activityApp.isEmpty($this.queryParams.dateScope) ||
+                            !activityApp.isEmpty($this.queryParams.status);
                     }
                 },
                 methods: {
@@ -502,4 +505,3 @@
         }
     </script>
 </div>
-</html>

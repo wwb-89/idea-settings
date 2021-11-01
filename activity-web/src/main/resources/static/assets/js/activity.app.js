@@ -30,6 +30,13 @@
         return typeof (str) == 'undefined' || str == null || "" === $.trim(str);
     };
 
+    activityApp.prototype.other_activity_type_marketids = [293, 305];
+
+
+    activityApp.prototype.showOtherActivityType = function (marketId) {
+        var $this = this;
+        return $this.other_activity_type_marketids.indexOf(marketId) != -1;
+    }
     /**
      * 是否是手机号
      * @param phone
