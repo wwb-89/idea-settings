@@ -323,6 +323,10 @@ public class ActivityMhV2ApiController {
 		if (CollectionUtils.isNotEmpty(workBtnDtos)) {
 			for (WorkBtnDTO workBtnDto : workBtnDtos) {
 				String flag = getFlag(availableFlags);
+				if (StringUtils.isBlank(flag)) {
+					// 没有可用的flag
+					continue;
+				}
 				Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
 				Boolean needValidate = Optional.ofNullable(workBtnDto.getNeedValidate()).orElse(false);
 				if (needValidate && !signedUp) {
