@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/**作品征集信息同步任务
  * @author wwb
  * @version ver 1.0
  * @className ActivityWorkInfoSyncTask

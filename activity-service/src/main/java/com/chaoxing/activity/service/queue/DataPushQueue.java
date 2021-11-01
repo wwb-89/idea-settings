@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  * @author wwb
  * @version ver 1.0
  * @className DataPushQueue
- * @description
+ * @description 旧版本基于机构配置的数据推送
  * @blame wwb
  * @date 2021-06-24 19:43:42
  */

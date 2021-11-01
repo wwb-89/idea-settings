@@ -5,7 +5,16 @@ import com.chaoxing.activity.dto.manager.NoticeDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
+import com.chaoxing.activity.service.queue.IntegralPushQueue;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
+import com.chaoxing.activity.service.queue.user.UserActionQueue;
+import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
+import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
+import com.chaoxing.activity.util.enums.UserActionEnum;
+import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +41,14 @@ public class UserSignedUpEventQueueService {
     private ActivityQueryService activityQueryService;
     @Resource
     private XxtNoticeApiService noticeApiService;
+    @Resource
+    private IntegralPushQueue integralPushQueue;
+    @Resource
+    private ActivityStatSummaryQueue activityStatSummaryQueue;
+    @Resource
+    private UserStatSummaryQueue userStatSummaryQueue;
+    @Resource
+    private UserActionRecordQueue userActionRecordQueue;
 
     /** 活动时间格式化 */
     private static final DateTimeFormatter ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
@@ -40,11 +57,36 @@ public class UserSignedUpEventQueueService {
         if (eventOrigin == null) {
             return;
         }
-        Integer activityId = eventOrigin.getActivityId();
-        Activity activity = activityQueryService.getById(activityId);
+        Integer signId = eventOrigin.getSignId();
+        Activity activity = activityQueryService.getBySignId(signId);
         if (activity == null) {
             return;
         }
+        Integer activityId = activity.getId();
+        Integer uid = eventOrigin.getUid();
+        // 发送通知
+        signedUpNotice(activity, uid);
+        // 积分推送
+        integralPush(activity, uid);
+        // 相应活动的统计数据需要变更
+        activityStatSummaryQueue.push(activityId);
+        // 用户汇总表的报名签到统计信息需要更新
+        userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
+        // 记录用户行为
+        UserActionQueue.QueueParamDTO queueParam = new UserActionQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_UP, UserActionEnum.SIGNED_UP, String.valueOf(eventOrigin.getSignUpId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
+        userActionRecordQueue.push(queueParam);
+
+    }
+
+    /**给报名成功的用户发送通知
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-01 10:09:24
+     * @param activity
+     * @param uid
+     * @return void
+    */
+    private void signedUpNotice(Activity activity, Integer uid) {
         Boolean signedUpNotice = Optional.ofNullable(activity.getSignedUpNotice()).orElse(false);
         if (!signedUpNotice) {
             return;
@@ -53,9 +95,26 @@ public class UserSignedUpEventQueueService {
         String content = generateUserSignedUpNoticeContent(activity);
         String attachment = NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl());
         List<Integer> uids = Lists.newArrayList();
-        uids.add(eventOrigin.getUid());
+        uids.add(uid);
         noticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, uids);
     }
+
+    /**积分推送
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-01 10:10:09
+     * @param activity
+     * @param uid
+     * @return void
+    */
+    private void integralPush(Activity activity, Integer uid) {
+        Integer activityId = activity.getId();
+        String activityName = activity.getName();
+        Integer createFid = activity.getCreateFid();
+        IntegralPushQueue.IntegralPushDTO integralPush = new IntegralPushQueue.IntegralPushDTO(uid, createFid, IntegralOriginTypeEnum.SIGN_UP.getValue(), String.valueOf(activityId), activityName);
+        integralPushQueue.push(integralPush);
+    }
+
 
     private String generateUserSignedUpNoticeTitle(Activity activity) {
         return "成功报名活动 " + activity.getName();

@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UserSignedInEventOrigin extends AbstractEventOrigin {
 
-	private Integer signIn;
+	private Integer signId;
 	private Integer signInId;
 	private Integer uid;
 	private LocalDateTime signedInTime;

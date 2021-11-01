@@ -2,6 +2,7 @@ package com.chaoxing.activity.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chaoxing.activity.model.DataPushConfig;
+import com.chaoxing.activity.model.DataPushFormConfig;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -12,5 +13,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @version: ver 1.0
  */
 @Mapper
-public interface DataPushFormConfigMapper extends BaseMapper<DataPushConfig> {
+public interface DataPushFormConfigMapper extends BaseMapper<DataPushFormConfig> {
 }

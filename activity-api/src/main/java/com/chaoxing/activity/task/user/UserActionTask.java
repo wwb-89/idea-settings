@@ -80,7 +80,8 @@ public class UserActionTask {
                 if (Objects.equals(UserActionEnum.SIGNED_UP, queueParam.getUserAction())) {
                     // 报名成功
                     UserSignedUpEventOrigin userSignedUpEventOrigin = UserSignedUpEventOrigin.builder()
-                            .activityId(queueParam.getActivityId())
+                            // TODO 应该传入signId
+                            .signId(queueParam.getActivityId())
                             .signUpId(Integer.parseInt(queueParam.getIdentify()))
                             .signedUpTime(queueParam.getTime())
                             .timestamp(DateUtils.date2Timestamp(queueParam.getTime()))

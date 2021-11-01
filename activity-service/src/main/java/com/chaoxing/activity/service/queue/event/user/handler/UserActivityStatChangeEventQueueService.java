@@ -4,7 +4,7 @@ import com.chaoxing.activity.dto.event.user.UserActivityStatChangeEventOrigin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
+/**用户活动统计信息改变事件任务队列服务
  * @author wwb
  * @version ver 1.0
  * @className UserActivityStatChangeEventQueueService

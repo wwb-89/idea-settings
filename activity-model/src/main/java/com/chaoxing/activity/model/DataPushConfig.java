@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 活动市场数据推送配置表
@@ -53,5 +51,49 @@ public class DataPushConfig {
     private LocalDateTime updateTime;
     /** 更新人id; column: update_uid*/
     private Integer updateUid;
+
+    @Getter
+    public enum DataTypeEnum {
+
+        /** 活动数据 */
+        ACTIVITY_DATA("活动数据", "activity_data"),
+        USER_DATA("用户数据", "user_data");
+
+        private final String name;
+        private final String value;
+
+        DataTypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+    }
+
+    @Getter
+    public enum WayEnum {
+
+        /** 活动数据 */
+        WFW_FORM("万能表单", "wfw_form"),
+        URL("接口", "url");
+
+        private final String name;
+        private final String value;
+
+        WayEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static WayEnum fromValue(String value) {
+            WayEnum[] values = WayEnum.values();
+            for (WayEnum wayEnum : values) {
+                if (Objects.equals(wayEnum.getValue(), value)) {
+                    return wayEnum;
+                }
+            }
+            return null;
+        }
+
+    }
 
 }

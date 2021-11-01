@@ -1,15 +1,10 @@
 package com.chaoxing.activity.service.queue.event.user.handler;
 
-import com.chaoxing.activity.dto.event.user.UserCancelSignUpEventOrigin;
+import com.chaoxing.activity.dto.event.user.UserUnQualifiedEventOrigin;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
-import com.chaoxing.activity.service.queue.user.UserActionQueue;
-import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
 import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
-import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.enums.UserActionEnum;
-import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +13,14 @@ import javax.annotation.Resource;
 /**
  * @author wwb
  * @version ver 1.0
- * @className UserCancelSignUpEventQueueService
+ * @className UserUnQualifiedEventQueueService
  * @description
  * @blame wwb
- * @date 2021-10-28 18:00:43
+ * @date 2021-11-01 10:48:47
  */
 @Slf4j
 @Service
-public class UserCancelSignUpEventQueueService {
+public class UserUnQualifiedEventQueueService {
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -33,27 +28,21 @@ public class UserCancelSignUpEventQueueService {
     private ActivityStatSummaryQueue activityStatSummaryQueue;
     @Resource
     private UserStatSummaryQueue userStatSummaryQueue;
-    @Resource
-    private UserActionRecordQueue userActionRecordQueue;
 
-    public void handle(UserCancelSignUpEventOrigin eventOrigin) {
+    public void handle(UserUnQualifiedEventOrigin eventOrigin) {
         if (eventOrigin == null) {
             return;
         }
-        Integer signId = eventOrigin.getSignId();
-        Activity activity = activityQueryService.getBySignId(signId);
+        Integer activityId = eventOrigin.getActivityId();
+        Activity activity = activityQueryService.getById(activityId);
         if (activity == null) {
             return;
         }
-        Integer activityId = activity.getId();
         Integer uid = eventOrigin.getUid();
         // 相应活动的统计数据需要变更
         activityStatSummaryQueue.push(activityId);
         // 用户汇总表的报名签到统计信息需要更新
         userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
-        // 记录用户行为
-        UserActionQueue.QueueParamDTO queueParam = new UserActionQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_UP, UserActionEnum.CANCEL_SIGNED_UP, String.valueOf(eventOrigin.getSignUpId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
-        userActionRecordQueue.push(queueParam);
     }
 
 }

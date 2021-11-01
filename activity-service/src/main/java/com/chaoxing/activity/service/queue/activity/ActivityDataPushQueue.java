@@ -2,7 +2,6 @@ package com.chaoxing.activity.service.queue.activity;
 
 import com.chaoxing.activity.service.queue.IQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.constant.DataPushTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,7 +45,6 @@ public class ActivityDataPushQueue implements IQueue<ActivityDataPushQueue.Queue
 
         private Integer activityId;
         private Integer dataPushConfigId;
-        private DataPushTypeEnum dataPushType;
 
     }
 
