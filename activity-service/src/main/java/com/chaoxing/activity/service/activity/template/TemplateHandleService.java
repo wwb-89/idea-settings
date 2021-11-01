@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity.template;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.*;
@@ -117,5 +118,17 @@ public class TemplateHandleService {
 			return;
 		}
 		templateMapper.updateById(template);
+    }
+
+	/**根据marketId删除对应的模板
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:52:35
+	 * @param marketId
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+    public void deleteByMarketId(Integer marketId) {
+		templateMapper.delete(new LambdaUpdateWrapper<Template>().eq(Template::getMarketId, marketId));
     }
 }

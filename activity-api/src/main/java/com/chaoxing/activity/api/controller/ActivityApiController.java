@@ -31,6 +31,7 @@ import com.chaoxing.activity.service.activity.WfwFormSynOperateQueueService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.create.ActivityCreateService;
+import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -109,6 +110,8 @@ public class ActivityApiController {
 	private WfwFormSynOperateQueueService wfwFormSynOperateQueueService;
 	@Resource
 	private ActivityCreateService activityCreateService;
+	@Resource
+	private MarketHandleService marketHandleService;
 
 	/**组活动推荐
 	 * @Description 
@@ -596,6 +599,19 @@ public class ActivityApiController {
 		Activity activity = activityQueryService.getByWebsiteId(websiteId);
 		Integer activityId = Optional.ofNullable(activity).map(Activity::getId).orElse(1);
 		return "redirect:" + String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activityId);
+	}
+
+	/**根据市场wfwAppId删除市场，及市场关联的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:52:57
+	 * @param wfwAppId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("wfw-app/delete")
+	public RestRespDTO marketAppDelete(@RequestParam("wfwAppId") Integer wfwAppId) {
+		marketHandleService.deleteByWfwAppId(wfwAppId);
+		return RestRespDTO.success();
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OperateUserDTO;
@@ -313,4 +314,19 @@ public class ActivityMarketService {
         );
     }
 
+    /**删除市场id关联的活动
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-01 16:28:16
+     * @param marketId
+     * @return void
+     */
+    public void deleteByMarketId(Integer marketId) {
+        if (marketId == null) {
+            return;
+        }
+        activityMarketMapper.update(null, new LambdaUpdateWrapper<ActivityMarket>()
+                .eq(ActivityMarket::getMarketId, marketId)
+                .set(ActivityMarket::getStatus, 0));
+    }
 }

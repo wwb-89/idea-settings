@@ -1076,6 +1076,20 @@ public class ActivityQueryService {
     	return activityMapper.selectList(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId)).stream().findFirst().orElse(null);
     }
 
+	/**查询marketId下非删除状态的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:42:19
+	 * @param marketId
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	 */
+	public List<Activity> listByMarketId(Integer marketId) {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getMarketId, marketId)
+				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+				.select(Activity::getId, Activity::getCreateUid, Activity::getCreateFid));
+	}
+
     /**查询机构创建的作品征集列表（未删除的活动）
      * @Description 
      * @author wwb

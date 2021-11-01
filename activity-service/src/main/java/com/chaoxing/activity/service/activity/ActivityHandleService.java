@@ -446,7 +446,7 @@ public class ActivityHandleService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void updateActivityReleaseStatus(Integer activityId, Integer fid, Integer uid, boolean released) {
-		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
+		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, fid);
 		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
 		marketIdsUnderFid.forEach(marketId -> {
 			if (released) {
@@ -501,7 +501,7 @@ public class ActivityHandleService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteActivityUnderFid(Integer fid, Integer activityId, Integer uid) {
-		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
+		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, fid);
 		List<Integer> martketIds = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
 		martketIds.forEach(marketId -> {
 			delete(activityId, marketId, loginUser);
@@ -943,7 +943,7 @@ public class ActivityHandleService {
 		}
 		Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
 		if (activity != null) {
-			LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), "", activity.getCreateFid(), "");
+			LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateFid());
 			delete(activity.getId(), activity.getMarketId(), loginUser);
 		}
 	}
@@ -1019,4 +1019,22 @@ public class ActivityHandleService {
 		workApiService.updateWorkInfo(workId, activity.getName(), activity.getStartTime(), activity.getEndTime(), activity.getCreateUid());
 	}
 
+	/**删除市场id为marketId的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:53:26
+	 * @param marketId
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteByMarketId(Integer marketId) {
+		List<Activity> activities = activityQueryService.listByMarketId(marketId);
+		if (CollectionUtils.isEmpty(activities)) {
+			return;
+		}
+		ActivityHandleService handleService = ApplicationContextHolder.getBean(ActivityHandleService.class);
+		activities.forEach(v -> {
+			handleService.delete(v.getId(), marketId, LoginUserDTO.buildDefault(v.getCreateUid(), v.getCreateFid()));
+		});
+	}
 }

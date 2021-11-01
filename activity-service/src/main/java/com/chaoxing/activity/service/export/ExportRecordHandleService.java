@@ -156,7 +156,7 @@ public class ExportRecordHandleService {
                 exportData = userResultQueryService.packageExportData(queryParam);
             case ACTIVITY_MANAGE:
                 ActivityManageQueryDTO activityManageQueryParams = JSONObject.parseObject(params, ActivityManageQueryDTO.class);
-                LoginUserDTO exportUser = LoginUserDTO.buildDefault(activityManageQueryParams.getExportUid(), "", activityManageQueryParams.getFid(), "");
+                LoginUserDTO exportUser = LoginUserDTO.buildDefault(activityManageQueryParams.getExportUid(), activityManageQueryParams.getFid());
                 exportData = activityQueryService.packageExportData(activityManageQueryParams, exportUser);
             default:
         }
