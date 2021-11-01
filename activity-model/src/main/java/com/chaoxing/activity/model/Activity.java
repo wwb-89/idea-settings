@@ -245,7 +245,7 @@ public class Activity {
         /** 线上举办 */
         ONLINE("线上举办", "online"),
         OFFLINE("线下举办", "offline"),
-        OTHER("其他", "other");
+        OTHER("线上+线下", "other");
 
         private final String name;
         private final String value;

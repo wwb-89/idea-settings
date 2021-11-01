@@ -44,7 +44,7 @@
                     <div class="inner">
                         <div class="img-box border">
                             <div class="tips-box">
-<!--                                <p class="tips color6 sign"><span class="sign-dot"></span>报名中</p>-->
+                                <span v-if="activity.hasSignUp && signUpAble && activity.signUpStatus == 2" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>报名中</span>
                                 <p :class="{'tips': true, 'color2': (activity.status == 1), 'color5': (activity.status == 2), 'color1': (activity.status == 3), 'color3': (activity.status == 4) }">{{activity.status | activityStatusInstructions}}</p>
                             </div>
                             <p class="num" style="z-index: 1" v-if="activity.openSignUp"><i></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
@@ -130,7 +130,7 @@
     <script src="/static/mobile/assets/component/hover-button.js" th:src="@{/mobile/assets/component/hover-button.js}"></script>
     <script th:inline="javascript">
         function ready() {
-            var vm = new Vue({
+            vm = new Vue({
                 el: '#activity-list',
                 data: function () {
                     return {

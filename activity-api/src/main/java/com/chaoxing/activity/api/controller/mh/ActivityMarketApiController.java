@@ -134,15 +134,15 @@ public class ActivityMarketApiController {
 
 				JSONObject endTime = new JSONObject();
 				endTime.put("flag", "101");
-				endTime.put("key", "活动时间");
+				endTime.put("key", "结束时间");
 				endTime.put("value", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()));
 				fields.add(endTime);
 
 				// 活动状态
 				JSONObject status = new JSONObject();
-				endTime.put("flag", "100");
-				endTime.put("key", "状态");
-				endTime.put("value", Activity.getStatusDescription(record.getStatus()));
+				status.put("flag", "100");
+				status.put("key", "状态");
+				status.put("value", Activity.getStatusDescription(record.getStatus()));
 				fields.add(status);
 
 				// 地点

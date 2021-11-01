@@ -42,7 +42,7 @@
                     <img :src="activity | getCloudImgUrl" class="jqthumbImg">
                     <div class="status-box">
                         <!--报名状态-->
-<!--                        <span v-if="activity.hasSignUp && signUpAble" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>{{activity.signUpStatusDescribe}}</span>-->
+                        <span v-if="activity.hasSignUp && signUpAble && activity.signUpStatus == 2" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>报名中</span>
                             <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
                     </div>
                     <p class="num" v-if="activity.openSignUp"><i></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
