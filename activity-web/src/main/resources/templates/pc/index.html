@@ -133,7 +133,7 @@
                 topFid: [[${topFid}]],
                 // 是否查询能报名的活动
                 signUpAble: [[${signUpAble}]],
-                otherTypeMarketIds: [293, 305]
+                showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]])
             },
             created: function () {
                 var $this = this;
@@ -201,12 +201,6 @@
                     }
                 }
                 $this.loadData();
-            },
-            computed: {
-                showOtherActivityType: function () {
-                    var $this = this;
-                    return $this.otherTypeMarketIds.indexOf([[${marketId}]]) != -1;
-                }
             },
             methods: {
                 //改变选中状态

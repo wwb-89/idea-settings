@@ -12,6 +12,15 @@
         activityApp.prototype.origin = W.location.origin;
     }
 
+    /** 需要展示线上线下活动类型的市场id列表 */
+    activityApp.prototype.other_activity_type_marketids = [293, 305];
+
+    /** 判断是否需要展示线上线下活动类型 */
+    activityApp.prototype.showOtherActivityType = function (marketId) {
+        var $this = this;
+        return $this.other_activity_type_marketids.indexOf(marketId) != -1;
+    }
+
     /**
      * 字符串是否为空
      * @param str

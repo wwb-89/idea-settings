@@ -168,7 +168,7 @@
                                 ]
                             }
                         },
-                        otherTypeMarketIds: [293, 305]
+                        showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]])
                     }
                 },
                 created: function () {
@@ -249,10 +249,6 @@
                         return !activityApp.isEmpty($this.queryParams.activityClassifyName) ||
                             !activityApp.isEmpty($this.queryParams.dateScope) ||
                             !activityApp.isEmpty($this.queryParams.status);
-                    },
-                    showOtherActivityType: function () {
-                        var $this = this;
-                        return $this.otherTypeMarketIds.indexOf([[${marketId}]]) != -1;
                     }
                 },
                 methods: {

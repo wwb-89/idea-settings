@@ -863,7 +863,7 @@
                 // 班级
                 classDataLoading: false,
                 // 需要显示其他类型的活动市场id列表
-                otherTypeMarketIds: [293, 305]
+                showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]])
             },
             created: function () {
                 var $this = this;
@@ -1222,10 +1222,6 @@
                         }
                     });
                     return nodeMap;
-                },
-                showOtherActivityType: function () {
-                    var $this = this;
-                    return $this.otherTypeMarketIds.indexOf($this.marketId) != -1;
                 }
             },
             watch: {
