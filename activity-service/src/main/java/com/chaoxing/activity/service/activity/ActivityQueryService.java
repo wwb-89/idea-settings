@@ -384,14 +384,14 @@ public class ActivityQueryService {
 				.collect(Collectors.toMap(ActivityStatSummaryDTO::getActivityId, v -> v, (v1, v2) -> v2));
 		Map<Integer, SignStatDTO> signIdSignStatMap = Maps.newHashMap();
 		if (CollectionUtils.isNotEmpty(signIds)) {
-			List<SignStatDTO> signStats = signApiService.statSignSignedUpNum(signIds);
+			List<SignStatDTO> signStats = signApiService.statSignSignUps(signIds);
 			signIdSignStatMap = signStats.stream().collect(Collectors.toMap(SignStatDTO::getId, v -> v, (v1, v2) -> v2));
 		}
 		for (Activity activity : activities) {
 			// 活动报名签到状态数据
 			SignStatDTO signStatItem = Optional.ofNullable(activity.getSignId()).map(signIdSignStatMap::get).orElse(null);
 			activity.setSignedUpNum(Optional.ofNullable(signStatItem).map(SignStatDTO::getSignedUpNum).orElse(0));
-			activity.setPersonLimit(Optional.ofNullable(signStatItem).map(SignStatDTO::getSignedUpNum).orElse(0));
+			activity.setPersonLimit(Optional.ofNullable(signStatItem).map(SignStatDTO::getLimitNum).orElse(0));
 			// 活动统计数据
 			ActivityStatSummaryDTO summaryItem = statSummaryMap.get(activity.getId());
 			activity.setSignedInNum(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getSignedInNum).orElse(0));

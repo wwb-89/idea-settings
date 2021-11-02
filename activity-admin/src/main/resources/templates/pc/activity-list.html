@@ -109,6 +109,17 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                                v-else-if="item.code === 'signedInRate'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.signedInRate | percentageFormat}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                                 v-else-if="item.code === 'status'"
                                 class-name="th-dropdwon-radio"
                                 :fixed="item.defaultTop"

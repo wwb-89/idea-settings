@@ -477,3 +477,10 @@ Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
     result += end;
     return result;
 });
+
+Vue.filter("percentageFormat", function (value) {
+    if (!value || typeof value != "number") {
+        return 0;
+    }
+    return (value * 100) + '%';
+});
