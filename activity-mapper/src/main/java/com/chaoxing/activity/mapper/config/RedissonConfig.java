@@ -1,14 +1,14 @@
 package com.chaoxing.activity.mapper.config;
 
-import com.alibaba.fastjson.parser.ParserConfig;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.client.codec.Codec;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
-import org.springframework.beans.factory.annotation.Value;
+import org.redisson.config.TransportMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.Resource;
 
 /**
  * @author wwb
@@ -21,28 +21,31 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.redis.host}")
-    private String host;
-    @Value("${spring.redis.port}")
-    private Integer port;
-    @Value("${spring.redis.password}")
-    private String password;
-    @Value("${spring.redis.database}")
-    private Integer database;
-    @Value("${spring.redis.timeout}")
-    private Integer timeout;
+    @Resource
+    private RedissonConfigProperty redissonConfigProperty;
 
     @Bean
-    public RedissonClient redissonClient() {
-        ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
+    public RedissonClient redissonClient(){
         Config config = new Config();
+        config.setTransportMode(TransportMode.NIO);
+        config.setThreads(redissonConfigProperty.getThreads());
+        config.setNettyThreads(redissonConfigProperty.getNettyThreads());
         SingleServerConfig singleServerConfig = config.useSingleServer();
-        singleServerConfig.setAddress("redis://"+ host +":" + port);
-        singleServerConfig.setPassword(password);
-        singleServerConfig.setDatabase(database);
-        singleServerConfig.setTimeout(timeout);
-        Codec codec = new FastjsonCodec();
-        config.setCodec(codec);
+        SingleServerConfig serverConfig = redissonConfigProperty.getSingleServerConfig();
+        singleServerConfig.setAddress(serverConfig.getAddress());
+        singleServerConfig.setPassword(serverConfig.getPassword());
+        singleServerConfig.setDatabase(serverConfig.getDatabase());
+        singleServerConfig.setIdleConnectionTimeout(serverConfig.getIdleConnectionTimeout());
+        singleServerConfig.setConnectTimeout(serverConfig.getConnectTimeout());
+        singleServerConfig.setTimeout(serverConfig.getTimeout());
+        singleServerConfig.setRetryAttempts(serverConfig.getRetryAttempts());
+        singleServerConfig.setRetryInterval(serverConfig.getRetryInterval());
+        singleServerConfig.setSubscriptionsPerConnection(serverConfig.getSubscriptionsPerConnection());
+        singleServerConfig.setSubscriptionConnectionMinimumIdleSize(serverConfig.getSubscriptionConnectionMinimumIdleSize());
+        singleServerConfig.setSubscriptionConnectionPoolSize(serverConfig.getSubscriptionConnectionPoolSize());
+        singleServerConfig.setConnectionMinimumIdleSize(serverConfig.getConnectionMinimumIdleSize());
+        singleServerConfig.setConnectionPoolSize(serverConfig.getConnectionPoolSize());
+        config.setCodec(new FastjsonCodec());
         RedissonClient redisson = Redisson.create(config);
         return redisson;
     }

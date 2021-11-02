@@ -65,11 +65,10 @@ public class ActivityStatusService {
 			Integer oldStatus = activity.getStatus();
 			Integer activityId = activity.getId();
 			Activity.calAndSetActivityStatus(activity);
-			Activity.StatusEnum status = Activity.StatusEnum.fromValue(activity.getStatus());
 			activityMapper.update(null, new UpdateWrapper<Activity>()
 					.lambda()
 					.eq(Activity::getId, activityId)
-					.set(Activity::getStatus, status.getValue())
+					.set(Activity::getStatus, activity.getStatus())
 			);
 			// 更新所有关联该活动的市场的活动状态
 			List<ActivityMarket> activityMarkets = activityMarketService.listByActivityId(activityId);

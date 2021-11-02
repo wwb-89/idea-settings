@@ -2,9 +2,8 @@ package com.chaoxing.activity.service.queue.event.activity.handler;
 
 import com.chaoxing.activity.dto.event.activity.ActivityChangeEventOrigin;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.data.DataPushService;
+import com.chaoxing.activity.service.queue.activity.ActivityDataPrePushQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +22,9 @@ import javax.annotation.Resource;
 public class ActivityChangeEventQueueService {
 
     @Resource
-    private DataPushService dataPushService;
-    @Resource
     private ActivityQueryService activityQueryService;
+    @Resource
+    private ActivityDataPrePushQueue activityDataPrePushQueue;
 
     public void handle(ActivityChangeEventOrigin eventOrigin) {
         if (eventOrigin == null) {
@@ -37,8 +36,7 @@ public class ActivityChangeEventQueueService {
             return;
         }
         // 数据推送
-        DataPushService.DataPushParamDTO dataPushParam = new DataPushService.DataPushParamDTO(activity.getCreateFid(), OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId));
-        dataPushService.dataPush(dataPushParam);
+        activityDataPrePushQueue.push(activityId);
     }
 
 }

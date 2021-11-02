@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 @Service
 public class ActivityDataPushQueue implements IQueue<ActivityDataPushQueue.QueueParamDTO> {
 
-    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "activity_data_pre_push";
+    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "activity_data_push";
 
     @Resource
     private RedissonClient redissonClient;

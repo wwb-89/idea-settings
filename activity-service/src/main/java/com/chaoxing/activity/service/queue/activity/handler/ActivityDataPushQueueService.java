@@ -208,8 +208,7 @@ public class ActivityDataPushQueueService {
             // 活动状态
             if ("activity_status".equals(alias)) {
                 Integer status = activity.getStatus();
-                Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
-                data.add(statusEnum.getName());
+                data.add(Activity.getStatusDescription(status));
                 item.put("val", data);
             }
         }

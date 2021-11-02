@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_activity_create_permission")
+@TableName(value = "t_activity_data_push_record")
 public class ActivityDataPushRecord {
 
     /** 主键; column: id*/

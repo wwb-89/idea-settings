@@ -1,8 +1,10 @@
 package com.chaoxing.activity.service.event;
 
+import com.chaoxing.activity.dto.event.activity.ActivityChangeEventOrigin;
 import com.chaoxing.activity.dto.event.activity.ActivityDeletedEventOrigin;
 import com.chaoxing.activity.dto.event.activity.ActivityEndEventOrigin;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.queue.event.activity.ActivityChangeEventQueue;
 import com.chaoxing.activity.service.queue.event.activity.ActivityDeletedEventQueue;
 import com.chaoxing.activity.service.queue.event.activity.ActivityEndEventQueue;
 import com.chaoxing.activity.util.DateUtils;
@@ -29,6 +31,8 @@ public class ActivityStatusChangeEventService {
     private ActivityEndEventQueue activityEndEventQueue;
     @Resource
     private ActivityDeletedEventQueue activityDeletedEventQueue;
+    @Resource
+    private ActivityChangeEventQueue activityChangeEventQueue;
 
     /**活动状态变更
      * @Description
@@ -64,6 +68,12 @@ public class ActivityStatusChangeEventService {
                 break;
             default:
         }
+        // 活动改变
+        ActivityChangeEventOrigin activityChangeEventOrigin = ActivityChangeEventOrigin.builder()
+                .activityId(activityId)
+                .timestamp(timestamp)
+                .build();
+        activityChangeEventQueue.push(activityChangeEventOrigin);
     }
 
 }
