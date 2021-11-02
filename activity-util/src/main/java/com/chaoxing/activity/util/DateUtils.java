@@ -4,10 +4,12 @@ import com.chaoxing.activity.util.constant.CommonConstant;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,8 +22,10 @@ import java.util.List;
  */
 public class DateUtils {
 
+	public static final String DATE_MINUTE_STRING = "yyyy-MM-dd HH:mm";
+	public static final String FULL_DATE_MINUTE_STRING = "yyyy-MM-dd HH:mm:ss";
 	public static final DateTimeFormatter DAY_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-	public static final DateTimeFormatter FULL_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	public static final DateTimeFormatter FULL_TIME_FORMATTER = DateTimeFormatter.ofPattern(FULL_DATE_MINUTE_STRING);
 	public static final DateTimeFormatter DATE_MINUTE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
 	public static final DateTimeFormatter MONTH_DAY_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM.dd HH:mm");
 
@@ -45,6 +49,52 @@ public class DateUtils {
 			return null;
 		}
 		return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), CommonConstant.DEFAULT_ZONEOFFSET);
+	}
+	/**开始时间戳转换为localDateTime
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-02 15:30:42
+	 * @param timestamp
+	 * @return java.time.LocalDateTime
+	 */
+	public static LocalDateTime startTimestamp2Time(Long timestamp) {
+		if (timestamp == null) {
+			return null;
+		}
+		String timeFormatStr = timestamp2Format(timestamp, DATE_MINUTE_STRING) + ":00";
+		return LocalDateTime.parse(timeFormatStr, DateTimeFormatter.ofPattern(FULL_DATE_MINUTE_STRING));
+	}
+
+	/**开始时间戳转换为localDateTime
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-02 15:30:51
+	 * @param timestamp
+	 * @return java.time.LocalDateTime
+	 */
+	public static LocalDateTime endTimestamp2Time(Long timestamp) {
+		if (timestamp == null) {
+			return null;
+		}
+		String timeFormatStr = timestamp2Format(timestamp, DATE_MINUTE_STRING) + ":59";
+		return LocalDateTime.parse(timeFormatStr, DateTimeFormatter.ofPattern(FULL_DATE_MINUTE_STRING));
+	}
+
+	/**时间戳格式化字符串
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-02 15:31:04
+	 * @param timestamp
+	 * @param format
+	 * @return java.lang.String
+	 */
+	private static String timestamp2Format(Long timestamp, String format) {
+		if (timestamp == null) {
+			return null;
+		}
+		Date date = new Date(timestamp);
+		SimpleDateFormat sf = new SimpleDateFormat(format);
+		return sf.format(date);
 	}
 
 	/**时间转换成时间戳

@@ -148,8 +148,8 @@ public class ActivityCreateParamDTO {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity buildActivity() {
-		LocalDateTime startTime = DateUtils.timestamp2Date(getStartTimeStamp());
-		LocalDateTime endTime = DateUtils.timestamp2Date(getEndTimeStamp());
+		LocalDateTime startTime = DateUtils.startTimestamp2Time(getStartTimeStamp());
+		LocalDateTime endTime = DateUtils.endTimestamp2Time(getEndTimeStamp());
 		defaultValue();
 		return Activity.builder()
 				.name(getName())
@@ -170,7 +170,7 @@ public class ActivityCreateParamDTO {
 				.credit(getCredit())
 				.timeLengthUpperLimit(getTimeLengthUpperLimit())
 				.timingRelease(getTimingRelease())
-				.timingReleaseTime(Optional.ofNullable(getTimingReleaseTimeStamp()).map(v -> DateUtils.timestamp2Date(getTimingReleaseTimeStamp())).orElse(null))
+				.timingReleaseTime(Optional.ofNullable(getTimingReleaseTimeStamp()).map(v -> DateUtils.startTimestamp2Time(getTimingReleaseTimeStamp())).orElse(null))
 				.tags(getTags())
 				.openRating(getOpenRating())
 				.ratingNeedAudit(getRatingNeedAudit())
