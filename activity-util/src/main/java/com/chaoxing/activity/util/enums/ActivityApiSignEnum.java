@@ -39,6 +39,6 @@ public enum ActivityApiSignEnum {
                 return item;
             }
         }
-        throw new BusinessException("不存在sign: " + sign + "对应的 key");
+        throw new BusinessException("sign: " + sign + "对应的 key 不存在");
     }
 }

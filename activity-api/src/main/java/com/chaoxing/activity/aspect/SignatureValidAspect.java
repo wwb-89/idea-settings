@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -49,9 +50,15 @@ public class SignatureValidAspect {
         String[] encArr = parameterMap.get("enc");
         if (signArr != null) {
             sign = Optional.ofNullable(signArr[0]).orElse(null);
+            if (StringUtils.isBlank(sign)) {
+                throw new BusinessException("参数sign不能为空");
+            }
         }
         if (encArr != null) {
             reqEnc = Optional.ofNullable(encArr[0]).orElse(null);
+            if (StringUtils.isNotBlank(reqEnc)) {
+                throw new BusinessException("参数enc不能为空");
+            }
         }
         ActivityApiSignEnum signEnum = ActivityApiSignEnum.fromSign(sign);
         // 对比enc，enc不匹配，则抛出异常

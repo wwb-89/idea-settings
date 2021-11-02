@@ -1,6 +1,5 @@
 package com.chaoxing.activity.dto.manager.uc;
 
-import jdk.nashorn.internal.IntDeque;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
