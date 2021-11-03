@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.util;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.DepartmentDTO;
@@ -319,6 +320,31 @@ public class FormUtils {
 			}
 		}
 		return departments;
+	}
+
+	/**获取下拉字段的选项列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-02 18:17:46
+	 * @param field
+	 * @return java.util.List<java.lang.String>
+	 */
+	public static List<String> getOptionsFromField(JSONObject field) {
+		List<String> options = Lists.newArrayList();
+		if (field == null) {
+			return options;
+		}
+		JSONArray optionsJsonArray = field.getJSONArray("options");
+		if (CollectionUtils.isNotEmpty(optionsJsonArray)) {
+			optionsJsonArray.forEach(o -> {
+				JSONObject option = (JSONObject) o;
+				String type = option.getString("title");
+				if (StringUtils.isNotBlank(type)) {
+					options.add(type);
+				}
+			});
+		}
+		return options;
 	}
 
 

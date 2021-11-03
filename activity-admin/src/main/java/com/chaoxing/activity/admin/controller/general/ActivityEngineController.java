@@ -1,6 +1,7 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormTemplateDTO;
 import com.chaoxing.activity.model.Template;
@@ -65,6 +66,7 @@ public class ActivityEngineController {
         model.addAttribute("templateInfo", templateInfo);
         model.addAttribute("wfwForms", wfwForms);
         model.addAttribute("wfwFormTemplateList", WfwFormTemplateDTO.wfwFormTemplateList());
+        model.addAttribute("conditionEnums", ConditionDTO.listWithoutNoLimit());
         return "pc/engine/index";
     }
 }

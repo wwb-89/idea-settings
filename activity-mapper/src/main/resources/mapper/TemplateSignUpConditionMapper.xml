@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.TemplateSignUpConditionMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TemplateSignUpCondition">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="template_compoent_id" jdbcType="INTEGER" property="templateCompoentId" />
+        <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+        <result column="condition" jdbcType="VARCHAR" property="condition" />
+        <result column="value" jdbcType="VARCHAR" property="value" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.template_compoent_id, t.field_name, t.condition, t.value
+    </sql>
+</mapper>
