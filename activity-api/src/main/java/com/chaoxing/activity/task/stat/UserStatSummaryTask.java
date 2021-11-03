@@ -34,6 +34,7 @@ public class UserStatSummaryTask {
         try {
             userStatSummaryService.updateUserSignData(queueParam.getUid(), queueParam.getActivityId());
         } catch (Exception e) {
+            e.printStackTrace();
             userStatSummaryQueueService.pushUserSignStat(queueParam);
         }
     }
@@ -47,6 +48,7 @@ public class UserStatSummaryTask {
         try {
             userStatSummaryService.updateUserResult(queueParam.getUid(), queueParam.getActivityId());
         } catch (Exception e) {
+            e.printStackTrace();
             userStatSummaryQueueService.pushUserResultStat(queueParam);
         }
     }

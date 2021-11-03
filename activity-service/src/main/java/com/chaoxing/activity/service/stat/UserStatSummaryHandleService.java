@@ -3,20 +3,19 @@ package com.chaoxing.activity.service.stat;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.chaoxing.activity.dto.event.user.UserStatSummaryChangeEventOrigin;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.event.UserStatSummaryChangeEventService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.queue.event.user.UserStatSummaryChangeEventQueue;
 import com.chaoxing.activity.service.user.UserStatService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
-import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.CalculateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +56,7 @@ public class UserStatSummaryHandleService {
     @Resource
     private UserStatSummaryQueryService userStatSummaryQueryService;
     @Resource
-    private UserStatSummaryChangeEventQueue userStatSummaryChangeEventQueue;
+    private UserStatSummaryChangeEventService userStatSummaryChangeEventService;
 
     /**更新用户报名签到信息
      * @Description 
@@ -89,6 +87,19 @@ public class UserStatSummaryHandleService {
         }else {
             isValid = userSignStatSummary.getSignedInNum() > 0;
         }
+        Integer signInNum = userSignStatSummary.getSignInNum();
+        Integer signedInNum = userSignStatSummary.getSignedInNum();
+        Integer signInLeaveNum = userSignStatSummary.getSignInLeaveNum();
+        Integer notSignInNum = userSignStatSummary.getNotSignInNum();
+        // 签到率
+        BigDecimal signInRate = BigDecimal.ZERO;
+        if (signInNum > 0) {
+            signInRate = BigDecimal.valueOf(CalculateUtils.div(signedInNum, signInNum));
+            BigDecimal maxSignInRate = BigDecimal.valueOf(1L);
+            if (signInRate.compareTo(maxSignInRate) > 0) {
+                signInRate = maxSignInRate;
+            }
+        }
         if (CollectionUtils.isNotEmpty(userStatSummaries)) {
             // 更新用户数据
             userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
@@ -98,8 +109,11 @@ public class UserStatSummaryHandleService {
                     .set(UserStatSummary::getSignUpNum, userSignStatSummary.getSignUpNum())
                     .set(UserStatSummary::getSignedUpNum, userSignStatSummary.getSignedUpNum())
                     .set(UserStatSummary::getSignUpTime, userSignStatSummary.getSignUpTime())
-                    .set(UserStatSummary::getSignInNum, userSignStatSummary.getSignInNum())
-                    .set(UserStatSummary::getSignedInNum, userSignStatSummary.getSignedInNum())
+                    .set(UserStatSummary::getSignInNum, signInNum)
+                    .set(UserStatSummary::getSignedInNum, signedInNum)
+                    .set(UserStatSummary::getSignInLeaveNum, signInLeaveNum)
+                    .set(UserStatSummary::getNotSignInNum, notSignInNum)
+                    .set(UserStatSummary::getSignedInRate, signInRate)
                     .set(UserStatSummary::getParticipateTimeLength, userSignStatSummary.getParticipateTimeLength())
                     .set(UserStatSummary::getValid, isValid)
             );
@@ -110,21 +124,17 @@ public class UserStatSummaryHandleService {
             userStatSummary.setSignUpNum(userSignStatSummary.getSignUpNum());
             userStatSummary.setSignedUpNum(userSignStatSummary.getSignedUpNum());
             userStatSummary.setSignUpTime(userSignStatSummary.getSignUpTime());
-            userStatSummary.setSignInNum(userSignStatSummary.getSignInNum());
-            userStatSummary.setSignedInNum(userSignStatSummary.getSignedInNum());
-            userStatSummary.setSignInLeaveNum(userSignStatSummary.getSignInLeaveNum());
-            userStatSummary.setNotSignInNum(userSignStatSummary.getNotSignInNum());
+            userStatSummary.setSignInNum(signInNum);
+            userStatSummary.setSignedInNum(signedInNum);
+            userStatSummary.setSignInLeaveNum(signInLeaveNum);
+            userStatSummary.setNotSignInNum(notSignInNum);
+            userStatSummary.setSignedInRate(signInRate);
+            userStatSummary.setActivityIntegral(Optional.ofNullable(activity.getIntegral()).orElse(BigDecimal.ZERO));
             userStatSummary.setParticipateTimeLength(userSignStatSummary.getParticipateTimeLength());
             userStatSummary.setValid(isValid);
             userStatSummaryMapper.insert(userStatSummary);
         }
-        Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
-        UserStatSummaryChangeEventOrigin userStatSummaryChangeEventOrigin = UserStatSummaryChangeEventOrigin.builder()
-                .activityId(activityId)
-                .uid(uid)
-                .timestamp(timestamp)
-                .build();
-        userStatSummaryChangeEventQueue.push(userStatSummaryChangeEventOrigin);
+        userStatSummaryChangeEventService.handle(uid, activityId);
     }
 
     private UserStatSummary buildDefault(Integer uid, Integer activityCreateFid) {
@@ -146,7 +156,7 @@ public class UserStatSummaryHandleService {
                 .build();
     }
 
-    /**更新用户成绩合格
+    /**更新用户成绩合格/不合格
      * @Description 
      * @author wwb
      * @Date 2021-05-26 14:39:57
@@ -157,43 +167,32 @@ public class UserStatSummaryHandleService {
     @Transactional(rollbackFor = Exception.class)
     public void updateUserResult(Integer uid, Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
-        Integer signId = activity.getSignId();
-        if (signId == null) {
-            return;
-        }
         boolean isQualified = userResultQueryService.isUserQualified(uid, activityId);
-        List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
-                .lambda()
-                .eq(UserStatSummary::getUid, uid)
-                .eq(UserStatSummary::getActivityId, activityId)
-        );
-        BigDecimal integral = activity.getIntegral();
-        integral = Optional.ofNullable(integral).orElse(BigDecimal.ZERO);
+        UserStatSummary existUserStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
+        BigDecimal integral = Optional.ofNullable(activity.getIntegral()).orElse(BigDecimal.ZERO);
+        BigDecimal acquiredIntegral = integral;
         if (!isQualified) {
-            integral = BigDecimal.ZERO;
+            acquiredIntegral = BigDecimal.ZERO;
         }
-        if (CollectionUtils.isNotEmpty(userStatSummaries)) {
+        if (existUserStatSummary != null) {
             // 更新用户数据
             userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
                     .lambda()
                     .eq(UserStatSummary::getUid, uid)
                     .eq(UserStatSummary::getActivityId, activityId)
                     .set(UserStatSummary::getIntegral, integral)
+                    .set(UserStatSummary::getQualified, isQualified)
             );
         } else {
             // 新增用户数据
             UserStatSummary userStatSummary = buildDefault(uid, activity.getCreateFid());
             userStatSummary.setActivityId(activityId);
-            userStatSummary.setIntegral(integral);
+            userStatSummary.setIntegral(acquiredIntegral);
+            userStatSummary.setActivityIntegral(integral);
+            userStatSummary.setQualified(isQualified);
             userStatSummaryMapper.insert(userStatSummary);
         }
-        Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
-        UserStatSummaryChangeEventOrigin userStatSummaryChangeEventOrigin = UserStatSummaryChangeEventOrigin.builder()
-                .activityId(activityId)
-                .uid(uid)
-                .timestamp(timestamp)
-                .build();
-        userStatSummaryChangeEventQueue.push(userStatSummaryChangeEventOrigin);
+        userStatSummaryChangeEventService.handle(uid, activityId);
     }
 
     /**更新用户评价数
@@ -221,22 +220,18 @@ public class UserStatSummaryHandleService {
                     .set(UserStatSummary::getRatingNum, ratingNum)
             );
         } else {
+            Activity activity = activityQueryService.getById(activityId);
             // 新增
             UserStatSummary userStatSummary = UserStatSummary.builder()
                     .uid(uid)
                     .activityId(activityId)
+                    .activityIntegral(Optional.ofNullable(activity.getIntegral()).orElse(BigDecimal.ZERO))
                     .realName(passportApiService.getUserRealName(uid))
                     .ratingNum(ratingNum)
                     .build();
             userStatSummaryMapper.insert(userStatSummary);
         }
-        Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
-        UserStatSummaryChangeEventOrigin userStatSummaryChangeEventOrigin = UserStatSummaryChangeEventOrigin.builder()
-                .activityId(activityId)
-                .uid(uid)
-                .timestamp(timestamp)
-                .build();
-        userStatSummaryChangeEventQueue.push(userStatSummaryChangeEventOrigin);
+        userStatSummaryChangeEventService.handle(uid, activityId);
     }
 
     /**更新用户汇总数据中的活动设置的积分
@@ -269,14 +264,8 @@ public class UserStatSummaryHandleService {
             );
         }
         // 触发用户活动汇总数据的变更
-        Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
         for (UserStatSummary userStatSummary : userStatSummaries) {
-            UserStatSummaryChangeEventOrigin userStatSummaryChangeEventOrigin = UserStatSummaryChangeEventOrigin.builder()
-                    .activityId(activityId)
-                    .uid(userStatSummary.getUid())
-                    .timestamp(timestamp)
-                    .build();
-            userStatSummaryChangeEventQueue.push(userStatSummaryChangeEventOrigin);
+            userStatSummaryChangeEventService.handle(userStatSummary.getUid(), activityId);
         }
     }
 

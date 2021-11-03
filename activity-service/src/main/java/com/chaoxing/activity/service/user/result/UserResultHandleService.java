@@ -3,11 +3,10 @@ package com.chaoxing.activity.service.user.result;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.UserResultMapper;
-import com.chaoxing.activity.model.InspectionConfig;
-import com.chaoxing.activity.model.InspectionConfigDetail;
-import com.chaoxing.activity.model.UserActionRecord;
-import com.chaoxing.activity.model.UserResult;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
+import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
+import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
@@ -48,6 +47,11 @@ public class UserResultHandleService {
     private UserActionRecordQueryService userActionRecordQueryService;
     @Resource
     private InspectionConfigQueryService inspectionConfigQueryService;
+    @Resource
+    private UserStatSummaryQueryService userStatSummaryQueryService;
+
+    @Resource
+    private UserStatSummaryQueue userStatSummaryQueue;
 
     /**更新用户成绩
      * @Description
@@ -213,6 +217,9 @@ public class UserResultHandleService {
                 .eq(UserResult::getUid, uid)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
                 .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue()));
+        // 通知用户活动汇总更新成绩
+        UserStatSummaryQueue.QueueParamDTO queueParam = new UserStatSummaryQueue.QueueParamDTO(uid, activityId);
+        userStatSummaryQueue.pushUserResultStat(queueParam);
     }
 
     /**批量改变用户合格状态
@@ -238,7 +245,13 @@ public class UserResultHandleService {
                 .eq(UserResult::getActivityId, activityId)
                 .in(UserResult::getUid, uidList)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
-                .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue()));
+                .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue())
+        );
+        for (Integer uid : uidList) {
+            // 通知用户活动汇总更新成绩
+            UserStatSummaryQueue.QueueParamDTO queueParam = new UserStatSummaryQueue.QueueParamDTO(uid, activityId);
+            userStatSummaryQueue.pushUserResultStat(queueParam);
+        }
     }
 
     /**合格自动判定
@@ -277,6 +290,14 @@ public class UserResultHandleService {
                     .in(UserResult::getUid, qualifiedUids)
                     .set(UserResult::getQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue())
                     .set(UserResult::getAutoQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue()));
+        }
+        // 查询活动下的用户活动汇总数据
+        List<Integer> uids = userStatSummaryQueryService.listUidByActivityId(activityId);
+        if (CollectionUtils.isNotEmpty(uids)) {
+            for (Integer uid : uids) {
+                UserStatSummaryQueue.QueueParamDTO queueParam = new UserStatSummaryQueue.QueueParamDTO(uid, activityId);
+                userStatSummaryQueue.pushUserResultStat(queueParam);
+            }
         }
     }
 

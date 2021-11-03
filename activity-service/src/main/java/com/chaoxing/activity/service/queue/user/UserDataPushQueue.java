@@ -5,7 +5,9 @@ import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
@@ -17,9 +19,11 @@ import javax.annotation.Resource;
  * @blame wwb
  * @date 2021-11-02 15:35:34
  */
+@Slf4j
+@Service
 public class UserDataPushQueue implements IQueue<UserDataPushQueue.QueueParamDTO> {
 
-    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "user_data_push";
+    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_data_push";
 
     @Resource
     private RedissonClient redissonClient;

@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 @Service
 public class UserDataPrePushQueue implements IQueue<UserDataPrePushQueue.QueueParamDTO> {
 
-    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "user_data_pre_push";
+    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_data_pre_push";
 
     @Resource
     private RedissonClient redissonClient;

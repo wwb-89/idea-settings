@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
-/**活动数据推送记录服务
+/**活动市场下活动数据推送记录服务
  * @author wwb
  * @version ver 1.0
  * @className ActivityDataPushRecordService
@@ -21,7 +21,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Service
-public class ActivityDataPushRecordService {
+public class MarketActivityDataPushRecordService {
 
     @Resource
     private ActivityDataPushRecordMapper activityDataPushRecordMapper;

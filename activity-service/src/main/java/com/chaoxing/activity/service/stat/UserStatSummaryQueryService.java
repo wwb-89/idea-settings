@@ -359,4 +359,19 @@ public class UserStatSummaryQueryService {
 		return Optional.ofNullable(userStatSummaries).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
+	/**根据活动id查询uid列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 15:03:51
+	 * @param activityId
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listUidByActivityId(Integer activityId) {
+		List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new LambdaQueryWrapper<UserStatSummary>()
+				.eq(UserStatSummary::getActivityId, activityId)
+				.select(UserStatSummary::getUid)
+		);
+		return Optional.ofNullable(userStatSummaries).orElse(Lists.newArrayList()).stream().map(UserStatSummary::getUid).filter(v -> v != null).collect(Collectors.toList());
+	}
+
 }

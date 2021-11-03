@@ -8,7 +8,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDataPushRecord;
 import com.chaoxing.activity.model.DataPushConfig;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.data.v2.ActivityDataPushRecordService;
+import com.chaoxing.activity.service.data.v2.MarketActivityDataPushRecordService;
 import com.chaoxing.activity.service.data.v2.DataPushConfigService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
@@ -42,7 +42,7 @@ public class ActivityDataPushQueueService {
     @Resource
     private DataPushConfigService dataPushConfigService;
     @Resource
-    private ActivityDataPushRecordService activityDataPushRecordService;
+    private MarketActivityDataPushRecordService marketActivityDataPushRecordService;
     @Resource
     private SignApiService signApiService;
     @Resource
@@ -86,7 +86,7 @@ public class ActivityDataPushQueueService {
         Integer fid = activity.getCreateFid();
         Integer formUserId = null;
         // 查询已经推送的记录
-        ActivityDataPushRecord activityDataPushRecord = activityDataPushRecordService.get(activityId, configId);
+        ActivityDataPushRecord activityDataPushRecord = marketActivityDataPushRecordService.get(activityId, configId);
         if (activityDataPushRecord != null) {
             formUserId = Optional.ofNullable(activityDataPushRecord.getTargetIdentify()).filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null);
             if (formUserId != null) {
@@ -97,7 +97,7 @@ public class ActivityDataPushQueueService {
                 }
             }
             if (formUserId == null) {
-                activityDataPushRecordService.delete(activityDataPushRecord.getId());
+                marketActivityDataPushRecordService.delete(activityDataPushRecord.getId());
                 activityDataPushRecord = null;
             }
         }
@@ -105,7 +105,7 @@ public class ActivityDataPushQueueService {
         switch (status) {
             case DELETED:
                 // 删除
-                activityDataPushRecordService.delete(activityDataPushRecord.getId());
+                marketActivityDataPushRecordService.delete(activityDataPushRecord.getId());
                 if (formUserId != null) {
                     wfwFormApiService.deleteFormRecord(formUserId, formId);
                 }
@@ -115,7 +115,7 @@ public class ActivityDataPushQueueService {
                 if (formUserId == null) {
                     // 新增
                     formUserId = wfwFormApiService.fillForm(formId, fid, activity.getCreateUid(), wfwFormData);
-                    activityDataPushRecordService.add(ActivityDataPushRecord.builder()
+                    marketActivityDataPushRecordService.add(ActivityDataPushRecord.builder()
                                     .activityId(activityId)
                                     .configId(configId)
                                     .marketId(activity.getMarketId())
