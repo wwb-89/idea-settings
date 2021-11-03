@@ -91,6 +91,9 @@ public class BigDataPointApiService {
         if (!jsonObject.getBoolean("status")) {
             String message = jsonObject.getString("msg");
             log.error("根据url:{} 消费大数据积分失败:{}", url, message);
+            if (message.contains("积分不足")) {
+                return;
+            }
             throw new BusinessException("大数据积分消费失败");
         }
     }
