@@ -98,7 +98,6 @@ CREATE TABLE `t_org_user_data_push_record` (
 ALTER TABLE t_user_stat_summary ADD sign_in_leave_num INT(11) DEFAULT 0 COMMENT '签到请假次数';
 ALTER TABLE t_user_stat_summary ADD not_sign_in_num INT(11) DEFAULT 0 COMMENT '未签到次数';
 ALTER TABLE t_user_stat_summary DROP participate_activity_num;
-ALTER TABLE t_user_stat_summary ADD organization VARCHAR(255) DEFAULT "" COMMENT '组织架构';
 -- 报名签到中的用户表单数据的推送记录迁移到活动引擎中
 INSERT INTO t_org_user_data_push_record ( uid, activity_id, form_id, form_user_id, create_time, update_time )
 SELECT
