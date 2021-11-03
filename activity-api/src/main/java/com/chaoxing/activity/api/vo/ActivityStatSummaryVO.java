@@ -84,6 +84,10 @@ public class ActivityStatSummaryVO {
     private String createOrgName;
     /** 主办方 */
     private String organisers;
+    /** 报名开始时间 */
+    private Long signUpStartTime;
+    /** 报名结束时间 */
+    private Long signUpEndTime;
     /** 报名起止时间 */
     private String signUpStartEndTime;
 
@@ -131,6 +135,8 @@ public class ActivityStatSummaryVO {
                 .createFid(actStatSummary.getCreateFid())
                 .createOrgName(actStatSummary.getCreateOrgName())
                 .organisers(actStatSummary.getOrganisers())
+                .signUpStartTime(Optional.ofNullable(signUp).map(SignUpCreateParamDTO::getStartTime).orElse(null))
+                .signUpEndTime(Optional.ofNullable(signUp).map(SignUpCreateParamDTO::getEndTime).orElse(null))
                 .signUpStartEndTime(signUpStartEndTime)
                 .build();
     }
