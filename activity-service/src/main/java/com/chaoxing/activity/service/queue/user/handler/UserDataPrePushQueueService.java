@@ -4,8 +4,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushConfig;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.data.v2.DataPushConfigService;
-import com.chaoxing.activity.service.queue.activity.MarketActivityDataPushQueue;
-import com.chaoxing.activity.service.queue.activity.OrgActivityDataPushQueue;
+import com.chaoxing.activity.service.queue.user.OrgUserDataPushQueue;
 import com.chaoxing.activity.service.queue.user.UserDataPrePushQueue;
 import com.chaoxing.activity.service.queue.user.UserDataPushQueue;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +31,7 @@ public class UserDataPrePushQueueService {
     @Resource
     private DataPushConfigService dataPushConfigService;
     @Resource
-    private OrgActivityDataPushQueue orgActivityDataPushQueue;
-    @Resource
-    private MarketActivityDataPushQueue activityDataPushQueue;
+    private OrgUserDataPushQueue orgUserDataPushQueue;
     @Resource
     private UserDataPushQueue userDataPushQueue;
 
@@ -69,7 +66,8 @@ public class UserDataPrePushQueueService {
     }
 
     private void handleOrgDataPush(Integer uid, Integer activityId) {
-
+        OrgUserDataPushQueue.QueueParamDTO queueParam = new OrgUserDataPushQueue.QueueParamDTO(uid, activityId);
+        orgUserDataPushQueue.push(queueParam);
     }
 
 }
