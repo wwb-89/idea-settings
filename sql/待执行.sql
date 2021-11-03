@@ -95,3 +95,7 @@ CREATE TABLE `t_org_user_data_push_record` (
     `update_time` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='机构用户数据推送记录';
+ALTER TABLE t_user_stat_summary ADD sign_in_leave_num INT(11) DEFAULT 0 COMMENT '签到请假次数';
+ALTER TABLE t_user_stat_summary ADD not_sign_in_num INT(11) DEFAULT 0 COMMENT '未签到次数';
+ALTER TABLE t_user_stat_summary DROP participate_activity_num;
+ALTER TABLE t_user_stat_summary ADD organization VARCHAR(255) DEFAULT "" COMMENT '组织架构';

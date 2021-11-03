@@ -49,6 +49,10 @@ public class UserStatSummary {
     private Integer signInNum;
     /** 签到成功数量; column: signed_in_num*/
     private Integer signedInNum;
+    /** 签到请假次数; column: sign_in_leave_num*/
+    private Integer signInLeaveNum;
+    /** 未签到次数; column: not_sign_in_num*/
+    private Integer notSignInNum;
     /** 评价数量; column: rating_num*/
     private Integer ratingNum;
     /** 获得的积分; column: integral*/

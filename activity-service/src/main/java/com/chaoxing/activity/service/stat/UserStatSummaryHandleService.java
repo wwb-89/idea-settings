@@ -112,6 +112,8 @@ public class UserStatSummaryHandleService {
             userStatSummary.setSignUpTime(userSignStatSummary.getSignUpTime());
             userStatSummary.setSignInNum(userSignStatSummary.getSignInNum());
             userStatSummary.setSignedInNum(userSignStatSummary.getSignedInNum());
+            userStatSummary.setSignInLeaveNum(userSignStatSummary.getSignInLeaveNum());
+            userStatSummary.setNotSignInNum(userSignStatSummary.getNotSignInNum());
             userStatSummary.setParticipateTimeLength(userSignStatSummary.getParticipateTimeLength());
             userStatSummary.setValid(isValid);
             userStatSummaryMapper.insert(userStatSummary);

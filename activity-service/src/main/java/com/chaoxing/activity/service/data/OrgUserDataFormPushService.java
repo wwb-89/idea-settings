@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
+import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,8 @@ import java.util.Optional;
 public class OrgUserDataFormPushService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final static Integer ZJ_BUSINESS_COLLEGE_FID = 177443;
+    private final static Integer ZJ_BUSINESS_COLLEGE_FORM_ID = 112028;
 
     @Resource
     private WfwFormApiService wfwFormApiService;
@@ -55,6 +58,8 @@ public class OrgUserDataFormPushService {
     private OrgUserDataPushRecordService orgUserDataPushRecordService;
     @Resource
     private UserStatSummaryQueryService userStatSummaryQueryService;
+    @Resource
+    private UserResultQueryService userResultQueryService;
 
     @Transactional(rollbackFor = Exception.class)
     public void push(Integer uid, Integer activityId) {
@@ -88,30 +93,48 @@ public class OrgUserDataFormPushService {
                 formUserId = null;
             }
         }
-        // 获取用户数据
-        String wfwFormData = generateWfwFormData(uid, activity, formId, fid);
+        boolean isSpecialFlag = Objects.equals(fid, ZJ_BUSINESS_COLLEGE_FID) && Objects.equals(formId, ZJ_BUSINESS_COLLEGE_FORM_ID);
+        UserStatSummary userStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
+        String wfwFormData;
+        if (isSpecialFlag) {
+            wfwFormData = generateZjBusinessCollegeFormData(userStatSummary, formId, fid);
+        } else {
+            wfwFormData = generateWfwFormData(activity, userStatSummary, formId, fid);
+        }
         if (StringUtils.isBlank(wfwFormData)) {
             return;
         }
+        // 不是合格的需要删除
+        Boolean qualified = Optional.ofNullable(userStatSummary.getQualified()).orElse(false);
         if (formUserId == null) {
-            // 新增
-            formUserId = wfwFormApiService.fillForm(formId, fid, uid, wfwFormData);
-            orgUserDataPushRecord = OrgUserDataPushRecord.builder()
-                    .uid(uid)
-                    .activityId(activityId)
-                    .formId(formId)
-                    .formUserId(formUserId)
-                    .build();
-            orgUserDataPushRecordService.addOrUpdate(orgUserDataPushRecord);
+            if (!isSpecialFlag || qualified) {
+                // 新增
+                formUserId = wfwFormApiService.fillForm(formId, fid, uid, wfwFormData);
+                orgUserDataPushRecord = OrgUserDataPushRecord.builder()
+                        .uid(uid)
+                        .activityId(activityId)
+                        .formId(formId)
+                        .formUserId(formUserId)
+                        .build();
+                orgUserDataPushRecordService.addOrUpdate(orgUserDataPushRecord);
+            }
         } else {
-            // 修改
-            wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
+            if (isSpecialFlag) {
+                if (qualified) {
+                    wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
+                } else {
+                    wfwFormApiService.deleteFormRecord(formUserId, formId);
+                }
+            } else {
+                // 修改
+                wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
+            }
+
         }
     }
 
-    private String generateWfwFormData(Integer uid, Activity activity, Integer formId, Integer fid) {
+    private String generateWfwFormData(Activity activity, UserStatSummary userStatSummary, Integer formId, Integer fid) {
         Integer activityId = activity.getId();
-        UserStatSummary userStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
         if (userStatSummary == null) {
             return null;
         }
@@ -141,7 +164,7 @@ public class OrgUserDataFormPushService {
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "department")) {
-                    data.add("");
+                    data.add(userStatSummary.getOrganizationStructure());
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "activity_id")) {
@@ -157,7 +180,17 @@ public class OrgUserDataFormPushService {
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "sign_up_status")) {
-                    data.add("");
+                    Integer signUpNum = Optional.ofNullable(userStatSummary.getSignUpNum()).orElse(0);
+                    Integer signedUpNum = Optional.ofNullable(userStatSummary.getSignedUpNum()).orElse(0);
+                    String signUpStatue = "-";
+                    if (signUpNum > 0) {
+                        if (signedUpNum > 0) {
+                            signUpStatue = "已报名";
+                        } else {
+                            signUpStatue = "未报名";
+                        }
+                    }
+                    data.add(signUpStatue);
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "signed_in_time")) {
@@ -165,11 +198,11 @@ public class OrgUserDataFormPushService {
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "sign_in_leave_time")) {
-                    data.add(0);
+                    data.add(userStatSummary.getSignInLeaveNum());
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "un_signed_in_time")) {
-                    data.add(0);
+                    data.add(userStatSummary.getNotSignInNum());
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "sign_in_rate")) {
@@ -203,11 +236,11 @@ public class OrgUserDataFormPushService {
                         result.add(item);
                     }
                 } else if (Objects.equals(alias, "organizer_audit_status")) {
-                    data.add("");
+                    data.add(userResultQueryService.getResultQualifiedDescription(userStatSummary.getUid(), activityId));
                     item.put("val", data);
                     result.add(item);
                 }  else if (Objects.equals(alias, "integral_no")) {
-                    String integralNo = uid + "" + activityId;
+                    String integralNo = userStatSummary.getUid() + "" + activityId;
                     data.add(integralNo);
                     item.put("val", data);
                     result.add(item);
@@ -237,15 +270,12 @@ public class OrgUserDataFormPushService {
      * @Description 
      * @author wwb
      * @Date 2021-11-03 10:43:19
-     * @param uid
-     * @param activity
+     * @param userStatSummary
      * @param formId
      * @param fid
      * @return java.lang.String
     */
-    private String generateZjBusinessCollegeFormData(Integer uid, Activity activity, Integer formId, Integer fid) {
-        Integer activityId = activity.getId();
-        UserStatSummary userStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
+    private String generateZjBusinessCollegeFormData(UserStatSummary userStatSummary, Integer formId, Integer fid) {
         if (userStatSummary == null) {
             return null;
         }
@@ -268,11 +298,11 @@ public class OrgUserDataFormPushService {
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "department")) {
-                    data.add("");
+                    data.add(userStatSummary.getOrganizationStructure());
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "uid")) {
-                    data.add(uid);
+                    data.add(userStatSummary.getUid());
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "get_time")) {

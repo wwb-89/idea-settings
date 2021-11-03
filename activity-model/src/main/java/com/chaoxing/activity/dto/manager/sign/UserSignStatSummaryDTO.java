@@ -35,6 +35,10 @@ public class UserSignStatSummaryDTO {
 	private Integer signInNum;
 	/** 签到成功数量 */
 	private Integer signedInNum;
+	/** 签到请假次数 */
+	private Integer signInLeaveNum;
+	/** 未签次数 */
+	private Integer notSignInNum;
 	/** 参数时长 */
 	private Integer participateTimeLength;
 
