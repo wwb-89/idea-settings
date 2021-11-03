@@ -3,9 +3,6 @@ package com.chaoxing.activity.service.activity.performance;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.PerformanceMapper;
 import com.chaoxing.activity.model.Performance;
-import com.chaoxing.activity.service.queue.user.UserActionQueue;
-import com.chaoxing.activity.util.enums.UserActionEnum;
-import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,8 +28,6 @@ public class PerformanceService {
 	@Resource
 	private PerformanceMapper performanceMapper;
 
-	@Resource
-	private UserActionQueue userActionQueueService;
 	/***新增活动表现
 	* @Description
 	* @author huxiaolong
@@ -46,14 +41,6 @@ public class PerformanceService {
 		performance.setCreateTime(now);
 		performance.setUpdateTime(now);
 		performanceMapper.insert(performance);
-		userActionQueueService.push(
-				new UserActionQueue.QueueParamDTO(performance.getUid(),
-						performance.getActivityId(),
-						UserActionTypeEnum.PERFORMANCE,
-						UserActionEnum.PERFORMANCE,
-						String.valueOf(performance.getId()),
-						performance.getCreateTime()));
-
 	}
 
 	/**根据activityId 和表现 ids 查询数据(含删除和未删除)

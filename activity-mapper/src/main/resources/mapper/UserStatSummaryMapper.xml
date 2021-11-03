@@ -16,13 +16,15 @@
         <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
         <result column="rating_num" jdbcType="INTEGER" property="ratingNum" />
         <result column="integral" jdbcType="DECIMAL" property="integral" />
+        <result column="activity_integral" jdbcType="DECIMAL" property="activityIntegral" />
         <result column="participate_time_length" jdbcType="INTEGER" property="participateTimeLength" />
         <result column="is_valid" jdbcType="BIT" property="valid" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time, t.sign_in_num, t.signed_in_num, t.rating_num, t.integral, t.participate_time_length, t.is_valid, t.create_time, t.update_time
+        t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time,
+        t.sign_in_num, t.signed_in_num, t.rating_num, t.integral, t.activity_integral, t.participate_time_length, t.is_valid, t.create_time, t.update_time
     </sql>
     <select id="paging" resultType="com.chaoxing.activity.model.UserStatSummary">
         SELECT

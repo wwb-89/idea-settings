@@ -1,9 +1,9 @@
 package com.chaoxing.activity.task.event.user;
 
 import com.alibaba.fastjson.JSON;
-import com.chaoxing.activity.dto.event.user.UserActivityStatChangeEventOrigin;
-import com.chaoxing.activity.service.queue.event.user.UserActivityStatChangeEventQueue;
-import com.chaoxing.activity.service.queue.event.user.handler.UserActivityStatChangeEventQueueService;
+import com.chaoxing.activity.dto.event.user.UserStatSummaryChangeEventOrigin;
+import com.chaoxing.activity.service.queue.event.user.UserStatSummaryChangeEventQueue;
+import com.chaoxing.activity.service.queue.event.user.handler.UserStatSummaryChangeEventQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,25 +20,25 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component
-public class UserActivityStatChangeEventTask {
+public class UserStatSummaryChangeEventTask {
 
     @Resource
-    private UserActivityStatChangeEventQueue userActivityStatChangeEventQueue;
+    private UserStatSummaryChangeEventQueue userStatSummaryChangeEventQueue;
     @Resource
-    private UserActivityStatChangeEventQueueService userActivityStatChangeEventQueueService;
+    private UserStatSummaryChangeEventQueueService userStatSummaryChangeEventQueueService;
 
     @Scheduled(fixedDelay = 1L)
     public void handle() throws InterruptedException {
-        UserActivityStatChangeEventOrigin eventOrigin = userActivityStatChangeEventQueue.pop();
+        UserStatSummaryChangeEventOrigin eventOrigin = userStatSummaryChangeEventQueue.pop();
         if (eventOrigin == null) {
             return;
         }
         try {
-            userActivityStatChangeEventQueueService.handle(eventOrigin);
+            userStatSummaryChangeEventQueueService.handle(eventOrigin);
         } catch (Exception e) {
             log.error("根据参数:{} 处理用户活动统计数据改变事件任务error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
-            userActivityStatChangeEventQueue.push(eventOrigin);
+            userStatSummaryChangeEventQueue.push(eventOrigin);
         }
     }
 

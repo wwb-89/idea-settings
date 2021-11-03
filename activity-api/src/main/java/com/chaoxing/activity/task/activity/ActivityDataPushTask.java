@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task.activity;
 
-import com.chaoxing.activity.service.queue.activity.ActivityDataPushQueue;
+import com.chaoxing.activity.service.queue.activity.MarketActivityDataPushQueue;
 import com.chaoxing.activity.service.queue.activity.handler.ActivityDataPushQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,13 +21,13 @@ import javax.annotation.Resource;
 public class ActivityDataPushTask {
 
     @Resource
-    private ActivityDataPushQueue activityDataPushQueue;
+    private MarketActivityDataPushQueue activityDataPushQueue;
     @Resource
     private ActivityDataPushQueueService activityDataPushQueueService;
 
     @Scheduled(fixedDelay = 1L)
     public void handle() throws InterruptedException {
-        ActivityDataPushQueue.QueueParamDTO queueParam = activityDataPushQueue.pop();
+        MarketActivityDataPushQueue.QueueParamDTO queueParam = activityDataPushQueue.pop();
         if (queueParam == null) {
             return;
         }

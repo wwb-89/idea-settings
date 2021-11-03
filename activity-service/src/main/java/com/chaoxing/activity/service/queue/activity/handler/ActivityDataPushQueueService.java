@@ -12,7 +12,7 @@ import com.chaoxing.activity.service.data.v2.ActivityDataPushRecordService;
 import com.chaoxing.activity.service.data.v2.DataPushConfigService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
-import com.chaoxing.activity.service.queue.activity.ActivityDataPushQueue;
+import com.chaoxing.activity.service.queue.activity.MarketActivityDataPushQueue;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class ActivityDataPushQueueService {
     private WfwFormApiService wfwFormApiService;
 
     @Transactional(rollbackFor = Exception.class)
-    public void handle(ActivityDataPushQueue.QueueParamDTO queueParam) {
+    public void handle(MarketActivityDataPushQueue.QueueParamDTO queueParam) {
         if (queueParam == null) {
             return;
         }

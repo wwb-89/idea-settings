@@ -1,0 +1,295 @@
+package com.chaoxing.activity.service.data;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.manager.form.FormDataDTO;
+import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
+import com.chaoxing.activity.model.OrgUserDataPushRecord;
+import com.chaoxing.activity.model.UserStatSummary;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
+import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
+import com.chaoxing.activity.util.CalculateUtils;
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+/**机构用户数据表单推送服务
+ * @author wwb
+ * @version ver 1.0
+ * @className UserActivityDataFormPushService
+ * @description
+ * @blame wwb
+ * @date 2021-06-24 19:11:49
+ */
+@Slf4j
+@Service
+public class OrgUserDataFormPushService {
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    @Resource
+    private WfwFormApiService wfwFormApiService;
+    @Resource
+    private ActivityQueryService activityQueryService;
+
+    @Resource
+    private OrgDataRepoConfigQueryService orgDataRepoConfigQueryService;
+    @Resource
+    private DataPushValidationService dataPushValidationService;
+    @Resource
+    private OrgUserDataPushRecordService orgUserDataPushRecordService;
+    @Resource
+    private UserStatSummaryQueryService userStatSummaryQueryService;
+
+    @Transactional(rollbackFor = Exception.class)
+    public void push(Integer uid, Integer activityId) {
+        Activity activity = activityQueryService.getById(activityId);
+        if (activity == null) {
+            return;
+        }
+        Integer fid = activity.getCreateFid();
+        if (!dataPushValidationService.pushAble(fid, activity.getMarketId())) {
+            // 是否允许推送
+            return;
+        }
+        OrgDataRepoConfigDetail.RepoTypeEnum repoType = OrgDataRepoConfigDetail.RepoTypeEnum.FORM;
+        OrgDataRepoConfigDetail.DataTypeEnum dataType = OrgDataRepoConfigDetail.DataTypeEnum.USER_ACTIVITY_DATA;
+        OrgDataRepoConfigDetail orgConfigDetail = orgDataRepoConfigQueryService.getOrgConfigDetail(fid, dataType, repoType);
+        if (orgConfigDetail == null) {
+            return;
+        }
+        String repo = orgConfigDetail.getRepo();
+        if (StringUtils.isBlank(repo)) {
+            return;
+        }
+        Integer formId = Integer.parseInt(repo);
+        Integer formUserId = null;
+        OrgUserDataPushRecord orgUserDataPushRecord = orgUserDataPushRecordService.get(uid, activityId);
+        if (orgUserDataPushRecord != null) {
+            // 新增
+            formUserId = orgUserDataPushRecord.getFormUserId();
+            FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
+            if (formRecord == null) {
+                formUserId = null;
+            }
+        }
+        // 获取用户数据
+        String wfwFormData = generateWfwFormData(uid, activity, formId, fid);
+        if (StringUtils.isBlank(wfwFormData)) {
+            return;
+        }
+        if (formUserId == null) {
+            // 新增
+            formUserId = wfwFormApiService.fillForm(formId, fid, uid, wfwFormData);
+            orgUserDataPushRecord = OrgUserDataPushRecord.builder()
+                    .uid(uid)
+                    .activityId(activityId)
+                    .formId(formId)
+                    .formUserId(formUserId)
+                    .build();
+            orgUserDataPushRecordService.addOrUpdate(orgUserDataPushRecord);
+        } else {
+            // 修改
+            wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
+        }
+    }
+
+    private String generateWfwFormData(Integer uid, Activity activity, Integer formId, Integer fid) {
+        Integer activityId = activity.getId();
+        UserStatSummary userStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
+        if (userStatSummary == null) {
+            return null;
+        }
+        JSONArray result = new JSONArray();
+        List<FormStructureDTO> formInfos = wfwFormApiService.getFormStructure(formId, fid);
+        if (CollectionUtils.isNotEmpty(formInfos)) {
+            List<String> handledAlias = Lists.newArrayList();
+            for (FormStructureDTO formInfo : formInfos) {
+                String alias = formInfo.getAlias();
+                if (handledAlias.contains(alias)) {
+                    continue;
+                }
+                JSONObject item = new JSONObject();
+                item.put("compt", formInfo.getCompt());
+                item.put("comptId", formInfo.getId());
+                item.put("alias", alias);
+                JSONArray data = new JSONArray();
+                if (Objects.equals(alias, "user")) {
+                    JSONObject user = new JSONObject();
+                    user.put("id", userStatSummary.getUid());
+                    user.put("name", userStatSummary.getRealName());
+                    data.add(user);
+                    item.put("idNames", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "uname")) {
+                    data.add(userStatSummary.getUname());
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "department")) {
+                    data.add("");
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "activity_id")) {
+                    data.add(userStatSummary.getActivityId());
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "activity_name")) {
+                    data.add(activity.getName());
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "activity_classify")) {
+                    data.add(activity.getActivityClassifyName());
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "sign_up_status")) {
+                    data.add("");
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "signed_in_time")) {
+                    data.add(userStatSummary.getSignedInNum());
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "sign_in_leave_time")) {
+                    data.add(0);
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "un_signed_in_time")) {
+                    data.add(0);
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "sign_in_rate")) {
+                    // 签到率
+                    String signInRateStr = "";
+                    BigDecimal signInRate = userStatSummary.getSignedInRate();
+                    if (signInRate != null && signInRate.compareTo(BigDecimal.valueOf(0)) >= 0) {
+                        signInRateStr = CalculateUtils.mul(signInRate.doubleValue(), 100) + "%";
+                    }
+                    data.add(signInRateStr);
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "rating_status")) {
+                    Integer ratingNum = userStatSummary.getRatingNum();
+                    data.add(ratingNum == null ? "未评价" : "已评价");
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "integral")) {
+                    data.add(userStatSummary.getActivityIntegral());
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "unit")) {
+                    data.add("积分");
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "get_time")) {
+                    LocalDateTime auditTime = userStatSummary.getCreateTime();
+                    if (auditTime != null) {
+                        data.add(auditTime.format(DATE_TIME_FORMATTER));
+                        item.put("val", data);
+                        result.add(item);
+                    }
+                } else if (Objects.equals(alias, "organizer_audit_status")) {
+                    data.add("");
+                    item.put("val", data);
+                    result.add(item);
+                }  else if (Objects.equals(alias, "integral_no")) {
+                    String integralNo = uid + "" + activityId;
+                    data.add(integralNo);
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "participate_in_length")) {
+                    Integer participateTimeLength = Optional.ofNullable(userStatSummary.getParticipateTimeLength()).orElse(0);
+                    data.add(participateTimeLength);
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "participate_in_hour_length")) {
+                    Integer participateTimeLength = Optional.ofNullable(userStatSummary.getParticipateTimeLength()).orElse(0);
+                    data.add(Math.round(CalculateUtils.div(participateTimeLength, 60)));
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "activity_time_scope")) {
+                    data.add(activity.getStartTime().format(DATE_TIME_FORMATTER));
+                    data.add(activity.getEndTime().format(DATE_TIME_FORMATTER));
+                    item.put("val", data);
+                    result.add(item);
+                }
+                handledAlias.add(alias);
+            }
+        }
+        return result.toJSONString();
+    }
+
+    /**获取浙江商业技术学院表单数据
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-03 10:43:19
+     * @param uid
+     * @param activity
+     * @param formId
+     * @param fid
+     * @return java.lang.String
+    */
+    private String generateZjBusinessCollegeFormData(Integer uid, Activity activity, Integer formId, Integer fid) {
+        Integer activityId = activity.getId();
+        UserStatSummary userStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
+        if (userStatSummary == null) {
+            return null;
+        }
+        JSONArray result = new JSONArray();
+        List<FormStructureDTO> formInfos = wfwFormApiService.getFormStructure(formId, fid);
+        if (CollectionUtils.isNotEmpty(formInfos)) {
+            for (FormStructureDTO formInfo : formInfos) {
+                String alias = formInfo.getAlias();
+                JSONObject item = new JSONObject();
+                item.put("compt", formInfo.getCompt());
+                item.put("comptId", formInfo.getId());
+                item.put("alias", alias);
+                JSONArray data = new JSONArray();
+                if (Objects.equals(alias, "real_name")) {
+                    data.add(userStatSummary.getRealName());
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "mobile")) {
+                    data.add(userStatSummary.getMobile());
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "department")) {
+                    data.add("");
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "uid")) {
+                    data.add(uid);
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "get_time")) {
+                    LocalDateTime auditTime = userStatSummary.getCreateTime();
+                    if (auditTime != null) {
+                        data.add(auditTime.format(DATE_TIME_FORMATTER));
+                        item.put("val", data);
+                        result.add(item);
+                    }
+                } else if (Objects.equals(alias, "behavior")) {
+                    data.add("信息素养线下活动");
+                    item.put("val", data);
+                    result.add(item);
+                }
+            }
+        }
+        return result.toJSONString();
+    }
+
+}

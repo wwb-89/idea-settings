@@ -85,4 +85,13 @@ CREATE TABLE `t_user_data_push_record`  (
 ) COMMENT = '用户数据推送记录表';
 ALTER TABLE t_user_stat_summary ADD activity_integral DECIMAL ( 10, 2 ) COMMENT '活动积分';
 UPDATE t_user_stat_summary t, t_activity t1 SET t.activity_integral = t1.integral WHERE t.activity_id = t1.id;
-
+CREATE TABLE `t_org_user_data_push_record` (
+    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `uid` int(11) DEFAULT NULL COMMENT '用户id',
+    `activity_id` int(11) DEFAULT NULL COMMENT '活动id',
+    `form_id` int(11) DEFAULT NULL COMMENT '表单id',
+    `form_user_id` int(11) DEFAULT NULL COMMENT '表单记录id',
+    `create_time` datetime DEFAULT current_timestamp() COMMENT '创建时间',
+    `update_time` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='机构用户数据推送记录';

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.UserActionRecordMapper;
 import com.chaoxing.activity.model.UserActionRecord;
-import com.chaoxing.activity.service.queue.user.UserActionQueue;
+import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
 import com.chaoxing.activity.service.queue.user.UserResultQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,7 +39,7 @@ public class UserActionRecordHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void addUserActionRecord(UserActionQueue.QueueParamDTO queueParam) {
+	public void addUserActionRecord(UserActionRecordQueue.QueueParamDTO queueParam) {
 		Integer uid = queueParam.getUid();
 		Integer activityId = queueParam.getActivityId();
 		UserActionRecord userActionRecord = UserActionRecord.builder()

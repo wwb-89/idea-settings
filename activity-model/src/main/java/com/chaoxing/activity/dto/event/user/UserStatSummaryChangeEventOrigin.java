@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 /**用户活动统计改变事件源
  * @author wwb
  * @version ver 1.0
- * @className UserActivityStatChangeEventOrigin
+ * @className UserStatSummaryChangeEventOrigin
  * @description
  * @blame wwb
  * @date 2021-10-29 16:07:10
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserActivityStatChangeEventOrigin extends AbstractEventOrigin {
+public class UserStatSummaryChangeEventOrigin extends AbstractEventOrigin {
 
     /** 用户id */
     private Integer uid;

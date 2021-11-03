@@ -2,9 +2,7 @@ package com.chaoxing.activity.api.controller.action;
 
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.event.user.*;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.event.user.*;
-import com.chaoxing.activity.service.queue.user.UserActionQueue;
 import com.chaoxing.activity.util.DateUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,11 +20,6 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("user/action")
 public class UserActionApiController {
-
-    @Resource
-    private UserActionQueue userActionQueue;
-    @Resource
-    private ActivityQueryService activityQueryService;
 
     @Resource
     private UserSignedUpEventQueue userSignedUpEventQueue;

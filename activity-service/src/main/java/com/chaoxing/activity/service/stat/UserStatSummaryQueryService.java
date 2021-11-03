@@ -343,4 +343,20 @@ public class UserStatSummaryQueryService {
 		return userStatSummaryMapper.pageUserSummaryStat(page, marketId, fid);
 	}
 
+	/**查询用户活动汇总记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-02 18:28:43
+	 * @param uid
+	 * @param activityId
+	 * @return com.chaoxing.activity.model.UserStatSummary
+	*/
+	public UserStatSummary getByUidAndActivityId(Integer uid, Integer activityId) {
+		List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new LambdaQueryWrapper<UserStatSummary>()
+				.eq(UserStatSummary::getUid, uid)
+				.eq(UserStatSummary::getActivityId, activityId)
+		);
+		return Optional.ofNullable(userStatSummaries).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+	}
+
 }

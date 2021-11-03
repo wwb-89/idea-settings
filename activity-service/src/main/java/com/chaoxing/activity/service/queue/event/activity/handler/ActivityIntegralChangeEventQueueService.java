@@ -3,7 +3,6 @@ package com.chaoxing.activity.service.queue.event.activity.handler;
 import com.chaoxing.activity.dto.event.activity.ActivityIntegralChangeEventOrigin;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.activity.ActivityIntegralChangeQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,6 @@ public class ActivityIntegralChangeEventQueueService {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private ActivityIntegralChangeQueue activityIntegralChangeQueue;
-    @Resource
     private UserStatSummaryHandleService userStatSummaryHandleService;
 
     @Transactional(rollbackFor = Exception.class)
@@ -37,17 +34,14 @@ public class ActivityIntegralChangeEventQueueService {
         if (eventOrigin == null) {
             return;
         }
+
         Integer activityId = eventOrigin.getActivityId();
         Activity activity = activityQueryService.getById(activityId);
         if (activity == null) {
             return;
         }
-        // 机构用户统计中用户获得的积分更新
-        userStatSummaryHandleService.updateActivityUserIntegral(activity.getId(), activity.getIntegral());
-        Integer signId = activity.getSignId();
-        if (signId != null) {
-            activityIntegralChangeQueue.push(signId);
-        }
+        // 用户活动汇总数据的活动积分和活的的积分变更
+        userStatSummaryHandleService.updateActivityIntegral(activity.getId(), activity.getIntegral());
     }
 
 }

@@ -1,15 +1,15 @@
 package com.chaoxing.activity.task.user;
 
-import com.chaoxing.activity.service.queue.user.UserActionQueue;
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
-import com.chaoxing.activity.service.user.action.UserActionRecordHandleService;
+import com.chaoxing.activity.service.queue.user.handler.UserActionRecordQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**消费用户行为记录队列
+/**用户行为记录任务
  * @author wwb
  * @version ver 1.0
  * @className UserActionRecordTask
@@ -24,17 +24,18 @@ public class UserActionRecordTask {
     @Resource
     private UserActionRecordQueue userActionRecordQueue;
     @Resource
-    private UserActionRecordHandleService userActionRecordHandleService;
+    private UserActionRecordQueueService userActionRecordQueueService;
 
     @Scheduled(fixedDelay = 1L)
-    public void consumerUserActionRecord() throws InterruptedException {
-        UserActionQueue.QueueParamDTO queueParam = userActionRecordQueue.pop();
+    public void handle() throws InterruptedException {
+        UserActionRecordQueue.QueueParamDTO queueParam = userActionRecordQueue.pop();
         if (queueParam == null) {
             return;
         }
         try {
-            userActionRecordHandleService.addUserActionRecord(queueParam);
+            userActionRecordQueueService.handle(queueParam);
         } catch (Exception e) {
+            log.error("根据参数:{} 处理用户行为记录任务error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
             userActionRecordQueue.push(queueParam);
         }

@@ -4,7 +4,6 @@ import com.chaoxing.activity.dto.event.user.UserLeaveSignInEventOrigin;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
-import com.chaoxing.activity.service.queue.user.UserActionQueue;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
 import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
 import com.chaoxing.activity.util.DateUtils;
@@ -51,7 +50,7 @@ public class UserLeaveSignInEventQueueService {
         // 用户活动汇总统计中的报名签到信息需要更新
         userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
         // 记录用户行为
-        UserActionQueue.QueueParamDTO queueParam = new UserActionQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_IN, UserActionEnum.LEAVE_SIGNED_IN, String.valueOf(eventOrigin.getSignInId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
+        UserActionRecordQueue.QueueParamDTO queueParam = new UserActionRecordQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_IN, UserActionEnum.LEAVE_SIGNED_IN, String.valueOf(eventOrigin.getSignInId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
         userActionRecordQueue.push(queueParam);
     }
 

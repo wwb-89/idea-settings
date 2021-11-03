@@ -23,17 +23,17 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
-/**活动数据表单推送服务
+/**机构活动数据表单推送服务
  * @author wwb
  * @version ver 1.0
- * @className ActivityDataFormPushService
+ * @className OrgActivityDataFormPushService
  * @description 将活动数据推送到表单
  * @blame wwb
  * @date 2021-06-24 19:11:02
  */
 @Slf4j
 @Service
-public class ActivityDataFormPushService {
+public class OrgActivityDataFormPushService {
 
     @Resource
     private WfwFormApiService formApiService;

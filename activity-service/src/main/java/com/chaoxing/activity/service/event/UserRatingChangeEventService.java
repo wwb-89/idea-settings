@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.model.ActivityRatingDetail;
-import com.chaoxing.activity.service.queue.user.UserActionQueue;
+import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
@@ -26,7 +26,7 @@ public class UserRatingChangeEventService {
 	@Resource
 	private UserStatSummaryHandleService userStatSummaryService;
 	@Resource
-	private UserActionQueue userActionQueue;
+	private UserActionRecordQueue userActionRecordQueue;
 
 	/**用户评价变更
 	 * @Description
@@ -38,10 +38,10 @@ public class UserRatingChangeEventService {
 	*/
 	public void change(ActivityRatingDetail activityRatingDetail) {
 		Integer activityId = activityRatingDetail.getActivityId();
-		Integer scorerUid = activityRatingDetail.getScorerUid();
+		Integer uid = activityRatingDetail.getScorerUid();
 		// 更新用户的评价数量
-		userStatSummaryService.updateUserRatingNum(scorerUid, activityId);
-		// 更新用户行为详情
+		userStatSummaryService.updateUserRatingNum(uid, activityId);
+		// 更新用户行为记录
 		UserActionEnum userAction;
 		if (activityRatingDetail.getDeleted()) {
 			// 删除评价
@@ -51,7 +51,7 @@ public class UserRatingChangeEventService {
 			userAction = UserActionEnum.RATING;
 		}
 		LocalDateTime updateTime = activityRatingDetail.getUpdateTime();
-		userActionQueue.push(new UserActionQueue.QueueParamDTO(scorerUid, activityId, UserActionTypeEnum.RATING, userAction, String.valueOf(activityRatingDetail.getId()), updateTime));
+		userActionRecordQueue.push(new UserActionRecordQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.RATING, userAction, String.valueOf(activityRatingDetail.getId()), updateTime));
 	}
 
 }

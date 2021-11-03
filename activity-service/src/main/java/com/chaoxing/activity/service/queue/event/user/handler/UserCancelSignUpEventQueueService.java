@@ -4,7 +4,6 @@ import com.chaoxing.activity.dto.event.user.UserCancelSignUpEventOrigin;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
-import com.chaoxing.activity.service.queue.user.UserActionQueue;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
 import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
 import com.chaoxing.activity.util.DateUtils;
@@ -52,7 +51,7 @@ public class UserCancelSignUpEventQueueService {
         // 用户汇总表的报名签到统计信息需要更新
         userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
         // 记录用户行为
-        UserActionQueue.QueueParamDTO queueParam = new UserActionQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_UP, UserActionEnum.CANCEL_SIGNED_UP, String.valueOf(eventOrigin.getSignUpId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
+        UserActionRecordQueue.QueueParamDTO queueParam = new UserActionRecordQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_UP, UserActionEnum.CANCEL_SIGNED_UP, String.valueOf(eventOrigin.getSignUpId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
         userActionRecordQueue.push(queueParam);
     }
 

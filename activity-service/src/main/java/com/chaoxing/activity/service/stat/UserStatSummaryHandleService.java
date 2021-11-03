@@ -1,7 +1,9 @@
 package com.chaoxing.activity.service.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.chaoxing.activity.dto.event.user.UserStatSummaryChangeEventOrigin;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
@@ -11,14 +13,18 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.queue.event.user.UserStatSummaryChangeEventQueue;
 import com.chaoxing.activity.service.user.UserStatService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
+import com.chaoxing.activity.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +55,10 @@ public class UserStatSummaryHandleService {
     private ActivityQueryService activityQueryService;
     @Resource
     private UserResultQueryService userResultQueryService;
+    @Resource
+    private UserStatSummaryQueryService userStatSummaryQueryService;
+    @Resource
+    private UserStatSummaryChangeEventQueue userStatSummaryChangeEventQueue;
 
     /**更新用户报名签到信息
      * @Description 
@@ -58,6 +68,7 @@ public class UserStatSummaryHandleService {
      * @param activityId
      * @return void
     */
+    @Transactional(rollbackFor = Exception.class)
     public void updateUserSignData(Integer uid, Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
         Integer signId = activity.getSignId();
@@ -105,6 +116,13 @@ public class UserStatSummaryHandleService {
             userStatSummary.setValid(isValid);
             userStatSummaryMapper.insert(userStatSummary);
         }
+        Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+        UserStatSummaryChangeEventOrigin userStatSummaryChangeEventOrigin = UserStatSummaryChangeEventOrigin.builder()
+                .activityId(activityId)
+                .uid(uid)
+                .timestamp(timestamp)
+                .build();
+        userStatSummaryChangeEventQueue.push(userStatSummaryChangeEventOrigin);
     }
 
     private UserStatSummary buildDefault(Integer uid, Integer activityCreateFid) {
@@ -134,6 +152,7 @@ public class UserStatSummaryHandleService {
      * @param activityId
      * @return void
     */
+    @Transactional(rollbackFor = Exception.class)
     public void updateUserResult(Integer uid, Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
         Integer signId = activity.getSignId();
@@ -166,6 +185,13 @@ public class UserStatSummaryHandleService {
             userStatSummary.setIntegral(integral);
             userStatSummaryMapper.insert(userStatSummary);
         }
+        Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+        UserStatSummaryChangeEventOrigin userStatSummaryChangeEventOrigin = UserStatSummaryChangeEventOrigin.builder()
+                .activityId(activityId)
+                .uid(uid)
+                .timestamp(timestamp)
+                .build();
+        userStatSummaryChangeEventQueue.push(userStatSummaryChangeEventOrigin);
     }
 
     /**更新用户评价数
@@ -176,6 +202,7 @@ public class UserStatSummaryHandleService {
      * @param activityId
      * @return void
     */
+    @Transactional(rollbackFor = Exception.class)
     public void updateUserRatingNum(Integer uid, Integer activityId) {
         Integer ratingNum = userStatService.countUserRatingNum(uid, activityId);
         List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
@@ -201,18 +228,34 @@ public class UserStatSummaryHandleService {
                     .build();
             userStatSummaryMapper.insert(userStatSummary);
         }
+        Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+        UserStatSummaryChangeEventOrigin userStatSummaryChangeEventOrigin = UserStatSummaryChangeEventOrigin.builder()
+                .activityId(activityId)
+                .uid(uid)
+                .timestamp(timestamp)
+                .build();
+        userStatSummaryChangeEventQueue.push(userStatSummaryChangeEventOrigin);
     }
 
-    /**更新活动下用户获得的积分
-     * @Description 只有合格的才更新
+    /**更新用户汇总数据中的活动设置的积分
+     * @Description 
      * @author wwb
-     * @Date 2021-06-02 10:07:10
+     * @Date 2021-11-02 14:42:08
      * @param activityId
      * @param integral
      * @return void
     */
-    public void updateActivityUserIntegral(Integer activityId, BigDecimal integral) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateActivityIntegral(Integer activityId, BigDecimal integral) {
         integral = Optional.ofNullable(integral).orElse(BigDecimal.ZERO);
+        List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(activityId);
+        if (CollectionUtils.isEmpty(userStatSummaries)) {
+            return;
+        }
+        userStatSummaryMapper.update(null, new LambdaUpdateWrapper<UserStatSummary>()
+                .eq(UserStatSummary::getActivityId, activityId)
+                .set(UserStatSummary::getActivityIntegral, integral)
+        );
         // 找到活动下合格的用户uid列表
         List<Integer> uids = userResultQueryService.listActivityQualifiedUid(activityId);
         if (CollectionUtils.isNotEmpty(uids)) {
@@ -222,6 +265,16 @@ public class UserStatSummaryHandleService {
                     .in(UserStatSummary::getUid, uids)
                     .set(UserStatSummary::getIntegral, integral)
             );
+        }
+        // 触发用户活动汇总数据的变更
+        Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+        for (UserStatSummary userStatSummary : userStatSummaries) {
+            UserStatSummaryChangeEventOrigin userStatSummaryChangeEventOrigin = UserStatSummaryChangeEventOrigin.builder()
+                    .activityId(activityId)
+                    .uid(userStatSummary.getUid())
+                    .timestamp(timestamp)
+                    .build();
+            userStatSummaryChangeEventQueue.push(userStatSummaryChangeEventOrigin);
         }
     }
 

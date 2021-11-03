@@ -1,6 +1,6 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.activity;
 
-import com.chaoxing.activity.service.data.DataPushService;
+import com.chaoxing.activity.service.queue.IQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-/**数据推送队列
+/**机构活动数据推送队列
  * @author wwb
  * @version ver 1.0
  * @className DataPushQueue
@@ -18,18 +18,18 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class DataPushQueue implements IQueue<DataPushService.DataPushParamDTO> {
+public class OrgActivityDataPushQueue implements IQueue<Integer> {
 
-    private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "data_push";
+    private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "org_activity_data_push";
 
     @Resource
     private RedissonClient redissonClient;
 
-    public void push(DataPushService.DataPushParamDTO queueParam) {
-        push(redissonClient, CACHE_KEY, queueParam);
+    public void push(Integer activityId) {
+        push(redissonClient, CACHE_KEY, activityId);
     }
 
-    public DataPushService.DataPushParamDTO pop() throws InterruptedException {
+    public Integer pop() throws InterruptedException {
         return pop(redissonClient, CACHE_KEY);
     }
 

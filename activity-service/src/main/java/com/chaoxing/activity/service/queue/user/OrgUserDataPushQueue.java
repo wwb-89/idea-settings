@@ -11,19 +11,19 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-/**用户成绩合格队列服务
+/**机构用户数据推送任务队列
  * @author wwb
  * @version ver 1.0
- * @className UserResultChangeNoticeQueueService
- * @description 用户成绩合格判定后需要通知报名签到（以便更新表单中用户的活动记录）
+ * @className OrgUserDataPushQueue
+ * @description
  * @blame wwb
- * @date 2021-06-25 10:05:38
+ * @date 2021-11-02 16:56:43
  */
 @Slf4j
 @Service
-public class UserResultQualifiedQueue implements IQueue<UserResultQualifiedQueue.QueueParamDTO> {
+public class OrgUserDataPushQueue implements IQueue<OrgUserDataPushQueue.QueueParamDTO> {
 
-    private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_result_qualified";
+    private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "org_user_data_push";
 
     @Resource
     private RedissonClient redissonClient;
@@ -43,8 +43,9 @@ public class UserResultQualifiedQueue implements IQueue<UserResultQualifiedQueue
 
         /** 用户id */
         private Integer uid;
-        /** 报名签到id */
-        private Integer signId;
+        /** 活动id */
+        private Integer activityId;
 
     }
+
 }

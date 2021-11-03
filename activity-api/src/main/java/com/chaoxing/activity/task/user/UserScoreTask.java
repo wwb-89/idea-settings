@@ -1,14 +1,15 @@
 package com.chaoxing.activity.task.user;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.queue.user.UserResultQueue;
-import com.chaoxing.activity.service.user.result.UserResultHandleService;
+import com.chaoxing.activity.service.queue.user.handler.UserResultQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**用户得分任务
+/**用户成绩更新任务
  * @author wwb
  * @version ver 1.0
  * @className UserScoreTask
@@ -23,17 +24,18 @@ public class UserScoreTask {
     @Resource
     private UserResultQueue userResultQueue;
     @Resource
-    private UserResultHandleService userResultHandleService;
+    private UserResultQueueService userResultQueueService;
 
     @Scheduled(fixedDelay = 1L)
-    public void consumerUserResult() throws InterruptedException {
+    public void handle() throws InterruptedException {
         UserResultQueue.QueueParamDTO queueParam = userResultQueue.pop();
         if (queueParam == null) {
             return;
         }
         try {
-            userResultHandleService.updateUserResult(queueParam.getUid(), queueParam.getActivityId());
+            userResultQueueService.handle(queueParam);
         } catch (Exception e) {
+            log.error("根据参数:{} 处理用户成绩更新任务error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
             userResultQueue.push(queueParam);
         }

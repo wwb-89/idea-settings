@@ -1,9 +1,8 @@
-package com.chaoxing.activity.service.queue.activity;
+package com.chaoxing.activity.service.queue.user;
 
 import com.chaoxing.activity.service.queue.IQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,19 +11,19 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-/**活动数据推送队列
+/**用户数据预推送队列
  * @author wwb
  * @version ver 1.0
- * @className ActivityDataPushQueue
+ * @className UserDataPrePushQueue
  * @description
  * @blame wwb
- * @date 2021-10-29 16:59:11
+ * @date 2021-11-02 15:35:26
  */
 @Slf4j
 @Service
-public class ActivityDataPushQueue implements IQueue<ActivityDataPushQueue.QueueParamDTO> {
+public class UserDataPrePushQueue implements IQueue<UserDataPrePushQueue.QueueParamDTO> {
 
-    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "activity_data_push";
+    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "user_data_pre_push";
 
     @Resource
     private RedissonClient redissonClient;
@@ -38,13 +37,14 @@ public class ActivityDataPushQueue implements IQueue<ActivityDataPushQueue.Queue
     }
 
     @Data
-    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class QueueParamDTO {
 
+        /** 用户id */
+        private Integer uid;
+        /** 活动id */
         private Integer activityId;
-        private Integer dataPushConfigId;
 
     }
 

@@ -53,6 +53,8 @@ public class UserStatSummary {
     private Integer ratingNum;
     /** 获得的积分; column: integral*/
     private BigDecimal integral;
+    /** 活动积分; column: activity_integral*/
+    private BigDecimal activityIntegral;
     /** 参与时长; column: participate_time_length*/
     private Integer participateTimeLength;
     /** 是否可用; column: is_valid*/
