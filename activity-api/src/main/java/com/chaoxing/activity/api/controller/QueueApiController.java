@@ -31,10 +31,6 @@ public class QueueApiController {
 	@Resource
 	private ActivityStatQueue activityStatQueueService;
 	@Resource
-	private ActivityStartTimeReachEventQueue activityStartTimeReachEventQueue;
-	@Resource
-	private ActivityEndTimeReachEventQueue activityEndTimeReachEventQueue;
-	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
@@ -42,68 +38,15 @@ public class QueueApiController {
 	private ActivityWebTemplateChangeEventQueue activityWebTemplateChangeEventQueue;
 	@Resource
 	private ActivityCoverChangeEventQueue activityCoverChangeEventQueue;
-
 	@Resource
 	private ActivityAboutStartEventQueue activityAboutStartEventQueue;
+	@Resource
+	private ActivityAboutEndEventQueue activityAboutEndEventQueue;
+	@Resource
+	private ActivityStartTimeReachEventQueue activityStartTimeReachEventQueue;
+	@Resource
+	private ActivityEndTimeReachEventQueue activityEndTimeReachEventQueue;
 
-	/**初始化活动即将开始/结束的通知事件
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-25 20:16:34
-	 * @param
-	 * @return com.chaoxing.sign.dto.RestRespDTO
-	 */
-	@RequestMapping("init/activity-start-end-event")
-	public RestRespDTO initActivityIsAboutToStartQueue() {
-		List<Activity> activities = activityQueryService.list();
-		if (CollectionUtils.isNotEmpty(activities)) {
-			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
-			for (Activity activity : activities) {
-				// 活动即将开始
-				ActivityAboutStartEventOrigin activityAboutStartEventOrigin = ActivityAboutStartEventOrigin.builder()
-						.activityId(activity.getId())
-						.marketId(activity.getMarketId())
-						.startTime(activity.getStartTime())
-						.timestamp(timestamp)
-						.build();
-				activityAboutStartEventQueue.push(activityAboutStartEventOrigin);
-				// 活动即将结束
-
-			}
-		}
-		return RestRespDTO.success();
-	}
-
-	/**初始化活动的状态队列
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-04-21 15:31:45
-	 * @param 
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@RequestMapping("init/activity-status")
-	public RestRespDTO initActivityStatusQueue() {
-		List<Activity> activities = activityQueryService.list();
-		if (CollectionUtils.isNotEmpty(activities)) {
-			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
-			for (Activity activity : activities) {
-				Integer activityId = activity.getId();
-				ActivityStartTimeReachEventOrigin activityStartTimeReachEventOrigin = ActivityStartTimeReachEventOrigin.builder()
-						.activityId(activityId)
-						.startTime(activity.getStartTime())
-						.timestamp(timestamp)
-						.build();
-				activityStartTimeReachEventQueue.push(activityStartTimeReachEventOrigin);
-				ActivityEndTimeReachEventOrigin activityEndTimeReachEventOrigin = ActivityEndTimeReachEventOrigin.builder()
-						.activityId(activityId)
-						.endTime(activity.getEndTime())
-						.timestamp(timestamp)
-						.build();
-				activityEndTimeReachEventQueue.push(activityEndTimeReachEventOrigin);
-			}
-		}
-		return RestRespDTO.success();
-	}
 	/**初始化活动的汇总统计队列
 	 * @Description
 	 * @author wwb
@@ -170,6 +113,99 @@ public class QueueApiController {
 						.timestamp(timestamp)
 						.build();
 				activityWebTemplateChangeEventQueue.push(eventOrigin);
+			}
+		}
+		return RestRespDTO.success();
+	}
+
+	/**初始化活动即将开始任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 16:56:30
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity_about_start")
+	public RestRespDTO initActivityAboutStart() {
+		List<Activity> activities = activityQueryService.listNotStart();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			for (Activity activity : activities) {
+				ActivityAboutStartEventOrigin eventOrigin = ActivityAboutStartEventOrigin.builder()
+						.activityId(activity.getId())
+						.startTime(activity.getStartTime())
+						.timestamp(timestamp)
+						.build();
+				activityAboutStartEventQueue.push(eventOrigin);
+			}
+		}
+		return RestRespDTO.success();
+	}
+	/**初始化活动即将结束任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 16:56:43
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity_about_end")
+	public RestRespDTO initActivityAboutEnd() {
+		List<Activity> activities = activityQueryService.listNotEnd();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			for (Activity activity : activities) {
+				ActivityAboutEndEventOrigin eventOrigin = ActivityAboutEndEventOrigin.builder()
+						.activityId(activity.getId())
+						.endTime(activity.getEndTime())
+						.timestamp(timestamp)
+						.build();
+				activityAboutEndEventQueue.push(eventOrigin);
+			}
+		}
+		return RestRespDTO.success();
+	}
+	/**初始化活动开始时间将要到达任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 16:56:59
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity_start_time_reach")
+	public RestRespDTO initActivityStartTimeReach() {
+		List<Activity> activities = activityQueryService.listNotStart();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			for (Activity activity : activities) {
+				ActivityStartTimeReachEventOrigin eventOrigin = ActivityStartTimeReachEventOrigin.builder()
+						.activityId(activity.getId())
+						.startTime(activity.getStartTime())
+						.timestamp(timestamp)
+						.build();
+				activityStartTimeReachEventQueue.push(eventOrigin);
+			}
+		}
+		return RestRespDTO.success();
+	}
+	/**初始化活动结束时间将要到达任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 17:18:20
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity_end_time_reach")
+	public RestRespDTO initActivityEndTimeReach() {
+		List<Activity> activities = activityQueryService.listNotEnd();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			for (Activity activity : activities) {
+				ActivityEndTimeReachEventOrigin eventOrigin = ActivityEndTimeReachEventOrigin.builder()
+						.activityId(activity.getId())
+						.endTime(activity.getEndTime())
+						.timestamp(timestamp)
+						.build();
+				activityEndTimeReachEventQueue.push(eventOrigin);
 			}
 		}
 		return RestRespDTO.success();

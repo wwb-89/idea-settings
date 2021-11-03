@@ -24,9 +24,7 @@ public class ActivityAboutStartEventOrigin extends AbstractEventOrigin {
 
 	/** 活动id */
 	private Integer activityId;
-	/** 市场id */
-	private Integer marketId;
-	/** 活动开始事件 */
+	/** 开始时间 */
 	private LocalDateTime startTime;
 	/** 事件发生的事件（时间戳） */
 	private Long timestamp;

@@ -254,7 +254,6 @@ public class ActivityDataChangeEventService {
 			if (oldActivity == null || activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0) {
 				ActivityAboutStartEventOrigin activityAboutStartEventOrigin = ActivityAboutStartEventOrigin.builder()
 						.activityId(activityId)
-						.marketId(marketId)
 						.startTime(activity.getStartTime())
 						.timestamp(timestamp)
 						.build();
@@ -263,7 +262,6 @@ public class ActivityDataChangeEventService {
 			if (oldActivity == null || activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0) {
 				ActivityAboutEndEventOrigin activityAboutEndEventOrigin = ActivityAboutEndEventOrigin.builder()
 						.activityId(activityId)
-						.marketId(marketId)
 						.endTime(activity.getEndTime())
 						.timestamp(timestamp)
 						.build();
