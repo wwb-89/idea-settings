@@ -1,5 +1,6 @@
 package com.chaoxing.activity.api.vo;
 
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.DateUtils;
@@ -83,6 +84,8 @@ public class ActivityStatSummaryVO {
     private String createOrgName;
     /** 主办方 */
     private String organisers;
+    /** 报名起止时间 */
+    private String signUpStartEndTime;
 
 
     public static ActivityStatSummaryVO buildActivityStatSummaryVo(ActivityStatSummaryDTO actStatSummary) {
@@ -90,10 +93,12 @@ public class ActivityStatSummaryVO {
         if (actStatSummary.getSignUp() != null) {
             personLimit  = actStatSummary.getSignUp().getPersonLimit();
         }
-        boolean existSignUp = actStatSummary.getSignUp() != null;
+        SignUpCreateParamDTO signUp = actStatSummary.getSignUp();
         String signUpUrl = "";
-        if (existSignUp && actStatSummary.getSignId() != null) {
+        String signUpStartEndTime = "";
+        if (signUp != null && actStatSummary.getSignId() != null) {
             signUpUrl = "https://reading.chaoxing.com/qd/sign/" + actStatSummary.getSignId() + "/to-sign-up";
+            signUpStartEndTime = DateUtils.activityTimeScope(DateUtils.timestamp2Date(signUp.getStartTime()), DateUtils.timestamp2Date(signUp.getEndTime()));
         }
         return ActivityStatSummaryVO.builder()
                 .activityId(actStatSummary.getActivityId())
@@ -119,13 +124,14 @@ public class ActivityStatSummaryVO {
                 .introduction(actStatSummary.getIntroduction())
                 .address(Optional.ofNullable(actStatSummary.getAddress()).orElse("").concat(Optional.ofNullable(actStatSummary.getDetailAddress()).orElse("")))
                 .personLimit(personLimit)
-                .openSignUp(existSignUp)
+                .openSignUp(signUp != null)
                 .signUpUrl(signUpUrl)
                 .collectNum(actStatSummary.getCollectNum())
                 .pv(actStatSummary.getPv())
                 .createFid(actStatSummary.getCreateFid())
                 .createOrgName(actStatSummary.getCreateOrgName())
                 .organisers(actStatSummary.getOrganisers())
+                .signUpStartEndTime(signUpStartEndTime)
                 .build();
     }
 }
