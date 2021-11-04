@@ -185,7 +185,8 @@ public class ActivityHandleService {
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
 		// 保存活动报名的报名条件启用
-		signUpConditionService.saveActivitySignUpEnables(activityId, activityCreateParamDto.getSucTemplateComponentIds());
+		signUpConditionService.saveActivitySignUpConditionEnables(activityId, activityCreateParamDto.getSucTemplateComponentIds());
+		signUpConditionService.saveActivitySignUpConditionsFromConditions(activityId, activityCreateParamDto.getSignUpConditions());
 		// 保存自定义组件值
 		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
 		// 保存门户模板
@@ -335,6 +336,7 @@ public class ActivityHandleService {
 			bindWebTemplate(existActivity, activity.getWebTemplateId(), loginUser);
 			// 更新
 			signUpConditionService.updateActivitySignUpEnables(activityId, activityUpdateParamDto.getSucTemplateComponentIds());
+			signUpConditionService.updateActivitySignUpConditionsFromConditions(activityId, activityUpdateParamDto.getSignUpConditions());
 			// 更新自定义组件的值
 			activityComponentValueService.updateActivityComponentValues(activityId, activityUpdateParamDto.getActivityComponentValues());
 			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);

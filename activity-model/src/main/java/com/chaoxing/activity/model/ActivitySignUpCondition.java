@@ -44,7 +44,11 @@ public class ActivitySignUpCondition {
     private String value;
 
     public static ActivitySignUpCondition buildFromTemplateSignUpCondition(TemplateSignUpCondition signUpCondition) {
-        return ActivitySignUpCondition.builder().templateComponentId(signUpCondition.getTemplateComponentId()).fieldName(signUpCondition.getFieldName()).build();
+        return ActivitySignUpCondition.builder()
+                .condition("")
+                .value("")
+                .templateComponentId(signUpCondition.getTemplateComponentId())
+                .fieldName(signUpCondition.getFieldName()).build();
     }
 
     public static List<ActivitySignUpCondition> buildFromTemplateSignUpConditions(List<TemplateSignUpCondition> signUpConditions) {

@@ -3,6 +3,7 @@ package com.chaoxing.activity.dto.activity;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
+import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.AllArgsConstructor;
@@ -125,6 +126,8 @@ public class ActivityUpdateParamDTO {
 	private List<ActivityComponentValueDTO> activityComponentValues;
 	/** 活动报名条件启用模板组件id列表 */
 	private List<Integer> sucTemplateComponentIds;
+	/** 报名条件配置列表 */
+	private List<SignUpCondition> signUpConditions;
 
 	/**构建活动
 	 * @Description 

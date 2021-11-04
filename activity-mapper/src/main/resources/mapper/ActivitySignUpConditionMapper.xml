@@ -12,4 +12,19 @@
     <sql id="Base_Column_List">
         t.id, t.activity_id, t.template_component_id, t.field_name, t.`condition`, t.`value`
     </sql>
+
+
+    <insert id="batchAdd">
+        INSERT INTO t_activity_sign_up_condition ( activity_id, template_component_id, field_name, `condition`, `value`)
+        VALUES
+        <foreach collection="data" index="key" item="value" open="" close="" separator=",">
+            (
+            #{value.activityId},
+            #{value.templateComponentId},
+            #{value.fieldName},
+            #{value.condition},
+            #{value.value}
+            )
+        </foreach>
+    </insert>
 </mapper>

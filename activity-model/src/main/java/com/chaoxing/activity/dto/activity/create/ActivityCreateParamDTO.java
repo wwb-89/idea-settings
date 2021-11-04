@@ -7,6 +7,7 @@ import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
+import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.FormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -135,6 +136,9 @@ public class ActivityCreateParamDTO {
 
 	/** 活动报名条件启用模板组件id列表 */
 	private List<Integer> sucTemplateComponentIds;
+
+	/** 报名条件配置列表 */
+	private List<SignUpCondition> signUpConditions;
 	/** 操作用户 */
 	private LoginUserDTO loginUser;
 	/** 创建机构fid */

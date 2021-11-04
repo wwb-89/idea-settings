@@ -207,7 +207,7 @@ public class TemplateComponentService {
      * @param templateComponents
      * @return void
      */
-    private void buildTplComponentActivitySignUpCondition(Integer activityId, List<TemplateComponentDTO> templateComponents) {
+/*    private void buildTplComponentActivitySignUpCondition(Integer activityId, List<TemplateComponentDTO> templateComponents) {
         List<Integer> signUpConditionTplComponentIds = templateComponents.stream()
                 .filter(v -> v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue()))
                 .map(TemplateComponentDTO::getId).collect(Collectors.toList());
@@ -224,7 +224,7 @@ public class TemplateComponentService {
         templateComponents.forEach(v -> {
             v.setSignUpCondition(Optional.ofNullable(signUpConditionMap.get(v.getId())).orElse(null));
         });
-    }
+    }*/
 
     /**查询模板id下的报名条件模板组件列表
      * @Description

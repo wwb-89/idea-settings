@@ -31,8 +31,7 @@
             on t.template_component_id = t1.id
             and t1.template_id = #{templateId}
     </select>
-
-    <select id="listActivityEnableSignUpCondition">
+    <select id="listActivityEnableSignUpCondition" resultType="com.chaoxing.activity.model.SignUpCondition">
         select t.*
         FROM t_sign_up_condition t
         INNER JOIN t_sign_up_condition_enable t1
