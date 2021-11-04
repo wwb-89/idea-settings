@@ -3,12 +3,25 @@
 <mapper namespace="com.chaoxing.activity.mapper.TemplateSignUpConditionMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TemplateSignUpCondition">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="template_compoent_id" jdbcType="INTEGER" property="templateCompoentId" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
         <result column="condition" jdbcType="VARCHAR" property="condition" />
         <result column="value" jdbcType="VARCHAR" property="value" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_compoent_id, t.field_name, t.condition, t.value
+        t.id, t.template_component_id, t.field_name, t.`condition`, t.`value`
     </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_template_sign_up_condition ( template_component_id, field_name, `condition`, `value`)
+        VALUES
+        <foreach collection="data" index="key" item="value" open="" close="" separator=",">
+            (
+            #{value.templateComponentId},
+            #{value.fieldName},
+            #{value.condition},
+            #{value.value}
+            )
+        </foreach>
+    </insert>
 </mapper>

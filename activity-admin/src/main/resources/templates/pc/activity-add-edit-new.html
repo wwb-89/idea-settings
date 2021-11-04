@@ -45,6 +45,27 @@
         .el-select, .el-input {
             height: auto;
         }
+        .setForm .form-item .item-tips {
+            line-height: 20px;
+            background: #F0F0F0;
+            border-radius: 2px;
+            color: #999999;
+            font-size: 12px;
+            padding: 0 4px;
+            display: inline-block;
+            border: none;
+            margin: 6px 16px 0;
+            font-weight: normal;
+        }
+
+        .setForm .form-item .select-form {
+            margin-left: 122px;
+        }
+
+        .setForm .form-item .select-form .el-select {
+            width: 120px;
+        }
+
         [v-cloak] {
             display: none;
         }
@@ -519,13 +540,43 @@
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                     </div>
-                                    <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
-                                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                                        <div class="input-box">
-                                            <el-switch v-model="signUpConditionActiveMap[it.id]"></el-switch>
-                                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                                    <template v-else-if="it.code == 'sign_up_condition'">
+                                        <div class="form-item">
+                                            <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                                            <div class="input-box">
+                                                <el-switch v-model="signUpConditionMap[it.id].enable"></el-switch>
+                                                <el-tooltip class="item-tips fl" effect="dark" content="" placement="top">
+                                                    <el-button>报名条件</el-button>
+                                                </el-tooltip>
+                                                <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                        <div class="form-item">
+                                            <el-form label-position='left' label-width="72px" class="select-form" onsubmit="return false">
+                                                <el-form-item :label="detail.fieldName" v-for="(detail, dIndex) in signUpConditionMap[it.id].activityConditionDetails">
+                                                    <el-select v-model="detail.condition" placeholder="请选择">
+                                                        <el-option v-for="(ce, ceIdx) in conditionEnums"
+                                                                   :key="ceIdx"
+                                                                   :label="ce.name"
+                                                                   :value="ce.value"
+                                                        >
+                                                        </el-option>
+                                                    </el-select>
+                                                    <template v-if="item.condition != 'empty' && item.condition != 'un_empty'">
+                                                        <el-select v-if="currFormField.type == 'select'" v-model="item.value" placeholder="请选择" style="width: 152px">
+                                                            <el-option  v-for="(it, index) in currFormField.options"
+                                                                        :key="index"
+                                                                        :label="it"
+                                                                        :value="it"
+                                                            >
+                                                            </el-option>
+                                                        </el-select>
+                                                        <el-input v-else v-model="item.value" placeholder="请输入"></el-input>
+                                                    </template>
+                                                </el-form-item>
+                                            </el-form>
+                                        </div>
+                                    </template>
                                     <div class="form-item" v-if="false">
                                         <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                                         <div class="input-box btn-name">
@@ -811,7 +862,8 @@
                 signUpMap: {},
                 // 报名信息填写类型: { templateComponentId: signUpFillInfoType }
                 fillInfoTypeMap: {},
-                signUpConditionActiveMap: {},
+                signUpConditions: [[${signUpConditions}]],
+                signUpConditionMap: {},
                 notAllowCancelTypes: [
                     {value: 'after_sign_up_end', label: '报名结束后'},
                     {value: 'after_activity_start', label: '活动开始后'},
@@ -913,7 +965,10 @@
                     if (_this.children && _this.children.length > 0) {
                         $(_this.children).each(function () {
                             if (this.code == 'sign_up_condition') {
-                                $this.$set($this.signUpConditionActiveMap, this.id, false);
+                                var signUpCondition = this.signUpCondition;
+                                if (signUpCondition) {
+                                    $this.$set($this.signUpConditionMap, this.id, signUpCondition);
+                                }
                             } else if (this.code == 'sign_up_fill_info' && this.signUpFillInfoType) {
                                 // 一个报名目前只有一个报名信息填写，故map的映射为 { signUpTplComponentId : signUpFillInfoType }
                                 $this.fillInfoTypeMap[_this.id] = this.signUpFillInfoType
@@ -1002,13 +1057,13 @@
                             $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
                         });
                     }
-                    if ($this.activity.sucTemplateComponentIds) {
-                        var sucTemplateComponentIds = $this.activity.sucTemplateComponentIds;
-                        for (var i = 0; i < sucTemplateComponentIds.length; i++) {
-                            var tplComponentId = sucTemplateComponentIds[i];
-                            $this.$set($this.signUpConditionActiveMap, tplComponentId, true);
-                        }
-                    }
+                    // if ($this.activity.sucTemplateComponentIds) {
+                    //     var sucTemplateComponentIds = $this.activity.sucTemplateComponentIds;
+                    //     for (var i = 0; i < sucTemplateComponentIds.length; i++) {
+                    //         var tplComponentId = sucTemplateComponentIds[i];
+                    //         $this.$set($this.signUpConditionMap, tplComponentId, true);
+                    //     }
+                    // }
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
                 // 标签
@@ -1808,14 +1863,14 @@
                 },
                 packageSignUpConditionEnable: function () {
                     var $this = this;
-                    var keys = Object.keys($this.signUpConditionActiveMap);
+                    var keys = Object.keys($this.signUpConditionMap);
                     if (keys.length == 0) {
                         return null;
                     }
                     var sucTemplateComponentIds = [];
                     for (var i = 0; i < keys.length; i++) {
                         var tplComponentId = keys[i];
-                        if ($this.signUpConditionActiveMap[tplComponentId]) {
+                        if ($this.signUpConditionMap[tplComponentId]) {
                             sucTemplateComponentIds.push(tplComponentId)
                         }
                     }

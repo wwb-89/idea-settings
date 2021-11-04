@@ -34,6 +34,14 @@ public class ActivityEngineQueryService {
     @Resource
     private MarketQueryService marketQueryService;
 
+    /**根据模板id和市场id查询模板数据(模板字段设置页面使用该查询)
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-03 16:54:18
+     * @param templateId
+     * @param marketId
+     * @return com.chaoxing.activity.dto.engine.ActivityEngineDTO
+     */
     public ActivityEngineDTO findEngineTemplateInfo(Integer templateId, Integer marketId) {
         // 查询模板数据
         Template template = templateQueryService.getById(templateId);

@@ -34,4 +34,14 @@ public interface SignUpConditionMapper extends BaseMapper<SignUpCondition> {
 	* @return java.util.List<java.lang.Integer>
 	*/
     List<Integer> selectTemplateComponentIdByTemplateId(@Param("templateId") Integer templateId);
+
+
+	/**查询活动启用的报名条件列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-03 16:06:30
+	 * @param activityId
+	 * @return java.util.List<com.chaoxing.activity.model.SignUpCondition>
+	 */
+    List<SignUpCondition> listActivityEnableSignUpCondition(@Param("activityId") Integer activityId);
 }

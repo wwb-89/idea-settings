@@ -50,7 +50,9 @@ public class SignUpCondition {
 
     /** 模板条件明细 */
     @TableField(exist = false)
-    private List<TemplateSignUpCondition> conditionDetails = Lists.newArrayList();
+    private List<TemplateSignUpCondition> templateConditionDetails;
+    @TableField(exist = false)
+    private List<ActivitySignUpCondition> activityConditionDetails;
 
     public SignUpCondition cloneToNewTemplateComponentId(Integer templateComponentId) {
         return SignUpCondition.builder()

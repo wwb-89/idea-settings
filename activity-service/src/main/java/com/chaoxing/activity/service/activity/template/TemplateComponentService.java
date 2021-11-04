@@ -152,6 +152,13 @@ public class TemplateComponentService {
         return templateComponents;
     }
 
+    /**封装模板组件详细系信息(报名条件、报名信息填报类型)
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-03 16:55:07
+     * @param tplCompoenents
+     * @return void
+     */
     private void packageTemplateComponents(List<TemplateComponentDTO> tplCompoenents) {
         // 报名条件templateComponentIds
         List<Integer> sucTplComponentIds = Lists.newArrayList();
@@ -164,7 +171,7 @@ public class TemplateComponentService {
                 sufiTplComponentIds.add(v.getId());
             }
         });
-        Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listByTemplateComponentIds(sucTplComponentIds).stream()
+        Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listWithTemplateDetailsByTplComponentIds(sucTplComponentIds).stream()
                 .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
         Map<Integer, SignUpFillInfoType> signUpFillInfoTypeMap = signUpFillInfoTypeService.listByTemplateComponentIds(sufiTplComponentIds).stream()
                 .collect(Collectors.toMap(SignUpFillInfoType::getTemplateComponentId, v -> v, (v1, v2) -> v2));
@@ -177,11 +184,11 @@ public class TemplateComponentService {
             }
         });
     }
-
-    /**查询模板组件关联数据，并安装父子结构进行树结构封装
+    /**查询活动的模板组件关联数据，并安装父子结构进行树结构封装
      * @Description
      * @author huxiaolong
-     * @Date 2021-08-03 16:20:36
+     * @Date 2021-11-03 17:23:34
+     * @param activityId
      * @param templateId
      * @param fid
      * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
@@ -190,6 +197,44 @@ public class TemplateComponentService {
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
         buildComponentFieldsAndFieldValues(fid, templateComponents);
         return TemplateComponentDTO.buildTrees(templateComponents);
+    }
+
+    /**给报名条件模板组件封装活动报名条件明细
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-03 17:22:12
+     * @param activityId
+     * @param templateComponents
+     * @return void
+     */
+    private void buildTplComponentActivitySignUpCondition(Integer activityId, List<TemplateComponentDTO> templateComponents) {
+        List<Integer> signUpConditionTplComponentIds = templateComponents.stream()
+                .filter(v -> v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue()))
+                .map(TemplateComponentDTO::getId).collect(Collectors.toList());
+        List<SignUpCondition> signUpConditions;
+        if (activityId == null) {
+            signUpConditions = signUpConditionService.listNewActivityByTplComponentIds(signUpConditionTplComponentIds);
+        } else {
+            signUpConditions = signUpConditionService.listActivityEnableSignUpConditions(activityId);
+        }
+        if (CollectionUtils.isEmpty(signUpConditions)) {
+            return;
+        }
+        Map<Integer, SignUpCondition> signUpConditionMap = signUpConditions.stream().collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
+        templateComponents.forEach(v -> {
+            v.setSignUpCondition(Optional.ofNullable(signUpConditionMap.get(v.getId())).orElse(null));
+        });
+    }
+
+    /**查询模板id下的报名条件模板组件列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-03 18:07:36
+     * @param templateId
+     * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+     */
+    public List<TemplateComponent> listSignUpConditionTplComponents(Integer templateId) {
+        return templateComponentMapper.listTemplateComponentByCode(templateId, Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue());
     }
 
     /**查询基本信息组件关联数据(不含报名、签到)
@@ -321,7 +366,7 @@ public class TemplateComponentService {
                 if (suc.getId() == null) {
                     signUpConditionService.add(suc);
                 } else {
-                    signUpConditionService.updateById(suc);
+                    signUpConditionService.update(suc);
                 }
             }
             if (signUpFillInfoType != null) {

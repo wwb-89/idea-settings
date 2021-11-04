@@ -1,6 +1,7 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
@@ -17,6 +18,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
@@ -79,6 +81,8 @@ public class ActivityManageController {
 	private ActivityClassService activityClassService;
 	@Resource
 	private ClassifyQueryService classifyQueryService;
+	@Resource
+	private SignUpConditionService signUpConditionService;
 
 	/**活动管理主页
 	 * @Description 
@@ -174,6 +178,8 @@ public class ActivityManageController {
 		// 通讯录组织架构
 		model.addAttribute("contactGroups", permission.getContactsGroups());
 		model.addAttribute("strict", strict);
+		model.addAttribute("signUpConditions", signUpConditionService.listActivityEnableSignUpConditions(activityId));
+		model.addAttribute("conditionEnums", ConditionDTO.list());
 		return "pc/activity-add-edit-new";
 	}
 

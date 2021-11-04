@@ -10,6 +10,6 @@
         <result column="value" jdbcType="VARCHAR" property="value" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.activity_id, t.template_component_id, t.field_name, t.condition, t.value
+        t.id, t.activity_id, t.template_component_id, t.field_name, t.`condition`, t.`value`
     </sql>
 </mapper>

@@ -590,7 +590,7 @@
                                 <el-switch v-model="innerAddEditItem.configOnActivity" class="margin-auto" inactive-text="活动发起时配置字段值"></el-switch>
                             </div>
                             <div class="condition-box">
-                                <div class="condition-item" v-for="(item, index) in innerAddEditItem.conditionDetails">
+                                <div class="condition-item" v-for="(item, index) in innerAddEditItem.templateConditionDetails">
                                     <el-select v-model="item.fieldName" placeholder="请选择" @change="conditionFieldChange">
                                         <el-option  v-for="(it, idx) in wfwFormFields"
                                                     v-if="it.compt != 'belonger' && it.compt != 'contact'"
@@ -619,7 +619,7 @@
                                         </el-select>
                                         <el-input v-else v-model="item.value" placeholder="请输入"></el-input>
                                     </template>
-                                    <i class="icon-minus-circle"></i>
+                                    <i class="icon-minus-circle" @click="removeConditionDetail(index)"></i>
                                 </div>
                                 <div class="add-box" style="cursor: pointer" @click="addConditionDetail"><i class="icon-plus-circle"></i>添加条件</div>
                             </div>
@@ -887,7 +887,7 @@
                         };
                     },
                     getInitSignUpCondition: function () {
-                        return { fid: this.fid, originIdentify: '', fieldName: '', allowSignedUp: false, configOnActivity: false, conditionDetails: [] }
+                        return { fid: this.fid, originIdentify: '', fieldName: '', allowSignedUp: false, configOnActivity: false, templateConditionDetails: [] }
                     },
                     getInitSignUpFillInfoType: function () {
                         return { type: 'form', templateType: '' }
@@ -1241,26 +1241,26 @@
                         if (!$this.innerAddEditItem.allowSignedUp) {
                             // xxx, 不存在
                             $this.innerAddEditItem.configOnActivity = false;
-                            $this.innerAddEditItem.conditionDetails = [];
+                            $this.innerAddEditItem.templateConditionDetails = [];
                             return true;
                         }
-                        var conditionDetails = $this.innerAddEditItem.conditionDetails;
+                        var templateConditionDetails = $this.innerAddEditItem.templateConditionDetails;
                         if ($this.innerAddEditItem.configOnActivity) {
-                            if (conditionDetails && conditionDetails > 0) {
-                                $(conditionDetails).each(function () {
+                            if (templateConditionDetails && templateConditionDetails > 0) {
+                                $(templateConditionDetails).each(function () {
                                     this.condition = '';
                                     this.value = '';
                                 });
                             }
                             return true;
                         }
-                        for (var i = 0; i < conditionDetails.length; i++) {
-                            if (!conditionDetails[i].fieldName) {
+                        for (var i = 0; i < templateConditionDetails.length; i++) {
+                            if (!templateConditionDetails[i].fieldName) {
                                 app.showMsg("请选择条件字段")
                                 return false;
                             }
-                            if (!conditionDetails[i].condition) {
-                                app.showMsg(conditionDetails[i].fieldName + "条件不能为空")
+                            if (!templateConditionDetails[i].condition) {
+                                app.showMsg(templateConditionDetails[i].fieldName + "条件不能为空")
                                 return false;
                             }
                         }
@@ -1632,7 +1632,7 @@
                     },
                     addConditionDetail: function () {
                         var $this = this;
-                        $this.innerAddEditItem.conditionDetails.push({
+                        $this.innerAddEditItem.templateConditionDetails.push({
                             templateComponentId: $this.addEditItem && this.addEditItem.id,
                             fieldName: '',
                             condition: '',
@@ -1656,6 +1656,10 @@
                             return false;
                         }
                         return true;
+                    },
+                    removeConditionDetail: function (index) {
+                        var $this = this;
+                        $this.innerAddEditItem.templateConditionDetails.splice(index, 1);
                     }
                 }
             })

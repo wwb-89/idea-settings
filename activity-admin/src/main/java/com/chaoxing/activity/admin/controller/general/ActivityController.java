@@ -1,6 +1,7 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -10,6 +11,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
@@ -55,7 +57,7 @@ public class ActivityController {
 	@Resource
 	private ClassifyQueryService classifyQueryService;
 	@Resource
-	private MarketQueryService marketQueryService;
+	private SignUpConditionService signUpConditionService;
 
 	/**新活动管理主页
 	 * @Description
@@ -124,6 +126,8 @@ public class ActivityController {
 		List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);
 		List<WfwAreaDTO> participatedOrgs = Optional.ofNullable(wfwAreaDtos).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).collect(Collectors.toList());
 		model.addAttribute("participatedOrgs", participatedOrgs);
+		model.addAttribute("signUpConditions", signUpConditionService.listNewActivityConditionByTemplate(templateId));
+		model.addAttribute("conditionEnums", ConditionDTO.list());
 		return "pc/activity-add-edit-new";
 	}
 }

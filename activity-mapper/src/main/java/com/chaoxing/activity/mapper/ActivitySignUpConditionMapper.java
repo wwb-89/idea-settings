@@ -1,5 +1,7 @@
 package com.chaoxing.activity.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.chaoxing.activity.model.ActivitySignUpCondition;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,5 +12,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @version: ver 1.0
  */
 @Mapper
-public interface ActivitySignUpConditionMapper {
+public interface ActivitySignUpConditionMapper extends BaseMapper<ActivitySignUpCondition> {
 }

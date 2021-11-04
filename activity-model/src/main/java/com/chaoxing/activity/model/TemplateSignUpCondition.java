@@ -1,6 +1,7 @@
 package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -26,12 +27,14 @@ public class TemplateSignUpCondition {
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
     private Integer id;
-    /** 模板组件id; column: template_compoent_id*/
-    private Integer templateCompoentId;
+    /** 模板组件id; column: template_component_id*/
+    private Integer templateComponentId;
     /** 字段名称; column: field_name*/
     private String fieldName;
     /** 条件; column: condition*/
+    @TableField(value = "`condition`")
     private String condition;
     /** 值; column: value*/
+    @TableField(value = "`value`")
     private String value;
 }

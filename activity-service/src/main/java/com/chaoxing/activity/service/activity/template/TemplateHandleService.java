@@ -79,7 +79,8 @@ public class TemplateHandleService {
 		List<TemplateComponent> originTemplateComponents = templateComponentService.listTemplateComponentByTemplateId(originTemplateId);
 		// 组件id列表
 		List<Integer> templateComponentIds = Optional.ofNullable(originTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
-		List<SignUpCondition> originSignUpConditions = signUpConditionService.listByTemplateComponentIds(templateComponentIds);
+		// todo 克隆应该将明细条件也克隆了
+		List<SignUpCondition> originSignUpConditions = signUpConditionService.listWithTemplateDetailsByTplComponentIds(templateComponentIds);
 		List<SignUpFillInfoType> originSignUpFillInfoTypes = signUpFillInfoTypeService.listByTemplateComponentIds(templateComponentIds);
 
 		// 克隆

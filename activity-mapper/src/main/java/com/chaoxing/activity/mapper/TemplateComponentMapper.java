@@ -55,4 +55,14 @@ public interface TemplateComponentMapper extends BaseMapper<TemplateComponent> {
      * @return int
      */
     int countTemplateComponentByCode(@Param("templateId") Integer templateId, @Param("componentCode") String componentCode);
+
+    /**根据模板id和组件code查询模板组件列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-03 18:05:47
+     * @param templateId
+     * @param componentCode
+     * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+     */
+    List<TemplateComponent> listTemplateComponentByCode(@Param("templateId") Integer templateId, @Param("componentCode") String componentCode);
 }

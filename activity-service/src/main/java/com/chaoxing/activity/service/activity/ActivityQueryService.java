@@ -30,6 +30,7 @@ import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
@@ -103,6 +104,8 @@ public class ActivityQueryService {
 	private ActivityComponentValueService activityComponentValueService;
 	@Resource
 	private SignUpConditionEnableMapper signUpConditionEnableMapper;
+	@Resource
+	private SignUpConditionService signUpConditionService;
 	@Resource
 	private ComponentQueryService componentQueryService;
 	@Resource
@@ -978,12 +981,12 @@ public class ActivityQueryService {
 		// set 自定义组件值对象列表
 		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValues(activityId, activity.getTemplateId());
 		createParamDTO.setActivityComponentValues(activityComponentValues);
-		// set 报名条件
-		List<Integer> signUpConditionEnables = signUpConditionEnableMapper.selectList(new QueryWrapper<SignUpConditionEnable>()
-				.lambda()
-				.eq(SignUpConditionEnable::getActivityId, activityId))
-				.stream().map(SignUpConditionEnable::getTemplateComponentId).collect(Collectors.toList());
-		createParamDTO.setSucTemplateComponentIds(signUpConditionEnables);
+//		// set 报名条件
+//		List<Integer> signUpConditionEnables = signUpConditionEnableMapper.selectList(new QueryWrapper<SignUpConditionEnable>()
+//				.lambda()
+//				.eq(SignUpConditionEnable::getActivityId, activityId))
+//				.stream().map(SignUpConditionEnable::getTemplateComponentId).collect(Collectors.toList());
+//		createParamDTO.setSucTemplateComponentIds(signUpConditionEnables);
 		// set 考核管理id
 		InspectionConfig inspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
 		if (inspectionConfig != null) {
