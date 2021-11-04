@@ -175,7 +175,7 @@ public class WorkApiService {
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (!success) {
 			String message = jsonObject.getString("message");
-			log.info("根据作品征集id:{} 更新作品征集信息error:{}", workId, message);
+			log.error("根据参数:{} 更新作品征集信息error:{}", JSON.toJSONString(params), message);
 			throw new BusinessException(message);
 		}
 	}
