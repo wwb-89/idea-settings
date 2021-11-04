@@ -385,9 +385,9 @@ Vue.filter("timestampFormat", function (timestamp) {
     var dateObj = moment(timestamp);
     var year = dateObj.year();
     if (year == new Date().getFullYear()) {
-        return dateObj.format("MM.DD HH:mm");
+        return dateObj.format("MM-DD HH:mm");
     } else {
-        return dateObj.format("YYYY.MM.DD HH:mm");
+        return dateObj.format("YYYY-MM-DD HH:mm");
     }
 
 });
@@ -410,18 +410,18 @@ Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp, forma
         start = startDateObj ? startDateObj.format(format) : "";
         end = endDateObj ? endDateObj.format(format) : "";
     } else if (isThisYear) {
-        start = startDateObj ? startDateObj.format("MM.DD HH:mm") : "";
+        start = startDateObj ? startDateObj.format("MM-DD HH:mm") : "";
         if (isSameDay) {
             end = endDateObj ? endDateObj.format("HH:mm") : "";
         } else {
-            end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+            end = endDateObj ? endDateObj.format("MM-DD HH:mm") : "";
         }
     } else {
-        start = startDateObj ? startDateObj.format("YYYY.MM.DD HH:mm") : "";
+        start = startDateObj ? startDateObj.format("YYYY-MM-DD HH:mm") : "";
         if (isSameDay) {
             end = endDateObj ? endDateObj.format("HH:mm") : "";
         } else {
-            end = endDateObj ? endDateObj.format("YYYY.MM.DD HH:mm") : "";
+            end = endDateObj ? endDateObj.format("YYYY-MM-DD HH:mm") : "";
         }
     }
     var result = start;
