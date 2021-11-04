@@ -593,31 +593,33 @@
                                 <div class="condition-item" v-for="(item, index) in innerAddEditItem.templateConditionDetails">
                                     <el-select v-model="item.fieldName" placeholder="请选择" @change="conditionFieldChange">
                                         <el-option  v-for="(it, idx) in wfwFormFields"
-                                                    v-if="it.compt != 'belonger' && it.compt != 'contact'"
+                                                    v-if="it.compt != 'belonger' && it.compt != 'contact' && (it.name == item.fieldName || !it.selected)"
                                                     :key="idx"
                                                     :label="it.name"
                                                     :value="it.name"
                                         >
                                         </el-option>
                                     </el-select>
-                                    <el-select v-model="item.condition" placeholder="请选择">
-                                        <el-option  v-for="(it, idx) in conditionEnums"
-                                                    :key="idx"
-                                                    :label="it.name"
-                                                    :value="it.value"
-                                        >
-                                        </el-option>
-                                    </el-select>
-                                    <template v-if="item.condition != 'empty' && item.condition != 'un_empty'">
-                                        <el-select v-if="currFormField.type == 'select'" v-model="item.value" placeholder="请选择" style="width: 152px">
-                                            <el-option  v-for="(it, index) in currFormField.options"
-                                                        :key="index"
-                                                        :label="it"
-                                                        :value="it"
+                                    <template v-if="!innerAddEditItem.configOnActivity">
+                                        <el-select v-model="item.condition" placeholder="请选择">
+                                            <el-option  v-for="(it, idx) in conditionEnums"
+                                                        :key="idx"
+                                                        :label="it.name"
+                                                        :value="it.value"
                                             >
                                             </el-option>
                                         </el-select>
-                                        <el-input v-else v-model="item.value" placeholder="请输入"></el-input>
+                                        <template v-if="item.condition != 'empty' && item.condition != 'un_empty'">
+                                            <el-select v-if="currFormField.type == 'select'" v-model="item.value" placeholder="请选择" style="width: 152px">
+                                                <el-option  v-for="(it, index) in currFormField.options"
+                                                            :key="index"
+                                                            :label="it"
+                                                            :value="it"
+                                                >
+                                                </el-option>
+                                            </el-select>
+                                            <el-input v-else v-model="item.value" placeholder="请输入"></el-input>
+                                        </template>
                                     </template>
                                     <i class="icon-minus-circle" @click="removeConditionDetail(index)"></i>
                                 </div>
@@ -924,6 +926,7 @@
                         $this.wfwFormFields = [];
                         app.ajaxGet(url, function (res) {
                             if (res.success) {
+                                $this.resetWfwFormFieldSelected(res.data)
                                 $this.wfwFormFields = res.data
                             } else {
                                 var errorMessage = res.message;
@@ -1632,15 +1635,34 @@
                     },
                     addConditionDetail: function () {
                         var $this = this;
+                        var tplComponentId = typeof $this.addEditItem.id == 'number' ? $this.addEditItem.id : ''
                         $this.innerAddEditItem.templateConditionDetails.push({
-                            templateComponentId: $this.addEditItem && this.addEditItem.id,
+                            templateComponentId: tplComponentId,
                             fieldName: '',
                             condition: '',
                             value: ''
                         })
                     },
+                    resetWfwFormFieldSelected: function (wfwFormFields) {
+                        var $this = this;
+                        if (!wfwFormFields) {
+                            return;
+                        }
+                        var existFieldNames = [];
+                        var conditionDetails = $this.innerAddEditItem && $this.innerAddEditItem.templateConditionDetails;
+                        if (conditionDetails) {
+                            $(conditionDetails).each(function () {
+                                existFieldNames.push(this.fieldName);
+                            });
+                        }
+                        $(wfwFormFields).each(function() {
+                            this.selected = existFieldNames.includes(this.name);
+                        });
+                    },
                     conditionFieldChange: function (value) {
                         var $this = this;
+                        $this.resetWfwFormFieldSelected($this.wfwFormFields);
+
                         var fields = $.grep($this.wfwFormFields, function(item) { return item.name == value; });
                         var field = (fields && fields[0]) || {}
                         if (field.compt == 'selectbox') {
