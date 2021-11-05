@@ -154,10 +154,12 @@ public class ExportRecordHandleService {
             case ACTIVITY_INSPECTION_MANAGE:
                 UserResultQueryDTO queryParam = JSON.parseObject(params, UserResultQueryDTO.class);
                 exportData = userResultQueryService.packageExportData(queryParam);
+                break;
             case ACTIVITY_MANAGE:
                 ActivityManageQueryDTO activityManageQueryParams = JSONObject.parseObject(params, ActivityManageQueryDTO.class);
                 LoginUserDTO exportUser = LoginUserDTO.buildDefault(activityManageQueryParams.getExportUid(), "", activityManageQueryParams.getFid(), "");
                 exportData = activityQueryService.packageExportData(activityManageQueryParams, exportUser);
+                break;
             default:
         }
         exportData.setSheetName(exportTypeEnum.getName());

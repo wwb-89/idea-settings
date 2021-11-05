@@ -183,7 +183,7 @@ public class ActivityQueryService {
 	 * @param activityQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> ListOrgParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
+	public Page<Activity> listOrgParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
 		page = activityMapper.pageOrgParticipate(page, activityQuery);
 		return page;

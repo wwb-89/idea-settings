@@ -47,7 +47,7 @@ public class UserDataPrePushQueueService {
         }
         Integer marketId = activity.getMarketId();
         if (marketId != null) {
-            List<DataPushConfig> dataPushConfigs = dataPushConfigService.ListByMarketId(marketId, DataPushConfig.DataTypeEnum.USER_DATA);
+            List<DataPushConfig> dataPushConfigs = dataPushConfigService.listByMarketId(marketId, DataPushConfig.DataTypeEnum.USER_DATA);
             if (CollectionUtils.isNotEmpty(dataPushConfigs)) {
                 handleMarketDataPush(uid, activityId, dataPushConfigs);
                 return;

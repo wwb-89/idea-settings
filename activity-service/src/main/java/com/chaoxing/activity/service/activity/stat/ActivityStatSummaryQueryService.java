@@ -134,7 +134,7 @@ public class ActivityStatSummaryQueryService {
         // 查询活动对应的收藏数
         Map<Integer, Integer> activityCollectedNumMap = activityCollectionQueryService.statCollectedByActivityIds(activityIds).stream().collect(Collectors.toMap(ActivityCollectionDTO::getActivityId, ActivityCollectionDTO::getCollectedNum, (v1, v2) -> v1));
         // 查询活动对应浏览数
-        Map<Integer, Integer> activityPvMap = activityStatQueryService.listActivityPVByActivityIds(activityIds).stream().collect(Collectors.toMap(ActivityStat::getActivityId, ActivityStat::getPv, (v1, v2) -> v1));
+        Map<Integer, Integer> activityPvMap = activityStatQueryService.listActivityPvByActivityIds(activityIds).stream().collect(Collectors.toMap(ActivityStat::getActivityId, ActivityStat::getPv, (v1, v2) -> v1));
         Map<Integer, String> classifyMap = Maps.newHashMap();
         if (CollectionUtils.isNotEmpty(classifyIds)) {
             List<Classify> classifies = classifyQueryService.listByIds(new ArrayList<>(classifyIds));

@@ -33,7 +33,7 @@ public class UrlUtils {
     * @param paramMap
     * @return java.lang.String
     */
-    public static String packageParam2URL(String url, Map<String, String> paramMap) {
+    public static String packageParam2Url(String url, Map<String, String> paramMap) {
         if (!Pattern.matches(URL_REGEX, url)) {
             throw new BusinessException("url非法");
         }

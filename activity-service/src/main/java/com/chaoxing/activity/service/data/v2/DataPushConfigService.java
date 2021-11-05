@@ -37,7 +37,7 @@ public class DataPushConfigService {
      * @param marketId
      * @return java.util.List<com.chaoxing.activity.model.DataPushConfig>
     */
-    public List<DataPushConfig> ListByMarketId(Integer marketId) {
+    public List<DataPushConfig> listByMarketId(Integer marketId) {
         return dataPushConfigMapper.selectList(new LambdaQueryWrapper<DataPushConfig>()
                 .eq(DataPushConfig::getMarketId, marketId)
                 .eq(DataPushConfig::getEnable, true)
@@ -53,7 +53,7 @@ public class DataPushConfigService {
      * @param dataType
      * @return java.util.List<com.chaoxing.activity.model.DataPushConfig>
     */
-    public List<DataPushConfig> ListByMarketId(Integer marketId, DataPushConfig.DataTypeEnum dataType) {
+    public List<DataPushConfig> listByMarketId(Integer marketId, DataPushConfig.DataTypeEnum dataType) {
         return dataPushConfigMapper.selectList(new LambdaQueryWrapper<DataPushConfig>()
                 .eq(DataPushConfig::getMarketId, marketId)
                 .eq(DataPushConfig::getDataType, dataType.getValue())
