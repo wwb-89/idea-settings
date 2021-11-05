@@ -415,7 +415,8 @@ body {
       }
     }
     .table-img{
-      width: 126px;
+      width: 100%;
+      max-width: 126px;
       height: 60px;
       display: block;
       border-radius: 2px;
@@ -462,7 +463,6 @@ body {
       border-radius: 4px;
       width: 55px;
       height: 26px;
-      font-weight: 500;
       font-size: 13px;
       line-height: 26px;
       text-align: center;
@@ -477,7 +477,6 @@ body {
       border-radius: 4px;
       width: 55px;
       height: 26px;
-      font-weight: 500;
       font-size: 13px;
       line-height: 26px;
       text-align: center;

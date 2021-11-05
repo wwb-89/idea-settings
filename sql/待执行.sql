@@ -58,3 +58,9 @@ CREATE TABLE `t_activity_sign_up_condition` (
      `value` varchar(50) DEFAULT NULL COMMENT '值',
      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='活动报名条件明细表';
+
+
+-- 活动管理列表字段配置数字字段居中显示
+UPDATE t_table_field_detail  set align = 'center'
+WHERE table_field_id = 4 AND
+        `code` in ('signedUpNum', 'personLimit','signedInNum','signedInRate','rateNum','rateScore','qualifiedNum');
