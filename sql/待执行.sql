@@ -139,3 +139,5 @@ CREATE TABLE `t_activity_sign_up_condition` (
 UPDATE t_table_field_detail  set align = 'center'
 WHERE table_field_id = 4 AND
         `code` in ('signedUpNum', 'personLimit','signedInNum','signedInRate','rateNum','rateScore','qualifiedNum');
+
+ALTER TABLE t_sign_up_condition ADD is_config_on_activity TINYINT(1) DEFAULT 0 COMMENT '是否在活动发布时配置';
