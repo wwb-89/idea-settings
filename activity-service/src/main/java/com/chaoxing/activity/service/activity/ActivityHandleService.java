@@ -313,10 +313,8 @@ public class ActivityHandleService {
 			Integer signId = existActivity.getSignId();
 			signCreateParam.setId(signId);
 			handleSign(activity, signCreateParam, loginUser);
-			// 处理活动相关
-			if (!Objects.equals(existActivity.getCoverCloudId(), activity.getCoverCloudId())) {
-				activity.coverCloudIdChange();
-			}
+			// 处理活动封面
+			activity.coverCloudIdChange(existActivity.getCoverCloudId());
 			activityMapper.update(activity, new LambdaUpdateWrapper<Activity>()
 					.eq(Activity::getId, activity.getId())
 					// 一些可能为null的字段需要设置

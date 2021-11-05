@@ -405,8 +405,10 @@ public class Activity {
         setStatus(StatusEnum.DELETED.getValue());
     }
 
-    public void coverCloudIdChange() {
-        setCoverUrl("");
+    public void coverCloudIdChange(String cloudId) {
+        if (!Objects.equals(cloudId, this.getCoverCloudId())) {
+            setCoverUrl("");
+        }
     }
 
     public void beforeCreate(Integer uid, String userName, Integer fid, String orgName) {
