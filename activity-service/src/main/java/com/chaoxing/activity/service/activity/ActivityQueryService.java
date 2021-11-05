@@ -532,13 +532,17 @@ public class ActivityQueryService {
 		Integer fid = loginUser.getFid();
 		Page signedUpPage = signApiService.pageUserSignedUp(new Page(1, Integer.MAX_VALUE), uid, sw);
 		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
+			List<Integer> marketIds = Lists.newArrayList();
 			Integer marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+			if (marketId != null) {
+				marketIds.add(marketId);
+			}
 			// 若flag不为空且市场id不存在，则查询结果为空
 			if (StringUtils.isNotBlank(flag) && marketId == null) {
 				page.setRecords(Lists.newArrayList());
 				return page;
 			}
-			pageSignedUpActivities(page, signedUpPage.getRecords(), Lists.newArrayList(marketId));
+			pageSignedUpActivities(page, signedUpPage.getRecords(), marketIds);
 		}
 		return page;
 	}
