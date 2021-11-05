@@ -25,17 +25,17 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
-/**活动数据推送
+/**活动市场下活动数据推送
  * @author wwb
  * @version ver 1.0
- * @className ActivityDataPushQueueService
+ * @className MarketActivityDataPushQueueService
  * @description
  * @blame wwb
  * @date 2021-10-29 17:00:56
  */
 @Slf4j
 @Service
-public class ActivityDataPushQueueService {
+public class MarketActivityDataPushQueueService {
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -83,14 +83,14 @@ public class ActivityDataPushQueueService {
         }
         Integer configId = dataPushConfig.getId();
         Integer activityId = activity.getId();
-        Integer fid = activity.getCreateFid();
+        Integer formIdFid = dataPushConfig.getFid();
         Integer formUserId = null;
         // 查询已经推送的记录
         ActivityDataPushRecord activityDataPushRecord = marketActivityDataPushRecordService.get(activityId, configId);
         if (activityDataPushRecord != null) {
             formUserId = Optional.ofNullable(activityDataPushRecord.getTargetIdentify()).filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null);
             if (formUserId != null) {
-                FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
+                FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, formIdFid);
                 if (formRecord == null) {
                     // 表单中数据不存在
                     formUserId = null;
@@ -111,10 +111,10 @@ public class ActivityDataPushQueueService {
                 }
                 break;
             default:
-                String wfwFormData = generateWfwFormPushData(activity, formId, fid);
+                String wfwFormData = generateWfwFormPushData(activity, formId, formIdFid);
                 if (formUserId == null) {
                     // 新增
-                    formUserId = wfwFormApiService.fillForm(formId, fid, activity.getCreateUid(), wfwFormData);
+                    formUserId = wfwFormApiService.fillForm(formId, formIdFid, activity.getCreateUid(), wfwFormData);
                     marketActivityDataPushRecordService.add(ActivityDataPushRecord.builder()
                                     .activityId(activityId)
                                     .configId(configId)

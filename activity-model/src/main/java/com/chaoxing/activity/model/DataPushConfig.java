@@ -37,6 +37,8 @@ public class DataPushConfig {
     private String way;
     /** 推送方式值; column: way_value*/
     private String wayValue;
+    /** 机构id; column: fid*/
+    private Integer fid;
     /** 是否启用; column: is_enable*/
     @TableField(value = "is_enable")
     private Boolean enable;

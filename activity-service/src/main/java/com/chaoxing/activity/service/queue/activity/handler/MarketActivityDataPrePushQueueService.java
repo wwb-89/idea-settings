@@ -16,14 +16,14 @@ import java.util.List;
 /**
  * @author wwb
  * @version ver 1.0
- * @className ActivityDataPushQueueService
+ * @className MarketActivityDataPrePushQueueService
  * @description 活动可能配置了很多推送，在此处分发
  * @blame wwb
  * @date 2021-10-29 16:45:31
  */
 @Slf4j
 @Service
-public class ActivityDataPrePushQueueService {
+public class MarketActivityDataPrePushQueueService {
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -32,7 +32,7 @@ public class ActivityDataPrePushQueueService {
     @Resource
     private OrgActivityDataPushQueue orgActivityDataPushQueue;
     @Resource
-    private MarketActivityDataPushQueue activityDataPushQueue;
+    private MarketActivityDataPushQueue marketActivityDataPushQueue;
 
     public void handle(Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
@@ -54,7 +54,7 @@ public class ActivityDataPrePushQueueService {
     private void handleMarketDataPush(Activity activity, List<DataPushConfig> dataPushConfigs) {
         for (DataPushConfig dataPushConfig : dataPushConfigs) {
             MarketActivityDataPushQueue.QueueParamDTO queueParam = new MarketActivityDataPushQueue.QueueParamDTO(activity.getId(), dataPushConfig.getId());
-            activityDataPushQueue.push(queueParam);
+            marketActivityDataPushQueue.push(queueParam);
         }
     }
 

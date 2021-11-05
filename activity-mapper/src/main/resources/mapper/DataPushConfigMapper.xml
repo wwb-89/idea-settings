@@ -8,6 +8,7 @@
         <result column="data_type" jdbcType="VARCHAR" property="dataType" />
         <result column="way" jdbcType="VARCHAR" property="way" />
         <result column="way_value" jdbcType="VARCHAR" property="wayValue" />
+        <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="is_enable" jdbcType="BIT" property="enable" />
         <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -16,7 +17,7 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.market_id, t.name, t.data_type, t.way, t.way_value, t.is_enable, t.is_deleted, 
+        t.id, t.market_id, t.name, t.data_type, t.way, t.way_value, t.fid, t.is_enable, t.is_deleted,
         t.create_time, t.create_uid, t.update_time, t.update_uid
     </sql>
 </mapper>

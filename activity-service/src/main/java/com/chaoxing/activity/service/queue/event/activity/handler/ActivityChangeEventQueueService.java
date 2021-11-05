@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.queue.event.activity.handler;
 import com.chaoxing.activity.dto.event.activity.ActivityChangeEventOrigin;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.activity.ActivityDataPrePushQueue;
+import com.chaoxing.activity.service.queue.activity.MarketActivityDataPrePushQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class ActivityChangeEventQueueService {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private ActivityDataPrePushQueue activityDataPrePushQueue;
+    private MarketActivityDataPrePushQueue activityDataPrePushQueue;
 
     public void handle(ActivityChangeEventOrigin eventOrigin) {
         if (eventOrigin == null) {

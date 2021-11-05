@@ -8,17 +8,17 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-/**活动数据预推送队列
+/**活动市场下活动数据预推送队列
  * @author wwb
  * @version ver 1.0
- * @className ActivityDataPrePushQueue
+ * @className MarketActivityDataPrePushQueue
  * @description
  * @blame wwb
  * @date 2021-10-29 16:39:58
  */
 @Slf4j
 @Service
-public class ActivityDataPrePushQueue implements IQueue<Integer> {
+public class MarketActivityDataPrePushQueue implements IQueue<Integer> {
 
     private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "activity_data_pre_push";
 
