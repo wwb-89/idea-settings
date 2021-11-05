@@ -1914,6 +1914,12 @@
                         if (item.enable) {
                             $this.activity.sucTemplateComponentIds.push(tplComponentId);
                             if (item.allowSignedUp && item.configOnActivity) {
+                                $(item.activityConditionDetails).each(function () {
+                                    // 条件是不限、为空、不为空, 清空value
+                                    if (!this.condition || this.condition == 'empty' || this.condition == 'un_empty') {
+                                        this.value = "";
+                                    }
+                                });
                                 $this.activity.signUpConditions.push(item);
                             }
                         }

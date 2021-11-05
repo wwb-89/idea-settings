@@ -1249,7 +1249,7 @@
                         }
                         var templateConditionDetails = $this.innerAddEditItem.templateConditionDetails;
                         if ($this.innerAddEditItem.configOnActivity) {
-                            if (templateConditionDetails && templateConditionDetails > 0) {
+                            if (templateConditionDetails && templateConditionDetails.length > 0) {
                                 $(templateConditionDetails).each(function () {
                                     this.condition = '';
                                     this.value = '';
@@ -1672,12 +1672,6 @@
                         }
                         $this.currFormField.type = 'input';
                         $this.currFormField.options = [];
-                    },
-                    showConditionValue: function (condition) {
-                        if (condtion == 'empty' || condition == 'un_empty') {
-                            return false;
-                        }
-                        return true;
                     },
                     removeConditionDetail: function (index) {
                         var $this = this;
