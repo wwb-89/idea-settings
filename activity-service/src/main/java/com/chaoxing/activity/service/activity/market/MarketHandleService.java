@@ -289,7 +289,5 @@ public class MarketHandleService {
 		activityMarketService.deleteByMarketId(marketId);
 		// 删除市场id为marketId的活动
 		activityHandleService.deleteByMarketId(marketId);
-
-
     }
 }

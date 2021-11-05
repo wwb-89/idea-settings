@@ -987,4 +987,22 @@ public class ActivityHandleService {
 		ApplicationContextHolder.getBean(ActivityHandleService.class).add(targetActivity, signCreateParam, releaseScopes, loginUser);
 	}
 
+	/**删除市场id为marketId的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:53:26
+	 * @param marketId
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteByMarketId(Integer marketId) {
+		List<Activity> activities = activityQueryService.listByMarketId(marketId);
+		if (CollectionUtils.isEmpty(activities)) {
+			return;
+		}
+		ActivityHandleService handleService = ApplicationContextHolder.getBean(ActivityHandleService.class);
+		activities.forEach(v -> {
+			handleService.delete(v.getId(), marketId, LoginUserDTO.buildDefault(v.getCreateUid(), v.getCreateFid()));
+		});
+	}
 }
