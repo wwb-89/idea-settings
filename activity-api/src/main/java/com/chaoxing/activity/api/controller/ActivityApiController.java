@@ -501,13 +501,13 @@ public class ActivityApiController {
 	* @Description 
 	* @author huxiaolong
 	* @Date 2021-08-12 17:50:59
-	* @param fid
 	* @param activityId
+	* @param fid
 	* @param uid
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("{activityId}/delete/with-shared")
-	public RestRespDTO sharedNewActivity(Integer fid, @PathVariable Integer activityId, Integer uid) {
+	public RestRespDTO sharedNewActivity(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid) {
 		activityHandleService.deleteActivityUnderFid(fid, activityId, uid);
 		return RestRespDTO.success();
 	}
@@ -523,7 +523,7 @@ public class ActivityApiController {
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("{activityId}/update/release-status")
-	public RestRespDTO updateActivityReleaseStatus(@PathVariable Integer activityId, Integer fid, Integer uid, boolean released) {
+	public RestRespDTO updateActivityReleaseStatus(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid, boolean released) {
 		activityHandleService.updateActivityReleaseStatus(activityId, fid, uid, released);
 		return RestRespDTO.success();
 	}
