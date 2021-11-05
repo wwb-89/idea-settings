@@ -113,29 +113,21 @@ public class UserDataPushQueueService {
             }
         }
         Boolean valid = Optional.ofNullable(userStatSummary.getValid()).orElse(false);
-        if (valid) {
-            String wfwFormData = generateWfwFormPushData(activity, userStatSummary, dataPushConfig);
-            if (formUserId == null) {
-                // 新增
-                formUserId = wfwFormApiService.fillForm(formId, formFid, activity.getCreateUid(), wfwFormData);
-            } else {
-                // 更新
-                wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
-            }
-            marketUserDataPushRecordService.addOrUpdate(UserDataPushRecord.builder()
-                    .uid(uid)
-                    .activityId(activityId)
-                    .configId(configId)
-                    .marketId(activity.getMarketId())
-                    .targetIdentify(String.valueOf(formUserId))
-                    .build());
+        String wfwFormData = generateWfwFormPushData(activity, userStatSummary, dataPushConfig);
+        if (formUserId == null) {
+            // 新增
+            formUserId = wfwFormApiService.fillForm(formId, formFid, activity.getCreateUid(), wfwFormData);
         } else {
-            // 已删除
-            marketUserDataPushRecordService.delete(userDataPushRecord.getId());
-            if (formUserId != null) {
-                wfwFormApiService.deleteFormRecord(formUserId, formId);
-            }
+            // 更新
+            wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
         }
+        marketUserDataPushRecordService.addOrUpdate(UserDataPushRecord.builder()
+                .uid(uid)
+                .activityId(activityId)
+                .configId(configId)
+                .marketId(activity.getMarketId())
+                .targetIdentify(String.valueOf(formUserId))
+                .build());
     }
 
     private String generateWfwFormPushData(Activity activity, UserStatSummary userStatSummary, DataPushConfig dataPushConfig) {
