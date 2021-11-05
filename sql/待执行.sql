@@ -54,6 +54,7 @@ CREATE TABLE `t_data_push_config`  (
     `data_type` varchar(50) NULL COMMENT '推送数据类型',
     `way` varchar(50) NULL COMMENT '推送方式',
     `way_value` varchar(255) NULL COMMENT '推送方式值',
+    `fid` int(11) NOT NULL COMMENT '机构id',
     `is_enable` tinyint(1) NULL DEFAULT 1 COMMENT '是否启用',
     `is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否删除',
     `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
