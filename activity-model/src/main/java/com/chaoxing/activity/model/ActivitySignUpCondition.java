@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +46,8 @@ public class ActivitySignUpCondition {
 
     public static ActivitySignUpCondition buildFromTemplateSignUpCondition(TemplateSignUpCondition signUpCondition) {
         return ActivitySignUpCondition.builder()
-                .condition("")
-                .value("")
+                .condition(Optional.ofNullable(signUpCondition.getCondition()).orElse(""))
+                .value(Optional.ofNullable(signUpCondition.getValue()).orElse(""))
                 .templateComponentId(signUpCondition.getTemplateComponentId())
                 .fieldName(signUpCondition.getFieldName()).build();
     }

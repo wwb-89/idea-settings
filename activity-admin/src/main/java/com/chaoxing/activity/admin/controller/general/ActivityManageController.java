@@ -196,7 +196,7 @@ public class ActivityManageController {
 					(v1, v2) -> v2));
 		}
 		model.addAttribute("formFieldStructures", formFieldStructures);
-		model.addAttribute("sucTplComponentIds", signUpConditionService.listEnableSignUpConditionTplComponentIds(activityId));
+		model.addAttribute("sucTplComponentIds", signUpConditionService.listActivityEnabledTemplateComponentId(activityId));
 		model.addAttribute("signUpConditions", signUpConditions);
 		model.addAttribute("conditionEnums", ConditionDTO.list());
 		return "pc/activity-add-edit-new";
