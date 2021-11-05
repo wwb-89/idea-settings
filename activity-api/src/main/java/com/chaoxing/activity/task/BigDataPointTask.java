@@ -1,5 +1,6 @@
 package com.chaoxing.activity.task;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.data.BigDataPointTaskHandleService;
 import com.chaoxing.activity.service.queue.BigDataPointQueue;
 import com.chaoxing.activity.service.queue.BigDataPointTaskQueue;
@@ -45,6 +46,7 @@ public class BigDataPointTask {
         try {
             bigDataPointTaskHandleService.handleTask(queueParam);
         } catch (Exception e) {
+            log.error("根据参数:{} 处理大数据积分任务error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
             bigDataPointTaskQueueService.push(queueParam);
         }
@@ -66,6 +68,7 @@ public class BigDataPointTask {
         try {
             bigDataPointTaskHandleService.dataPush(queueParam);
         } catch (Exception e) {
+            log.error("根据参数:{} 处理积分推送任务error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
             bigDataPointQueueService.push(queueParam);
         }

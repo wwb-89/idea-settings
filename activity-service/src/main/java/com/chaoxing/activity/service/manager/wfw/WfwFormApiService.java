@@ -282,7 +282,7 @@ public class WfwFormApiService {
 			return jsonObject.getInteger("formUserId");
 		} else {
 			String errorMessage = jsonObject.getString("msg");
-			log.info("根据参数:{}, 填写表单error:{}", JSON.toJSONString(paramMap), errorMessage);
+			log.error("根据参数:{}, 填写表单error:{}", JSON.toJSONString(paramMap), errorMessage);
 			throw new BusinessException(errorMessage);
 		}
 	}
@@ -338,7 +338,7 @@ public class WfwFormApiService {
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (!success) {
 			String errorMessage = jsonObject.getString("msg");
-			log.info("根据参数:{}更新表单数据error:{}", JSON.toJSONString(paramsMap), errorMessage);
+			log.error("根据参数:{}更新表单数据error:{}", JSON.toJSONString(paramsMap), errorMessage);
 			throw new BusinessException(errorMessage);
 		}
 	}

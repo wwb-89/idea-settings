@@ -43,7 +43,7 @@ public class IntegralPushTask {
 			integralApiService.pushIntegral(integralPush);
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.error("积分推送:{} error:{}", JSON.toJSONString(integralPush), e.getMessage());
+			log.error("根据参数:{} 处理积分推送任务error:{}", JSON.toJSONString(integralPush), e.getMessage());
 			integralPushQueueService.push(integralPush);
 
 		}

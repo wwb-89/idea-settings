@@ -36,6 +36,7 @@ public class ExportTask {
         try {
             exportRecordService.exportHandle(taskId, PathUtils.getUploadRootPath());
         } catch (Exception e) {
+            e.printStackTrace();
             exportQueueService.push(taskId);
         }
     }
