@@ -19,7 +19,7 @@
 	<div class="header-con">
 		<div class="header-inner-content">
 			<div class="searchDiv fl">
-				<input type="text" placeholder="搜索标题" class="inputValue" v-model.trim="sw" @keyup.enter="search">
+				<input type="text" placeholder="搜索" class="inputValue" v-model.trim="sw" @keyup.enter="search">
 				<i class="icon-delete1" v-show="sw" @click="clearSearch"></i>
 				<i class="icon-search1" @click="search"></i>
 			</div>
