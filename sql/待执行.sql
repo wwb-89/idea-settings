@@ -121,7 +121,7 @@ CREATE TABLE `t_template_sign_up_condition` (
                                                 `condition` varchar(50) DEFAULT NULL COMMENT '条件',
                                                 `value` varchar(50) DEFAULT NULL COMMENT '值',
                                                 PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='模版的报名条件明细表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='模版的报名条件明细表';
 
 -- 创建活动报名条件明细表
 CREATE TABLE `t_activity_sign_up_condition` (
@@ -132,7 +132,7 @@ CREATE TABLE `t_activity_sign_up_condition` (
                                                 `condition` varchar(50) DEFAULT NULL COMMENT '条件',
                                                 `value` varchar(50) DEFAULT NULL COMMENT '值',
                                                 PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='活动报名条件明细表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动报名条件明细表';
 
 
 -- 活动管理列表字段配置数字字段居中显示
