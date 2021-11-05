@@ -66,7 +66,7 @@
                             <label class="label">标题</label>
                             <div class="input-box">
                                 <div class="custom-input" contenteditable="true" @blur="blurEdit">
-                                    您收藏的<span class="tag color1">标签一</span>即将开始报名！
+                                    您收藏的<input type="text" class="tag" value="标签一" readonly style="width: 40px;">即将开始报名！
                                 </div>
                             </div>
                         </div>
@@ -74,9 +74,9 @@
                             <label class="label">内容</label>
                             <div class="input-box">
                                 <div class="custom-input desc-box" contenteditable="true" @blur="blurEdit">
-                                    您好，<span class="tag color1">参与人</span>，您收藏的<span class="tag color1">活动名称</span><br>
-                                    活动名称：<span class="tag color1">活动名称</span><br>
-                                    报名时间：<span class="tag color2">报名时间</span>
+                                    您好，<input type="text" class="tag" value="参与人" readonly style="width: 45px;">，您收藏的<input type="text" class="tag" value="活动名称" readonly style="width: 55px;" ><br>
+                                    活动名称：<input type="text" class="tag" value="活动名称" readonly style="width: 55px;"><br>
+                                    报名时间：<input type="text" class="tag" value="报名时间" readonly style="width: 55px;"></span>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                             <label class="label">可插入字段</label>
                             <div class="input-box">
                                 <el-select v-model="form.field" placeholder="请选择" size="small" @change="fieldChange" class="select-field">
-                                    <el-option v-for="(item,index) in fieldList" :key="index" :lable="item.label"
+                                    <el-option v-for="(item,index) in fieldList" :key="index" :label="item.label"
                                         :value="item">
                                         <span style="float: left">{{ item.label }}</span>
                                         <span style="float: right;"
@@ -126,7 +126,7 @@
             el: '#index',
             data: function () {
                 return {
-                    editRulePop: false,
+                    editRulePop: true,
                     form: {
                         name: '已收藏',
                         time: '',
@@ -383,13 +383,17 @@
                 fieldChange: function (params) {
                     // console.log(params)
                     if (this.position) {
-                        var span = document.createElement('span')
-                        if (params.type == 1) {
-                            span.innerHTML = `<span class="tag color1">${params.label}</span>`
-                        } else if (params.type == 2) {
-                            span.innerHTML = `<span class="tag color2">${params.label}</span>`
-                        }
-                        this.position.insertNode(span)
+                        var input = document.createElement('input')
+                        // 输入框得传入宽度，不能自适应
+                        var wid = (params.label.length + 1)*10 + 5;
+                        input.value = params.label;
+                        input.style.width = wid + "px";
+                        $(input).attr({
+                            "type":"text",
+                            "class":"tag",
+                            "readonly":"readonly",
+                        });
+                        this.position.insertNode(input);
                     }
                 },
             }
