@@ -94,14 +94,14 @@ public class UserDataPushQueueService {
         Integer uid = userStatSummary.getUid();
         Integer configId = dataPushConfig.getId();
         Integer activityId = activity.getId();
-        Integer fid = activity.getCreateFid();
+        Integer formFid = dataPushConfig.getFid();
         Integer formUserId = null;
         // 查询已经推送的记录
         UserDataPushRecord userDataPushRecord = marketUserDataPushRecordService.get(uid, activityId, configId);
         if (userDataPushRecord != null) {
             formUserId = Optional.ofNullable(userDataPushRecord.getTargetIdentify()).filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null);
             if (formUserId != null) {
-                FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
+                FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, formFid);
                 if (formRecord == null) {
                     // 表单中数据不存在
                     formUserId = null;
@@ -117,7 +117,7 @@ public class UserDataPushQueueService {
             String wfwFormData = generateWfwFormPushData(activity, userStatSummary, dataPushConfig);
             if (formUserId == null) {
                 // 新增
-                formUserId = wfwFormApiService.fillForm(formId, fid, activity.getCreateUid(), wfwFormData);
+                formUserId = wfwFormApiService.fillForm(formId, formFid, activity.getCreateUid(), wfwFormData);
             } else {
                 // 更新
                 wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
@@ -145,8 +145,8 @@ public class UserDataPushQueueService {
         }
         JSONArray result = new JSONArray();
         Integer formId = Integer.parseInt(dataPushConfig.getWayValue());
-        Integer fid = activity.getCreateFid();
-        List<FormStructureDTO> formInfos = wfwFormApiService.getFormStructure(formId, fid);
+        Integer formFid = dataPushConfig.getFid();
+        List<FormStructureDTO> formInfos = wfwFormApiService.getFormStructure(formId, formFid);
         if (CollectionUtils.isNotEmpty(formInfos)) {
             List<String> handledAlias = Lists.newArrayList();
             for (FormStructureDTO formInfo : formInfos) {
