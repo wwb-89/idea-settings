@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity.template;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.*;
@@ -78,7 +79,8 @@ public class TemplateHandleService {
 		List<TemplateComponent> originTemplateComponents = templateComponentService.listTemplateComponentByTemplateId(originTemplateId);
 		// 组件id列表
 		List<Integer> templateComponentIds = Optional.ofNullable(originTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
-		List<SignUpCondition> originSignUpConditions = signUpConditionService.listByTemplateComponentIds(templateComponentIds);
+		// todo 克隆应该将明细条件也克隆了
+		List<SignUpCondition> originSignUpConditions = signUpConditionService.listWithTemplateDetailsByTplComponentIds(templateComponentIds);
 		List<SignUpFillInfoType> originSignUpFillInfoTypes = signUpFillInfoTypeService.listByTemplateComponentIds(templateComponentIds);
 
 		// 克隆
@@ -117,5 +119,17 @@ public class TemplateHandleService {
 			return;
 		}
 		templateMapper.updateById(template);
+    }
+
+	/**根据marketId删除对应的模板
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:52:35
+	 * @param marketId
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+    public void deleteByMarketId(Integer marketId) {
+		templateMapper.delete(new LambdaUpdateWrapper<Template>().eq(Template::getMarketId, marketId));
     }
 }

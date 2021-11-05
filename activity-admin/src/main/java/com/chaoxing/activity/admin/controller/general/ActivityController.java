@@ -1,6 +1,7 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -10,14 +11,19 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -55,7 +61,9 @@ public class ActivityController {
 	@Resource
 	private ClassifyQueryService classifyQueryService;
 	@Resource
-	private MarketQueryService marketQueryService;
+	private SignUpConditionService signUpConditionService;
+	@Resource
+	private WfwFormApiService formApiService;
 
 	/**新活动管理主页
 	 * @Description
@@ -124,6 +132,22 @@ public class ActivityController {
 		List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);
 		List<WfwAreaDTO> participatedOrgs = Optional.ofNullable(wfwAreaDtos).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).collect(Collectors.toList());
 		model.addAttribute("participatedOrgs", participatedOrgs);
+
+		List<SignUpCondition> signUpConditions = signUpConditionService.listWithActivityConditionsByTemplate(templateId);
+		// 获取表单结构map
+		List<String> formIds = signUpConditions.stream().map(SignUpCondition::getOriginIdentify).filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
+		Map<String, List<WfwFormFieldVO>> formFieldStructures = Maps.newHashMap();
+		if (CollectionUtils.isNotEmpty(formIds)) {
+			formFieldStructures = formIds.stream().collect(Collectors.toMap(
+					v -> v,
+					v -> formApiService.getFormStructure(Integer.valueOf(v), fid)
+							.stream().map(WfwFormFieldVO::buildFromWfwFormFieldDTO)
+							.collect(Collectors.toList()),
+					(v1, v2) -> v2));
+		}
+		model.addAttribute("formFieldStructures", formFieldStructures);
+		model.addAttribute("signUpConditions", signUpConditions);
+		model.addAttribute("conditionEnums", ConditionDTO.list());
 		return "pc/activity-add-edit-new";
 	}
 }

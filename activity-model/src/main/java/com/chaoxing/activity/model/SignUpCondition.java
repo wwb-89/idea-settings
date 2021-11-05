@@ -44,6 +44,15 @@ public class SignUpCondition {
     /** 是否允许报名（记录存在的时候）; column: is_allow_signed_up*/
     @TableField(value = "is_allow_signed_up")
     private Boolean allowSignedUp;
+    /** 是否在活动发布时配置; column: is_config_on_activity*/
+    @TableField(value = "is_config_on_activity")
+    private Boolean configOnActivity;
+
+    /** 模板条件明细 */
+    @TableField(exist = false)
+    private List<TemplateSignUpCondition> templateConditionDetails;
+    @TableField(exist = false)
+    private List<ActivitySignUpCondition> activityConditionDetails;
 
     public SignUpCondition cloneToNewTemplateComponentId(Integer templateComponentId) {
         return SignUpCondition.builder()

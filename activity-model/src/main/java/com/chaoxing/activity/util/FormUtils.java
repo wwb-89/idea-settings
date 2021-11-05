@@ -1,11 +1,13 @@
 package com.chaoxing.activity.util;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
+import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.dto.manager.form.FormUserDTO;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -284,4 +286,29 @@ public class FormUtils {
 		return address;
 	}
 
+	/**获取下拉字段的选项列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-02 18:17:46
+	 * @param fs
+	 * @return java.util.List<java.lang.String>
+	 */
+	public static List<String> getOptionsFormStructure(FormStructureDTO fs) {
+		JSONObject field = fs.getField();
+		List<String> options = Lists.newArrayList();
+		if (field == null) {
+			return options;
+		}
+		JSONArray optionsJsonArray = field.getJSONArray("options");
+		if (CollectionUtils.isNotEmpty(optionsJsonArray)) {
+			optionsJsonArray.forEach(o -> {
+				JSONObject option = (JSONObject) o;
+				String type = option.getString("title");
+				if (StringUtils.isNotBlank(type)) {
+					options.add(type);
+				}
+			});
+		}
+		return options;
+	}
 }

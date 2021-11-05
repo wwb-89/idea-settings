@@ -29,6 +29,7 @@ import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
@@ -102,6 +103,8 @@ public class ActivityQueryService {
 	private ActivityComponentValueService activityComponentValueService;
 	@Resource
 	private SignUpConditionEnableMapper signUpConditionEnableMapper;
+	@Resource
+	private SignUpConditionService signUpConditionService;
 	@Resource
 	private ComponentQueryService componentQueryService;
 	@Resource
@@ -977,12 +980,6 @@ public class ActivityQueryService {
 		// set 自定义组件值对象列表
 		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValues(activityId, activity.getTemplateId());
 		createParamDTO.setActivityComponentValues(activityComponentValues);
-		// set 报名条件
-		List<Integer> signUpConditionEnables = signUpConditionEnableMapper.selectList(new QueryWrapper<SignUpConditionEnable>()
-				.lambda()
-				.eq(SignUpConditionEnable::getActivityId, activityId))
-				.stream().map(SignUpConditionEnable::getTemplateComponentId).collect(Collectors.toList());
-		createParamDTO.setSucTemplateComponentIds(signUpConditionEnables);
 		// set 考核管理id
 		InspectionConfig inspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
 		if (inspectionConfig != null) {
@@ -1074,6 +1071,20 @@ public class ActivityQueryService {
 		}
     	return activityMapper.selectList(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId)).stream().findFirst().orElse(null);
     }
+
+	/**查询marketId下非删除状态的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:42:19
+	 * @param marketId
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	 */
+	public List<Activity> listByMarketId(Integer marketId) {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getMarketId, marketId)
+				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+				.select(Activity::getId, Activity::getCreateUid, Activity::getCreateFid));
+	}
 
     /**查询机构创建的作品征集列表（未删除的活动）
      * @Description 

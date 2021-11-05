@@ -14,9 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**表单数据对象
  * @author wwb
@@ -167,6 +165,32 @@ public class FormDataDTO {
 			}
 		}
 		return null;
+	}
+
+
+	/**在表单记录中，根据用户别名alias，查询出用户uid对应的表单记录
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-05 11:31:19
+	 * @param wfwFormData
+	 * @param fieldAlias
+	 * @param uid
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.form.FormDataDTO>
+	 */
+	public static List<FormDataDTO> listUserFormData(List<FormDataDTO> wfwFormData, String fieldAlias, Integer uid) {
+		List<FormDataDTO> userFormData = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(wfwFormData)) {
+			// 根据fieldName找到字段id
+			if (StringUtils.isNotBlank(fieldAlias)) {
+				for (FormDataDTO wfwFormDatum : wfwFormData) {
+					Integer userId = wfwFormDatum.getUidByAlias(fieldAlias);
+					if (Objects.equals(uid, userId)) {
+						userFormData.add(wfwFormDatum);
+					}
+				}
+			}
+		}
+		return userFormData;
 	}
 
 }

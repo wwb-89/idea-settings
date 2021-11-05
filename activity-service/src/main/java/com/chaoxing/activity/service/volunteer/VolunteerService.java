@@ -10,6 +10,7 @@ import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
+import com.chaoxing.activity.util.FormUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -100,17 +101,8 @@ public class VolunteerService {
         List<FormStructureDTO> formStructures = formApiService.getFormStructure(formId, fid);
 
         for (FormStructureDTO fs: formStructures) {
-            if (Objects.equals("type", fs.getAlias()) && fs.getField() != null) {
-                JSONArray options = fs.getField().getJSONArray("options");
-                if (CollectionUtils.isNotEmpty(options)) {
-                    options.forEach(o -> {
-                        JSONObject option = (JSONObject) o;
-                        String type = option.getString("title");
-                        if (StringUtils.isNotBlank(type)) {
-                            serviceTypeList.add(type);
-                        }
-                    });
-                }
+            if (Objects.equals("type", fs.getAlias())) {
+                serviceTypeList = FormUtils.getOptionsFormStructure(fs);
                 break;
             }
         }

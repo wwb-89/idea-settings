@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity.market;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OperateUserDTO;
@@ -9,6 +10,8 @@ import com.chaoxing.activity.dto.manager.wfw.WfwAppParamDTO;
 import com.chaoxing.activity.mapper.MarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.ActivityMarketService;
 import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAppApiService;
@@ -46,6 +49,10 @@ public class MarketHandleService {
 	private WfwAppApiService wfwAppApiService;
 	@Resource
 	private MarketValidationService marketValidationService;
+	@Resource
+	private ActivityMarketService activityMarketService;
+	@Resource
+	private ActivityHandleService activityHandleService;
 
 
 	/**单独创建活动市场
@@ -258,4 +265,29 @@ public class MarketHandleService {
 		return newMarket;
 	}
 
+	/**根据市场wfwAppId删除市场，及市场关联的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:52:19
+	 * @param wfwAppId
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+    public void deleteByWfwAppId(Integer wfwAppId) {
+		Market market = marketMapper.selectList(new LambdaQueryWrapper<Market>().eq(Market::getWfwAppId, wfwAppId)).stream().findFirst().orElse(null);
+		if (market == null) {
+			return;
+		}
+		Integer marketId = market.getId();
+		// 手动删除市场
+		marketMapper.update(null, new LambdaUpdateWrapper<Market>()
+				.eq(Market::getId, marketId)
+				.set(Market::getDeleted, true));
+		// 删除市场下的模板
+		templateHandleService.deleteByMarketId(marketId);
+		// 删除市场下关联的活动
+		activityMarketService.deleteByMarketId(marketId);
+		// 删除市场id为marketId的活动
+		activityHandleService.deleteByMarketId(marketId);
+    }
 }

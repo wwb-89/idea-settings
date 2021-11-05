@@ -2,12 +2,15 @@ package com.chaoxing.activity.dto.manager.form;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**表单结构对象
  * @author wwb
@@ -37,5 +40,21 @@ public class FormStructureDTO {
 	private JSONArray values;
 	/** 嵌套表格 */
 	private List<FormStructureDTO> compts;
+
+	/**通过字段名称获取别名
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-05 11:15:28
+	 * @param formStructure
+	 * @param label
+	 * @return java.lang.String
+	 */
+	public static String getFieldAliasByLabel(List<FormStructureDTO> formStructure, String label) {
+		return Optional.ofNullable(formStructure)
+				.orElse(Lists.newArrayList())
+				.stream().filter(v -> Objects.equals(v.getLabel(), label))
+				.findFirst().map(FormStructureDTO::getAlias).orElse(null);
+
+	}
 
 }

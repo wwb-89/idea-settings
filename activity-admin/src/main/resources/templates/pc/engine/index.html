@@ -494,7 +494,7 @@
                         </el-form-item>
                         <template v-if="addEditItem.dataOrigin == 'form'">
                             <el-form-item label="选择表单" class="marginBottom20">
-                                <el-select v-model="addEditItem.originIdentify" placeholder="请选择" @change="selectForm">
+                                <el-select v-model="addEditItem.originIdentify" placeholder="请选择" @change="loadWfwFormFields">
                                     <el-option
                                             v-for="item in wfwForms"
                                             :key="item.id"
@@ -556,7 +556,7 @@
                         <el-input v-model="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
                         <el-input v-model="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
                         <el-form-item label="数据来源" class="marginBottom20">
-                            <el-select v-model="innerAddEditItem.originIdentify" placeholder="请选择关联表单" @change="selectForm">
+                            <el-select v-model="innerAddEditItem.originIdentify" placeholder="请选择关联表单" @change="loadWfwFormFields">
                                 <el-option v-for="item in wfwForms"
                                            :key="item.id"
                                            :label="item.name"
@@ -567,31 +567,65 @@
                         </el-form-item>
                         <div class="marginBottom20">
                             <p class="tips marginBottom8">报名用户</p>
-                            <div class="three">
-                                <el-select v-model="baomingzhe" placeholder="" class="width186">
-                                    <el-option label="报名者" value="1"></el-option>
-                                </el-select>
-                                <span>等于</span>
-                                <el-select v-model="innerAddEditItem.fieldName" placeholder="请选择"  class="width186">
+                            <div class="three" style="display: flex">
+                                <el-select v-model="innerAddEditItem.fieldName" placeholder="请选择"  class="width186" style="width: 150px; margin-right: 10px">
                                     <el-option  v-for="(item, index) in wfwFormFields"
+                                                v-if="item.compt == 'belonger' || item.compt == 'contact'"
                                                 :key="index"
                                                 :label="item.name"
                                                 :value="item.name"
                                     >
                                     </el-option>
                                 </el-select>
-                            </div>
-                        </div>
-                        <div class="marginBottom20">
-                            <p class="tips marginBottom8">判断条件</p>
-                            <div class="three">
-                                <el-select v-model="innerAddEditItem.allowSignedUp" placeholder="" class="width150">
-                                    <el-option label="不为空" :value="true"></el-option>
-                                    <el-option label="为空" :value="false"></el-option>
+                                <el-select v-model="innerAddEditItem.allowSignedUp" placeholder="" class="width150" style="width: 120px">
+                                    <el-option label="存在" :value="true"></el-option>
+                                    <el-option label="不存在" :value="false"></el-option>
                                 </el-select>
                                 <span>时，可以报名</span>
                             </div>
                         </div>
+                        <template v-if="innerAddEditItem.allowSignedUp">
+                            <div class="marginBottom20 display-flex">
+                                <label>设置条件</label>
+                                <el-switch v-model="innerAddEditItem.configOnActivity" class="margin-auto" inactive-text="活动发起时配置字段值"></el-switch>
+                            </div>
+                            <div class="condition-box">
+                                <div class="condition-item" v-for="(item, index) in innerAddEditItem.templateConditionDetails">
+                                    <el-select v-model="item.fieldName" placeholder="请选择" @change="conditionFieldChange">
+                                        <el-option  v-for="(it, idx) in wfwFormFields"
+                                                    v-if="it.compt != 'belonger' && it.compt != 'contact' && (it.name == item.fieldName || !it.selected)"
+                                                    :key="idx"
+                                                    :label="it.name"
+                                                    :value="it.name"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                    <template v-if="!innerAddEditItem.configOnActivity">
+                                        <el-select v-model="item.condition" placeholder="请选择">
+                                            <el-option  v-for="(it, idx) in conditionEnums"
+                                                        :key="idx"
+                                                        :label="it.name"
+                                                        :value="it.value"
+                                            >
+                                            </el-option>
+                                        </el-select>
+                                        <template v-if="item.condition != 'empty' && item.condition != 'un_empty'">
+                                            <el-select v-if="currFormField.type == 'select'" v-model="item.value" placeholder="请选择" style="width: 152px">
+                                                <el-option  v-for="(it, index) in currFormField.options"
+                                                            :key="index"
+                                                            :label="it"
+                                                            :value="it"
+                                                >
+                                                </el-option>
+                                            </el-select>
+                                            <el-input v-else v-model="item.value" placeholder="请输入"></el-input>
+                                        </template>
+                                    </template>
+                                    <i class="icon-minus-circle" @click="removeConditionDetail(index)"></i>
+                                </div>
+                                <div class="add-box" style="cursor: pointer" @click="addConditionDetail"><i class="icon-plus-circle"></i>添加条件</div>
+                            </div>
+                        </template>
                     </el-form>
                 </div>
                 <div class="footer">
@@ -665,7 +699,7 @@
                     marketId: [[${marketId}]],
                     currTemplateId: [[${templateId}]],
                     templateInfo: [[${templateInfo}]],
-                    wfwForms: [[${wfwForms}]],
+                    wfwForms: [],
                     wfwFormFields: [],
                     wfwFormTypes: [
                         {label: "普通采集表单", value: "form"},
@@ -732,6 +766,8 @@
                     // uncheckCode
                     nonDefaultCheckedCodes: ["wfw_participation_scope", "sign_up_condition"],
                     defaultRequiredCodes: ["sign_up_time_scope"],
+                    conditionEnums: [[${conditionEnums}]],
+                    currFormField: { type: 'input', options: []},
                     // v-model 临时变量
                     scoreNum: 0,
                     baomingzhe:'报名者',
@@ -744,6 +780,10 @@
                 },
                 created: function () {
                     var $this = this;
+                    $([[${wfwForms}]]).each(function () {
+                        this.id = this.id.toString();
+                        $this.wfwForms.push(this);
+                    });
                     $this.initData();
                 },
                 mounted: function () {
@@ -849,7 +889,7 @@
                         };
                     },
                     getInitSignUpCondition: function () {
-                        return { fid: this.fid, originIdentify: '', fieldName: '', allowSignedUp: false }
+                        return { fid: this.fid, originIdentify: '', fieldName: '', allowSignedUp: false, configOnActivity: false, templateConditionDetails: [] }
                     },
                     getInitSignUpFillInfoType: function () {
                         return { type: 'form', templateType: '' }
@@ -879,13 +919,14 @@
                             }]);
                         }
                     },
-                    selectForm: function (value) {
+                    loadWfwFormFields: function (formId) {
                         var $this = this;
-                        var url = ctx + "/api/wfw-form/" + value + "/field?fid=" + $this.fid;
+                        var url = ctx + "/api/wfw-form/" + formId + "/field?fid=" + $this.fid;
                         // 置空
                         $this.wfwFormFields = [];
                         app.ajaxGet(url, function (res) {
                             if (res.success) {
+                                $this.resetWfwFormFieldSelected(res.data)
                                 $this.wfwFormFields = res.data
                             } else {
                                 var errorMessage = res.message;
@@ -897,7 +938,6 @@
                         }, function () {
                             app.showMsg("加载表单字段失败");
                         });
-
                     },
                     // 打开添加字段弹框
                     openAddFieldDialog: function () {
@@ -1076,6 +1116,9 @@
                         $this.currEditIndex = index;
                         var cmp = $.grep($this.components, function (it) { return it.id == item.componentId; })[0];
                         $this.addEditItem = $.extend({}, cmp);
+                        if ($this.addEditItem.originIdentify) {
+                            $this.loadWfwFormFields($this.addEditItem.originIdentify)
+                        }
                     },
                     // 主界面编辑时用到的统一弹窗方法
                     // index -> templateComponents[index], item -> templateComponent
@@ -1112,6 +1155,9 @@
                         $this.addEditItem = $.extend({}, $this.templateComponents[index].children[idx]);
                         if (item.code == "sign_up_condition") {
                             $this.innerAddEditItem = $this.addEditItem.signUpCondition;
+                            if ($this.innerAddEditItem.originIdentify) {
+                                $this.loadWfwFormFields($this.innerAddEditItem.originIdentify)
+                            }
                         } else if (item.code == "sign_up_fill_info") {
                             $this.innerAddEditItem = $this.addEditItem.signUpFillInfoType;
                         }
@@ -1176,6 +1222,10 @@
                     confirmChildrenComponentEdit: function (code) {
                         var $this = this;
                         if (code == "sign_up_condition") {
+                            var validCondition = $this.validateSignUpCondition();
+                            if (!validCondition) {
+                                return;
+                            }
                             $this.addEditItem.signUpCondition = $this.innerAddEditItem;
                         } else if (code == "sign_up_fill_info") {
                             $this.addEditItem.signUpFillInfoType = $this.innerAddEditItem;
@@ -1187,6 +1237,37 @@
                             $this.templateComponents[$this.currEditIndex].children[$this.innerCurrEditIndex] = $.extend({}, $this.addEditItem);
                         }
                         $this.initEditData();
+                    },
+                    // 校验报名条件填写内容是否合格
+                    validateSignUpCondition: function () {
+                        var $this = this;
+                        if (!$this.innerAddEditItem.allowSignedUp) {
+                            // xxx, 不存在
+                            $this.innerAddEditItem.configOnActivity = false;
+                            $this.innerAddEditItem.templateConditionDetails = [];
+                            return true;
+                        }
+                        var templateConditionDetails = $this.innerAddEditItem.templateConditionDetails;
+                        if ($this.innerAddEditItem.configOnActivity) {
+                            if (templateConditionDetails && templateConditionDetails > 0) {
+                                $(templateConditionDetails).each(function () {
+                                    this.condition = '';
+                                    this.value = '';
+                                });
+                            }
+                            return true;
+                        }
+                        for (var i = 0; i < templateConditionDetails.length; i++) {
+                            if (!templateConditionDetails[i].fieldName) {
+                                app.showMsg("请选择条件字段")
+                                return false;
+                            }
+                            if (!templateConditionDetails[i].condition) {
+                                app.showMsg(templateConditionDetails[i].fieldName + "条件不能为空")
+                                return false;
+                            }
+                        }
+                        return true;
                     },
                     // 配置页面基础信息关联移除操作 --> 主要针对 pid = 0 item : templateComponent
                     removeComponentAssociate1: function (index, item) {
@@ -1552,6 +1633,56 @@
                             $('.toast-box').fadeOut();
                         }, 1500)
                     },
+                    addConditionDetail: function () {
+                        var $this = this;
+                        var tplComponentId = typeof $this.addEditItem.id == 'number' ? $this.addEditItem.id : ''
+                        $this.innerAddEditItem.templateConditionDetails.push({
+                            templateComponentId: tplComponentId,
+                            fieldName: '',
+                            condition: '',
+                            value: ''
+                        })
+                    },
+                    resetWfwFormFieldSelected: function (wfwFormFields) {
+                        var $this = this;
+                        if (!wfwFormFields) {
+                            return;
+                        }
+                        var existFieldNames = [];
+                        var conditionDetails = $this.innerAddEditItem && $this.innerAddEditItem.templateConditionDetails;
+                        if (conditionDetails) {
+                            $(conditionDetails).each(function () {
+                                existFieldNames.push(this.fieldName);
+                            });
+                        }
+                        $(wfwFormFields).each(function() {
+                            this.selected = existFieldNames.includes(this.name);
+                        });
+                    },
+                    conditionFieldChange: function (value) {
+                        var $this = this;
+                        $this.resetWfwFormFieldSelected($this.wfwFormFields);
+
+                        var fields = $.grep($this.wfwFormFields, function(item) { return item.name == value; });
+                        var field = (fields && fields[0]) || {}
+                        if (field.compt == 'selectbox') {
+                            $this.currFormField.type = 'select';
+                            $this.currFormField.options = field.options || [];
+                            return;
+                        }
+                        $this.currFormField.type = 'input';
+                        $this.currFormField.options = [];
+                    },
+                    showConditionValue: function (condition) {
+                        if (condtion == 'empty' || condition == 'un_empty') {
+                            return false;
+                        }
+                        return true;
+                    },
+                    removeConditionDetail: function (index) {
+                        var $this = this;
+                        $this.innerAddEditItem.templateConditionDetails.splice(index, 1);
+                    }
                 }
             })
         </script>

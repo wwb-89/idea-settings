@@ -110,3 +110,32 @@ SELECT
     t.update_time
 FROM
     t_user_sign_form_push_record t INNER JOIN t_activity t1 ON t.sign_id = t1.sign_id;
+
+
+
+-- 创建模板明细报名条件表
+CREATE TABLE `t_template_sign_up_condition` (
+                                                `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+                                                `template_component_id` int(11) DEFAULT NULL COMMENT '模板组件id',
+                                                `field_name` varchar(50) DEFAULT NULL COMMENT '字段名称',
+                                                `condition` varchar(50) DEFAULT NULL COMMENT '条件',
+                                                `value` varchar(50) DEFAULT NULL COMMENT '值',
+                                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='模版的报名条件明细表';
+
+-- 创建活动报名条件明细表
+CREATE TABLE `t_activity_sign_up_condition` (
+                                                `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+                                                `activity_id` int(11) DEFAULT NULL COMMENT '活动id',
+                                                `template_component_id` int(11) DEFAULT NULL COMMENT '模版组件id',
+                                                `field_name` varchar(50) DEFAULT NULL COMMENT '字段名称',
+                                                `condition` varchar(50) DEFAULT NULL COMMENT '条件',
+                                                `value` varchar(50) DEFAULT NULL COMMENT '值',
+                                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='活动报名条件明细表';
+
+
+-- 活动管理列表字段配置数字字段居中显示
+UPDATE t_table_field_detail  set align = 'center'
+WHERE table_field_id = 4 AND
+        `code` in ('signedUpNum', 'personLimit','signedInNum','signedInRate','rateNum','rateScore','qualifiedNum');

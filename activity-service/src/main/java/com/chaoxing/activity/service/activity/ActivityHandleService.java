@@ -185,7 +185,8 @@ public class ActivityHandleService {
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
 		// 保存活动报名的报名条件启用
-		signUpConditionService.saveActivitySignUpEnables(activityId, activityCreateParamDto.getSucTemplateComponentIds());
+		signUpConditionService.saveActivitySignUpConditionEnables(activityId, activityCreateParamDto.getSucTemplateComponentIds());
+		signUpConditionService.saveActivitySignUpConditionsFromConditions(activityId, activityCreateParamDto.getSignUpConditions());
 		// 保存自定义组件值
 		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
 		// 保存门户模板
@@ -335,6 +336,7 @@ public class ActivityHandleService {
 			bindWebTemplate(existActivity, activity.getWebTemplateId(), loginUser);
 			// 更新
 			signUpConditionService.updateActivitySignUpEnables(activityId, activityUpdateParamDto.getSucTemplateComponentIds());
+			signUpConditionService.updateActivitySignUpConditionsFromConditions(activityId, activityUpdateParamDto.getSignUpConditions());
 			// 更新自定义组件的值
 			activityComponentValueService.updateActivityComponentValues(activityId, activityUpdateParamDto.getActivityComponentValues());
 			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
@@ -985,4 +987,22 @@ public class ActivityHandleService {
 		ApplicationContextHolder.getBean(ActivityHandleService.class).add(targetActivity, signCreateParam, releaseScopes, loginUser);
 	}
 
+	/**删除市场id为marketId的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:53:26
+	 * @param marketId
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteByMarketId(Integer marketId) {
+		List<Activity> activities = activityQueryService.listByMarketId(marketId);
+		if (CollectionUtils.isEmpty(activities)) {
+			return;
+		}
+		ActivityHandleService handleService = ApplicationContextHolder.getBean(ActivityHandleService.class);
+		activities.forEach(v -> {
+			handleService.delete(v.getId(), marketId, LoginUserDTO.buildDefault(v.getCreateUid(), v.getCreateFid()));
+		});
+	}
 }
