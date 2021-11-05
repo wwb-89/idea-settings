@@ -10,8 +10,8 @@ import com.chaoxing.activity.model.InspectionConfig;
 import com.chaoxing.activity.model.InspectionConfigDetail;
 import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
-import com.chaoxing.activity.service.queue.user.UserResultQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueue;
+import com.chaoxing.activity.service.queue.user.UserResultQueue;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,9 +48,9 @@ public class InspectionConfigHandleService {
 	@Resource
 	private InspectionConfigQueryService inspectionConfigQueryService;
 	@Resource
-	private ActivityInspectionResultDecideQueueService activityInspectionResultDecideQueueService;
+	private ActivityInspectionResultDecideQueue activityInspectionResultDecideQueueService;
 	@Resource
-	private UserResultQueueService userResultQueueService;
+	private UserResultQueue userResultQueueService;
 	@Resource
 	private UserResultQueryService userResultQueryService;
 
@@ -100,7 +100,7 @@ public class InspectionConfigHandleService {
 		List<UserResult> userResults = userResultQueryService.listByActivityId(activityId);
 		if (CollectionUtils.isNotEmpty(userResults)) {
 			for (UserResult userResult : userResults) {
-				userResultQueueService.push(new UserResultQueueService.QueueParamDTO(userResult.getUid(), userResult.getActivityId()));
+				userResultQueueService.push(new UserResultQueue.QueueParamDTO(userResult.getUid(), userResult.getActivityId()));
 			}
 		}
 	}

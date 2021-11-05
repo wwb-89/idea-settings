@@ -7,7 +7,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class ActivityStatSummaryHandlerService {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private ActivityStatSummaryQueueService activityStatSummaryQueueService;
+    private ActivityStatSummaryQueue activityStatSummaryQueueService;
 
     /**给活动初始化统计汇总数据
      * @Description 当创建活动的时候添加一条默认数据

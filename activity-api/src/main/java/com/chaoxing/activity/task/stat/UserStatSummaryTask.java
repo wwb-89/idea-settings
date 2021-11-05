@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task.stat;
 
-import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,32 +21,34 @@ import javax.annotation.Resource;
 public class UserStatSummaryTask {
 
     @Resource
-    private UserStatSummaryQueueService userStatSummaryQueueService;
+    private UserStatSummaryQueue userStatSummaryQueueService;
     @Resource
     private UserStatSummaryHandleService userStatSummaryService;
 
     @Scheduled(fixedDelay = 1L)
     public void handleUserSignInStat() throws InterruptedException {
-        UserStatSummaryQueueService.QueueParamDTO queueParam = userStatSummaryQueueService.popUserSignStat();
+        UserStatSummaryQueue.QueueParamDTO queueParam = userStatSummaryQueueService.popUserSignStat();
         if (queueParam == null) {
             return;
         }
         try {
             userStatSummaryService.updateUserSignData(queueParam.getUid(), queueParam.getActivityId());
         } catch (Exception e) {
+            e.printStackTrace();
             userStatSummaryQueueService.pushUserSignStat(queueParam);
         }
     }
 
     @Scheduled(fixedDelay = 1L)
     public void handleUserResultStat() throws InterruptedException {
-        UserStatSummaryQueueService.QueueParamDTO queueParam = userStatSummaryQueueService.popUserResultStata();
+        UserStatSummaryQueue.QueueParamDTO queueParam = userStatSummaryQueueService.popUserResultStata();
         if (queueParam == null) {
             return;
         }
         try {
             userStatSummaryService.updateUserResult(queueParam.getUid(), queueParam.getActivityId());
         } catch (Exception e) {
+            e.printStackTrace();
             userStatSummaryQueueService.pushUserResultStat(queueParam);
         }
     }

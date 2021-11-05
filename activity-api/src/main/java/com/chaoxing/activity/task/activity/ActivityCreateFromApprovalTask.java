@@ -3,7 +3,7 @@ package com.chaoxing.activity.task.activity;
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateActivity;
 import com.chaoxing.activity.service.manager.WfwFormApprovalApiService;
-import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueueService;
+import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 /**通过审批创建活动任务
  * @author wwb
  * @version ver 1.0
- * @className FormCreateActivityTask
+ * @className ActivityCreateFromApprovalTask
  * @description
  * @blame wwb
  * @date 2021-05-11 16:37:54
@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 public class ActivityCreateFromApprovalTask {
 
     @Resource
-    private FormActivityCreateQueueService formActivityCreateQueueService;
+    private FormActivityCreateQueue formActivityCreateQueueService;
     @Resource
     private WfwFormApprovalApiService formApprovalApiService;
 

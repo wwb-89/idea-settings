@@ -1,15 +1,19 @@
 package com.chaoxing.activity.api.controller;
 
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.event.activity.*;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
-import com.chaoxing.activity.service.queue.activity.*;
+import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
+import com.chaoxing.activity.service.queue.event.activity.*;
+import com.chaoxing.activity.util.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**队列api服务
@@ -25,55 +29,24 @@ import java.util.List;
 public class QueueApiController {
 
 	@Resource
-	private ActivityStatQueueService activityStatQueueService;
-	@Resource
-	private ActivityIsAboutToStartQueueService activityIsAboutToStartQueueService;
-	@Resource
-	private ActivityStatusUpdateQueueService activityStatusUpdateQueueService;
+	private ActivityStatQueue activityStatQueueService;
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
 	@Resource
-	private ActivityCoverUrlSyncQueueService activityCoverUrlSyncQueueService;
+	private ActivityWebTemplateChangeEventQueue activityWebTemplateChangeEventQueue;
 	@Resource
-	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
+	private ActivityCoverChangeEventQueue activityCoverChangeEventQueue;
+	@Resource
+	private ActivityAboutStartEventQueue activityAboutStartEventQueue;
+	@Resource
+	private ActivityAboutEndEventQueue activityAboutEndEventQueue;
+	@Resource
+	private ActivityStartTimeReachEventQueue activityStartTimeReachEventQueue;
+	@Resource
+	private ActivityEndTimeReachEventQueue activityEndTimeReachEventQueue;
 
-	/**初始化签到的开始结束时间队列
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-25 20:16:34
-	 * @param
-	 * @return com.chaoxing.sign.dto.RestRespDTO
-	 */
-	@RequestMapping("init/activity-is-about-to-start")
-	public RestRespDTO initActivityIsAboutToStartQueue() {
-		List<Activity> activities = activityQueryService.list();
-		if (CollectionUtils.isNotEmpty(activities)) {
-			for (Activity activity : activities) {
-				activityIsAboutToStartQueueService.pushNoticeSignedUp(new ActivityIsAboutToStartQueueService.QueueParamDTO(activity.getId(), activity.getStartTime()), false);
-			}
-		}
-		return RestRespDTO.success();
-	}
-
-	/**初始化活动的状态队列
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-04-21 15:31:45
-	 * @param 
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@RequestMapping("init/activity-status")
-	public RestRespDTO initActivityStatusQueue() {
-		List<Activity> activities = activityQueryService.list();
-		if (CollectionUtils.isNotEmpty(activities)) {
-			for (Activity activity : activities) {
-				activityStatusUpdateQueueService.push(activity);
-			}
-		}
-		return RestRespDTO.success();
-	}
 	/**初始化活动的汇总统计队列
 	 * @Description
 	 * @author wwb
@@ -112,7 +85,11 @@ public class QueueApiController {
 		List<Activity> activities = activityQueryService.listEmptyCoverUrl();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
-				activityCoverUrlSyncQueueService.push(activity.getId());
+				ActivityCoverChangeEventOrigin eventOrigin = ActivityCoverChangeEventOrigin.builder()
+						.activityId(activity.getId())
+						.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+						.build();
+				activityCoverChangeEventQueue.push(eventOrigin);
 			}
 		}
 		return RestRespDTO.success();
@@ -129,13 +106,109 @@ public class QueueApiController {
 	public RestRespDTO activityWebsiteIdSync() {
 		List<Integer> activityIds = activityQueryService.listEmptyWebsiteIdActivityId();
 		if (CollectionUtils.isNotEmpty(activityIds)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 			for (Integer activityId : activityIds) {
-				activityWebsiteIdSyncQueueService.add(activityId);
+				ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
+						.activityId(activityId)
+						.timestamp(timestamp)
+						.build();
+				activityWebTemplateChangeEventQueue.push(eventOrigin);
 			}
 		}
 		return RestRespDTO.success();
 	}
 
-
+	/**初始化活动即将开始任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 16:56:30
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity_about_start")
+	public RestRespDTO initActivityAboutStart() {
+		List<Activity> activities = activityQueryService.listNotStart();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			for (Activity activity : activities) {
+				ActivityAboutStartEventOrigin eventOrigin = ActivityAboutStartEventOrigin.builder()
+						.activityId(activity.getId())
+						.startTime(activity.getStartTime())
+						.timestamp(timestamp)
+						.build();
+				activityAboutStartEventQueue.push(eventOrigin);
+			}
+		}
+		return RestRespDTO.success();
+	}
+	/**初始化活动即将结束任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 16:56:43
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity_about_end")
+	public RestRespDTO initActivityAboutEnd() {
+		List<Activity> activities = activityQueryService.listNotEnd();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			for (Activity activity : activities) {
+				ActivityAboutEndEventOrigin eventOrigin = ActivityAboutEndEventOrigin.builder()
+						.activityId(activity.getId())
+						.endTime(activity.getEndTime())
+						.timestamp(timestamp)
+						.build();
+				activityAboutEndEventQueue.push(eventOrigin);
+			}
+		}
+		return RestRespDTO.success();
+	}
+	/**初始化活动开始时间将要到达任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 16:56:59
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity_start_time_reach")
+	public RestRespDTO initActivityStartTimeReach() {
+		List<Activity> activities = activityQueryService.listNotStart();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			for (Activity activity : activities) {
+				ActivityStartTimeReachEventOrigin eventOrigin = ActivityStartTimeReachEventOrigin.builder()
+						.activityId(activity.getId())
+						.startTime(activity.getStartTime())
+						.timestamp(timestamp)
+						.build();
+				activityStartTimeReachEventQueue.push(eventOrigin);
+			}
+		}
+		return RestRespDTO.success();
+	}
+	/**初始化活动结束时间将要到达任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 17:18:20
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity_end_time_reach")
+	public RestRespDTO initActivityEndTimeReach() {
+		List<Activity> activities = activityQueryService.listNotEnd();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			for (Activity activity : activities) {
+				ActivityEndTimeReachEventOrigin eventOrigin = ActivityEndTimeReachEventOrigin.builder()
+						.activityId(activity.getId())
+						.endTime(activity.getEndTime())
+						.timestamp(timestamp)
+						.build();
+				activityEndTimeReachEventQueue.push(eventOrigin);
+			}
+		}
+		return RestRespDTO.success();
+	}
 
 }

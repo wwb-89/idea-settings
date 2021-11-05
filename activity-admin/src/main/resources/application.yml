@@ -43,7 +43,19 @@ spring:
         loginPassword: druid_passwd
   ## redis相关
   redis:
-    timeout: 10000
+    redisson:
+      config:
+        single_server_config:
+          idleConnectionTimeout: 10000
+          connectTimeout: 10000
+          timeout: 3000
+          retryAttempts: 3
+          retryInterval: 1500
+          subscriptionsPerConnection: 5
+          subscriptionConnectionMinimumIdleSize: 1
+          subscriptionConnectionPoolSize: 50
+          connectionMinimumIdleSize: 32
+          connectionPoolSize: 64
   servlet:
     multipart:
       ## 上传一个文件最大值

@@ -1,8 +1,14 @@
 package com.chaoxing.activity.api.controller.action;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.service.queue.SignActionQueueService;
-import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.dto.event.sign.SignInAddEventOrigin;
+import com.chaoxing.activity.dto.event.sign.SignInDeletedEventOrigin;
+import com.chaoxing.activity.dto.event.sign.SignUpAddEventOrigin;
+import com.chaoxing.activity.dto.event.sign.SignUpDeletedEventOrigin;
+import com.chaoxing.activity.service.queue.event.sign.SignInAddEventQueue;
+import com.chaoxing.activity.service.queue.event.sign.SignInDeletedEventQueue;
+import com.chaoxing.activity.service.queue.event.sign.SignUpAddEventQueue;
+import com.chaoxing.activity.service.queue.event.sign.SignUpDeletedEventQueue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,9 +30,15 @@ import javax.annotation.Resource;
 public class SignActionApiController {
 
     @Resource
-    private SignActionQueueService signActionQueueService;
+    private SignUpAddEventQueue signUpAddEventQueue;
+    @Resource
+    private SignUpDeletedEventQueue signUpDeletedEventQueue;
+    @Resource
+    private SignInAddEventQueue signInAddEventQueue;
+    @Resource
+    private SignInDeletedEventQueue signInDeletedEventQueue;
 
-    /**新增报名行为
+    /**添加报名
      * @Description 
      * @author wwb
      * @Date 2021-06-23 17:41:28
@@ -37,11 +49,16 @@ public class SignActionApiController {
     */
     @RequestMapping("sign-up/add")
     public RestRespDTO addSignUp(@RequestParam Integer signId, @RequestParam Integer signUpId, @RequestParam Long time) {
-        signActionQueueService.push(new SignActionQueueService.QueueParamDTO(signId, SignActionQueueService.SignActionEnum.ADD_SIGN_UP, String.valueOf(signUpId), DateUtils.timestamp2Date(time)));
+        SignUpAddEventOrigin eventOrigin = SignUpAddEventOrigin.builder()
+                .signId(signId)
+                .signUpId(signUpId)
+                .timestamp(time)
+                .build();
+        signUpAddEventQueue.push(eventOrigin);
         return RestRespDTO.success();
     }
 
-    /**删除报名行为
+    /**删除报名
      * @Description 
      * @author wwb
      * @Date 2021-06-23 17:41:39
@@ -52,11 +69,16 @@ public class SignActionApiController {
     */
     @RequestMapping("sign-up/delete")
     public RestRespDTO deleteSignUp(@RequestParam Integer signId, @RequestParam Integer signUpId, @RequestParam Long time) {
-        signActionQueueService.push(new SignActionQueueService.QueueParamDTO(signId, SignActionQueueService.SignActionEnum.DELETE_SIGN_UP, String.valueOf(signUpId), DateUtils.timestamp2Date(time)));
+        SignUpDeletedEventOrigin eventOrigin = SignUpDeletedEventOrigin.builder()
+                .signId(signId)
+                .signUpId(signUpId)
+                .timestamp(time)
+                .build();
+        signUpDeletedEventQueue.push(eventOrigin);
         return RestRespDTO.success();
     }
 
-    /**新增签到行为
+    /**添加签到
      * @Description 
      * @author wwb
      * @Date 2021-06-23 17:41:48
@@ -67,11 +89,16 @@ public class SignActionApiController {
     */
     @RequestMapping("sign-in/add")
     public RestRespDTO addSignIn(@RequestParam Integer signId, @RequestParam Integer signInId, @RequestParam Long time) {
-        signActionQueueService.push(new SignActionQueueService.QueueParamDTO(signId, SignActionQueueService.SignActionEnum.ADD_SIGN_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
+        SignInAddEventOrigin eventOrigin = SignInAddEventOrigin.builder()
+                .signId(signId)
+                .signInId(signInId)
+                .timestamp(time)
+                .build();
+        signInAddEventQueue.push(eventOrigin);
         return RestRespDTO.success();
     }
 
-    /**删除签到行为
+    /**删除签到
      * @Description 
      * @author wwb
      * @Date 2021-06-23 17:41:59
@@ -82,7 +109,12 @@ public class SignActionApiController {
     */
     @RequestMapping("sign-in/delete")
     public RestRespDTO deleteSignIn(@RequestParam Integer signId, @RequestParam Integer signInId, @RequestParam Long time) {
-        signActionQueueService.push(new SignActionQueueService.QueueParamDTO(signId, SignActionQueueService.SignActionEnum.DELETE_SIGN_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
+        SignInDeletedEventOrigin eventOrigin = SignInDeletedEventOrigin.builder()
+                .signId(signId)
+                .signInId(signInId)
+                .timestamp(time)
+                .build();
+        signInDeletedEventQueue.push(eventOrigin);
         return RestRespDTO.success();
     }
 

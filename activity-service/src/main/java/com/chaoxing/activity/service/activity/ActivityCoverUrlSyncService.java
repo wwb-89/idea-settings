@@ -34,20 +34,15 @@ public class ActivityCoverUrlSyncService {
 	 * @param activityId
 	 * @return boolean
 	*/
-	public boolean syncActivityCoverUrl(Integer activityId) {
+	public void updateActivityCoverUrl(Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
 		if (activity != null) {
 			String cloudId = activity.getCoverCloudId();
 			if (StringUtils.isNotBlank(cloudId)) {
 				String imageUrl = cloudApiService.getImageUrl(cloudId);
-				if (StringUtils.isBlank(imageUrl)) {
-					return false;
-				} else {
-					activityHandleService.updateActivityCoverUrl(activityId, imageUrl);
-				}
+				activityHandleService.updateActivityCoverUrl(activityId, imageUrl);
 			}
 		}
-		return true;
 	}
 
 	/**获取封面url

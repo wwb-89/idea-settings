@@ -1,14 +1,10 @@
 package com.chaoxing.activity.api.controller.action;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.user.UserActionQueueService;
+import com.chaoxing.activity.dto.event.user.*;
+import com.chaoxing.activity.service.queue.event.user.*;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.enums.UserActionEnum;
-import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -26,9 +22,15 @@ import javax.annotation.Resource;
 public class UserActionApiController {
 
     @Resource
-    private UserActionQueueService userActionQueueService;
+    private UserSignedUpEventQueue userSignedUpEventQueue;
     @Resource
-    private ActivityQueryService activityQueryService;
+    private UserCancelSignUpEventQueue userCancelSignUpEventQueue;
+    @Resource
+    private UserSignedInEventQueue userSignedInEventQueue;
+    @Resource
+    private UserCancelSignInEventQueue userCancelSignInEventQueue;
+    @Resource
+    private UserLeaveSignInEventQueue userLeaveSignInEventQueue;
 
     /**用户报名
      * @Description 
@@ -42,10 +44,14 @@ public class UserActionApiController {
     */
     @RequestMapping("signed-up")
     public RestRespDTO signedUp(Integer uid, Integer signId, Integer signUpId, Long time) {
-        Activity activity = activityQueryService.getBySignId(signId);
-        if (activity != null) {
-            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_UP, UserActionEnum.SIGNED_UP, String.valueOf(signUpId), DateUtils.timestamp2Date(time)));
-        }
+        UserSignedUpEventOrigin userSignedUpEventOrigin = UserSignedUpEventOrigin.builder()
+                .uid(uid)
+                .signId(signId)
+                .signUpId(signUpId)
+                .signedUpTime(DateUtils.timestamp2Date(time))
+                .timestamp(time)
+                .build();
+        userSignedUpEventQueue.push(userSignedUpEventOrigin);
         return RestRespDTO.success();
     }
 
@@ -61,10 +67,13 @@ public class UserActionApiController {
     */
     @RequestMapping("cancel-sign-up")
     public RestRespDTO cancelSignUp(Integer uid, Integer signId, Integer signUpId, Long time) {
-        Activity activity = activityQueryService.getBySignId(signId);
-        if (activity != null) {
-            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_UP, UserActionEnum.CANCEL_SIGNED_UP, String.valueOf(signUpId), DateUtils.timestamp2Date(time)));
-        }
+        UserCancelSignUpEventOrigin userCancelSignedUpEventOrigin = UserCancelSignUpEventOrigin.builder()
+                .uid(uid)
+                .signId(signId)
+                .signUpId(signUpId)
+                .timestamp(time)
+                .build();
+        userCancelSignUpEventQueue.push(userCancelSignedUpEventOrigin);
         return RestRespDTO.success();
     }
 
@@ -80,10 +89,14 @@ public class UserActionApiController {
     */
     @RequestMapping("signed-in")
     public RestRespDTO signedIn(Integer uid, Integer signId, Integer signInId, Long time) {
-        Activity activity = activityQueryService.getBySignId(signId);
-        if (activity != null) {
-            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
-        }
+        UserSignedInEventOrigin userSignedInEventOrigin = UserSignedInEventOrigin.builder()
+                .uid(uid)
+                .signId(signId)
+                .signInId(signInId)
+                .signedInTime(DateUtils.timestamp2Date(time))
+                .timestamp(time)
+                .build();
+        userSignedInEventQueue.push(userSignedInEventOrigin);
         return RestRespDTO.success();
     }
 
@@ -99,10 +112,13 @@ public class UserActionApiController {
     */
     @RequestMapping("cancel-sign-in")
     public RestRespDTO cancelSignIn(Integer uid, Integer signId, Integer signInId, Long time) {
-        Activity activity = activityQueryService.getBySignId(signId);
-        if (activity != null) {
-            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.CANCEL_SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
-        }
+        UserCancelSignInEventOrigin userCancelSignInEventOrigin = UserCancelSignInEventOrigin.builder()
+                .uid(uid)
+                .signId(signId)
+                .signInId(signInId)
+                .timestamp(time)
+                .build();
+        userCancelSignInEventQueue.push(userCancelSignInEventOrigin);
         return RestRespDTO.success();
     }
 
@@ -118,48 +134,14 @@ public class UserActionApiController {
     */
     @RequestMapping("leave-sign-in")
     public RestRespDTO leaveSignIn(Integer uid, Integer signId, Integer signInId, Long time) {
-        Activity activity = activityQueryService.getBySignId(signId);
-        if (activity != null) {
-            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.LEAVE_SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
-        }
-        return RestRespDTO.success();
-    }
-
-    /**用户提交作品
-     * @Description 
-     * @author wwb
-     * @Date 2021-06-23 16:09:05
-     * @param workActivityId
-     * @param workId
-     * @param uid
-     * @param time
-     * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @RequestMapping("work/add")
-    public RestRespDTO submitWork(@RequestParam("activityId") Integer workActivityId, Integer workId, Integer uid, Long time) {
-        Activity activity = activityQueryService.getByWorkId(workActivityId);
-        if (activity != null) {
-            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.WORK, UserActionEnum.SUBMIT_WORK, String.valueOf(workId), DateUtils.timestamp2Date(time)));
-        }
-        return RestRespDTO.success();
-    }
-
-    /**用户删除作品
-     * @Description 
-     * @author wwb
-     * @Date 2021-06-23 16:09:16
-     * @param workActivityId
-     * @param workId
-     * @param uid
-     * @param time
-     * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @RequestMapping("work/delete")
-    public RestRespDTO deleteWork(@RequestParam("activityId") Integer workActivityId, Integer workId, Integer uid, Long time) {
-        Activity activity = activityQueryService.getByWorkId(workActivityId);
-        if (activity != null) {
-            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.WORK, UserActionEnum.DELETE_WORK, String.valueOf(workId), DateUtils.timestamp2Date(time)));
-        }
+        UserLeaveSignInEventOrigin userLeaveSignInEventOrigin = UserLeaveSignInEventOrigin.builder()
+                .uid(uid)
+                .signId(signId)
+                .signInId(signInId)
+                .leaveTime(DateUtils.timestamp2Date(time))
+                .timestamp(time)
+                .build();
+        userLeaveSignInEventQueue.push(userLeaveSignInEventOrigin);
         return RestRespDTO.success();
     }
 

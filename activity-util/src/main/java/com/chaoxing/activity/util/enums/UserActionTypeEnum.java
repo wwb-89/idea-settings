@@ -20,6 +20,7 @@ public enum UserActionTypeEnum {
 	/** 报名 */
 	SIGN_UP("报名", "sign_up", false),
 	SIGN_IN("签到", "sign_in", true, UserActionEnum.SIGNED_IN),
+	SIGN_OUT("签退", "sign_out", false, UserActionEnum.SIGNED_OUT),
 	RATING("评价", "rating", true, UserActionEnum.RATING),
 	DISCUSS("讨论", "discuss", false, UserActionEnum.PUBLISH_TOPIC, UserActionEnum.REPLY_TOPIC),
 	WORK("作品征集", "work", false, UserActionEnum.SUBMIT_WORK),

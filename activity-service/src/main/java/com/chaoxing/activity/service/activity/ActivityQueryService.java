@@ -6,12 +6,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
-import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
@@ -187,7 +186,7 @@ public class ActivityQueryService {
 	 * @param activityQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> ListOrgParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
+	public Page<Activity> listOrgParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
 		page = activityMapper.pageOrgParticipate(page, activityQuery);
 		return page;
@@ -1249,4 +1248,31 @@ public class ActivityQueryService {
 		}
 		return data;
 	}
+
+	/**查询未开始的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 16:48:47
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listNotStart() {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.in(Activity::getStatus, Lists.newArrayList(Activity.StatusEnum.WAIT_RELEASE.getValue(), Activity.StatusEnum.RELEASED.getValue()))
+		);
+	}
+
+	/**查询未结束的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 16:48:57
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listNotEnd() {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.in(Activity::getStatus, Lists.newArrayList(Activity.StatusEnum.WAIT_RELEASE.getValue(), Activity.StatusEnum.RELEASED.getValue(), Activity.StatusEnum.ONGOING.getValue()))
+		);
+	}
+
 }

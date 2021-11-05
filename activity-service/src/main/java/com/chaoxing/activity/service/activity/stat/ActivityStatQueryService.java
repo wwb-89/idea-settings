@@ -615,10 +615,10 @@ public class ActivityStatQueryService {
 	* @param activityIds
 	* @return java.util.List<com.chaoxing.activity.model.ActivityStat>
 	*/
-	public List<ActivityStat> listActivityPVByActivityIds(List<Integer> activityIds) {
+	public List<ActivityStat> listActivityPvByActivityIds(List<Integer> activityIds) {
 		if (CollectionUtils.isEmpty(activityIds)) {
 			return Lists.newArrayList();
 		}
-		return activityStatMapper.listActivityPVByActivityIds(activityIds);
+		return activityStatMapper.listActivityPvByActivityIds(activityIds);
 	}
 }

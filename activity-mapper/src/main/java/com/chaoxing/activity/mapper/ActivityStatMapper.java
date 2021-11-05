@@ -71,5 +71,5 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
     * @param
     * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
     */
-    List<ActivityStat> listActivityPVByActivityIds(@Param("activityIds") List<Integer> activityIds);
+    List<ActivityStat> listActivityPvByActivityIds(@Param("activityIds") List<Integer> activityIds);
 }

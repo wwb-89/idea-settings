@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.dto.OrgFormConfigDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserFormCollectionGroupDTO;
 import com.chaoxing.activity.dto.manager.sign.*;
@@ -74,8 +73,6 @@ public class SignApiService {
 	private static final String STAT_SIGNED_UP_NUM = SIGN_API_DOMAIN + "/stat/sign/signed-up-num";
 	/** 用户已报名的报名签到列表url */
 	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
-	/** 通知已收藏url */
-	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
 	/** 报名签到参与范围描述yrl */
 	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = SIGN_API_DOMAIN + "/sign/%d/scope/describe";
 	/** 报名签到下用户报名信息 */
@@ -120,28 +117,13 @@ public class SignApiService {
 	private static final String CONFIG_FORM_WITH_FIELDS = SIGN_WEB_DOMAIN + "/api/form/config/from-fields";
 	/** 用户报名签到参与情况url */
 	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/stat/sign/%d/user-participation?uid=%s";
-	/** 根据signId列表查询报名的人数 */
-	private static final String STAT_SIGN_SIGNED_UP_INFO_URL = SIGN_API_DOMAIN + "/stat/signs";
 	/** 单活动统计 */
 	public static final String STAT_SINGLE_ACTIVITY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/single-activity?startTime=%s&endTime=%s";
-
-	/** 通知活动已评价 */
-	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
-	/** 通知报名签到活动积分已变更 */
-	private static final String NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/activity-integral-change";
 
 	/** 签到位置搜索缓存 */
 	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = SIGN_API_DOMAIN + "/sign-in/position-history";
 	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = SIGN_API_DOMAIN + "/sign-in/position-history/add";
 	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = SIGN_API_DOMAIN + "/sign-in/position-history/delete";
-
-	/** 获取机构配置的表单 */
-	private static final String GET_ORG_FORM_CONFIG_URL = SIGN_API_DOMAIN + "/org/%d/form";
-	/** 配置机构的表单 */
-	private static final String ORG_FORM_CONFIG_URL = SIGN_API_DOMAIN + "/org/form/config";
-
-	/** 通知报名签到用户成绩合格变更 */
-	private static final String NOTICE_SIGN_USER_RESULT_QUALIFIED_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/user/%d/result/qualified/changed";
 
 	/** 根据字段名称列表创建表单接口 */
 	private static final String CREATE_FORM_BY_FIELD_NAMES_URL = SIGN_API_DOMAIN + "/form/create";
@@ -329,7 +311,6 @@ public class SignApiService {
 	public Page pageUserSignedUp(Page page, Integer uid, String sw, Integer specificFid) {
 		String url = String.format(USER_SIGNED_UP_URL, uid);
 		HttpHeaders httpHeaders = new HttpHeaders();
-//		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, Object> multiValuedMap = new LinkedMultiValueMap();
 		multiValuedMap.add("pageNum", page.getCurrent());
@@ -423,32 +404,6 @@ public class SignApiService {
 		});
 	}
 
-	/**通知已收藏
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-02-05 16:20:39
-	 * @param signId
-	 * @param uids
-	 * @return void
-	*/
-	public void noticeCollected(Integer signId, List<Integer> uids) {
-		if (signId == null) {
-			return;
-		}
-		String url = String.format(NOTICE_COLLECTED_URL, signId);
-		JSONObject params = new JSONObject();
-		params.put("uids", uids);
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<>(params.toJSONString(), httpHeaders);
-		String result = restTemplate.postForObject(url, httpEntity, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		resultHandle(jsonObject, () -> null, (message) -> {
-			log.error("通知已收藏, 报名签到id:{}, error:{}", signId, message);
-			throw new BusinessException(message);
-		});
-	}
-
 	/**是否开启了报名
 	 * @Description
 	 * @author wwb
@@ -531,52 +486,6 @@ public class SignApiService {
 		});
 	}
 
-	/**处理通知评价
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-24 14:08:22
-	 * @param signId
-	 * @param uid
-	 * @return void
-	*/
-	public void handleNoticeRating(Integer signId, Integer uid) {
-		String url = String.format(NOTICE_HAVE_RATING_URL, signId, uid);
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity httpEntity = new HttpEntity(httpHeaders);
-		String result = restTemplate.postForObject(url, httpEntity, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		resultHandle(jsonObject, () -> null, (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
-	/**根据signId列表查询报名的人数
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-24 20:24:58
-	 * @param signIds
-	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignStatDTO>
-	*/
-	public List<SignStatDTO> statSignSignedUpNum(List<Integer> signIds) {
-		if (CollectionUtils.isEmpty(signIds)) {
-			return Lists.newArrayList();
-		}
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		JSONObject params = new JSONObject();
-		params.put("signIds", signIds);
-		HttpEntity<String> httpEntity = new HttpEntity(params.toJSONString(), httpHeaders);
-		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_INFO_URL, httpEntity, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> {
-			String data = jsonObject.getString("data");
-			return JSON.parseArray(data, SignStatDTO.class);
-		}, (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
 	public List<SignStatDTO> statSignSignUps(List<Integer> signIds) {
 		if (CollectionUtils.isEmpty(signIds)) {
 			return Lists.newArrayList();
@@ -592,22 +501,6 @@ public class SignApiService {
 			String data = jsonObject.getString("data");
 			return JSON.parseArray(data, SignStatDTO.class);
 		}, (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
-	/**通知报名签到活动积分已修改
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-26 21:50:30
-	 * @param signId
-	 * @return void
-	*/
-	public void noticeSecondClassroomIntegralChange(Integer signId) {
-		String url = String.format(NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL, signId);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		resultHandle(jsonObject, () -> null, (message) -> {
 			throw new BusinessException(message);
 		});
 	}
@@ -768,61 +661,6 @@ public class SignApiService {
 
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
-	/**获取机构表单配置
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-06-08 16:10:50
-	 * @param fid
-	 * @return com.chaoxing.activity.dto.OrgFormConfigDTO
-	 */
-	public OrgFormConfigDTO getOrgFormConfig(Integer fid) {
-		String url = String.format(GET_ORG_FORM_CONFIG_URL, fid);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), OrgFormConfigDTO.class), (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
-	/**配置机构表单
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-06-08 16:46:12
-	 * @param orgFormConfig
-	 * @return void
-	 */
-	public void configOrgForm(OrgFormConfigDTO orgFormConfig) {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity(JSON.toJSONString(orgFormConfig), httpHeaders);
-		String result = restTemplate.postForObject(ORG_FORM_CONFIG_URL, httpEntity, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data")), (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
-	/**通知报名签到用户成绩合格状态变更
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-06-25 10:03:08
-	 * @param uid
-	 * @param signId
-	 * @return void
-	*/
-	public void noticeSignUserResultChange(Integer uid, Integer signId) {
-		if (uid == null) {
-			return;
-		}
-		String url = String.format(NOTICE_SIGN_USER_RESULT_QUALIFIED_CHANGE_URL, signId, uid);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		resultHandle(jsonObject, () -> null, (message) -> {
-			log.error("根据url:{} 通知报名签到用户成绩合格状态变更error:{}", url, message);
 			throw new BusinessException(message);
 		});
 	}

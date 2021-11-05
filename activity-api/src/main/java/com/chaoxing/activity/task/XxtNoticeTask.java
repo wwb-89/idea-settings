@@ -3,7 +3,7 @@ package com.chaoxing.activity.task;
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
-import com.chaoxing.activity.service.queue.notice.XxtNoticeQueueService;
+import com.chaoxing.activity.service.queue.notice.XxtNoticeQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 public class XxtNoticeTask {
 
 	@Resource
-	private XxtNoticeQueueService xxtNoticeQueueService;
+	private XxtNoticeQueue xxtNoticeQueueService;
 	@Resource
 	private XxtNoticeApiService xxtNoticeApiService;
 

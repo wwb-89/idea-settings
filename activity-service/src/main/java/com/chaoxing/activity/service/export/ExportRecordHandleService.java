@@ -14,7 +14,7 @@ import com.chaoxing.activity.model.ExportRecord;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
-import com.chaoxing.activity.service.queue.ExportQueueService;
+import com.chaoxing.activity.service.queue.ExportQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.FileUtils;
@@ -53,7 +53,7 @@ public class ExportRecordHandleService {
     @Resource
     private ExportService exportService;
     @Resource
-    private ExportQueueService exportQueueService;
+    private ExportQueue exportQueueService;
     @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
     @Resource
@@ -154,10 +154,12 @@ public class ExportRecordHandleService {
             case ACTIVITY_INSPECTION_MANAGE:
                 UserResultQueryDTO queryParam = JSON.parseObject(params, UserResultQueryDTO.class);
                 exportData = userResultQueryService.packageExportData(queryParam);
+                break;
             case ACTIVITY_MANAGE:
                 ActivityManageQueryDTO activityManageQueryParams = JSONObject.parseObject(params, ActivityManageQueryDTO.class);
                 LoginUserDTO exportUser = LoginUserDTO.buildDefault(activityManageQueryParams.getExportUid(), activityManageQueryParams.getFid());
                 exportData = activityQueryService.packageExportData(activityManageQueryParams, exportUser);
+                break;
             default:
         }
         exportData.setSheetName(exportTypeEnum.getName());

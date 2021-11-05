@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.service.activity.stat.ActivityStatHandleService;
-import com.chaoxing.activity.service.queue.activity.ActivityStatQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 public class ActivityStatTask {
 
     @Resource
-    private ActivityStatQueueService activityStatQueueService;
+    private ActivityStatQueue activityStatQueueService;
 
     @Resource
     private ActivityStatHandleService activityStatHandleService;

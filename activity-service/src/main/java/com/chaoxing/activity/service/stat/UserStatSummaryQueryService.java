@@ -343,4 +343,35 @@ public class UserStatSummaryQueryService {
 		return userStatSummaryMapper.pageUserSummaryStat(page, marketId, fid);
 	}
 
+	/**查询用户活动汇总记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-02 18:28:43
+	 * @param uid
+	 * @param activityId
+	 * @return com.chaoxing.activity.model.UserStatSummary
+	*/
+	public UserStatSummary getByUidAndActivityId(Integer uid, Integer activityId) {
+		List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new LambdaQueryWrapper<UserStatSummary>()
+				.eq(UserStatSummary::getUid, uid)
+				.eq(UserStatSummary::getActivityId, activityId)
+		);
+		return Optional.ofNullable(userStatSummaries).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+	}
+
+	/**根据活动id查询uid列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-03 15:03:51
+	 * @param activityId
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listUidByActivityId(Integer activityId) {
+		List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new LambdaQueryWrapper<UserStatSummary>()
+				.eq(UserStatSummary::getActivityId, activityId)
+				.select(UserStatSummary::getUid)
+		);
+		return Optional.ofNullable(userStatSummaries).orElse(Lists.newArrayList()).stream().map(UserStatSummary::getUid).filter(v -> v != null).collect(Collectors.toList());
+	}
+
 }

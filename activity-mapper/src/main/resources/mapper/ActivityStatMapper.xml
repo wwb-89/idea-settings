@@ -127,7 +127,7 @@
             AND t.is_released = 1
         GROUP BY t.id
     </select>
-    <select id="listActivityPVByActivityIds" resultType="com.chaoxing.activity.model.ActivityStat">
+    <select id="listActivityPvByActivityIds" resultType="com.chaoxing.activity.model.ActivityStat">
         SELECT
             t.activity_id as activityId,
             MAX( t.pv ) AS pv

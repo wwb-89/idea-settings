@@ -1,6 +1,6 @@
 package com.chaoxing.activity;
 
-import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
+import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueue;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,11 +18,11 @@ import javax.annotation.Resource;
 public class BlacklistAutoAddQueueServiceTests {
 
 	@Resource
-	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
+	private BlacklistAutoAddQueue blacklistAutoAddQueueService;
 
 	@Test
 	public void add() {
-		blacklistAutoAddQueueService.push(new BlacklistAutoAddQueueService.QueueParamDTO(1));
+		blacklistAutoAddQueueService.push(new BlacklistAutoAddQueue.QueueParamDTO(1));
 	}
 
 }

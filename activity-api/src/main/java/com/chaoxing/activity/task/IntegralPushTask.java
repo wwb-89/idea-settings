@@ -2,7 +2,7 @@ package com.chaoxing.activity.task;
 
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.manager.IntegralApiService;
-import com.chaoxing.activity.service.queue.IntegralPushQueueService;
+import com.chaoxing.activity.service.queue.IntegralPushQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 public class IntegralPushTask {
 
 	@Resource
-	private IntegralPushQueueService integralPushQueueService;
+	private IntegralPushQueue integralPushQueueService;
 	@Resource
 	private IntegralApiService integralApiService;
 
@@ -35,7 +35,7 @@ public class IntegralPushTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void pushData() throws InterruptedException {
-		IntegralPushQueueService.IntegralPushDTO integralPush = integralPushQueueService.pop();
+		IntegralPushQueue.IntegralPushDTO integralPush = integralPushQueueService.pop();
 		if (integralPush == null) {
 			return;
 		}
@@ -43,7 +43,7 @@ public class IntegralPushTask {
 			integralApiService.pushIntegral(integralPush);
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.error("积分推送:{} error:{}", JSON.toJSONString(integralPush), e.getMessage());
+			log.error("根据参数:{} 处理积分推送任务error:{}", JSON.toJSONString(integralPush), e.getMessage());
 			integralPushQueueService.push(integralPush);
 
 		}

@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMarket;
-import com.chaoxing.activity.service.event.ActivityChangeEventService;
-import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
-import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
+import com.chaoxing.activity.service.event.ActivityDataChangeEventService;
+import com.chaoxing.activity.service.event.ActivityReleaseStatusChangeEventService;
+import com.chaoxing.activity.service.event.ActivityStatusChangeEventService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -33,13 +33,13 @@ public class ActivityStatusService {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private ActivityChangeEventService activityChangeEventService;
-	@Resource
-	private ActivityInspectionResultDecideQueueService activityInspectionResultDecideQueueService;
-	@Resource
-	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
+	private ActivityDataChangeEventService activityChangeEventService;
 	@Resource
 	private ActivityMarketService activityMarketService;
+	@Resource
+	private ActivityStatusChangeEventService activityStatusChangeEventService;
+	@Resource
+	private ActivityReleaseStatusChangeEventService activityReleaseStatusChangeEventService;
 
 	/**活动状态更新
 	 * @Description 
@@ -65,18 +65,17 @@ public class ActivityStatusService {
 			Integer oldStatus = activity.getStatus();
 			Integer activityId = activity.getId();
 			Activity.calAndSetActivityStatus(activity);
-			Activity.StatusEnum status = Activity.StatusEnum.fromValue(activity.getStatus());
 			activityMapper.update(null, new UpdateWrapper<Activity>()
 					.lambda()
 					.eq(Activity::getId, activityId)
-					.set(Activity::getStatus, status.getValue())
+					.set(Activity::getStatus, activity.getStatus())
 			);
 			// 更新所有关联该活动的市场的活动状态
 			List<ActivityMarket> activityMarkets = activityMarketService.listByActivityId(activityId);
 			if (CollectionUtils.isNotEmpty(activityMarkets)) {
 				activityMarkets.forEach(v -> activityMarketService.updateActivityStatus(v.getMarketId(), activity));
 			}
-			activityChangeEventService.statusChange(activity, oldStatus);
+			activityStatusChangeEventService.statusChange(activity, oldStatus);
 		}
 	}
 
@@ -98,7 +97,7 @@ public class ActivityStatusService {
 		// 更新活动状态
 		statusUpdate(activity);
 		// 活动状态改变
-		activityChangeEventService.releaseStatusChange(activity);
+		activityReleaseStatusChangeEventService.releaseStatusChange(activity);
 	}
 
 }

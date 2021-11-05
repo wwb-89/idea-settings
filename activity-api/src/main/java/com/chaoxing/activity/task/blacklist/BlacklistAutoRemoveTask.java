@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.blacklist;
 
-import com.chaoxing.activity.service.blacklist.BlacklistHandleService;
-import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoRemoveQueueService;
+import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoRemoveQueue;
+import com.chaoxing.activity.service.queue.blacklist.handler.BlacklistAutoRemoveQueueService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,21 +19,21 @@ import javax.annotation.Resource;
 public class BlacklistAutoRemoveTask {
 
     @Resource
-    private BlacklistAutoRemoveQueueService blacklistAutoRemoveQueueService;
+    private BlacklistAutoRemoveQueue blacklistAutoRemoveQueue;
     @Resource
-    private BlacklistHandleService blacklistHandleService;
+    private BlacklistAutoRemoveQueueService blacklistAutoRemoveQueueService;
 
     @Scheduled(fixedDelay = 1L)
     public void handle() throws InterruptedException {
-        BlacklistAutoRemoveQueueService.QueueParamDTO queueParamDto = blacklistAutoRemoveQueueService.pop();
+        BlacklistAutoRemoveQueue.QueueParamDTO queueParamDto = blacklistAutoRemoveQueue.pop();
         if (queueParamDto == null) {
             return;
         }
         try {
-            blacklistHandleService.autoRemoveBlacklist(queueParamDto.getMarketId(), queueParamDto.getUid());
+            blacklistAutoRemoveQueueService.handle(queueParamDto.getMarketId(), queueParamDto.getUid());
         } catch (Exception e) {
             e.printStackTrace();
-            blacklistAutoRemoveQueueService.push(queueParamDto);
+            blacklistAutoRemoveQueue.push(queueParamDto);
         }
     }
 

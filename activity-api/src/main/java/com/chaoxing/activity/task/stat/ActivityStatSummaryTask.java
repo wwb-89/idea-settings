@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.stat;
 
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
-import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class ActivityStatSummaryTask {
 
     @Resource
-    private ActivityStatSummaryQueueService activityStatSummaryQueueService;
+    private ActivityStatSummaryQueue activityStatSummaryQueueService;
 
     @Resource
     private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;

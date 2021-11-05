@@ -49,12 +49,23 @@ public class UserStatSummary {
     private Integer signInNum;
     /** 签到成功数量; column: signed_in_num*/
     private Integer signedInNum;
+    /** 签到请假次数; column: sign_in_leave_num*/
+    private Integer signInLeaveNum;
+    /** 未签到次数; column: not_sign_in_num*/
+    private Integer notSignInNum;
+    /** 签到率; column: signed_in_rate*/
+    private BigDecimal signedInRate;
     /** 评价数量; column: rating_num*/
     private Integer ratingNum;
     /** 获得的积分; column: integral*/
     private BigDecimal integral;
+    /** 活动积分; column: activity_integral*/
+    private BigDecimal activityIntegral;
     /** 参与时长; column: participate_time_length*/
     private Integer participateTimeLength;
+    /** 是否合格; column: is_qualified*/
+    @TableField(value = "is_qualified")
+    private Boolean qualified;
     /** 是否可用; column: is_valid*/
     @TableField(value = "is_valid")
     private Boolean valid;
@@ -64,18 +75,12 @@ public class UserStatSummary {
     private LocalDateTime updateTime;
     
     // 附加
-    /** 是否合格 */
-    @TableField(exist = false)
-    private Boolean qualified;
     /** 合格数量（汇总多个活动时使用） */
     @TableField(exist = false)
     private Integer qualifiedNum;
     /** 参与活动数量 */
     @TableField(exist = false)
     private Integer participateActivityNum;
-    /** 签到率 */
-    @TableField(exist = false)
-    private BigDecimal signedInRate;
     /** 总得分 */
     @TableField(exist = false)
     private BigDecimal totalScore;

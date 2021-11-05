@@ -292,16 +292,16 @@ public class IndexController {
 		model.addAttribute("scope", scope);
 		model.addAttribute("hideFilter", hideFilter);
 		model.addAttribute("signUpAble", Objects.equals(1, strict));
+		// 验证style是否存在
+		if (!STYLES.contains(style)) {
+			style = DEFAULT_STYLE;
+		}
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/index-" + style;
 		}else {
 			if (StringUtils.isEmpty(style)) {
 				return "pc/index";
 			}else {
-				// 验证style是否存在
-				if (!STYLES.contains(style)) {
-					style = DEFAULT_STYLE;
-				}
 				return "pc/activity/market/activity-market-" + style;
 			}
 		}

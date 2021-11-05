@@ -1,9 +1,8 @@
 package com.chaoxing.activity.task.activity;
 
-import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueueService;
+import com.alibaba.fastjson.JSON;
+import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueue;
+import com.chaoxing.activity.service.queue.activity.handler.ActivityTimingReleaseQueueService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,26 +24,23 @@ import javax.annotation.Resource;
 public class ActivityTimingReleaseTask {
 
 	@Resource
+	private ActivityTimingReleaseQueue activityTimingReleaseQueue;
+	@Resource
 	private ActivityTimingReleaseQueueService activityTimingReleaseQueueService;
-	@Resource
-	private ActivityHandleService activityHandleService;
-	@Resource
-	private ActivityQueryService activityQueryService;
 
 	@Scheduled(fixedDelay = 1L)
-	public void release() throws InterruptedException {
-		ActivityTimingReleaseQueueService.QueueParamDTO queueParam = activityTimingReleaseQueueService.pop();
+	public void handle() throws InterruptedException {
+		ActivityTimingReleaseQueue.QueueParamDTO queueParam = activityTimingReleaseQueue.pop();
 		if (queueParam == null) {
 			return;
 		}
-		Integer activityId = queueParam.getActivityId();
-		LoginUserDTO loginUser = queueParam.getLoginUser();
 		try {
-			activityHandleService.release(activityId, loginUser);
+			activityTimingReleaseQueueService.handle(queueParam);
 		} catch (Exception e) {
+			log.error("根据参数:{} 处理活动定时发布error:{}", JSON.toJSONString(queueParam), e.getMessage());
 			e.printStackTrace();
 			if (!isIgnoreException(e)) {
-				activityTimingReleaseQueueService.push(queueParam);
+				activityTimingReleaseQueue.push(queueParam);
 			}
 		}
 	}

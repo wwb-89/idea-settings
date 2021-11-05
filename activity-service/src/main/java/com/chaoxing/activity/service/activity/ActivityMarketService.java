@@ -11,7 +11,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMarket;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.manager.PassportApiService;
-import com.chaoxing.activity.service.queue.OrgAssociateActivityQueueService;
+import com.chaoxing.activity.service.queue.OrgAssociateActivityQueue;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -38,7 +38,7 @@ public class ActivityMarketService {
     private ActivityMarketMapper activityMarketMapper;
 
     @Resource
-    private OrgAssociateActivityQueueService orgAssociateActivityQueueService;
+    private OrgAssociateActivityQueue orgAssociateActivityQueue;
     @Resource
     private MarketHandleService marketHandleService;
     @Resource
@@ -124,7 +124,7 @@ public class ActivityMarketService {
     public void shareActivityToFids(Activity activity, List<Integer> sharedFids, OperateUserDTO operateUser) {
         if (CollectionUtils.isNotEmpty(sharedFids)) {
             for (Integer sharedFid : sharedFids) {
-                orgAssociateActivityQueueService.push(new OrgAssociateActivityQueueService.QueueParamDTO(activity.getId(), sharedFid, operateUser.getUid()));
+                orgAssociateActivityQueue.push(new OrgAssociateActivityQueue.QueueParamDTO(activity.getId(), sharedFid, operateUser.getUid()));
             }
         }
     }

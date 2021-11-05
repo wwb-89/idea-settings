@@ -2,7 +2,7 @@ package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
-import com.chaoxing.activity.service.queue.activity.ActivityReleaseScopeChangeQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityReleaseScopeChangeQueue;
 import com.chaoxing.activity.util.enums.ModuleTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class ActivityReleaseScopeChangeTask {
 
 	@Resource
-	private ActivityReleaseScopeChangeQueueService activityReleaseScopeChangeQueueService;
+	private ActivityReleaseScopeChangeQueue activityReleaseScopeChangeQueueService;
 	@Resource
 	private ActivityModuleService activityModuleService;
 	@Resource

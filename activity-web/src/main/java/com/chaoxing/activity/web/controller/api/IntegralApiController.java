@@ -2,7 +2,7 @@ package com.chaoxing.activity.web.controller.api;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.service.queue.IntegralPushQueueService;
+import com.chaoxing.activity.service.queue.IntegralPushQueue;
 import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +26,7 @@ import java.util.Optional;
 public class IntegralApiController {
 
 	@Resource
-	private IntegralPushQueueService integralPushQueueService;
+	private IntegralPushQueue integralPushQueueService;
 
 	/**活动访问积分推送
 	 * @Description 
@@ -43,7 +43,7 @@ public class IntegralApiController {
 		Optional.ofNullable(loginUser).ifPresent(v -> {
 			Integer uid = loginUser.getUid();
 			Integer fid = loginUser.getFid();
-			IntegralPushQueueService.IntegralPushDTO integralPush = new IntegralPushQueueService.IntegralPushDTO(uid, fid, IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activityName);
+			IntegralPushQueue.IntegralPushDTO integralPush = new IntegralPushQueue.IntegralPushDTO(uid, fid, IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activityName);
 			integralPushQueueService.push(integralPush);
 		});
 		return RestRespDTO.success();

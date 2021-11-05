@@ -154,12 +154,15 @@ html {
 }
 
 .el-form .form-item .input-box .custom-input .tag {
+  border: none;
   display: inline-block;
   padding: 4px 8px;
   border-radius: 37px;
   font-size: 13px;
   line-height: 18px;
   margin: 0 4px;
+  background: rgba(0, 132, 255, 0.12);
+  color: #0084FF;
 }
 
 .el-form .form-item .input-box .custom-input .tag.color1 {
