@@ -20,7 +20,6 @@ import com.chaoxing.activity.util.enums.ConditionEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -30,7 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**报名条件服务
@@ -343,11 +345,16 @@ public class SignUpConditionService {
 		List<FormDataDTO> wfwFormData = wfwFormApiService.listFormRecord(formId, fid);
 		// 获取用户的表单记录列表
 		List<FormDataDTO> userFormData = FormDataDTO.listUserFormData(wfwFormData, userFieldAlias, uid);
+		// 用户在表单中的记录是否存在
+		boolean formDataExist = CollectionUtils.isNotEmpty(userFormData);
+		boolean formDataExistAllowSignUp = Optional.ofNullable(signUpCondition.getAllowSignedUp()).orElse(true);
 
-		boolean exist = CollectionUtils.isNotEmpty(userFormData) == Optional.ofNullable(signUpCondition.getAllowSignedUp()).orElse(true);
+		if (formDataExist != formDataExistAllowSignUp) {
+			return false;
+		}
 		List<ActivitySignUpCondition> conditionDetails = signUpCondition.getActivityConditionDetails();
-		if (!exist || CollectionUtils.isEmpty(conditionDetails)) {
-			return exist;
+		if (CollectionUtils.isEmpty(conditionDetails)) {
+			return true;
 		}
 
 		for (ActivitySignUpCondition detail : conditionDetails) {
