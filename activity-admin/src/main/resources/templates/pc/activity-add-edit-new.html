@@ -563,8 +563,8 @@
                                                         </el-option>
                                                     </el-select>
                                                     <template v-if="detail.condition && detail.condition != 'empty' && detail.condition != 'un_empty'">
-                                                        <el-select v-if="formFieldStructures[signUpConditionMap[it.id].originIdentify][detail.fieldName].compt == 'selectbox'" v-model="detail.value" placeholder="请选择" style="width: 152px">
-                                                            <el-option  v-for="(it, index) in formFieldStructures[signUpConditionMap[it.id].originIdentify][detail.fieldName].options"
+                                                        <el-select v-if="detail.compt == 'selectbox' || detail.compt == 'selectmultibox'" v-model="detail.value" placeholder="请选择" style="width: 152px">
+                                                            <el-option  v-for="(it, index) in detail.options"
                                                                         :key="index"
                                                                         :label="it"
                                                                         :value="it"
@@ -865,7 +865,6 @@
                 signUpConditionMap: {},
                 sucTplComponentIds: [[${sucTplComponentIds}]],
                 signUpConditions: [[${signUpConditions}]],
-                formFieldStructures: {},
                 conditionEnums: [[${conditionEnums}]],
                 currFormField: { type: 'input', options: []},
                 notAllowCancelTypes: [
@@ -954,14 +953,10 @@
                         }
                     }
                 });
-                // 报名条件map封装
-                var sucTplComponentIds = $this.sucTplComponentIds || [];
-                $($this.signUpConditions).each(function () {
-                    $this.$set(this, "enable", sucTplComponentIds.includes(this.templateComponentId));
-                    $this.$set($this.signUpConditionMap, this.templateComponentId, this);
-                });
+                // 表单字段map封装
                 var formFields = [[${formFieldStructures}]] || {}
                 var formIds = Object.keys(formFields);
+                var formStructureMap = {}
                 $(formIds).each(function (i) {
                     var formId = formIds[i];
                     if (formFields[formId]) {
@@ -969,9 +964,24 @@
                         $(formFields[formId]).each(function () {
                             fieldNameCompObj[this.name] = this;
                         });
-                        $this.formFieldStructures[formId] = fieldNameCompObj;
+                        formStructureMap[formId] = fieldNameCompObj;
                     }
                 });
+                // 报名条件map封装
+                var sucTplComponentIds = $this.sucTplComponentIds || [];
+                $($this.signUpConditions).each(function () {
+                    var _this = this;
+                    $this.$set(_this, "enable", sucTplComponentIds.includes(_this.templateComponentId));
+                    if (_this.activityConditionDetails) {
+                        $(_this.activityConditionDetails).each(function () {
+                            var fieldObj = formStructureMap[_this.originIdentify];
+                            $this.$set(this, "compt", fieldObj[this.fieldName].compt);
+                            $this.$set(this, "options", fieldObj[this.fieldName].options || []);
+                        })
+                    }
+                    $this.$set($this.signUpConditionMap, this.templateComponentId, _this);
+                });
+
                 var partitionIndexs = [];
                 // 前一个是不是特殊分区（报名属于特殊分区）
                 var isPreSpecialPartition = false;
