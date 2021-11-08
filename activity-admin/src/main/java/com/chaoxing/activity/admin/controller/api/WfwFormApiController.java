@@ -1,14 +1,19 @@
 package com.chaoxing.activity.admin.controller.api;
 
+import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.util.FormUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
+import com.google.common.collect.Lists;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**微服务表单api服务
@@ -40,7 +45,28 @@ public class WfwFormApiController {
 	@RequestMapping("{formId}/field")
 	public RestRespDTO listWfwFormField(@PathVariable Integer formId, @RequestParam Integer fid) {
 		List<FormStructureDTO> formFields = formApiService.getFormStructure(formId, fid);
-		return RestRespDTO.success(formFields.stream().map(WfwFormFieldVO::buildFromWfwFormFieldDTO).collect(Collectors.toList()));
+		List<WfwFormFieldVO> result = formFields.stream().map(v -> {
+			WfwFormFieldVO fieldItem = WfwFormFieldVO.buildFromWfwFormFieldDTO(v);
+			JSONObject optionBindInfo = v.getOptionBindInfo();
+			// 如果当前字段为关联表字段，则查询关联表字段的下拉数据源
+			if (optionBindInfo != null) {
+				Integer fieldId = optionBindInfo.getInteger("bindFieldId");
+				Integer bindFormId = optionBindInfo.getInteger("bindFormId");
+				FormStructureDTO relatedStructure = formApiService.getFormStructure(bindFormId, fid).stream().filter(u -> Objects.equals(u.getId(), fieldId)).findFirst().orElse(null);
+				if (relatedStructure != null) {
+					List<String> options = Lists.newArrayList();
+					List<FormDataDTO> relatedRecords = formApiService.listFormRecord(bindFormId, fid);
+					String fieldAlias = relatedStructure.getAlias();
+					for (FormDataDTO formDatum : relatedRecords) {
+						String formValue = FormUtils.getValue(formDatum, fieldAlias);
+						options.add(formValue);
+					}
+					fieldItem.setOptions(options);
+				}
+			}
+			return fieldItem;
+		}).collect(Collectors.toList());
+		return RestRespDTO.success(result);
 	}
 
 

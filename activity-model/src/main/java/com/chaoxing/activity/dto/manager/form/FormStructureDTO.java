@@ -40,6 +40,8 @@ public class FormStructureDTO {
 	private JSONArray values;
 	/** 嵌套表格 */
 	private List<FormStructureDTO> compts;
+	/** 选项值关联绑定信息 */
+	private JSONObject optionBindInfo;
 
 	/**通过字段名称获取别名
 	 * @Description
