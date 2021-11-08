@@ -488,7 +488,9 @@ public class SignUpConditionService {
 		// 新增活动启用关联
 		ApplicationContextHolder.getBean(SignUpConditionService.class).saveActivitySignUpConditionEnables(activityId, signUpTplComponentIds);
 		// 找出已停用的报名条件模板组件id
-		existEnableTplComponentIds.removeAll(signUpTplComponentIds);
+		if (CollectionUtils.isNotEmpty(signUpTplComponentIds)) {
+			existEnableTplComponentIds.removeAll(signUpTplComponentIds);
+		}
 		if (CollectionUtils.isNotEmpty(existEnableTplComponentIds)) {
 			// 删除已经停用的报名条件明细配置
 			activitySignUpConditionMapper.delete(new LambdaQueryWrapper<ActivitySignUpCondition>()
