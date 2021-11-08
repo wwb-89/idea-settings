@@ -228,7 +228,7 @@ public class WfwFormApprovalApiService {
     }
 
     /**创建活动
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-05-11 16:28:51
      * @param fid
@@ -238,7 +238,7 @@ public class WfwFormApprovalApiService {
      * @param flag
      * @param webTemplateId 门户网页模版id
      * @return void
-    */
+     */
     @Transactional(rollbackFor = Exception.class)
     public void createActivity(Integer fid, Integer formId, Integer formUserId, Integer marketId, String flag, Integer webTemplateId) {
         // 获取表单数据
@@ -316,7 +316,7 @@ public class WfwFormApprovalApiService {
     }
 
     /**通过活动审批创建报名签到
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-06-11 17:49:43
      * @param formData
@@ -324,7 +324,7 @@ public class WfwFormApprovalApiService {
      * @param activityStartTime
      * @param activityEndTime
      * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
-    */
+     */
     private SignCreateParamDTO buildSignFromActivityApproval(FormDataDTO formData, Integer uid, Integer fid, LocalDateTime activityStartTime, LocalDateTime activityEndTime) {
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.buildDefault();
         // 报名
@@ -347,18 +347,12 @@ public class WfwFormApprovalApiService {
             String signUpPublicList = FormUtils.getValue(formData, "sign_up_public_list");
             signUp.setPublicList(Objects.equals(YES, signUpPublicList));
             String signUpPersonLimit = FormUtils.getValue(formData, "sign_up_person_limit");
-            // 万能表单选择的节点都是根（上级）节点
             List<DepartmentDTO> departments = FormUtils.listDepartment(formData, "sign_up_contacts_scope");
             if (CollectionUtils.isNotEmpty(departments)) {
                 List<Integer> departmentIds = departments.stream().map(DepartmentDTO::getId).collect(Collectors.toList());
-                // 机构下的通讯录架构
-                List<WfwGroupDTO> orgWfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
-                List<WfwGroupDTO> rootWfwGroups = orgWfwGroups.stream().filter(v -> departmentIds.contains(Integer.valueOf(v.getId()))).collect(Collectors.toList());
-                List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
-                for (WfwGroupDTO rootWfwGroup : rootWfwGroups) {
-                    wfwGroups.add(rootWfwGroup);
-                    wfwGroups.addAll(wfwContactApiService.listAllSubWfwGroups(rootWfwGroup, orgWfwGroups));
-                }
+                List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid)
+                        .stream()
+                        .filter(v -> departmentIds.contains(Integer.valueOf(v.getId()))).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(wfwGroups)) {
                     signUp.setEnableContactsParticipateScope(true);
                     List<SignUpParticipateScopeDTO> contactsParticipateScopes = Lists.newArrayList();
