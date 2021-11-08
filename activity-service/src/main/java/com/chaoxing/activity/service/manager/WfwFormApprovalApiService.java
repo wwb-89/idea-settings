@@ -347,12 +347,18 @@ public class WfwFormApprovalApiService {
             String signUpPublicList = FormUtils.getValue(formData, "sign_up_public_list");
             signUp.setPublicList(Objects.equals(YES, signUpPublicList));
             String signUpPersonLimit = FormUtils.getValue(formData, "sign_up_person_limit");
+            // 万能表单选择的节点都是根（上级）节点
             List<DepartmentDTO> departments = FormUtils.listDepartment(formData, "sign_up_contacts_scope");
             if (CollectionUtils.isNotEmpty(departments)) {
                 List<Integer> departmentIds = departments.stream().map(DepartmentDTO::getId).collect(Collectors.toList());
-                List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid)
-                        .stream()
-                        .filter(v -> departmentIds.contains(Integer.valueOf(v.getId()))).collect(Collectors.toList());
+                // 机构下的通讯录架构
+                List<WfwGroupDTO> orgWfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
+                List<WfwGroupDTO> rootWfwGroups = orgWfwGroups.stream().filter(v -> departmentIds.contains(Integer.valueOf(v.getId()))).collect(Collectors.toList());
+                List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
+                for (WfwGroupDTO rootWfwGroup : rootWfwGroups) {
+                    wfwGroups.add(rootWfwGroup);
+                    wfwGroups.addAll(wfwContactApiService.listAllSubWfwGroups(rootWfwGroup, orgWfwGroups));
+                }
                 if (CollectionUtils.isNotEmpty(wfwGroups)) {
                     signUp.setEnableContactsParticipateScope(true);
                     List<SignUpParticipateScopeDTO> contactsParticipateScopes = Lists.newArrayList();
