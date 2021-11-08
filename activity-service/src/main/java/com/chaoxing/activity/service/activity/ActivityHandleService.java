@@ -9,7 +9,6 @@ import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
-import com.chaoxing.activity.dto.event.activity.ActivityWebTemplateChangeEventOrigin;
 import com.chaoxing.activity.dto.manager.group.GroupCreateParamDTO;
 import com.chaoxing.activity.dto.manager.group.GroupCreateResultDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
@@ -46,7 +45,6 @@ import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.queue.event.activity.ActivityWebTemplateChangeEventQueue;
 import com.chaoxing.activity.util.ApplicationContextHolder;
-import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
@@ -61,7 +59,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -541,11 +538,6 @@ public class ActivityHandleService {
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
 				.set(Activity::getWebsiteId, null)
 		);
-		ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
-				.activityId(activityId)
-				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
-				.build();
-		activityWebTemplateChangeEventQueue.push(eventOrigin);
 	}
 
 	/**创建模块

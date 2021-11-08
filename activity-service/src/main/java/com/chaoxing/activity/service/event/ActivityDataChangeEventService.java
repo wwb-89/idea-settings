@@ -49,6 +49,8 @@ public class ActivityDataChangeEventService {
 	private ActivityNameTimeChangeEventQueue activityNameTimeChangeEventQueue;
 	@Resource
 	private ActivityChangeEventQueue activityChangeEventQueue;
+	@Resource
+	private ActivityWebTemplateChangeEventQueue activityWebTemplateChangeEventQueue;
 
 	/**活动数据改变
 	 * @Description 
@@ -74,6 +76,8 @@ public class ActivityDataChangeEventService {
 		activityAddressTimeChangeHandle(activity, oldActivity);
 		// 活动名称、时间改变处理
 		activityNameTimeChangeHandle(activity, oldActivity);
+		// 门户模版改变
+		activityWebTemplateIdChangeHandle(activity, oldActivity);
 		// 活动改变处理
 		ActivityChangeEventOrigin activityChangeEventOrigin = ActivityChangeEventOrigin.builder()
 				.activityId(activity.getId())
@@ -235,6 +239,25 @@ public class ActivityDataChangeEventService {
 				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
 				.build();
 		activityNameTimeChangeEventQueue.push(eventOrigin);
+	}
+
+	/**处理门户模版的改变
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-08 20:55:34
+	 * @param activity
+	 * @param oldActivity
+	 * @return void
+	*/
+	private void activityWebTemplateIdChangeHandle(Activity activity, Activity oldActivity) {
+		if (oldActivity != null && Objects.equals(activity.getPageId(), oldActivity.getPageId()) && activity.getWebsiteId() != null) {
+			return;
+		}
+		ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
+				.activityId(activity.getId())
+				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+				.build();
+		activityWebTemplateChangeEventQueue.push(eventOrigin);
 	}
 
 	/**活动时间改变处理
