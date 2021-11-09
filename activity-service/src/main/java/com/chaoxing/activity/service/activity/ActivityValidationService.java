@@ -6,6 +6,7 @@ import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationS
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
+import com.chaoxing.activity.util.exception.ActivityUnReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -352,7 +353,7 @@ public class ActivityValidationService {
 		Activity activity = activityExist(activityId);
 		Boolean released = activity.getReleased();
 		if (!released) {
-			throw new BusinessException("活动已下架");
+			throw new ActivityUnReleasedException(activityId);
 		}
 		// 验证创建者
 		Integer uid = loginUser.getUid();

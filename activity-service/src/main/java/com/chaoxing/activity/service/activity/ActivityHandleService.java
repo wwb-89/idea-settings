@@ -50,6 +50,8 @@ import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.enums.*;
+import com.chaoxing.activity.util.exception.ActivityReleasedException;
+import com.chaoxing.activity.util.exception.ActivityUnReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -446,10 +448,14 @@ public class ActivityHandleService {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
 		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
 		marketIdsUnderFid.forEach(marketId -> {
-			if (released) {
-				activityMarketService.releaseActivity(marketId, activityId, loginUser);
-			} else {
-				activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
+			try {
+				if (released) {
+					activityMarketService.releaseActivity(marketId, activityId, loginUser);
+				} else {
+					activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
+				}
+			} catch (ActivityReleasedException | ActivityUnReleasedException e) {
+				// 忽略
 			}
 		});
 	}
