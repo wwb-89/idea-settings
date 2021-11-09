@@ -322,6 +322,10 @@ public class ActivityFormSyncService {
                 result.add(item);
             }
         }
+        if (result.isEmpty()) {
+            // 没有配置任何别名则放过
+            return null;
+        }
         return result.toJSONString();
     }
 

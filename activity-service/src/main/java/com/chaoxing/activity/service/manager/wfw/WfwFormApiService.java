@@ -323,6 +323,10 @@ public class WfwFormApiService {
 	 * @return void
 	*/
 	public void updateForm(Integer formId, Integer formUserId, String data) {
+		if (StringUtils.isBlank(data)) {
+			log.error("根据参数formId:{}, formUserId:{}, data:{} 更新万能表单error: 更新的数据不能为空", formId, formUserId, data);
+			return;
+		}
 		TreeMap<String, Object> paramsMap = Maps.newTreeMap();
 		paramsMap.put("formId", formId);
 		paramsMap.put("formUserId", formUserId);
