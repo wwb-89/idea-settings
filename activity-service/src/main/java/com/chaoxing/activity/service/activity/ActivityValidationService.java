@@ -5,8 +5,6 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
-import com.chaoxing.activity.util.exception.ActivityReleasedException;
-import com.chaoxing.activity.util.exception.ActivityUnReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -312,10 +310,6 @@ public class ActivityValidationService {
 	*/
 	public Activity releaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
-		Boolean released = activity.getReleased();
-		if (released) {
-			throw new ActivityReleasedException(activity.getId());
-		}
 		// 验证创建者
 		Integer uid = loginUser.getUid();
 		if (isCreator(activity, uid)) {
@@ -351,10 +345,6 @@ public class ActivityValidationService {
 	*/
 	public Activity cancelReleaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
-		Boolean released = activity.getReleased();
-		if (!released) {
-			throw new ActivityUnReleasedException(activityId);
-		}
 		// 验证创建者
 		Integer uid = loginUser.getUid();
 		if (isCreator(activity, uid)) {
