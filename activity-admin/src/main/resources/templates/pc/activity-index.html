@@ -34,7 +34,7 @@
                     <span>{{menus.sign_in.name}}</span>
                 </div>
             </div>
-            <div class="entry menu-item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist) && menuShow('results_manage')">
+            <div class="entry menu-item" v-if="menuShow('results_manage')">
                 <!--考核管理-->
                 <div :class="{'item': true, 'active': menus.results_manage.selected}" @click="toResultsManage">
                     <img :src="menus.results_manage.activeIconUrl" v-if="menus.results_manage.selected">
@@ -42,7 +42,7 @@
                     <span>{{menus.results_manage.name}}</span>
                 </div>
             </div>
-            <div class="message menu-item" v-if="signActivityManageIndex.signUpExist && menuShow('notice')">
+            <div class="message menu-item" v-if="menuShow('notice')">
                 <!--发通知-->
                 <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
                     <img :src="menus.notice.activeIconUrl" v-if="menus.notice.selected">

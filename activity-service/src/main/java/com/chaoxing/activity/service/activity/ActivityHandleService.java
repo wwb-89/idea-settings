@@ -9,7 +9,6 @@ import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
-import com.chaoxing.activity.dto.event.activity.ActivityWebTemplateChangeEventOrigin;
 import com.chaoxing.activity.dto.manager.group.GroupCreateParamDTO;
 import com.chaoxing.activity.dto.manager.group.GroupCreateResultDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
@@ -46,12 +45,13 @@ import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.queue.event.activity.ActivityWebTemplateChangeEventQueue;
 import com.chaoxing.activity.util.ApplicationContextHolder;
-import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.enums.*;
+import com.chaoxing.activity.util.exception.ActivityReleasedException;
+import com.chaoxing.activity.util.exception.ActivityUnReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +61,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -449,10 +448,14 @@ public class ActivityHandleService {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
 		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
 		marketIdsUnderFid.forEach(marketId -> {
-			if (released) {
-				activityMarketService.releaseActivity(marketId, activityId, loginUser);
-			} else {
-				activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
+			try {
+				if (released) {
+					activityMarketService.releaseActivity(marketId, activityId, loginUser);
+				} else {
+					activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
+				}
+			} catch (ActivityReleasedException | ActivityUnReleasedException e) {
+				// 忽略
 			}
 		});
 	}
@@ -541,11 +544,6 @@ public class ActivityHandleService {
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
 				.set(Activity::getWebsiteId, null)
 		);
-		ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
-				.activityId(activityId)
-				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
-				.build();
-		activityWebTemplateChangeEventQueue.push(eventOrigin);
 	}
 
 	/**创建模块

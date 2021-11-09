@@ -191,7 +191,7 @@ public class ActivityFormSyncService {
         if (Objects.equals(openSignUp, "是")) {
             // 报名时间
             TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
-            if (signUpTimeScope == null) {
+            if (signUpTimeScope.getStartTime() == null || signUpTimeScope.getEndTime() == null) {
                 LocalDateTime now = LocalDateTime.now();
                 signUpCreateParam.setStartTime(DateUtils.date2Timestamp(now));
                 signUpCreateParam.setEndTime(DateUtils.date2Timestamp(now.plusDays(1)));

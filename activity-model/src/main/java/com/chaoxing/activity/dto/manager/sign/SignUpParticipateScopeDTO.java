@@ -35,6 +35,7 @@ public class SignUpParticipateScopeDTO {
 
     public static SignUpParticipateScopeDTO buildFromWfwGroup(WfwGroupDTO wfwGroup, String groupType) {
 		return SignUpParticipateScopeDTO.builder()
+				.externalPid(Integer.valueOf(wfwGroup.getGid()))
 				.externalId(Integer.valueOf(wfwGroup.getId()))
 				.externalName(wfwGroup.getGroupname())
 				.groupType(groupType)

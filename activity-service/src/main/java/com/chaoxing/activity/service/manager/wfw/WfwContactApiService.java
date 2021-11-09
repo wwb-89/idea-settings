@@ -89,6 +89,28 @@ public class WfwContactApiService {
 		return convert2WfwGroup(result);
 	}
 
+	/**查询所有下级
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-08 19:00:12
+	 * @param wfwGroup
+	 * @param wfwGroups
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO>
+	*/
+	public List<WfwGroupDTO> listAllSubWfwGroups(WfwGroupDTO wfwGroup, List<WfwGroupDTO> wfwGroups) {
+		List<WfwGroupDTO> children = Lists.newArrayList();
+		if (wfwGroup == null || CollectionUtils.isEmpty(wfwGroups)) {
+			return children;
+		}
+		for (WfwGroupDTO group : wfwGroups) {
+			if (Objects.equals(group.getGid(), wfwGroup.getId())) {
+				children.add(group);
+				children.addAll(listAllSubWfwGroups(group, wfwGroups));
+			}
+		}
+		return children;
+	}
+
 	/**deptment转换成wfwGroup数据结构
 	* @Description 
 	* @author huxiaolong
