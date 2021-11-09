@@ -2,9 +2,105 @@ body {
   background: #F2F4F7;
 }
 
-.activity-list {
+.header {
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: #3B5165;
+  -webkit-box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.04);
+          box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.04);
+}
+
+.header .title {
+  text-align: center;
+  font-size: 16px;
+  line-height: 40px;
+  color: #FFFFFF;
+}
+
+.searchDiv {
+  width: 220px;
+  height: 30px;
+  position: relative;
+}
+
+.searchDiv .inputStyle {
+  color: #333333;
+  width: 100%;
+  background: none;
+  height: 28px;
+  line-height: 28px;
+  font-size: 14px;
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 25px;
+  padding-right: 61px;
+  padding-left: 16px;
+  box-sizing: border-box;
+}
+
+.searchDiv .inputStyle:focus {
+  border: 1px solid #0084FF;
+}
+
+.searchDiv .icon-cancel {
+  cursor: pointer;
+  position: absolute;
+  right: 35px;
+  top: 0;
+  line-height: 30px;
+  display: inline-block;
+  color: #DBDBDB;
+}
+
+.searchDiv .icon-cancel:hover {
+  color: #999999;
+}
+
+.searchDiv .icon-search {
+  cursor: pointer;
+  position: absolute;
+  right: 9px;
+  top: 0;
+  line-height: 30px;
+  display: inline-block;
+  color: #CCCCCC;
+}
+
+.searchDiv .icon-search:hover {
+  color: #0084FF;
+}
+
+.activity-list.width1000 {
   width: 1000px;
-  margin: 16px auto 50px;
+  margin: 0 auto 50px;
+  margin-top: 60px;
+}
+
+.activity-list .filter {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 0 32px;
+}
+
+.activity-list .filter .el-dropdown {
+  line-height: 30px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.activity-list .filter .marginLeftAuto {
+  margin-left: auto;
+}
+
+.el-popper .popper__arrow {
+  display: none;
 }
 
 .item-block {
@@ -14,7 +110,6 @@ body {
      -moz-box-sizing: border-box;
           box-sizing: border-box;
   border-radius: 8px;
-  margin-top: 16px;
   position: relative;
 }
 
@@ -35,10 +130,6 @@ body {
 
 .item-block .btns {
   display: block;
-}
-
-.item-block .btns button {
-  margin-left: 20px;
 }
 
 .item-block .btns button .addIcon {
@@ -72,6 +163,7 @@ body {
 }
 
 .item-block .card-list {
+  margin-top: 10px;
   margin-bottom: 24px;
 }
 
@@ -82,8 +174,8 @@ body {
 }
 
 .item-block .card-list ul li .inner {
-  padding-left: 200px;
-  min-height: 96px;
+  padding-left: 168px;
+  min-height: 88px;
   position: relative;
 }
 
@@ -95,8 +187,8 @@ body {
      -moz-box-sizing: border-box;
           box-sizing: border-box;
   border-radius: 4px;
-  width: 184px;
-  height: 96px;
+  width: 168px;
+  height: 88px;
   overflow: hidden;
 }
 
@@ -104,10 +196,8 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  width: 182px;
-  height: 94px;
-  border: 1px solid #E9E9E9;
-  border-radius: 4px;
+  width: 168px;
+  height: 88px;
   overflow: hidden;
 }
 
@@ -133,7 +223,7 @@ body {
   display: inline-block;
   width: 16px;
   height: 16px;
-  background: url("../images/pv.png") center center no-repeat;
+  background: url("../images/signed-up-user.png") center center no-repeat;
   background-size: 100%;
   margin-left: 10px;
   margin-right: 4px;
@@ -142,20 +232,20 @@ body {
 .item-block .card-list ul li .img-box .tips {
   position: absolute;
   z-index: 22;
-  right: 0;
-  top: 0;
-  padding: 0 8px;
-  font-weight: 500;
-  height: 22px;
-  line-height: 22px;
+  left: 8px;
+  top: 8px;
+  padding: 0 6px;
+  height: 20px;
+  line-height: 20px;
   color: #FFFFFF;
   font-size: 12px;
-  border-radius: 0px 3px 0px 8px;
+  border-radius: 4px;
 }
 
 .item-block .card-list ul li .img-box .color1 {
-  background: -o-linear-gradient(170.6deg, #24BB1D 0.2%, #48DF4E 100.2%);
-  background: linear-gradient(279.4deg, #24BB1D 0.2%, #48DF4E 100.2%);
+  background: -webkit-gradient(linear, right top, left top, from(#24BB1D), to(#48DF4E));
+  background: -o-linear-gradient(right, #24BB1D 0%, #48DF4E 100%);
+  background: linear-gradient(270deg, #24BB1D 0%, #48DF4E 100%);
 }
 
 .item-block .card-list ul li .img-box .color2 {
@@ -164,28 +254,32 @@ body {
 }
 
 .item-block .card-list ul li .img-box .color3 {
-  background: -o-linear-gradient(350.6deg, #ACB8BF -0.2%, #7F8E98 99.8%);
-  background: linear-gradient(99.4deg, #ACB8BF -0.2%, #7F8E98 99.8%);
+  background: -webkit-gradient(linear, left top, right top, color-stop(4.35%, #ACB8BF), to(#7F8E98));
+  background: -o-linear-gradient(left, #ACB8BF 4.35%, #7F8E98 100%);
+  background: linear-gradient(90deg, #ACB8BF 4.35%, #7F8E98 100%);
 }
 
 .item-block .card-list ul li .img-box .color4 {
-  background: -o-linear-gradient(350.83deg, #FD8585 1.9%, #FC564C 99.8%);
-  background: linear-gradient(99.17deg, #FD8585 1.9%, #FC564C 99.8%);
+  background: -webkit-gradient(linear, left top, right top, from(#FF7B73), to(#FF4343));
+  background: -o-linear-gradient(left, #FF7B73 0%, #FF4343 100%);
+  background: linear-gradient(90deg, #FF7B73 0%, #FF4343 100%);
 }
 
 .item-block .card-list ul li .img-box .color5 {
-  background: -o-linear-gradient(353.32deg, #FFB763 1.14%, #FF8B20 98.13%);
-  background: linear-gradient(96.68deg, #FFB763 1.14%, #FF8B20 98.13%);
+  background: -webkit-gradient(linear, left top, right top, from(#FFB673), to(#FF7043));
+  background: -o-linear-gradient(left, #FFB673 0%, #FF7043 100%);
+  background: linear-gradient(90deg, #FFB673 0%, #FF7043 100%);
 }
 
 .item-block .card-list ul li .card-info {
   text-align: left;
+  margin-left: 16px;
 }
 
 .item-block .card-list ul li .card-info .title {
   color: #333333;
-  font-size: 18px;
-  margin-bottom: 12px;
+  font-size: 16px;
+  margin-bottom: 8px;
   line-height: 24px;
   font-weight: 500;
   cursor: pointer;
@@ -194,6 +288,20 @@ body {
 
 .item-block .card-list ul li .card-info .title:hover {
   color: #0084FF;
+}
+
+.item-block .card-list ul li .card-info .title-box label {
+  display: inline-block;
+  height: 22px;
+  line-height: 22px;
+  color: #ffffff;
+  padding: 0 7px;
+  font-weight: normal;
+  font-size: 13px;
+  background: -webkit-gradient(linear, left top, right top, from(#91D3FF), to(#51B9FF));
+  background: -o-linear-gradient(left, #91D3FF 0%, #51B9FF 100%);
+  background: linear-gradient(90deg, #91D3FF 0%, #51B9FF 100%);
+  border-radius: 4px;
 }
 
 .item-block .card-list ul li .card-info .title-box .title-mark-top {
@@ -215,13 +323,17 @@ body {
 }
 
 .item-block .card-list ul li .card-info .time-box {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
-.item-block .card-list ul li .card-info .time-box .icon-img {
-  width: 16px;
-  height: 16px;
+.item-block .card-list ul li .card-info .time-box i {
+  display: inline-block;
+  color: #CCCCCC;
+  font-size: 14px;
+  line-height: 24px;
   margin-right: 4px;
+  position: relative;
+  top: 2px;
 }
 
 .item-block .card-list ul li .card-info .address {
@@ -230,10 +342,14 @@ body {
   color: #999999;
 }
 
-.item-block .card-list ul li .card-info .user-box .icon-img {
-  width: 16px;
-  height: 16px;
+.item-block .card-list ul li .card-info .user-box i {
+  display: inline-block;
+  color: #CCCCCC;
+  font-size: 14px;
+  line-height: 24px;
   margin-right: 4px;
+  position: relative;
+  top: 2px;
 }
 
 .item-block .card-list ul li .card-info .user-box .user {

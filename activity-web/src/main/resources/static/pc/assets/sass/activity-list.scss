@@ -1,16 +1,97 @@
 body {
   background: #F2F4F7;
 }
+.container {
+
+}
+.header {
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: #3B5165;
+  box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.04);
+  .title {
+    text-align: center;
+    font-size: 16px;
+    line-height: 40px;
+    color: #FFFFFF;
+  }
+}
+.searchDiv {
+  width: 220px;
+  height: 30px;
+  position: relative;
+  .inputStyle {
+    color: #333333;
+    width: 100%;
+    background:none;
+    height: 28px;
+    line-height: 28px;
+    font-size: 14px;
+    border: 1px solid #E9E9E9;
+    box-sizing: border-box;
+    border-radius: 25px;
+    padding-right: 61px;
+    padding-left: 16px;
+    box-sizing: border-box;
+    &:focus {
+      border: 1px solid #0084FF;
+    }
+  }
+  .icon-cancel {
+    cursor: pointer;
+    position: absolute;
+    right: 35px;
+    top: 0;
+    line-height: 30px;
+    display: inline-block;
+    color: #DBDBDB;
+    &:hover {
+      color: #999999;
+    }
+  }
+  .icon-search{
+    cursor: pointer;
+    position: absolute;
+    right: 9px;
+    top: 0;
+    line-height: 30px;
+    display: inline-block;
+    color: #CCCCCC;
+    &:hover {
+        color: #0084FF;
+    }
+  }
+}
 .activity-list {
-  width: 1000px;
-  margin: 16px auto 50px;
+  &.width1000 {
+    width: 1000px;
+    margin: 0 auto 50px;
+    margin-top: 60px;
+  }
+  .filter {
+    display: flex;
+    margin: 0 32px;
+    .el-dropdown {
+      line-height: 30px;
+      margin-right: 20px;
+      cursor: pointer;
+    }
+    .marginLeftAuto {
+      margin-left: auto;
+    }
+  }
+}
+.el-popper .popper__arrow {
+  display: none;
 }
 .item-block {
   background: #ffffff;
   padding: 20px 30px;
   box-sizing: border-box;
   border-radius: 8px;
-  margin-top: 16px;
   position: relative;
   &.paddingNew {
     padding: 24px 32px;
@@ -27,7 +108,6 @@ body {
   .btns {
     display: block;
     button {
-      margin-left: 20px;
       .addIcon {
         display: inline-block;
         width: 16px;
@@ -62,6 +142,7 @@ body {
     }
   }
   .card-list {
+    margin-top: 10px;
     margin-bottom: 24px;
     ul {
       li {
@@ -70,9 +151,8 @@ body {
         position: relative;
         //cursor: pointer;
         .inner {
-          padding-left: 200px;
-          //padding-right: 256px;
-          min-height: 96px;
+          padding-left: 168px;
+          min-height: 88px;
           position: relative;
         }
         .img-box {
@@ -81,17 +161,15 @@ body {
           border: 1px solid #E9E9E9;
           box-sizing: border-box;
           border-radius: 4px;
-          width: 184px;
-          height: 96px;
+          width: 168px;
+          height: 88px;
           overflow: hidden;
           .js-crop-img {
             position: absolute;
             left: 0;
             top: 0;
-            width: 182px;
-            height: 94px;
-            border: 1px solid #E9E9E9;
-            border-radius: 4px;
+            width: 168px;
+            height: 88px;
             overflow: hidden;
           }
           .num {
@@ -113,7 +191,7 @@ body {
               display: inline-block;
               width: 16px;
               height: 16px;
-              background: url("../images/pv.png")  center center no-repeat;
+              background: url("../images/signed-up-user.png")  center center no-repeat;
               background-size: 100%;
               margin-left: 10px;
               margin-right:4px;
@@ -122,39 +200,39 @@ body {
           .tips {
             position: absolute;
             z-index: 22;
-            right: 0;
-            top: 0;
-            padding: 0 8px;
-            font-weight: 500;
-            height: 22px;
-            line-height: 22px;
+            left: 8px;
+            top: 8px;
+            padding: 0 6px;
+            height: 20px;
+            line-height: 20px;
             color: #FFFFFF;
             font-size: 12px;
-            border-radius: 0px 3px 0px 8px;
+            border-radius: 4px;
           }
           .color1 {
-            background: linear-gradient(279.4deg, #24BB1D 0.2%, #48DF4E 100.2%);
+            background: linear-gradient(270deg, #24BB1D 0%, #48DF4E 100%);
           }
           .color2 {
             background: linear-gradient(99.4deg, #91D3FF -0.2%, #51B9FF 99.8%);
           }
           .color3 {
-            background: linear-gradient(99.4deg, #ACB8BF -0.2%, #7F8E98 99.8%);
+            background: linear-gradient(90deg, #ACB8BF 4.35%, #7F8E98 100%);
           }
           .color4 {
-            background: linear-gradient(99.17deg, #FD8585 1.9%, #FC564C 99.8%);
+            background: linear-gradient(90deg, #FF7B73 0%, #FF4343 100%);
           }
           .color5 {
 
-            background: linear-gradient(96.68deg, #FFB763 1.14%, #FF8B20 98.13%);
+            background: linear-gradient(90deg, #FFB673 0%, #FF7043 100%);
           }
         }
         .card-info {
           text-align: left;
+          margin-left: 16px;
           .title {
             color: #333333;
-            font-size: 18px;
-            margin-bottom: 12px;
+            font-size: 16px;
+            margin-bottom: 8px;
             line-height: 24px;
             font-weight: 500;
             cursor: pointer;
@@ -164,6 +242,17 @@ body {
             }
           }
           .title-box{
+            label {
+              display: inline-block;
+              height: 22px;
+              line-height: 22px;
+              color: #ffffff;
+              padding: 0 7px;
+              font-weight: normal;
+              font-size: 13px;
+              background: linear-gradient(90deg, #91D3FF 0%, #51B9FF 100%);
+              border-radius: 4px;
+            }
             .title-mark-top{
               background: rgba(0, 132, 255, 0.06);
               border-radius: 4px;
@@ -182,11 +271,15 @@ body {
             line-height: 24px;
           }
           .time-box{
-            margin-bottom: 12px;
-            .icon-img{
-              width: 16px;
-              height: 16px;
+            margin-bottom: 8px;
+            i{
+              display: inline-block;
+              color: #CCCCCC;
+              font-size: 14px;
+              line-height: 24px;
               margin-right: 4px;
+              position: relative;
+              top: 2px;
             }
           }
           .address {
@@ -195,10 +288,14 @@ body {
             color: #999999;
           }
           .user-box{
-            .icon-img{
-              width: 16px;
-              height: 16px;
+            i{
+              display: inline-block;
+              color: #CCCCCC;
+              font-size: 14px;
+              line-height: 24px;
               margin-right: 4px;
+              position: relative;
+              top: 2px;
             }
             .user{
               font-size: 14px;
