@@ -328,7 +328,11 @@ public class ActivityCreateParamDTO {
 		// 开始时间、结束时间
 		TimeScopeDTO activityTimeScope = FormUtils.getTimeScope(formData, "activity_time");
 		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(FormUtils.getTimeScope(formData, "activity_time_scope"));
-		if (activityTimeScope != null) {
+		if (activityTimeScope.getStartTime() == null || activityTimeScope.getEndTime() == null) {
+			LocalDateTime now = LocalDateTime.now();
+			activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(now));
+			activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(now.plusMonths(1)));
+		} else {
 			activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
 			activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
 		}
