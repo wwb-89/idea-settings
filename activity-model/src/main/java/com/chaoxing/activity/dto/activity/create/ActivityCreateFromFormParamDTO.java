@@ -1,6 +1,5 @@
 package com.chaoxing.activity.dto.activity.create;
 
-import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
 import java.util.Objects;
@@ -45,7 +44,8 @@ public class ActivityCreateFromFormParamDTO {
         /** 创建活动 */
         CREATE("创建", "data_create"),
         UPDATE("更新", "data_update"),
-        DELETE("删除", "data_remove");
+        DELETE("删除", "data_remove"),
+        UNDEFINED("未知", "undefined");
 
         private final String name;
         private final String value;
@@ -62,7 +62,7 @@ public class ActivityCreateFromFormParamDTO {
                     return operateTypeEnum;
                 }
             }
-            throw new BusinessException("未知同步操作类型");
+            return UNDEFINED;
         }
     }
 }
