@@ -5,7 +5,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
-import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
+import com.chaoxing.activity.service.queue.user.UserSignStatSummaryQueue;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
@@ -31,7 +31,7 @@ public class UserLeaveSignInEventQueueService {
     @Resource
     private ActivityStatSummaryQueue activityStatSummaryQueue;
     @Resource
-    private UserStatSummaryQueue userStatSummaryQueue;
+    private UserSignStatSummaryQueue userSignStatSummaryQueue;
     @Resource
     private UserActionRecordQueue userActionRecordQueue;
 
@@ -48,7 +48,7 @@ public class UserLeaveSignInEventQueueService {
         // 活动统计汇总中的签到数量需要更新
         activityStatSummaryQueue.push(activityId);
         // 用户活动汇总统计中的报名签到信息需要更新
-        userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
+        userSignStatSummaryQueue.push(new UserSignStatSummaryQueue.QueueParamDTO(uid, activityId));
         // 记录用户行为
         UserActionRecordQueue.QueueParamDTO queueParam = new UserActionRecordQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_IN, UserActionEnum.LEAVE_SIGNED_IN, String.valueOf(eventOrigin.getSignInId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
         userActionRecordQueue.push(queueParam);
