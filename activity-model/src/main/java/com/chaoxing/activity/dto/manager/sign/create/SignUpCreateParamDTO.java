@@ -67,8 +67,12 @@ public class SignUpCreateParamDTO {
 	private Boolean onSiteSignUp;
 	/** 是否开启微服务参与范围 */
 	private Boolean enableWfwParticipateScope;
+	/** 是否开启组织架构本单位参与范围 */
+	private Boolean wfwOnlySelfUnit;
 	/** 是否开启通讯录参与范围 */
 	private Boolean enableContactsParticipateScope;
+	/** 是否开启通讯录本单位参与范围 */
+	private Boolean contactOnlySelfUnit;
 	/** 定制报名类型 */
 	private String customSignUpType;
 	/** 是否被删除 */
@@ -97,7 +101,9 @@ public class SignUpCreateParamDTO {
 				.endAllowCancel(true)
 				.onSiteSignUp(false)
 				.enableWfwParticipateScope(false)
+				.wfwOnlySelfUnit(false)
 				.enableContactsParticipateScope(false)
+				.contactOnlySelfUnit(false)
 				.deleted(false)
 				.customSignUpType(CustomSignUpTypeEnum.NORMAL.getValue())
 				.build();

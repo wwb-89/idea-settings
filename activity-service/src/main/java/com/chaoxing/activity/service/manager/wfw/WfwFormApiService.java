@@ -96,7 +96,7 @@ public class WfwFormApiService {
 		TreeMap<String, Object> paramsMap = Maps.newTreeMap();
 		paramsMap.put("deptId", fid);
 		paramsMap.put("formId", formId);
-		paramsMap.put("formUserIds", String.join(",", Optional.of(formUserIds).orElse(Lists.newArrayList()).stream().map(String::valueOf).collect(Collectors.toList())));
+		paramsMap.put("formUserIds", Optional.of(formUserIds).orElse(Lists.newArrayList()).stream().map(String::valueOf).collect(Collectors.joining(",")));
 		paramsMap.put("sign", SIGN);
 		paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
 		paramsMap.put("enc", getEnc(paramsMap));
