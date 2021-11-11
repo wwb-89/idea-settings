@@ -54,6 +54,10 @@
             endNotAllowCancel: false,
             notAllowCancelType: "after_sign_up_end",
             notAllowCancelTime: null,
+            wfwOrgScope: 'no_limit',    // 仅作为参与范围前端选择项展示字段
+            contactScope: 'no_limit',   // 仅作为参与范围前端选择项展示字段
+            wfwOnlySelfUnit: false,
+            contactOnlySelfUnit: false,
             enableWfwParticipateScope: false,
             enableContactsParticipateScope: false,
             activityFlag: "",
