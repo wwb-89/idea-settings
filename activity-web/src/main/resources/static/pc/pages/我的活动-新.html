@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/activity-list.css">
+</head>
+<body>
+<div class="container " id="activity-list" v-cloak>
+    <div class="header">
+        <div class="title">应用标题</div>
+    </div>
+<!--    自用版加：width1000-->
+    <div class="activity-list width1000">
+        <div class="item-block nopadding minHeight800">
+            <div class="filter">
+                <div class="btns">
+                    <button class="btn-main-gradient"><i class="addIcon"></i>添加</button>
+                </div>
+                <el-dropdown  trigger="click" class="marginLeftAuto">
+                      <span class="el-dropdown-link">
+                        下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+                      </span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>黄金糕</el-dropdown-item>
+                        <el-dropdown-item>狮子头</el-dropdown-item>
+                        <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+                <div class="searchDiv">
+                    <input type="text" placeholder="搜索标题" v-model="inputValue" class="inputStyle">
+                    <i class="icon-cancel" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
+                    <i class="icon-search"></i>
+                </div>
+            </div>
+            <div class="filter">
+                <div class="searchDiv">
+                    <input type="text" placeholder="搜索标题" v-model="inputValue" class="inputStyle">
+                    <i class="icon-cancel" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
+                    <i class="icon-search"></i>
+                </div>
+                <el-dropdown  trigger="click" class="marginLeftAuto">
+                      <span class="el-dropdown-link">
+                        下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+                      </span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>黄金糕</el-dropdown-item>
+                        <el-dropdown-item>狮子头</el-dropdown-item>
+                        <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+
+            </div>
+            <div class="tabContent">
+                <div class="card-list card-list1">
+                    <ul>
+                        <li>
+                            <div class="inner">
+                                <div class="img-box">
+                                    <p class="tips color4">报名审核中</p>
+                                    <p class="num"><i></i>1028</p>
+                                    <div class="js-crop-img">
+                                        <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                                    </div>
+                                </div>
+                                <div class="card-info">
+                                    <div class="title-box">
+                                        <h2 class="title overHidden1 fl">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                        <label>管理</label>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="time-box">
+                                        <i class="icon-clock"></i>
+                                        <p class="time inlineMiddle">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                    </div>
+                                    <div class="user-box">
+                                        <i class="icon-user"></i>
+                                        <p class="user inlineMiddle">1945</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="handel">
+                                <a class="cancel">取消收藏</a>
+                                <a class="cancel" v-on:click="cancelFun('删除后，将清空该活动的相关信息和记录，确定删除吗？','删除')">删除</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 无数据 -->
+            <div class="noContent" style="display: block;">
+                <p>暂无内容</p>
+            </div>
+            <div class="load-div loading"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
+            <div class="load-div no-more" style="display: none">没有更多了</div>
+        </div>
+    </div>
+    <!-- 取消报名弹窗 -->
+    <el-dialog title="" :visible.sync="dialogVisible" width="300px"
+               class="myDialogStyle">
+        <div class="textCenter">
+            <img src="../assets/images/icon-30-warning.png" class="warning">
+            <p class="tips">{{tipsHtml}}</p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisible = false">{{btnTxt}}</el-button>
+            </span>
+    </el-dialog>
+    <!-- 创建活动弹窗 -->
+    <el-dialog title="创建活动" :visible.sync="createActivity" width="600px" class="myDialogStyle">
+        <div class="textCenter" style="height: 380px;">
+            <iframe src="/activity-engine/activity-admin/src/main/resources/static/pc/pages/createActivity.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+        <span slot="footer" class="dialog-footer">
+                <el-button @click="createActivity = false">取消</el-button>
+                <el-button type="primary" @click="createActivity = false">发布</el-button>
+            </span>
+    </el-dialog>
+</div>
+</body>
+</html>
+<script src="../assets/lib/jquery.1.8.2.min.js"></script>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/jqthumb.min.js"></script>
+
+<!-- 引入组件库 -->
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/js/common.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#activity-list',
+        data: function () {
+            return {
+                activeNum:0,
+                inputValue:'',
+                dialogVisible:false,
+                tipsHtml:'',
+                btnTxt:'确定',
+                createActivity: false, //创建活动
+            }
+        },
+        created: function () {
+        },
+        mounted: function () {
+            cropImgFun("body");
+        },
+        methods: {
+            //输入框的交互
+            inputDeleteFun:function (){
+                this.inputValue="";
+            },
+            tabChangeFun:function(num){
+                this.activeNum = num
+            },
+            cancelFun:function (html,txt){
+                this.tipsHtml = html;
+                this.btnTxt = txt;
+                this.dialogVisible = !this.dialogVisible;
+
+            },
+        }
+    });
+</script>

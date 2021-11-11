@@ -4,7 +4,7 @@ import com.chaoxing.activity.dto.event.user.UserUnQualifiedEventOrigin;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
-import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
+import com.chaoxing.activity.service.queue.user.UserSignStatSummaryQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class UserUnQualifiedEventQueueService {
     @Resource
     private ActivityStatSummaryQueue activityStatSummaryQueue;
     @Resource
-    private UserStatSummaryQueue userStatSummaryQueue;
+    private UserSignStatSummaryQueue userSignStatSummaryQueue;
 
     public void handle(UserUnQualifiedEventOrigin eventOrigin) {
         if (eventOrigin == null) {
@@ -42,7 +42,7 @@ public class UserUnQualifiedEventQueueService {
         // 相应活动的统计数据需要变更
         activityStatSummaryQueue.push(activityId);
         // 用户汇总表的报名签到统计信息需要更新
-        userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
+        userSignStatSummaryQueue.push(new UserSignStatSummaryQueue.QueueParamDTO(uid, activityId));
     }
 
 }

@@ -162,15 +162,7 @@
                         </el-table-column>
                     </template>
                 </el-table>
-                <el-pagination
-                        v-show="loaded && total > queryParams.pageSize"
-                        background
-                        layout="prev, pager, next"
-                        :total="total"
-                        :page-size="queryParams.pageSize"
-                        :current-page="queryParams.pageNum"
-                        @current-change="changePage">
-                </el-pagination>
+                <el-pagination background layout="sizes, prev, pager, next" :total="total" :page-sizes="[10, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
             </div>
         </div>
         <!-- 表格内容 -->
@@ -406,6 +398,12 @@
                         });
                     }
                     return configTableFieldDetails;
+                },
+                // 处理分页大小变更
+                sizeChangeHandle: function (val) {
+                    var $this = this;
+                    $this.queryParams.pageSize = val;
+                    $this.loadData();
                 },
                 // 重新加载数据
                 loadData: function() {

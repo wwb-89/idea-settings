@@ -42,7 +42,7 @@ public class OrgUserDataFormPushService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private final static Integer ZJ_BUSINESS_COLLEGE_FID = 177443;
-    private final static Integer ZJ_BUSINESS_COLLEGE_FORM_ID = 112028;
+    private final static Integer ZJ_BUSINESS_COLLEGE_FORM_ID = 21341;
 
     @Resource
     private WfwFormApiService wfwFormApiService;
@@ -82,22 +82,26 @@ public class OrgUserDataFormPushService {
         }
         Integer formId = Integer.parseInt(repo);
         Integer formUserId = null;
+        Integer formFid = fid;
+        boolean isSpecialFlag = Objects.equals(fid, ZJ_BUSINESS_COLLEGE_FID) && Objects.equals(formId, ZJ_BUSINESS_COLLEGE_FORM_ID);
+        if (isSpecialFlag) {
+            formFid = 1183;
+        }
         OrgUserDataPushRecord orgUserDataPushRecord = orgUserDataPushRecordService.get(uid, activityId);
         if (orgUserDataPushRecord != null) {
             // 新增
             formUserId = orgUserDataPushRecord.getFormUserId();
-            FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
+            FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, formFid);
             if (formRecord == null) {
                 formUserId = null;
             }
         }
-        boolean isSpecialFlag = Objects.equals(fid, ZJ_BUSINESS_COLLEGE_FID) && Objects.equals(formId, ZJ_BUSINESS_COLLEGE_FORM_ID);
         UserStatSummary userStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
         String wfwFormData;
         if (isSpecialFlag) {
-            wfwFormData = generateZjBusinessCollegeFormData(userStatSummary, formId, fid);
+            wfwFormData = generateZjBusinessCollegeFormData(userStatSummary, formId, formFid);
         } else {
-            wfwFormData = generateWfwFormData(activity, userStatSummary, formId, fid);
+            wfwFormData = generateWfwFormData(activity, userStatSummary, formId, formFid);
         }
         if (StringUtils.isBlank(wfwFormData)) {
             return;
@@ -107,7 +111,7 @@ public class OrgUserDataFormPushService {
         if (formUserId == null) {
             if (!isSpecialFlag || qualified) {
                 // 新增
-                formUserId = wfwFormApiService.fillForm(formId, fid, uid, wfwFormData);
+                formUserId = wfwFormApiService.fillForm(formId, formFid, uid, wfwFormData);
                 orgUserDataPushRecord = OrgUserDataPushRecord.builder()
                         .uid(uid)
                         .activityId(activityId)

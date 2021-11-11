@@ -56,8 +56,7 @@ public class WfwFormSyncOperateTask {
                 default:
             }
         } catch (Exception e) {
-            log.error("万能表单数据:{}更新后处理error:{}", JSON.toJSONString(queueParam), e.getMessage());
-            wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(queueParam);
+            log.error("根据参数:{} 处理万能表单新增/修改/删除数据error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
         }
     }
