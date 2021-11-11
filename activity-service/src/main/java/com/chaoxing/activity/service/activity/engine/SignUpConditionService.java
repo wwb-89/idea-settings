@@ -283,21 +283,7 @@ public class SignUpConditionService {
 	 * @return boolean
 	*/
 	public void userCanSignUp(Integer uid, Integer signId, Integer templateComponentId) {
-		List<SignUpCondition> signUpConditions = listBySignUp(signId, templateComponentId);
-		boolean signUpConditionValidate = false;
-		if (CollectionUtils.isNotEmpty(signUpConditions)) {
-			for (SignUpCondition signUpCondition : signUpConditions) {
-				if (whetherCanSignUp(signUpCondition, uid)) {
-					signUpConditionValidate = true;
-					break;
-				}
-			}
-		} else {
-			signUpConditionValidate = true;
-		}
-		if (!signUpConditionValidate) {
-			throw new BusinessException("不满足报名条件");
-		}
+		userMatchSignUpCondition(uid, signId, templateComponentId);
 		// 验证活动市场的报名限制
 		Activity activity = activityQueryService.getBySignId(signId);
 		Integer marketId = Optional.ofNullable(activity).map(Activity::getMarketId).orElse(null);
@@ -319,6 +305,33 @@ public class SignUpConditionService {
 		Integer signedUpActivityNum = activityQueryService.countIngActivityNumBySignIds(marketId, signedUpSignIds);
 		if (signedUpActivityNum.compareTo(signUpActivityLimit) >= 0) {
 			throw new BusinessException("同时报名活动数超过限制");
+		}
+	}
+
+	/**用户满足报名条件（忽略其他市场同时报名限制、黑名单等）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-10 13:00:06
+	 * @param uid
+	 * @param signId
+	 * @param templateComponentId
+	 * @return void
+	*/
+	public void userMatchSignUpCondition(Integer uid, Integer signId, Integer templateComponentId) {
+		List<SignUpCondition> signUpConditions = listBySignUp(signId, templateComponentId);
+		boolean signUpConditionValidate = false;
+		if (CollectionUtils.isNotEmpty(signUpConditions)) {
+			for (SignUpCondition signUpCondition : signUpConditions) {
+				if (whetherCanSignUp(signUpCondition, uid)) {
+					signUpConditionValidate = true;
+					break;
+				}
+			}
+		} else {
+			signUpConditionValidate = true;
+		}
+		if (!signUpConditionValidate) {
+			throw new BusinessException("不满足报名条件");
 		}
 	}
 

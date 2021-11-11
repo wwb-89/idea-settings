@@ -228,7 +228,7 @@ public class WfwFormApprovalApiService {
     }
 
     /**创建活动
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-05-11 16:28:51
      * @param fid
@@ -238,7 +238,7 @@ public class WfwFormApprovalApiService {
      * @param flag
      * @param webTemplateId 门户网页模版id
      * @return void
-    */
+     */
     @Transactional(rollbackFor = Exception.class)
     public void createActivity(Integer fid, Integer formId, Integer formUserId, Integer marketId, String flag, Integer webTemplateId) {
         // 获取表单数据
@@ -316,7 +316,7 @@ public class WfwFormApprovalApiService {
     }
 
     /**通过活动审批创建报名签到
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-06-11 17:49:43
      * @param formData
@@ -324,7 +324,7 @@ public class WfwFormApprovalApiService {
      * @param activityStartTime
      * @param activityEndTime
      * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
-    */
+     */
     private SignCreateParamDTO buildSignFromActivityApproval(FormDataDTO formData, Integer uid, Integer fid, LocalDateTime activityStartTime, LocalDateTime activityEndTime) {
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.buildDefault();
         // 报名

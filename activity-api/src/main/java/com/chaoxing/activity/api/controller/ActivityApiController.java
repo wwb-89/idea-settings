@@ -527,11 +527,6 @@ public class ActivityApiController {
 		activityHandleService.updateActivityReleaseStatus(activityId, fid, uid, released);
 		return RestRespDTO.success();
 	}
-//
-//	@RequestMapping("{activityId}/market-release/status")
-//	public RestRespDTO updateActivityReleaseStatus(@PathVariable Integer activityId, Integer marketId, boolean released) {
-//
-//	}
 
 	/** 万能表单数据修改后同步修改活动
 	* @Description

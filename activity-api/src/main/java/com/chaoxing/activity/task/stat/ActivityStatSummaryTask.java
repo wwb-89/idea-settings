@@ -38,6 +38,7 @@ public class ActivityStatSummaryTask {
     */
     @Scheduled(fixedDelay = 1L)
     public void handleSignStat() throws InterruptedException {
+        log.info("根据参数执行活动数据汇总 start");
         Integer activityId = activityStatSummaryQueueService.pop();
         if (activityId == null) {
             return;

@@ -8,7 +8,7 @@ import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.service.queue.IntegralPushQueue;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
-import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
+import com.chaoxing.activity.service.queue.user.UserSignStatSummaryQueue;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
@@ -45,7 +45,7 @@ public class UserSignedUpEventQueueService {
     @Resource
     private ActivityStatSummaryQueue activityStatSummaryQueue;
     @Resource
-    private UserStatSummaryQueue userStatSummaryQueue;
+    private UserSignStatSummaryQueue userSignStatSummaryQueue;
     @Resource
     private UserActionRecordQueue userActionRecordQueue;
 
@@ -70,7 +70,7 @@ public class UserSignedUpEventQueueService {
         // 相应活动的统计数据需要变更
         activityStatSummaryQueue.push(activityId);
         // 用户汇总表的报名签到统计信息需要更新
-        userStatSummaryQueue.pushUserSignStat(new UserStatSummaryQueue.QueueParamDTO(uid, activityId));
+        userSignStatSummaryQueue.push(new UserSignStatSummaryQueue.QueueParamDTO(uid, activityId));
         // 记录用户行为
         UserActionRecordQueue.QueueParamDTO queueParam = new UserActionRecordQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_UP, UserActionEnum.SIGNED_UP, String.valueOf(eventOrigin.getSignUpId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
         userActionRecordQueue.push(queueParam);

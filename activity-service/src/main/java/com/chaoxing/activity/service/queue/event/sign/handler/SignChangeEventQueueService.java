@@ -5,7 +5,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
-import com.chaoxing.activity.service.queue.user.UserStatSummaryQueue;
+import com.chaoxing.activity.service.queue.user.UserSignStatSummaryQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,7 +31,7 @@ public class SignChangeEventQueueService {
     @Resource
     private UserStatSummaryQueryService userStatSummaryQueryService;
     @Resource
-    private UserStatSummaryQueue userStatSummaryQueue;
+    private UserSignStatSummaryQueue userSignStatSummaryQueue;
     @Resource
     private ActivityStatSummaryQueue activityStatSummaryQueue;
 
@@ -46,8 +46,8 @@ public class SignChangeEventQueueService {
         List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(activityId);
         if (CollectionUtils.isNotEmpty(userStatSummaries)) {
             for (UserStatSummary userStatSummary : userStatSummaries) {
-                UserStatSummaryQueue.QueueParamDTO userStatSummaryQueueParam = new UserStatSummaryQueue.QueueParamDTO(userStatSummary.getUid(), activityId);
-                userStatSummaryQueue.pushUserSignStat(userStatSummaryQueueParam);
+                UserSignStatSummaryQueue.QueueParamDTO userStatSummaryQueueParam = new UserSignStatSummaryQueue.QueueParamDTO(userStatSummary.getUid(), activityId);
+                userSignStatSummaryQueue.push(userStatSummaryQueueParam);
             }
         }
         activityStatSummaryQueue.push(activityId);

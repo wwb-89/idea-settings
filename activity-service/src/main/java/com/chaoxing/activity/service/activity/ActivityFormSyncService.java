@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.activity;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
@@ -10,10 +11,12 @@ import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.MarketClassify;
@@ -26,6 +29,7 @@ import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.ApplicationContextHolder;
@@ -44,6 +48,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author huxiaolong
@@ -78,7 +83,8 @@ public class ActivityFormSyncService {
     private TemplateQueryService templateQueryService;
     @Resource
     private TemplateComponentService templateComponentService;
-
+    @Resource
+    private WfwContactApiService wfwContactApiService;
 
 
     /**
@@ -150,7 +156,7 @@ public class ActivityFormSyncService {
         // 封装报名信息
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
         // 获取报名信息
-        SignUpCreateParamDTO signUpCreateParam = packageSignUp(formUserRecord, templateId);
+        SignUpCreateParamDTO signUpCreateParam = packageSignUp(formUserRecord, templateId, fid);
         if (signUpCreateParam != null) {
             signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
         }
@@ -180,7 +186,7 @@ public class ActivityFormSyncService {
     * @param templateId
     * @return com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO
     */
-    private SignUpCreateParamDTO packageSignUp(FormDataDTO formUserRecord, Integer templateId) {
+    private SignUpCreateParamDTO packageSignUp(FormDataDTO formUserRecord, Integer templateId, Integer fid) {
         String openSignUp = FormUtils.getValue(formUserRecord, "open_sign_up");
         Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
         SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
@@ -191,10 +197,10 @@ public class ActivityFormSyncService {
         if (Objects.equals(openSignUp, "是")) {
             // 报名时间
             TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
-            if (signUpTimeScope == null) {
+            if (signUpTimeScope.getStartTime() == null || signUpTimeScope.getEndTime() == null) {
                 LocalDateTime now = LocalDateTime.now();
                 signUpCreateParam.setStartTime(DateUtils.date2Timestamp(now));
-                signUpCreateParam.setEndTime(DateUtils.date2Timestamp(now.plusDays(1)));
+                signUpCreateParam.setEndTime(DateUtils.date2Timestamp(now.plusMonths(1)));
             } else {
                 signUpCreateParam.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
                 signUpCreateParam.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
@@ -208,6 +214,25 @@ public class ActivityFormSyncService {
             String signUpReview = FormUtils.getValue(formUserRecord, "sign_up_review");
             if (StringUtils.isNotBlank(signUpReview)) {
                 signUpCreateParam.setOpenAudit(Objects.equals(signUpReview, "是"));
+            }
+            // 通讯录参与范围
+            FormDataItemDTO contactPublishAreas = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "contacts_participation_scope")).findFirst().orElse(null);
+            if (contactPublishAreas != null) {
+                List<Integer> departmentIds = FormUtils.listDepartment(formUserRecord, "contacts_participation_scope")
+                        .stream().map(DepartmentDTO::getId).collect(Collectors.toList());
+                List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid)
+                        .stream()
+                        .filter(v -> departmentIds.contains(Integer.valueOf(v.getId()))).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(wfwGroups)) {
+                    signUpCreateParam.setEnableContactsParticipateScope(true);
+                    List<SignUpParticipateScopeDTO> contactsParticipateScopes = Lists.newArrayList();
+                    for (WfwGroupDTO wfwGroup : wfwGroups) {
+                        contactsParticipateScopes.add(SignUpParticipateScopeDTO.buildFromWfwGroup(wfwGroup, "contacts"));
+                    }
+                    signUpCreateParam.setContactsParticipateScopes(contactsParticipateScopes);
+                }
+
+
             }
         }
         return signUpCreateParam;
@@ -321,6 +346,10 @@ public class ActivityFormSyncService {
                 item.put("val", data);
                 result.add(item);
             }
+        }
+        if (result.isEmpty()) {
+            // 没有配置任何别名则放过
+            return null;
         }
         return result.toJSONString();
     }
