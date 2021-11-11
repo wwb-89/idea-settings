@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>通知设置</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/confirm_dialog.css" th:href="@{/pc/assets/css/confirm_dialog.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/commonTable.css" th:href="@{/pc/assets/css/commonTable.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/notice-setting.css" th:href="@{/pc/assets/css/notice-setting.css}">
+	<style>
+		[v-cloak] {
+			display: none;
+        }
+	</style>
+</head>
+
+<body>
+<div class="notice-setting" id="index" v-cloak>
+	<el-table class="table-box" :data="marketNoticeTemplates">
+		<el-table-column fixed prop="noticeTypeDescription" label="通知规则" min-width="157"></el-table-column>
+		<el-table-column prop="showTitle" label="标题" min-width="236"></el-table-column>
+		<el-table-column prop="showContent" label="内容" min-width="866"></el-table-column>
+		<el-table-column fixed="right" align="center" label="状态" min-width="157">
+			<template slot-scope="scope">
+				<span>{{scope.row.enable ? "已启用" : "已禁用"}}</span>
+			</template>
+		</el-table-column>
+		<el-table-column fixed="right" prop="enable" label="开启" min-width="78">
+			<template slot-scope="scope">
+				<el-switch v-model="scope.row.enable" @change="changeEnable(scope.$index)"></el-switch>
+			</template>
+		</el-table-column>
+		<el-table-column fixed="right" prop="" label="操作" min-width="78">
+			<template slot-scope="scope">
+				<el-button type="text" size="middle" @click="toEdit(scope.$index)">编辑</el-button>
+			</template>
+		</el-table-column>
+	</el-table>
+	<!--修改弹窗-->
+	<div class="dialog-box" v-show="editDialogShow">
+		<div class="dialog-wrap edit-rule">
+			<div class="header">
+				<span class="color333">{{editMarketNoticeTemplate.noticeTypeDescription}}</span>
+				<img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="editDialogShow = false">
+			</div>
+			<div class="dialog-content">
+				<form action="" class="el-form">
+					<div class="form-item">
+						<label class="label">收件人</label>
+						<div class="input-box">
+							<div class="addressee">
+								<span class="tag" v-for="(receiverDescription, index) of editMarketNoticeTemplate.receiverDescriptions">{{receiverDescription}}</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-item" v-show="editMarketNoticeTemplate.supportTimeConfig">
+						<label class="label">发送时间</label>
+						<div class="input-box">
+							<span>{{editMarketNoticeTemplate.sendTimeDescription}}</span>
+							<el-cascader class="marginL8 width160" v-model="timeValue" :options="timeScope" size="small" separator=""></el-cascader>
+						</div>
+					</div>
+					<div class="form-item">
+						<label class="label">标题</label>
+						<div class="input-box">
+							<div id="editTitleDiv" class="custom-input" contenteditable="true" v-html="editTitle" @blur="blurEdit" @input="titleChange($event)"></div>
+						</div>
+					</div>
+					<div class="form-item">
+						<label class="label">内容</label>
+						<div class="input-box">
+							<div id="editContentDiv" class="custom-input desc-box" contenteditable="true" v-html="editContent" @blur="blurEdit" @input="contentChange($event)"></div>
+						</div>
+					</div>
+					<div class="form-item">
+						<label class="label">可插入字段</label>
+						<div class="input-box">
+							<el-select v-model="selectedNoticeField" placeholder="请选择" size="small" @change="fieldChange" class="select-field">
+								<el-option v-for="(noticeField, index) of noticeFields" :key="index" :label="noticeField.name" :value="noticeField">
+									<span style="float: left">{{ noticeField.name }}</span>
+									<span style="float: right;" class="tag color1">文本</span>
+								</el-option>
+							</el-select>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="footer">
+				<span class="btn btn-border" @click="editDialogShow = false">取消</span>
+				<span class="btn btn-normal" v-show="editMarketNoticeTemplate.title && editMarketNoticeTemplate.content" @click="editSubmit">完成</span>
+				<span class="btn btn-forbid" v-show="!editMarketNoticeTemplate.title || !editMarketNoticeTemplate.content">完成</span>
+			</div>
+		</div>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script th:inline="javascript">
+		vm = new Vue({
+			el: '#index',
+			data: {
+				marketId: [[${marketId}]],
+				marketNoticeTemplates: [[${marketNoticeTemplates}]],
+				noticeFields: [[${noticeFields}]],
+				selectedNoticeField: "",
+				editDialogShow: false,
+				editMarketNoticeTemplate: null,
+				editTitle: "",
+				editContent: "",
+				timeScope: [],
+				timeValue: [0, 0],
+				position: ''
+			},
+			created: function () {
+				var $this = this;
+				var marketNoticeTemplates = $this.marketNoticeTemplates;
+				$(marketNoticeTemplates).each(function () {
+					var receiverDescription = this.receiverDescription;
+					if (activityApp.isEmpty(receiverDescription)) {
+						this.receiverDescriptions = [];
+					} else {
+						this.receiverDescriptions = receiverDescription.split(",");
+					}
+				});
+				$this.marketNoticeTemplates = marketNoticeTemplates;
+				var editMarketNoticeTemplate = $this.marketNoticeTemplates[0];
+				$this.editMarketNoticeTemplate = $.extend({}, editMarketNoticeTemplate);
+				//时间范围初始化
+				for (var i = 0; i < 49; i++) {
+					var children = [];
+					for (var m = 0; m < 60; m++) {
+						children.push({value: m, label: m + "分钟"},);
+					}
+					var scopeItem = {value: i, label: i + "小时", children: children
+					};
+					$this.timeScope.push(scopeItem);
+				}
+			},
+			methods: {
+				// 获取光标位置
+				blurEdit: function () {
+					this.position = window.getSelection().getRangeAt(0);
+				},
+				titleChange: function (e) {
+					var $this = this;
+					$this.$set($this.editMarketNoticeTemplate, "title", $(e.target).html());
+				},
+				contentChange: function (e) {
+					var $this = this;
+					$this.$set($this.editMarketNoticeTemplate, "content", $(e.target).html());
+				},
+				// 插入字段
+				fieldChange: function (params) {
+					var $this = this;
+					if (this.position) {
+						var input = document.createElement('input')
+						// 输入框得传入宽度，不能自适应
+						var wid = (params.name.length + 1) * 10 + 5;
+						// input.value = params.name;
+						input.style.width = wid + "px";
+						$(input).attr({
+							"type": "text",
+							"class": "tag",
+							"readonly": "readonly",
+							"value": params.name,
+							"code": params.value
+						});
+						this.position.insertNode(input);
+						// 修改通知模版的值
+						$this.$set($this.editMarketNoticeTemplate, "title", $("#editTitleDiv").html());
+						$this.$set($this.editMarketNoticeTemplate, "content", $("#editContentDiv").html());
+					}
+				},
+				toEdit: function (index) {
+					var $this = this;
+					var editMarketNoticeTemplate = $this.marketNoticeTemplates[index];
+					$this.editMarketNoticeTemplate = $.extend({}, editMarketNoticeTemplate);
+					$this.timeValue = [$this.editMarketNoticeTemplate.delayHour, $this.editMarketNoticeTemplate.delayMinute];
+					$this.editTitle = $this.editMarketNoticeTemplate.title;
+					$this.editContent = $this.editMarketNoticeTemplate.content;
+					$this.editDialogShow = true;
+				},
+				packageData: function () {
+					var $this = this;
+					var title = $this.editMarketNoticeTemplate.title;
+					title = title.replaceAll("'", "").replace(/<input.*?code="(.*?)".*?>/g, "{$1}");
+					var content = $this.editMarketNoticeTemplate.content;
+					content = content.replaceAll("'", "").replace(/<input.*?code="(.*?)".*?>/g, "{$1}");
+					$this.editMarketNoticeTemplate.codeTitle = title;
+					$this.editMarketNoticeTemplate.codeContent = content;
+					$this.editMarketNoticeTemplate.delayHour = $this.timeValue[0];
+					$this.editMarketNoticeTemplate.delayMinute = $this.timeValue[1];
+				},
+				editSubmit: function () {
+					var $this = this;
+					$this.packageData();
+					var url = ctx + "/api/market/" + $this.marketId + "/notice-template/update";
+					app.ajaxPostWithLoading(url, $this.editMarketNoticeTemplate, function (data) {
+						if (data.success) {
+							window.location.reload();
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "处理失败";
+							}
+							app.showMsg(message);
+						}
+					}, function () {
+						app.showMsg("处理失败");
+					});
+
+				},
+				changeEnable: function (index) {
+					var $this = this;
+					var marketNoticeTemplate = $this.marketNoticeTemplates[index];
+					var enable = marketNoticeTemplate.enable;
+					var url = ctx + "/api/market/" + $this.marketId + "/notice-template/enable";
+					if (!enable) {
+						url = ctx + "/api/market/" + $this.marketId + "/notice-template/disable";
+					}
+					var params = {
+						noticeType: marketNoticeTemplate.noticeType
+					};
+					app.ajaxPostWithLoading(url, params, function (data) {
+						if (data.success) {
+
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "处理失败";
+							}
+							app.showMsg(message);
+							$this.$set($this.marketNoticeTemplates[index], "enable", !enable);
+						}
+					}, function () {
+						app.showMsg("处理失败");
+						$this.$set($this.marketNoticeTemplates[index], "enable", !enable);
+					});
+				}
+			}
+		})
+	</script>
+</div>
+</body>
+</html>
