@@ -42,8 +42,56 @@
         .el-input--prefix .el-input__inner {
             padding-left: 30px!important;
         }
-        .basic-set {
-            padding-top: 0px;
+        .setForm .input-box .join-select {
+            position: relative;
+            min-height: 32px;
+            margin-top: 8px;
+            border: 1px solid #E9E9E9;
+            border-radius: 2px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            padding-left: 10px;
+            font-size: 14px;
+            color: #cccccc;
+            line-height: 32px;
+        }
+
+        .setForm .input-box .add-range {
+            position: absolute;
+            right: 6px;
+            top: 6px;
+            cursor: pointer;
+        }
+
+        .setForm .input-box .add-tags {
+            padding-right: 26px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            font-size: 0;
+            color: #333333;
+            padding-top: 4px;
+            line-height: 20px;
+        }
+
+        .setForm .input-box .add-tags span {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #F2F4F7;
+            border-radius: 2px;
+            line-height: 20px;
+            margin-bottom: 4px;
+            margin-right: 4px;
+            font-size: 14px;
+        }
+
+        .setForm .input-box .add-tags span i {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 0;
+            cursor: pointer;
+            margin-bottom: 2px;
         }
         [v-cloak]{
             display: none;
@@ -96,8 +144,9 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                         <div class="input-box" style="display: block">
                             <div :class="{'autoRange': (!signUpMap[item.id].enableWfwParticipateScope)}">
-                                <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="false" name="active-type">不限</el-radio>
-                                <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="true" name="active-type">自定义</el-radio>
+                                <el-radio-group v-model="signUpMap[item.id].wfwOrgScope" @change="wfwOrgScopeChange($event, item.id)" >
+                                    <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList">{{scope.label}}</el-radio>
+                                </el-radio-group>
                             </div>
                             <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
                                 <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
@@ -113,8 +162,9 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                         <div class="input-box" style="display: block">
                             <div :class="{'autoRange': (!signUpMap[item.id].enableContactsParticipateScope)}">
-                                <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="false" name="active-type">不限</el-radio>
-                                <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="true" name="active-type">自定义</el-radio>
+                                <el-radio-group v-model="signUpMap[item.id].contactScope" @change="contactScopeChange($event, item.id)">
+                                    <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList">{{scope.label}}</el-radio>
+                                </el-radio-group>
                             </div>
                             <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
                                 <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
@@ -304,6 +354,11 @@
                             {value: 'after_activity_start', label: '活动开始后'},
                             {value: 'custom', label: '自定义'}
                         ],
+                        scopeList: [
+                            {value: 'no_limit', label: '不限'},
+                            {value: 'only_self_unit', label: '仅本单位'},
+                            {value: 'custom', label: '自定义'}
+                        ],
                         // 报名参与范围
                         signUpParticipateWindowShow: false,
                         wfwGroups: [[${wfwGroups}]],
@@ -397,6 +452,7 @@
                             }
                         }
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
+                        $this.initSignUpScope(i, this);
                         if (!this.endAllowCancel && !this.notAllowCancelType) {
                             $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
                         }
@@ -454,6 +510,23 @@
                     }
                 },
                 methods: {
+                    initSignUpScope: function(i, signUp) {
+                        var $this = this;
+                        if (signUp.enableContactsParticipateScope) {
+                            $this.$set($this.sign.signUps[i], "contactScope", "custom");
+                        } else if (signUp.contactOnlySelfUnit) {
+                            $this.$set($this.sign.signUps[i], "contactScope", "only_self_unit");
+                        } else {
+                            $this.$set($this.sign.signUps[i], "contactScope", "no_limit");
+                        }
+                        if (signUp.enableWfwParticipateScope) {
+                            $this.$set($this.sign.signUps[i], "wfwOrgScope", "custom");
+                        } else if (signUp.wfwOnlySelfUnit) {
+                            $this.$set($this.sign.signUps[i], "wfwOrgScope", "only_self_unit");
+                        } else {
+                            $this.$set($this.sign.signUps[i], "wfwOrgScope", "no_limit");
+                        }
+                    },
                     initWfwGroups: function () {
                         var $this = this;
                         var nodeSoncountMap = {}
@@ -830,6 +903,26 @@
                         if ("company_sign_up" == parenrComponent.code && !checked) {
                             app.showMsg(parenrComponent.name + "必须开启" + component.name);
                             $this.$set($this.signUpMap[component.pid], "fillInfo", true);
+                        }
+                    },
+                    wfwOrgScopeChange: function(value, tplComponentId) {
+                        var $this = this;
+                        $this.signUpMap[tplComponentId].wfwOnlySelfUnit = false;
+                        $this.signUpMap[tplComponentId].enableWfwParticipateScope = false;
+                        if (value == 'custom') {
+                            $this.signUpMap[tplComponentId].enableWfwParticipateScope = true;
+                        } else if (value == 'only_self_unit') {
+                            $this.signUpMap[tplComponentId].wfwOnlySelfUnit = true;
+                        }
+                    },
+                    contactScopeChange: function (value, tplComponentId) {
+                        var $this = this;
+                        $this.signUpMap[tplComponentId].contactOnlySelfUnit = false;
+                        $this.signUpMap[tplComponentId].enableContactsParticipateScope = false;
+                        if (value == 'custom') {
+                            $this.signUpMap[tplComponentId].enableContactsParticipateScope = true;
+                        } else if (value == 'only_self_unit') {
+                            $this.signUpMap[tplComponentId].contactOnlySelfUnit = true;
                         }
                     }
                 }

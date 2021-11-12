@@ -186,12 +186,12 @@ public class ActivityApiController {
 	private Activity erdosDefaultActivity() {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		return Activity.builder()
-				.name("鄂尔多斯第七届师生共读活动")
+				.name("学生测评积分活动")
 				.organisers("鄂尔多斯市教育局")
 				.startTime(LocalDateTime.parse("2021-05-31 00:00", dateTimeFormatter))
 				.endTime(LocalDateTime.parse("2022-07-01 23:59", dateTimeFormatter))
 				.status(3)
-				.coverUrl("https://tsjy.chaoxing.com/plaza/upload/general_course/banner-new/ed6a28781314715e6ca4d66dddd9a3f4.jpg")
+				.coverUrl("http://p.ananas.chaoxing.com/star3/origin/c9f16401f786b2357e98a6f37b13830e.png")
 				.previewUrl("https://tsjy.chaoxing.com/plaza/x?courseId=218348567&classId=41447926")
 				.build();
 	}
