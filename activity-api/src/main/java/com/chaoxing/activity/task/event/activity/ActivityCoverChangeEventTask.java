@@ -30,6 +30,7 @@ public class ActivityCoverChangeEventTask {
     @Scheduled(fixedDelay = 1L)
     public void handle() throws InterruptedException {
         ActivityCoverChangeEventOrigin eventOrigin = activityCoverChangeEventQueue.pop();
+        log.info("根据参数:{} 处理活动封面 start", JSON.toJSONString(eventOrigin));
         if (eventOrigin == null) {
             return;
         }
