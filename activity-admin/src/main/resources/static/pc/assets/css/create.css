@@ -1895,6 +1895,10 @@ input.btn-name,
           align-items: flex-start;
 }
 
+.flexStart .label {
+  line-height: 32px;
+}
+
 .setForm .join-box label {
   display: inline-block;
   vertical-align: top;
