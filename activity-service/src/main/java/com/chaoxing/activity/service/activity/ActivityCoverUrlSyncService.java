@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.CloudApiService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class ActivityCoverUrlSyncService {
 			String cloudId = activity.getCoverCloudId();
 			if (StringUtils.isNotBlank(cloudId)) {
 				String imageUrl = cloudApiService.getImageUrl(cloudId);
+				if (StringUtils.isBlank(imageUrl)) {
+					throw new BusinessException("无法获取封面地址");
+				}
 				activityHandleService.updateActivityCoverUrl(activityId, imageUrl);
 			}
 		}
