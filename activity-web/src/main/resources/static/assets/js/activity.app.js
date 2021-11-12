@@ -304,7 +304,7 @@
      * @returns {string}
      */
     activityApp.prototype.getDefaultCoverCloudId = function () {
-        return "ce257d8a6c546bcedcc7f415dd504296";
+        return "3b16823d7d5fc677d13c042479e3c6d0";
     };
     /**
      * 积分推送

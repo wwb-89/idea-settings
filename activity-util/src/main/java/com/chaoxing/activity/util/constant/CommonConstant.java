@@ -53,7 +53,7 @@ public class CommonConstant {
 	public static final Duration DELAYED_QUEUE_DURATION = Duration.ofSeconds(2);
 
 	/** 默认封面云盘id */
-	public static final String ACTIVITY_DEFAULT_COVER_CLOUD_ID = "ce257d8a6c546bcedcc7f415dd504296";
+	public static final String ACTIVITY_DEFAULT_COVER_CLOUD_ID = "3b16823d7d5fc677d13c042479e3c6d0";
 
 	// 表单相关
 	/** 表单审批同意 */
