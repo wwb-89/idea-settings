@@ -60,6 +60,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
@@ -448,16 +449,30 @@ public class ActivityHandleService {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
 		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
 		marketIdsUnderFid.forEach(marketId -> {
-			try {
-				if (released) {
-					activityMarketService.releaseActivity(marketId, activityId, loginUser);
-				} else {
-					activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
-				}
-			} catch (ActivityReleasedException | ActivityUnReleasedException e) {
-				// 忽略
-			}
+			ApplicationContextHolder.getBean(ActivityHandleService.class).updateActivityReleaseStatus(activityId, marketId, loginUser, released);
 		});
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void updateActivityReleaseStatus(Integer activityId, Integer marketId, boolean released) {
+		updateActivityReleaseStatus(activityId, marketId, (LoginUserDTO) null, released);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void updateActivityReleaseStatus(Integer activityId, Integer marketId, LoginUserDTO loginUser, boolean released) {
+		if (loginUser == null) {
+			Activity activity = activityQueryService.getById(activityId);
+			loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), "", activity.getCreateFid(), "");
+		}
+		try {
+			if (released) {
+				activityMarketService.releaseActivity(marketId, activityId, loginUser);
+			} else {
+				activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
+			}
+		} catch (ActivityReleasedException | ActivityUnReleasedException e) {
+			// 忽略
+		}
 	}
 
 	/**删除活动

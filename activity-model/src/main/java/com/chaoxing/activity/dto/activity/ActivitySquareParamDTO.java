@@ -50,6 +50,6 @@ public class ActivitySquareParamDTO {
     private String timeOrder = OrderTypeEnum.DESC.getValue();
 
     public Integer getRealFid() {
-        return Optional.ofNullable(this.wfwfid).orElse(Optional.ofNullable(this.unitId).orElse(Optional.ofNullable(this.state).orElse(this.fid)));
+        return Optional.ofNullable(getWfwfid()).orElse(Optional.ofNullable(getUnitId()).orElse(Optional.ofNullable(getState()).orElse(getFid())));
     }
 }

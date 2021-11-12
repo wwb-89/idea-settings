@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
@@ -24,6 +25,7 @@ import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
@@ -85,6 +87,8 @@ public class ActivityFormSyncService {
     private TemplateComponentService templateComponentService;
     @Resource
     private WfwContactApiService wfwContactApiService;
+    @Resource
+    private MarketQueryService marketQueryService;
 
 
     /**
@@ -456,5 +460,44 @@ public class ActivityFormSyncService {
             activityUpdateParam.setStartTimeStamp(DateUtils.date2Timestamp(startTime));
             activityUpdateParam.setEndTimeStamp(DateUtils.date2Timestamp(endTime));
         }
+    }
+
+    /**根据表单记录更新发布状态
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-13 00:36:58
+     * @param activityFormSyncParam
+     * @param released
+     * @return void
+     */
+    public void syncUpdateReleaseStatus(ActivityCreateFromFormParamDTO activityFormSyncParam, Integer marketId, boolean released) {
+        Integer fid = activityFormSyncParam.getDeptId();
+        Integer formId = activityFormSyncParam.getFormId();
+        Integer formUserId = activityFormSyncParam.getIndexID();
+        // 获取表单数据
+        FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
+        if (formUserRecord == null) {
+            log.error("未查询到记录为:" + formUserId + "的表单数据");
+            return;
+        }
+        // 判断活动是否存在，若不存在，则不更新发布状态
+        Integer activityId = Optional.ofNullable(FormUtils.getValue(formUserRecord, "activity_id")).filter(StringUtils::isNotBlank).map(Integer::valueOf).orElse(null);
+        if (activityId == null) {
+            Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+            activityId = Optional.ofNullable(activity).map(Activity::getId).orElse(null);
+        }
+        if (activityId == null) {
+            log.error("表单记录:" + formUserId + "不存在对应的活动");
+            return;
+        }
+        String flag = activityFormSyncParam.getFlag();
+        if (marketId == null && StringUtils.isNotBlank(flag)) {
+            marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+        }
+        if (marketId == null) {
+            log.error("市场id不存在");
+            return;
+        }
+        activityHandleService.updateActivityReleaseStatus(activityId, marketId, released);
     }
 }

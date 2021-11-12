@@ -24,10 +24,7 @@ import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.activity.WfwFormSynOperateQueueService;
+import com.chaoxing.activity.service.activity.*;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.create.ActivityCreateService;
@@ -112,6 +109,8 @@ public class ActivityApiController {
 	private ActivityCreateService activityCreateService;
 	@Resource
 	private MarketHandleService marketHandleService;
+	@Resource
+	private ActivityFormSyncService activityFormSyncService;
 
 	/**组活动推荐
 	 * @Description 
@@ -611,6 +610,21 @@ public class ActivityApiController {
 	@RequestMapping("wfw-app/delete")
 	public RestRespDTO marketAppDelete(@RequestParam("wfwAppId") Integer wfwAppId) {
 		marketHandleService.deleteByWfwAppId(wfwAppId);
+		return RestRespDTO.success();
+	}
+
+	/**通用表单配置发布状态更新接口
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-13 01:12:47
+	 * @param activityFormSyncParam
+	 * @param marketId
+	 * @param released
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("/update/release-status/from/wfw-form")
+	public RestRespDTO updateReleaseStatusFromWfwForm(ActivityCreateFromFormParamDTO activityFormSyncParam, Integer marketId, boolean released) {
+		activityFormSyncService.syncUpdateReleaseStatus(activityFormSyncParam, marketId, released);
 		return RestRespDTO.success();
 	}
 

@@ -66,6 +66,10 @@
             width: 120px;
         }
 
+        .flexStart .label {
+            line-height: 32px;
+        }
+
         [v-cloak] {
             display: none;
         }
@@ -760,14 +764,14 @@
         <div class="dailog-box1" v-show="signUpParticipateWindowShow">
             <div class="dailog">
                 <div class="header">
-                    <span>参与范围</span>
+                    <span>请选择</span>
                     <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="cancelSignUpParticipateScope" class="close">
                 </div>
                 <div class="body">
                     <div class="tree">
-                        <div class="tree-head">
-                            <span>选择参与的范围</span>
-                        </div>
+<!--                        <div class="tree-head">-->
+<!--                            <span>选择参与的范围</span>-->
+<!--                        </div>-->
                         <div class="tree-box">
                             <div id="sign-up-participate-scope-tree" class="ztree"></div>
                         </div>
@@ -775,7 +779,7 @@
                 </div>
                 <div class="footer">
                     <div class="normal-btn cancle" @click="cancelSignUpParticipateScope">取消</div>
-                    <div class="normal-btn after-sure" @click="sureSignUpParticipateScope">发布</div>
+                    <div class="normal-btn after-sure" @click="sureSignUpParticipateScope">确定</div>
                 </div>
             </div>
         </div>

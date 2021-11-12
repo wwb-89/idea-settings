@@ -192,7 +192,7 @@ public class ActivityApiController {
 				.endTime(LocalDateTime.parse("2022-07-01 23:59", dateTimeFormatter))
 				.status(3)
 				.coverUrl("http://p.ananas.chaoxing.com/star3/origin/c9f16401f786b2357e98a6f37b13830e.png")
-				.previewUrl("https://tsjy.chaoxing.com/plaza/x?courseId=218348567&classId=41447926")
+				.previewUrl("https://tsjy.chaoxing.com/plaza/x?courseId=218798245&classId=42416979")
 				.build();
 	}
 
