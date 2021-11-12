@@ -120,7 +120,6 @@ public class ActivityMarketService {
     * @param activity
     * @return void
     */
-    @Transactional(rollbackFor = Exception.class)
     public void shareActivityToFids(Activity activity, List<Integer> sharedFids, OperateUserDTO operateUser) {
         if (CollectionUtils.isNotEmpty(sharedFids)) {
             for (Integer sharedFid : sharedFids) {

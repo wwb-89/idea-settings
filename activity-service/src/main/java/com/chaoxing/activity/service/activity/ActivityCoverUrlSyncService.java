@@ -26,6 +26,8 @@ public class ActivityCoverUrlSyncService {
 	@Resource
 	private ActivityHandleService activityHandleService;
 	@Resource
+	private ActivityValidationService activityValidationService;
+	@Resource
 	private CloudApiService cloudApiService;
 
 	/**同步活动封面url
@@ -36,16 +38,14 @@ public class ActivityCoverUrlSyncService {
 	 * @return boolean
 	*/
 	public void updateActivityCoverUrl(Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
-		if (activity != null) {
-			String cloudId = activity.getCoverCloudId();
-			if (StringUtils.isNotBlank(cloudId)) {
-				String imageUrl = cloudApiService.getImageUrl(cloudId);
-				if (StringUtils.isBlank(imageUrl)) {
-					throw new BusinessException("无法获取封面地址");
-				}
-				activityHandleService.updateActivityCoverUrl(activityId, imageUrl);
+		Activity activity = activityValidationService.activityExist(activityId);
+		String cloudId = activity.getCoverCloudId();
+		if (StringUtils.isNotBlank(cloudId)) {
+			String imageUrl = cloudApiService.getImageUrl(cloudId);
+			if (StringUtils.isBlank(imageUrl)) {
+				throw new BusinessException("无法获取封面地址");
 			}
+			activityHandleService.updateActivityCoverUrl(activityId, imageUrl);
 		}
 	}
 
