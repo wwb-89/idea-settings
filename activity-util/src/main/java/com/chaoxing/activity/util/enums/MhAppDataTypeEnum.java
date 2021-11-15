@@ -24,7 +24,9 @@ public enum MhAppDataTypeEnum {
 	ACTIVITY_MODULE("活动模块", "activity_module"),
 	ACTIVITY_MAP("活动地图", "activity_map"),
 	ACTIVITY_LIST("活动列表", "activity_list"),
-	DUAL_SELECT("双选会", "dual_select");
+	DUAL_SELECT("双选会", "dual_select"),
+	// 版本v3
+	activity_brief_info("活动精简信息", "activity_brief_info");
 
 	private final String name;
 	private final String value;

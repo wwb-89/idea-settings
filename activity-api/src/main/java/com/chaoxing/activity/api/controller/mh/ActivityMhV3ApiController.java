@@ -68,7 +68,7 @@ public class ActivityMhV3ApiController {
     @Resource
     private ActivityStatQueryService activityStatQueryService;
 
-    @RequestMapping("/activity/brief/info")
+    @RequestMapping("activity/brief/info")
     public RestRespDTO briefInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         MhGeneralAppResultDataDTO mainFields = MhGeneralAppResultDataDTO.buildDefault();
@@ -178,7 +178,7 @@ public class ActivityMhV3ApiController {
     * @param data
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @RequestMapping("/activity/stat/info")
+    @RequestMapping("activity/stat/info")
     public RestRespDTO activityStatInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
@@ -209,7 +209,7 @@ public class ActivityMhV3ApiController {
     * @param data
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @RequestMapping("/activity/introduction")
+    @RequestMapping("activity/introduction")
     public RestRespDTO activityIntroduction(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         JSONObject jsonObject = new JSONObject();
@@ -257,7 +257,7 @@ public class ActivityMhV3ApiController {
     * @param data
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @RequestMapping("/activity/introduction/detail")
+    @RequestMapping("activity/introduction/detail")
     public RestRespDTO activityIntroductionDetail(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         JSONObject jsonObject = new JSONObject();

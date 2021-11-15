@@ -60,7 +60,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
@@ -745,6 +744,8 @@ public class ActivityHandleService {
 				return String.format(ActivityMhUrlConstant.ACTIVITY_RECOMMEND_URL, activityId);
 			case DUAL_SELECT:
 				return String.format(ActivityMhUrlConstant.DUAL_SELECT_URL, activityId);
+			case activity_brief_info:
+				return ActivityMhUrlConstant.ACTIVITY_BRIEF_INFO_URL;
 			default:
 
 		}
