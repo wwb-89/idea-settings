@@ -58,7 +58,7 @@ public class ActivityAboutStartEventQueueService {
     public void handle(ActivityAboutStartEventOrigin eventOrigin) {
         Activity activity = activityQueryService.getById(eventOrigin.getActivityId());
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_START.getValue());
-        if (needHandle(activity, noticeTemplate)) {
+        if (!needHandle(eventOrigin.getStartTime(), activity, noticeTemplate)) {
             return;
         }
         Integer signId = activity.getSignId();
@@ -118,7 +118,7 @@ public class ActivityAboutStartEventQueueService {
         activityCollectedUserNoticeQueue.push(queueParam);
     }
 
-    private boolean needHandle(Activity activity, MarketNoticeTemplateDTO noticeTemplate) {
+    private boolean needHandle(LocalDateTime activityStartTime, Activity activity, MarketNoticeTemplateDTO noticeTemplate) {
         if (activity == null) {
             return false;
         }
@@ -128,11 +128,7 @@ public class ActivityAboutStartEventQueueService {
         if (!noticeTemplate.getSupportTimeConfig()) {
             return true;
         }
-        long nowTimestamp = DateUtils.date2Timestamp(LocalDateTime.now());
-        long startTimestamp = DateUtils.date2Timestamp(activity.getStartTime());
-        long delayTimeThreshold = noticeTemplate.getDelayTimeThreshold();
-        // 小于通知阈值不处理
-        return startTimestamp - nowTimestamp >= delayTimeThreshold;
+        return Objects.equals(activity.getStartTime(), activityStartTime);
     }
 
     private String generateSignedUpNoticeTitle(Activity activity) {

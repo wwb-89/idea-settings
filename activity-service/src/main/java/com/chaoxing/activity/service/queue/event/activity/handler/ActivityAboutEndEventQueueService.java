@@ -55,6 +55,9 @@ public class ActivityAboutEndEventQueueService {
             // 活动已结束，忽略
             return;
         }
+        if (!Objects.equals(activity.getEndTime(), eventOrigin.getEndTime())) {
+            return;
+        }
         Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(false);
         if (!openRating) {
             return;

@@ -21,10 +21,10 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
-import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.google.common.collect.Lists;
@@ -64,8 +64,6 @@ public class ActivityMhV3ApiController {
     @Resource
     private WorkApiService workApiService;
     @Resource
-    private GroupApiService groupApiService;
-    @Resource
     private SignApiService signApiService;
     @Resource
     private ActivityStatQueryService activityStatQueryService;
@@ -73,27 +71,37 @@ public class ActivityMhV3ApiController {
     @RequestMapping("/activity/brief/info")
     public RestRespDTO briefInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
-        List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        MhGeneralAppResultDataDTO mainFields = MhGeneralAppResultDataDTO.buildDefault();
+        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
+        mainFields.setFields(fields);
         JSONObject jsonObject = new JSONObject();
         if (activity == null) {
             jsonObject.put("results", mainFields);
             return RestRespDTO.success(jsonObject);
         }
-        buildField(activity.getCoverUrl(), "", activity.getName(), "", mainFields);
+        int flag = 0;
+        buildField(++flag, "活动名称", activity.getName(), "", fields);
         // 开始结束时间
-        buildField(activity.getCoverUrl(), "", DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()), cloudApiService.buildImageUrl(MhAppIconEnum.ONE.TIME_TRANSPARENT.getValue()), mainFields);
+        buildField(++flag, "开始时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "", fields);
+        buildField(++flag, "结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "", fields);
+        // 报名参与情况
+        String signedUpNumDescribe = "";
+        String signUpStartTime = "";
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                String signedUpNumDescribe = String.valueOf(signStat.getSignedUpNum());
+                signedUpNumDescribe = String.valueOf(signStat.getSignedUpNum());
                 if (signStat.getLimitNum() != null && signStat.getLimitNum() > 0) {
                     signedUpNumDescribe += "/" + signStat.getLimitNum();
                 }
-                buildField(activity.getCoverUrl(), "已报名", signedUpNumDescribe, cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_USER.getValue()), mainFields);
+                if (signStat.getSignUpStartTime() != null) {
+                    signUpStartTime = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime());
+                }
             }
         }
-        // 活动报名参与情况
-        jsonObject.put("results", mainFields);
+        buildField(++flag, "报名时间", signUpStartTime, "", fields);
+        buildField(++flag, "已报名", signedUpNumDescribe, "", fields);
+        jsonObject.put("results", Lists.newArrayList(mainFields));
         return RestRespDTO.success(jsonObject);
     }
 
@@ -125,7 +133,7 @@ public class ActivityMhV3ApiController {
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         // 主办方
         if (StringUtils.isNotBlank(activity.getOrganisers())) {
-            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办", activity.getOrganisers(), mainFields);
+            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办方", activity.getOrganisers(), mainFields);
         }
         // 地址
         String address = "";
@@ -186,7 +194,7 @@ public class ActivityMhV3ApiController {
             signedInNum = Optional.ofNullable(statSummary.getSignedInNum()).map(String::valueOf).orElse("0");
             signedUpNum = Optional.ofNullable(statSummary.getSignedUpNum()).map(String::valueOf).orElse("0");
         }
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.STATISTICS_COLOR.getValue()), "浏览", pvNum , mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
         buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_IN_NUM.getValue()), "签到", signedInNum, mainFields);
         buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), "报名", signedUpNum, mainFields);
 
@@ -480,36 +488,18 @@ public class ActivityMhV3ApiController {
         return String.format(UrlConstant.WORK_INDEX_URL, workId);
     }
 
-
-    private void buildField(String coverUrl,
-                                 String key,
-                                 String value,
-                                 String iconUrl,
-                                 List<MhGeneralAppResultDataDTO> mainFields) {
-        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
-        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
-        Integer flag = 0;
+    private void buildField(Integer flag,
+                            String key,
+                            String value,
+                            String osrUrl,
+                            List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields) {
         fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("封面")
+                .key(key)
                 .flag(String.valueOf(flag))
-                .value(coverUrl)
+                .value(value)
+                .orsUrl(osrUrl)
                 .type("3")
                 .build());
-        String contentVal = StringUtils.isNotBlank(key) ? (key + "：" + value) : value;
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("内容")
-                .flag(String.valueOf(++flag))
-                .value(contentVal)
-                .type("3")
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("图标")
-                .value(iconUrl)
-                .flag(String.valueOf(++flag))
-                .type("3")
-                .build());
-        item.setFields(fields);
-        mainFields.add(item);
     }
 
     private void buildField(String iconUrl,
