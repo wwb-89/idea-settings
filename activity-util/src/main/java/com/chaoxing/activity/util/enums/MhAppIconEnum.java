@@ -73,5 +73,38 @@ public enum MhAppIconEnum {
         }
     }
 
+    /** 按钮的图标枚举 */
+    @Getter
+    public enum THREE {
+
+        /** 万能icon */
+        UNIVERSAL("universal", "55f4ed98f5c419f9c070e885547ec141"),
+        /** 作品审核icon */
+        WORK_REVIEW("work_review", "96c16a372012948dc6fd0ed0bd096c60"),
+        /** 作品优选icon */
+        WORK_PREFERRED_SELECTION("work_preferred_selection", "f9bd7f66745711533ea305d940226884"),
+        /** 我的作品icon */
+        MY_WORK("my_work", "54eb45f8017e868f59447dee034994a6"),
+        /** 报名信息icon */
+        SIGN_UP_INFO("sign_up_info", "fb296c77da3e7dfd56bcf9dfbb0eda6c"),
+        /** 报名详情icon */
+        SIGN_UP_DETAIL("sign_up_detail", "8b615070b69388b05392972ecdb10e38"),
+        /** 提交作品icon */
+        SUBMIT_WORK("submit_work", "67f3dd4d1a5afb5769ea68fd0ebc8b34"),
+        /** 更多icon */
+        MORE("MORE", "6af1a60c5935677f11679afd3d444d19"),
+        /** 评价icon */
+        RATING("rating", "7fdfbea39df1f9779b04c956b584012e"),
+        /** 评分icon */
+        RATING_SCORE("rating_score", "6a8c415821313ceed15381f10042f6d5");
+
+        private final String name;
+        private final String value;
+
+        THREE(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+    }
 }
 

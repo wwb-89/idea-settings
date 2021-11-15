@@ -427,7 +427,7 @@ public class ActivityMhV3ApiController {
                 if (needValidate && !signedUp) {
                     continue;
                 }
-                result.add(buildBtnField(workBtnDto.getButtonName(), "", workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
+                result.add(buildBtnField(workBtnDto.getButtonName(), cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue()), workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
             }
         }
         // 讨论小组
@@ -444,10 +444,10 @@ public class ActivityMhV3ApiController {
         Boolean openRating = activity.getOpenRating();
         openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
         if (openRating) {
-            result.add(buildBtnField("评价", "", activityQueryService.getActivityRatingUrl(activity.getId()), "2", false, MhBtnSequenceEnum.RATING.getSequence()));
+            result.add(buildBtnField("评价", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.RATING.getValue()), activityQueryService.getActivityRatingUrl(activity.getId()), "2", false, MhBtnSequenceEnum.RATING.getSequence()));
         }
         if (existSignUpInfo) {
-            result.add(buildBtnField("报名信息", "", userSignParticipationStat.getSignUpResultUrl(), "2", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
+            result.add(buildBtnField("报名信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "2", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
         }
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
