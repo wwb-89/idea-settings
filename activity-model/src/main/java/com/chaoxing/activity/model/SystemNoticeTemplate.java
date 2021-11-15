@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 系统通知模版
@@ -93,6 +94,52 @@ public class SystemNoticeTemplate {
         NoticeFieldEnum(String name, String value) {
             this.name = name;
             this.value = value;
+        }
+
+        /**
+         * 转换通知字段
+         * @param waitConvertStr
+         * @param participant
+         * @param activityName
+         * @param address
+         * @param activityTime
+         * @param signUpTime
+         * @return
+         */
+        public static String convertNoticeField(String waitConvertStr, String participant,
+                                                String activityName, String address,
+                                                String activityTime, String signUpTime) {
+            for (NoticeFieldEnum fieldEnum : NoticeFieldEnum.values()) {
+                String noticeField = "\\{" + fieldEnum.getValue() + "}";
+                switch (fieldEnum) {
+                    case PARTICIPANT:
+                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(participant).orElse(""));
+                        break;
+                    case ACTIVITY_NAME:
+                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(activityName).orElse(""));
+                        break;
+                    case ACTIVITY_ADDRESS:
+                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(address).orElse(""));
+                        break;
+                    case ACTIVITY_TIME:
+                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(activityTime).orElse(""));
+                        break;
+                    case SIGN_UP_TIME:
+                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(signUpTime).orElse(""));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return waitConvertStr;
+        }
+
+        public static String convertNoticeField(String waitConvertStr, String activityName, String address,
+                                                String activityTime, String signUpTime) {
+            return convertNoticeField(waitConvertStr, null, activityName, address, activityTime, signUpTime);
+        }
+        public static String convertNoticeField(String waitConvertStr, String activityName, String address, String activityTime) {
+            return convertNoticeField(waitConvertStr, null, activityName, address, activityTime, null);
         }
 
     }

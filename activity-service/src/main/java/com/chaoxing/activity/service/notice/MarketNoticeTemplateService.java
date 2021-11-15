@@ -108,6 +108,20 @@ public class MarketNoticeTemplateService {
 		return Optional.ofNullable(marketNoticeTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
+	public MarketNoticeTemplateDTO getMarketOrSystemNoticeTemplate(Integer marketId, String noticeType) {
+		MarketNoticeTemplate marketNoticeTemplate = getByMarketIdAndNoticeType(marketId, noticeType);
+		if (marketNoticeTemplate == null) {
+			SystemNoticeTemplate sysNoticeTemplate = systemNoticeTemplateService.getByNoticeType(noticeType);
+			if (sysNoticeTemplate == null) {
+				return null;
+			}
+			return MarketNoticeTemplateDTO.buildFromSystemNoticeTemplate(null, sysNoticeTemplate);
+		}
+		MarketNoticeTemplateDTO result = new MarketNoticeTemplateDTO();
+		BeanUtils.copyProperties(marketNoticeTemplate, result);
+		return result;
+	}
+
 	/**新增或更新
 	 * @Description 
 	 * @author wwb

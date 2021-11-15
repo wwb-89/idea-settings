@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 活动表
@@ -476,6 +477,17 @@ public class Activity {
         setReleased(existActivity.getReleased());
         setReleaseTime(existActivity.getReleaseTime());
         setGroupBbsid(existActivity.getGroupBbsid());
+    }
+
+    /**获取活动全地址(address + detailAdress)
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-12 17:11:26
+     * @param
+     * @return java.lang.String
+     */
+    public String getActivityFullAddress() {
+        return Optional.ofNullable(getAddress()).orElse("") + Optional.ofNullable(getDetailAddress()).orElse("");
     }
 
 }

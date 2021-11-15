@@ -57,7 +57,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-item" v-show="editMarketNoticeTemplate.supportTimeConfig">
+					<div class="form-item" v-if="editMarketNoticeTemplate.supportTimeConfig">
 						<label class="label">发送时间</label>
 						<div class="input-box">
 							<span>{{editMarketNoticeTemplate.sendTimeDescription}}</span>
@@ -135,8 +135,7 @@
 					for (var m = 0; m < 60; m++) {
 						children.push({value: m, label: m + "分钟"},);
 					}
-					var scopeItem = {value: i, label: i + "小时", children: children
-					};
+					var scopeItem = {value: i, label: i + "小时", children: children };
 					$this.timeScope.push(scopeItem);
 				}
 			},
@@ -190,6 +189,8 @@
 					title = title.replaceAll("'", "").replace(/<input.*?code="(.*?)".*?>/g, "{$1}");
 					var content = $this.editMarketNoticeTemplate.content;
 					content = content.replaceAll("'", "").replace(/<input.*?code="(.*?)".*?>/g, "{$1}");
+					// 内容换行符替换
+					content = content.replace(/<div>(.*?)<\/div>/g, '\n$1\n').replaceAll("\n\n", "\n")
 					$this.editMarketNoticeTemplate.codeTitle = title;
 					$this.editMarketNoticeTemplate.codeContent = content;
 					$this.editMarketNoticeTemplate.delayHour = $this.timeValue[0];

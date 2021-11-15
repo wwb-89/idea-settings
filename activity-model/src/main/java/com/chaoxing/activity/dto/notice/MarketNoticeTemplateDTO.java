@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.notice;
 
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.MarketNoticeTemplate;
 import com.chaoxing.activity.model.SystemNoticeTemplate;
 import lombok.AllArgsConstructor;
@@ -120,4 +121,16 @@ public class MarketNoticeTemplateDTO {
 		return value;
 	}
 
+	/**获取延迟时间阈值
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-12 16:46:15
+	 * @param
+	 * @return long
+	 */
+	public long getDelayTimeThreshold() {
+		Integer delayHour = Optional.ofNullable(getDelayHour()).orElse(0);
+		Integer delayMinute = Optional.ofNullable(getDelayMinute()).orElse(0);
+		return (delayHour * 60 * 60 + delayMinute * 60) * 1000L;
+	}
 }
