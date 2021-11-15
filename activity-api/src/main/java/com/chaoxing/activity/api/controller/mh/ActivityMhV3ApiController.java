@@ -79,11 +79,29 @@ public class ActivityMhV3ApiController {
             jsonObject.put("results", mainFields);
             return RestRespDTO.success(jsonObject);
         }
-        int flag = 0;
-        buildField(++flag, "活动名称", activity.getName(), "", fields);
-        // 开始结束时间
-        buildField(++flag, "开始时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "", fields);
-        buildField(++flag, "结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "", fields);
+        Map<String, String> fieldCodeNameMap = activityQueryService.getFieldCodeNameRelation(activity);
+        // 封面
+        buildField(0, "", "", "", fields);
+        // 活动名称
+        buildField(1, fieldCodeNameMap.getOrDefault("activity_name", "活动名称"), activity.getName(), "", fields);
+        // 子标题
+        buildField(2, "", "", "", fields);
+        // 作者
+        buildField(3, "", "", "", fields);
+        // 简介
+        buildField(4, "", "", "", fields);
+        // 数值
+        buildField(5, "", "", "", fields);
+        // 发布时间
+        buildField(6, "", "", "", fields);
+        // 开始时间
+        buildField(100, fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "", fields);;
+        // 结束时间
+        buildField(101, fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "", fields);;
+        // 标签1
+        buildField(102, "", "", "", fields);
+        // 标签2
+        buildField(103, "", "", "", fields);
         // 报名参与情况
         String signedUpNumDescribe = "";
         String signUpStartTime = "";
@@ -99,8 +117,11 @@ public class ActivityMhV3ApiController {
                 }
             }
         }
-        buildField(++flag, "报名时间", signUpStartTime, "", fields);
-        buildField(++flag, "已报名", signedUpNumDescribe, "", fields);
+
+        // 活动人数
+        buildField(104, fieldCodeNameMap.getOrDefault("sign_up_person_limit", "活动人数"), signedUpNumDescribe, "", fields);
+        // 报名时间
+        buildField(105, fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpStartTime, "", fields);
         jsonObject.put("results", Lists.newArrayList(mainFields));
         return RestRespDTO.success(jsonObject);
     }
@@ -130,10 +151,11 @@ public class ActivityMhV3ApiController {
             jsonObject.put("results", Lists.newArrayList());
             return RestRespDTO.success(jsonObject);
         }
+        Map<String, String> fieldCodeNameMap = activityQueryService.getFieldCodeNameRelation(activity);
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         // 主办方
         if (StringUtils.isNotBlank(activity.getOrganisers())) {
-            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办方", activity.getOrganisers(), mainFields);
+            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), fieldCodeNameMap.getOrDefault("activity_organisers", "主办方"), activity.getOrganisers(), mainFields);
         }
         // 地址
         String address = "";
@@ -147,12 +169,12 @@ public class ActivityMhV3ApiController {
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.TIME.getValue()), "报名时间",  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
+                buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.TIME.getValue()), fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"),  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
             }
         }
         // 积分
         if (activity.getIntegral() != null && activity.getIntegral().compareTo(new BigDecimal(0)) != 0) {
-            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), "积分", Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
+            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), fieldCodeNameMap.getOrDefault("integral", "积分"), Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
         }
         // 评价
         Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(false);
@@ -164,7 +186,7 @@ public class ActivityMhV3ApiController {
             } else {
                 ratingContent = "0人；0分";
             }
-            buildFieldWithUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING.getValue()), "评价", ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
+            buildFieldWithUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING.getValue()), fieldCodeNameMap.getOrDefault("activity_rating", "评价"), ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
         }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
