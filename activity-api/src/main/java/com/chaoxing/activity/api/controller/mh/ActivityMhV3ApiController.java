@@ -458,20 +458,20 @@ public class ActivityMhV3ApiController {
         Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
         String groupBbsid = activity.getGroupBbsid();
         if (openGroup && StringUtils.isNotBlank(groupBbsid) && signedUp) {
-            result.add(buildBtnField("讨论小组", "", UrlConstant.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
+            result.add(buildBtnField("讨论小组", "", UrlConstant.getGroupUrl(groupBbsid), "1", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员
         if (isManager) {
-            result.add(buildBtnField("管理", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.MANAGE_TRANSPARENT.getValue()), activityQueryService.getActivityManageUrl(activity.getId()), "2", false, MhBtnSequenceEnum.MANAGE.getSequence()));
+            result.add(buildBtnField("管理", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.MANAGE_TRANSPARENT.getValue()), activityQueryService.getActivityManageUrl(activity.getId()), "1", false, MhBtnSequenceEnum.MANAGE.getSequence()));
         }
         // 评价
         Boolean openRating = activity.getOpenRating();
         openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
         if (openRating) {
-            result.add(buildBtnField("评价", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.RATING.getValue()), activityQueryService.getActivityRatingUrl(activity.getId()), "2", false, MhBtnSequenceEnum.RATING.getSequence()));
+            result.add(buildBtnField("评价", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.RATING.getValue()), activityQueryService.getActivityRatingUrl(activity.getId()), "1", false, MhBtnSequenceEnum.RATING.getSequence()));
         }
         if (existSignUpInfo) {
-            result.add(buildBtnField("报名信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "2", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
+            result.add(buildBtnField("报名信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
         }
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
