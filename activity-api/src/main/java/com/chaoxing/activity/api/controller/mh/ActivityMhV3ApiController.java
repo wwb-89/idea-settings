@@ -427,7 +427,13 @@ public class ActivityMhV3ApiController {
                 if (needValidate && !signedUp) {
                     continue;
                 }
-                result.add(buildBtnField(workBtnDto.getButtonName(), cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue()), workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
+                String buttonIcon = "";
+                if (Objects.equals(workBtnDto.getButtonName(), "我的作品") || Objects.equals(workBtnDto.getButtonName(), "全部作品")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue());
+                } else if (Objects.equals(workBtnDto.getButtonName(), "征集管理")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SUBMIT_WORK.getValue());
+                }
+                result.add(buildBtnField(workBtnDto.getButtonName(), buttonIcon, workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
             }
         }
         // 讨论小组
