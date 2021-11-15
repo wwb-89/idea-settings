@@ -139,6 +139,14 @@
 					$this.timeScope.push(scopeItem);
 				}
 			},
+            mounted: function () {
+                $("#editTitleDiv").on('paste',function(){
+                    return false;
+                });
+                $("#editContentDiv").on('paste',function(){
+                    return false;
+                });
+            },
 			methods: {
 				// 获取光标位置
 				blurEdit: function () {
