@@ -3,6 +3,7 @@ package com.chaoxing.activity.api.resolver;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ExceptionConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -37,18 +38,26 @@ public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 		if (isPageRequest(handler)) {
 			String message = getMessage(ex);
 			ModelAndView modelAndView = new ModelAndView();
-			modelAndView.setViewName(getViewName(request));
+			modelAndView.setViewName(getViewName(request, ex));
 			modelAndView.addObject("message", message);
 			return modelAndView;
 		}
 		return null;
 	}
 
-	private String getViewName(HttpServletRequest request) {
+	private String getViewName(HttpServletRequest request, Exception e) {
 		if (UserAgentUtils.isMobileAccess(request)) {
-			return "/error/mobile/50x";
+			if (e instanceof WfwFormActivityNotGeneratedException) {
+				return "/error/mobile/activity-not-generated";
+			} else {
+				return "/error/mobile/50x";
+			}
 		}
-		return "/error/pc/50x";
+		if (e instanceof WfwFormActivityNotGeneratedException) {
+			return "/error/pc/activity-not-generated";
+		} else {
+			return "/error/pc/50x";
+		}
 	}
 
 	private String getMessage(Exception ex) {

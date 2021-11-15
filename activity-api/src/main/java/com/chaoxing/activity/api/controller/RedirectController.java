@@ -10,6 +10,7 @@ import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,10 +60,12 @@ public class RedirectController {
         if (dataPushRecord != null) {
             activity = activityQueryService.getById(Integer.parseInt(dataPushRecord.getIdentify()));
         }
-        if (activity != null) {
+        if (activity == null) {
+            throw new WfwFormActivityNotGeneratedException();
+        } else {
             url = activity.getPreviewUrl();
+            return "redirect:" + url;
         }
-        return "redirect:" + url;
     }
 
     /**转发到双选会会场
