@@ -104,7 +104,6 @@ public class ActivityMhV3ApiController {
         buildField(103, "", "", "", fields);
         // 报名参与情况
         String signedUpNumDescribe = "";
-        String signUpStartTime = "";
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
@@ -112,16 +111,13 @@ public class ActivityMhV3ApiController {
                 if (signStat.getLimitNum() != null && signStat.getLimitNum() > 0) {
                     signedUpNumDescribe += "/" + signStat.getLimitNum();
                 }
-                if (signStat.getSignUpStartTime() != null) {
-                    signUpStartTime = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime());
-                }
             }
         }
 
-        // 活动人数
-        buildField(104, fieldCodeNameMap.getOrDefault("sign_up_person_limit", "活动人数"), signedUpNumDescribe, "", fields);
+        // 已报名人数
+        buildField(104, "已报名", signedUpNumDescribe, "", fields);
         // 报名时间
-        buildField(105, fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpStartTime, "", fields);
+        buildField(105, "", "", "", fields);
         jsonObject.put("results", Lists.newArrayList(mainFields));
         return RestRespDTO.success(jsonObject);
     }
