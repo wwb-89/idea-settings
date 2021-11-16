@@ -44,7 +44,7 @@ public class ActivityTimingReleaseQueueService {
             // 发布时间不一致
             return;
         }
-        activityHandleService.release(queueParam.getActivityId(), queueParam.getLoginUser());
+        activityHandleService.release(queueParam.getActivityId(), queueParam.getLoginUser().buildOperateUserDTO());
     }
 
 }

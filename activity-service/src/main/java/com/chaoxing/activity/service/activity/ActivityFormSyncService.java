@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
@@ -173,7 +174,8 @@ public class ActivityFormSyncService {
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
         // 立即发布
-        activityHandleService.release(activityId, loginUser);
+        OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
+        activityHandleService.release(activityId, operateUser);
         activity = activityQueryService.getById(activityId);
         // 获取参与者列表, 进行用户报名
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
@@ -482,11 +484,14 @@ public class ActivityFormSyncService {
         }
         // 判断活动是否存在，若不存在，则不更新发布状态
         Integer activityId = Optional.ofNullable(FormUtils.getValue(formUserRecord, "activity_id")).filter(StringUtils::isNotBlank).map(Integer::valueOf).orElse(null);
+        Activity activity;
         if (activityId == null) {
-            Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+            activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
             activityId = Optional.ofNullable(activity).map(Activity::getId).orElse(null);
+        } else {
+            activity = activityQueryService.getById(activityId);
         }
-        if (activityId == null) {
+        if (activity == null) {
             log.error("表单记录:" + formUserId + "不存在对应的活动");
             return;
         }
@@ -498,6 +503,12 @@ public class ActivityFormSyncService {
             log.error("市场id不存在");
             return;
         }
-        activityHandleService.updateActivityReleaseStatus(activityId, marketId, released);
+        OperateUserDTO operateUser = OperateUserDTO.build(activity.getCreateUid(), fid);
+        if (released) {
+            activityHandleService.releaseMarketActivity(activityId, marketId, operateUser);
+        } else {
+            activityHandleService.cancelReleaseMarketActivity(activityId, marketId, operateUser);
+        }
+
     }
 }

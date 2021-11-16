@@ -7,6 +7,7 @@ import com.chaoxing.activity.api.vo.UserResultVO;
 import com.chaoxing.activity.api.vo.UserSignUpStatusVo;
 import com.chaoxing.activity.api.vo.UserStatSummaryVO;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
@@ -523,7 +524,12 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("{activityId}/update/release-status")
 	public RestRespDTO updateActivityReleaseStatus(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid, boolean released) {
-		activityHandleService.updateActivityReleaseStatus(activityId, fid, uid, released);
+		OperateUserDTO operateUser = OperateUserDTO.build(uid, fid);
+		if (released) {
+			activityHandleService.releaseOrgActivity(activityId, fid, operateUser);
+		} else {
+			activityHandleService.cancelReleaseOrgActivity(activityId, fid, operateUser);
+		}
 		return RestRespDTO.success();
 	}
 
@@ -622,7 +628,7 @@ public class ActivityApiController {
 	 * @param released
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
-	@RequestMapping("/update/release-status/from/wfw-form")
+	@RequestMapping("update/release-status/from/wfw-form")
 	public RestRespDTO updateReleaseStatusFromWfwForm(ActivityCreateFromFormParamDTO activityFormSyncParam, Integer marketId, boolean released) {
 		activityFormSyncService.syncUpdateReleaseStatus(activityFormSyncParam, marketId, released);
 		return RestRespDTO.success();

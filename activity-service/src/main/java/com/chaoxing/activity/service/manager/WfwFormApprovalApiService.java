@@ -3,10 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.AddressDTO;
-import com.chaoxing.activity.dto.DepartmentDTO;
-import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.TimeScopeDTO;
+import com.chaoxing.activity.dto.*;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormAdvanceSearchFilterConditionDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
@@ -311,8 +308,9 @@ public class WfwFormApprovalApiService {
         }
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
+        OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
         // 发布
-        activityHandleService.release(activityId, loginUser);
+        activityHandleService.release(activityId, operateUser);
     }
 
     /**通过活动审批创建报名签到

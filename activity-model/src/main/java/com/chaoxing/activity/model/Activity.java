@@ -425,6 +425,10 @@ public class Activity {
         return Objects.equals(StatusEnum.ENDED.getValue(), getStatus());
     }
 
+    public boolean isDeleted() {
+        return Objects.equals(StatusEnum.DELETED.getValue(), getStatus());
+    }
+
     /**计算活动状态
      * @Description
      * @author wwb

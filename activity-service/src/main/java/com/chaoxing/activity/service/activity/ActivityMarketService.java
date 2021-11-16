@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -45,8 +44,6 @@ public class ActivityMarketService {
     private ActivityQueryService activityQueryService;
     @Resource
     private PassportApiService passportApiService;
-    @Resource
-    private ActivityHandleService activityHandleService;
 
     /***关联
     * @Description 
@@ -190,43 +187,80 @@ public class ActivityMarketService {
         );
     }
 
-    /**更新活动发布状态
+    /**删除活动（修改活动关联市场的状态为"已删除"）
      * @Description 
      * @author wwb
-     * @Date 2021-09-22 17:05:01
-     * @param marketId
+     * @Date 2021-11-16 10:15:57
      * @param activityId
-     * @param release
      * @return void
     */
-    public void updateActivityRelease(Integer marketId, Integer activityId, boolean release) {
-        Activity activity = activityQueryService.getById(activityId);
-        updateActivityRelease(marketId, activity, release);
+    public void delete(Integer activityId) {
+        activityMarketMapper.update(null, new UpdateWrapper<ActivityMarket>()
+                .lambda()
+                .eq(ActivityMarket::getActivityId, activityId)
+                .set(ActivityMarket::getStatus, Activity.StatusEnum.DELETED.getValue())
+        );
+    }
+
+    /**修改活动市场下关联的活动的状态为"已删除"
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-16 10:20:01
+     * @param activityId
+     * @param marketId
+     * @return void
+    */
+    public void delete(Integer activityId, Integer marketId) {
+        activityMarketMapper.update(null, new UpdateWrapper<ActivityMarket>()
+                .lambda()
+                .eq(ActivityMarket::getActivityId, activityId)
+                .eq(ActivityMarket::getMarketId, marketId)
+                .set(ActivityMarket::getStatus, Activity.StatusEnum.DELETED.getValue())
+        );
     }
 
     /**更新活动发布状态
      * @Description 
      * @author wwb
      * @Date 2021-09-22 17:08:38
-     * @param marketId
      * @param activity
+     * @param marketId
      * @param release
      * @return void
     */
-    public void updateActivityRelease(Integer marketId, Activity activity, boolean release) {
-        Integer activityId = activity.getId();
-        ActivityMarket activityMarket = get(activityId, marketId);
-        if (activityMarket == null) {
-            return;
-        }
+    private void updateActivityRelease(Activity activity, Integer marketId, boolean release) {
         Activity.StatusEnum status = Activity.calAndSetActivityStatus(activity.getStartTime(), activity.getEndTime(), release);
         activityMarketMapper.update(null, new UpdateWrapper<ActivityMarket>()
                 .lambda()
-                .eq(ActivityMarket::getActivityId, activityId)
+                .eq(ActivityMarket::getActivityId, activity.getId())
                 .eq(ActivityMarket::getMarketId, marketId)
                 .set(ActivityMarket::getReleased, release)
                 .set(ActivityMarket::getStatus, status.getValue())
         );
+    }
+
+    /**发布活动
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-16 11:12:46
+     * @param activity
+     * @param marketId
+     * @return void
+    */
+    public void release(Activity activity, Integer marketId) {
+        updateActivityRelease(activity, marketId, true);
+    }
+
+    /**取消发布活动
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-16 11:13:03
+     * @param activity
+     * @param marketId
+     * @return void
+    */
+    public void cancelRelease(Activity activity, Integer marketId) {
+        updateActivityRelease(activity, marketId, false);
     }
 
     /**更新活动状态
@@ -251,52 +285,6 @@ public class ActivityMarketService {
                 .eq(ActivityMarket::getMarketId, marketId)
                 .set(ActivityMarket::getStatus, status.getValue())
         );
-    }
-
-    /**发布活动
-     * @Description 
-     * @author wwb
-     * @Date 2021-09-22 17:08:57
-     * @param marketId
-     * @param activityId
-     * @param loginUser
-     * @return void
-    */
-    public void releaseActivity(Integer marketId, Integer activityId, LoginUserDTO loginUser) {
-        ActivityMarket activityMarket = get(activityId, marketId);
-        if (activityMarket == null) {
-            return;
-        }
-        Activity activity = activityQueryService.getById(activityId);
-        if (Objects.equals(marketId, activity.getMarketId())) {
-            // 委托活动去修改发布状态
-            activityHandleService.release(activityId, loginUser);
-        } else {
-            updateActivityRelease(marketId, activity, true);
-        }
-    }
-
-    /**取消发布活动
-     * @Description 
-     * @author wwb
-     * @Date 2021-09-22 17:09:19
-     * @param marketId
-     * @param activityId
-     * @param loginUser
-     * @return void
-    */
-    public void cancelReleaseActivity(Integer marketId, Integer activityId, LoginUserDTO loginUser) {
-        ActivityMarket activityMarket = get(activityId, marketId);
-        if (activityMarket == null) {
-            return;
-        }
-        Activity activity = activityQueryService.getById(activityId);
-        if (Objects.equals(marketId, activity.getMarketId())) {
-            // 委托活动去修改发布状态
-            activityHandleService.cancelRelease(activityId, loginUser);
-        } else {
-            updateActivityRelease(marketId, activity, false);
-        }
     }
 
     /**查询关联了活动的记录

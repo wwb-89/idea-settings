@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
@@ -50,8 +51,6 @@ import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.enums.*;
-import com.chaoxing.activity.util.exception.ActivityReleasedException;
-import com.chaoxing.activity.util.exception.ActivityUnReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -395,20 +394,40 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-12 15:41:48
 	 * @param activityId
-	 * @param loginUser
+	 * @param operateUser
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void release(Integer activityId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
-		activity.release(loginUser.getUid());
+	public void release(Integer activityId, OperateUserDTO operateUser) {
+		Activity activity = activityValidationService.releaseAble(activityId, operateUser);
+		activity.release(operateUser.getUid());
 		activityStatusService.updateReleaseStatus(activity);
 		Integer marketId = activity.getMarketId();
 		if (marketId == null) {
 			return;
 		}
 		// 更新活动市场下活动的状态
-		activityMarketService.updateActivityRelease(marketId, activity, true);
+		activityMarketService.release(activity, marketId);
+	}
+
+	/**发布活动市场下的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 11:06:01
+	 * @param activityId
+	 * @param marketId
+	 * @param operateUser
+	 * @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void releaseMarketActivity(Integer activityId, Integer marketId, OperateUserDTO operateUser) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		boolean sameMarketId = Objects.equals(activity.getMarketId(), marketId);
+		if (sameMarketId) {
+			release(activityId, operateUser);
+		} else {
+			activityMarketService.release(activity, marketId);
+		}
 	}
 
 	/**取消发布（下架）
@@ -416,12 +435,12 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-12 17:23:58
 	 * @param activityId
-	 * @param loginUser
+	 * @param operateUser
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
+	public void cancelRelease(Integer activityId, OperateUserDTO operateUser) {
+		Activity activity = activityValidationService.cancelReleaseAble(activityId, operateUser);
 		activity.cancelRelease();
 		activityStatusService.updateReleaseStatus(activity);
 		Integer marketId = activity.getMarketId();
@@ -429,85 +448,155 @@ public class ActivityHandleService {
 			return;
 		}
 		// 更新活动市场下活动的状态
-		activityMarketService.updateActivityRelease(marketId, activity, false);
+		activityMarketService.cancelRelease(activity, marketId);
 	}
 
+	/**取消发布活动市场下的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 11:18:04
+	 * @param activityId
+	 * @param marketId
+	 * @param operateUser
+	 * @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void cancelReleaseMarketActivity(Integer activityId, Integer marketId, OperateUserDTO operateUser) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		boolean sameMarketId = Objects.equals(activity.getMarketId(), marketId);
+		if (sameMarketId) {
+			cancelRelease(activityId, operateUser);
+		} else {
+			activityMarketService.cancelRelease(activity, marketId);
+		}
+	}
 
-	/**更新fid下所有market的中活动id为activityId的活动
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-08-12 17:42:15
+	/**发布机构下的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 11:00:35
 	 * @param activityId
 	 * @param fid
-	 * @param uid
-	 * @param released
+	 * @param operateUser
 	 * @return void
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public void updateActivityReleaseStatus(Integer activityId, Integer fid, Integer uid, boolean released) {
-		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
-		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
-		marketIdsUnderFid.forEach(marketId -> {
-			ApplicationContextHolder.getBean(ActivityHandleService.class).updateActivityReleaseStatus(activityId, marketId, loginUser, released);
-		});
+	*/
+	public void releaseOrgActivity(Integer activityId, Integer fid, OperateUserDTO operateUser) {
+		updateOrgActivityRelease(activityId, fid, true, operateUser);
+	}
+	
+	/**下架机构下的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 11:01:22
+	 * @param activityId
+	 * @param fid
+	 * @param operateUser
+	 * @return void
+	*/
+	public void cancelReleaseOrgActivity(Integer activityId, Integer fid, OperateUserDTO operateUser) {
+		updateOrgActivityRelease(activityId, fid, false, operateUser);
 	}
 
-	@Transactional(rollbackFor = Exception.class)
-	public void updateActivityReleaseStatus(Integer activityId, Integer marketId, boolean released) {
-		updateActivityReleaseStatus(activityId, marketId, (LoginUserDTO) null, released);
-	}
-
-	@Transactional(rollbackFor = Exception.class)
-	public void updateActivityReleaseStatus(Integer activityId, Integer marketId, LoginUserDTO loginUser, boolean released) {
-		if (loginUser == null) {
-			Activity activity = activityQueryService.getById(activityId);
-			loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), "", activity.getCreateFid(), "");
+	/**更新机构下关联了指定活动的市场活动的发布状态
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 11:31:27
+	 * @param activityId
+	 * @param fid
+	 * @param release
+	 * @param operateUser
+	 * @return void
+	*/
+	private void updateOrgActivityRelease(Integer activityId, Integer fid, boolean release, OperateUserDTO operateUser) {
+		List<Integer> marketIds = marketQueryService.listOrgAssociatedActivityMarketId(fid, activityId);
+		if (CollectionUtils.isEmpty(marketIds)) {
+			return;
 		}
-		try {
-			if (released) {
-				activityMarketService.releaseActivity(marketId, activityId, loginUser);
+		for (Integer marketId : marketIds) {
+			if (release) {
+				releaseMarketActivity(activityId, marketId, operateUser);
 			} else {
-				activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
+				cancelReleaseMarketActivity(activityId, marketId, operateUser);		
 			}
-		} catch (ActivityReleasedException | ActivityUnReleasedException e) {
-			// 忽略
 		}
 	}
 
 	/**删除活动
 	 * @Description
+	 * 1、修改活动的状态为"已删除"
+	 * 2、如果活动关联了活动市场，则修改活动市场关联表的状态为"已删除"
 	 * @author wwb
-	 * @Date 2020-11-19 12:27:35
+	 * @Date 2021-11-16 10:04:34
 	 * @param activityId
-	 * @param loginUser
+	 * @param operateUser
 	 * @return void
-	 */
+	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void delete(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
+	public void deleteActivity(Integer activityId, OperateUserDTO operateUser) {
 		Activity activity =  activityValidationService.activityExist(activityId);
-		Integer oldStatus = activity.getStatus();
-		boolean isCreateMarket = Objects.equals(marketId, activity.getMarketId());
-		// marketId为空 或者 当前marketId 和 活动marketId 一致时，进行活动真实删除，需要验证是否能删除；
-		if (marketId == null) {
-			// 删除活动
-			isCreateMarket = true;
-		}
-		if (isCreateMarket) {
-			// 验证是否能删除
-			activity = activityValidationService.deleteAble(activityId, loginUser);
-			activity.delete();
-			activityMapper.update(null, new UpdateWrapper<Activity>()
-					.lambda()
-					.eq(Activity::getId, activityId)
-					.set(Activity::getStatus, activity.getStatus())
-			);
-			// 活动状态改变
-			activityStatusChangeEventService.statusChange(activity, oldStatus);
-		}
-		activityMarketService.remove(activityId, marketId, isCreateMarket);
+		deleteActivity(activity, operateUser);
 	}
 
-	/**删除fid下所有market的中活动id为activityId的活动
+	/**删除活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 10:17:19
+	 * @param activity
+	 * @param operateUser
+	 * @return void
+	*/
+	public void deleteActivity(Activity activity, OperateUserDTO operateUser) {
+		Integer activityId = activity.getId();
+		activityValidationService.deleteAble(activityId, operateUser);
+		Integer oldStatus = activity.getStatus();
+		if (activity.isDeleted()) {
+			return;
+		}
+		activity.delete();
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getId, activityId)
+				.set(Activity::getStatus, activity.getStatus())
+		);
+		activityMarketService.delete(activityId);
+		// 活动状态改变
+		activityStatusChangeEventService.statusChange(activity, oldStatus);
+	}
+
+	/**删除活动市场下的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 10:05:11
+	 * @param activityId
+	 * @param marketId
+	 * @param operateUser
+	 * @return void
+	*/
+	public void deleteMarketActivity(Integer activityId, Integer marketId, OperateUserDTO operateUser) {
+		Activity activity =  activityValidationService.activityExist(activityId);
+		deleteMarketActivity(activity, marketId, operateUser);
+	}
+
+	/**删除活动市场下的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 10:28:09
+	 * @param activity
+	 * @param marketId
+	 * @param operateUser
+	 * @return void
+	*/
+	public void deleteMarketActivity(Activity activity, Integer marketId, OperateUserDTO operateUser) {
+		boolean sameMarketId = Objects.equals(activity.getMarketId(), marketId);
+		if (sameMarketId) {
+			deleteActivity(activity, operateUser);
+		} else {
+			// 只删除活动关联的市场状态为"已删除"
+			activityMarketService.delete(activity.getId(), marketId);
+		}
+	}
+
+	/**删除机构下关联了指定活动的市场关联的活动状态
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-08-12 17:40:07
@@ -519,9 +608,10 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteActivityUnderFid(Integer fid, Integer activityId, Integer uid) {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
-		List<Integer> martketIds = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
+		OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
+		List<Integer> martketIds = marketQueryService.listOrgAssociatedActivityMarketId(fid, activityId);
 		martketIds.forEach(marketId -> {
-			delete(activityId, marketId, loginUser);
+			deleteMarketActivity(activityId, marketId, operateUser);
 		});
 	}
 
@@ -924,7 +1014,7 @@ public class ActivityHandleService {
 		this.edit(activityUpdateParam, sign, wfwAreaApiService.listByFid(activityCreateDTO.getFid()), loginUser);
 	}
 
-	/**
+	/**删除万能表单关联的活动
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-08-27 17:56:10
@@ -933,14 +1023,14 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void deleteByOriginAndFormUserId(Integer formId, Integer formUserId) {
+	public void deleteWfwFormActivity(Integer formId, Integer formUserId) {
 		if (formId == null || formUserId == null) {
 			return;
 		}
 		Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
 		if (activity != null) {
 			LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), "", activity.getCreateFid(), "");
-			delete(activity.getId(), activity.getMarketId(), loginUser);
+			deleteActivity(activity, loginUser.buildOperateUserDTO());
 		}
 	}
 
@@ -999,7 +1089,7 @@ public class ActivityHandleService {
 		ApplicationContextHolder.getBean(ActivityHandleService.class).add(targetActivity, signCreateParam, releaseScopes, loginUser);
 	}
 
-	/**删除市场id为marketId的活动
+	/**删除活动市场下的所有活动
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-11-01 16:53:26
@@ -1012,9 +1102,9 @@ public class ActivityHandleService {
 		if (CollectionUtils.isEmpty(activities)) {
 			return;
 		}
-		ActivityHandleService handleService = ApplicationContextHolder.getBean(ActivityHandleService.class);
 		activities.forEach(v -> {
-			handleService.delete(v.getId(), marketId, LoginUserDTO.buildDefault(v.getCreateUid(), v.getCreateFid()));
+			LoginUserDTO loginUser = LoginUserDTO.buildDefault(v.getCreateUid(), v.getCreateFid());
+			deleteMarketActivity(v, marketId, loginUser.buildOperateUserDTO());
 		});
 	}
 }

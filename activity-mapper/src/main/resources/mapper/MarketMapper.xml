@@ -33,16 +33,15 @@
             t.fid = #{fid}
     </select>
 
-    <select id="listMarketIdsByActivityIdFid" resultType="java.lang.Integer">
+    <select id="listOrgAssociatedActivityMarketId" resultType="java.lang.Integer">
         SELECT
             t.id
         FROM
             t_market t
-        LEFT JOIN
-            t_activity_market t1 ON t1.market_id = t.id
+            INNER JOIN t_activity_market t1 ON t.id = t1.market_id
+            AND t1.activity_id = #{activityId}
         WHERE
             t.fid = #{fid}
             AND t.is_deleted = 0
-            AND t1.activity_id = #{activityId}
     </select>
 </mapper>

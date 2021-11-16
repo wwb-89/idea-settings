@@ -86,15 +86,15 @@ public class MarketQueryService {
 		);
 	}
 
-	/**查询机构下的对应活动的活动市场列表id
+	/**查询机构下关联了指定活动的市场id
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-08-02 19:15:25
 	 * @param fid
 	 * @return java.util.List<com.chaoxing.activity.model.Market>
 	*/
-	public List<Integer> listMarketIdsByActivityIdFid(Integer fid, Integer activityId) {
-		return marketMapper.listMarketIdsByActivityIdFid(fid, activityId);
+	public List<Integer> listOrgAssociatedActivityMarketId(Integer fid, Integer activityId) {
+		return marketMapper.listOrgAssociatedActivityMarketId(fid, activityId);
 	}
 
 	/**通过fid，活动标识查询模板，根据模板获取市场id

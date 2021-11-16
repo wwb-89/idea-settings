@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -176,11 +177,11 @@ public class ActivityValidationService {
 	 * @author wwb
 	 * @Date 2020-12-02 16:11:36
 	 * @param fid
-	 * @param loginUser
+	 * @param operateUser
 	 * @return boolean
 	*/
-	public boolean isOrgInManageScope(Integer fid, LoginUserDTO loginUser) {
-		Integer loginUserFid = loginUser.getFid();
+	public boolean isOrgInManageScope(Integer fid, OperateUserDTO operateUser) {
+		Integer loginUserFid = operateUser.getFid();
 		List<Integer> manageFids = wfwAreaApiService.listSubFid(loginUserFid);
 		return manageFids.contains(fid);
 	}
@@ -282,15 +283,15 @@ public class ActivityValidationService {
 	 * @author wwb
 	 * @Date 2020-11-11 16:08:08
 	 * @param activityId
-	 * @param loginUser
+	 * @param operateUser
 	 * @return com.chaoxing.activity.model.Activity
 	*/
-	public Activity deleteAble(Integer activityId, LoginUserDTO loginUser) {
+	public Activity deleteAble(Integer activityId, OperateUserDTO operateUser) {
 		Activity activity = activityExist(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser.getUid());
-		if (creator || Objects.equals(createFid, loginUser.getFid())) {
+		boolean creator = isCreator(activity, operateUser.getUid());
+		if (creator || Objects.equals(createFid, operateUser.getFid())) {
 			return activity;
 		}
 		throw new BusinessException("只能删除自己或本单位创建的活动");
@@ -305,13 +306,13 @@ public class ActivityValidationService {
 	 * @author wwb
 	 * @Date 2020-11-12 15:43:24
 	 * @param activityId
-	 * @param loginUser
+	 * @param operateUser
 	 * @return com.chaoxing.activity.model.Activity
 	*/
-	public Activity releaseAble(Integer activityId, LoginUserDTO loginUser) {
+	public Activity releaseAble(Integer activityId, OperateUserDTO operateUser) {
 		Activity activity = activityExist(activityId);
 		// 验证创建者
-		Integer uid = loginUser.getUid();
+		Integer uid = operateUser.getUid();
 		if (isCreator(activity, uid)) {
 			return activity;
 		}
@@ -321,11 +322,11 @@ public class ActivityValidationService {
 		}
 		// 是不是本单位创建的
 		Integer createFid = activity.getCreateFid();
-		if (Objects.equals(createFid, loginUser.getFid())) {
+		if (Objects.equals(createFid, operateUser.getFid())) {
 			return activity;
 		}
 		// 下级单位创建的
-		if (isOrgInManageScope(createFid, loginUser)) {
+		if (isOrgInManageScope(createFid, operateUser)) {
 			return activity;
 		}
 		throw new BusinessException("只能发布自己管理的、本单位或下级创建的活动");
@@ -340,13 +341,13 @@ public class ActivityValidationService {
 	 * @author wwb
 	 * @Date 2020-11-12 15:48:44
 	 * @param activityId
-	 * @param loginUser
+	 * @param operateUser
 	 * @return com.chaoxing.activity.model.Activity
 	*/
-	public Activity cancelReleaseAble(Integer activityId, LoginUserDTO loginUser) {
+	public Activity cancelReleaseAble(Integer activityId, OperateUserDTO operateUser) {
 		Activity activity = activityExist(activityId);
 		// 验证创建者
-		Integer uid = loginUser.getUid();
+		Integer uid = operateUser.getUid();
 		if (isCreator(activity, uid)) {
 			return activity;
 		}
@@ -356,11 +357,11 @@ public class ActivityValidationService {
 		}
 		// 是不是本单位创建的
 		Integer createFid = activity.getCreateFid();
-		if (Objects.equals(createFid, loginUser.getFid())) {
+		if (Objects.equals(createFid, operateUser.getFid())) {
 			return activity;
 		}
 		// 下级单位创建的
-		if (isOrgInManageScope(createFid, loginUser)) {
+		if (isOrgInManageScope(createFid, operateUser)) {
 			return activity;
 		}
 		throw new BusinessException("只能下架自己管理的、本单位或下级创建的活动");

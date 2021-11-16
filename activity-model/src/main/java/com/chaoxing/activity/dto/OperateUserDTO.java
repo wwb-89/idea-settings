@@ -34,4 +34,11 @@ public class OperateUserDTO {
 				.build();
 	}
 
+	public static OperateUserDTO build(Integer uid, Integer fid) {
+		return OperateUserDTO.builder()
+				.uid(uid)
+				.fid(fid)
+				.build();
+	}
+
 }

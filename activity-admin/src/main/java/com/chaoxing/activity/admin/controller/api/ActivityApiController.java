@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
@@ -95,7 +96,12 @@ public class ActivityApiController {
 	@PostMapping("{activityId}/delete")
 	public RestRespDTO delele(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.delete(activityId, marketId, loginUser);
+		OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
+		if (marketId == null) {
+			activityHandleService.deleteActivity(activityId, operateUser);
+		} else {
+			activityHandleService.deleteMarketActivity(activityId, marketId, operateUser);
+		}
 		return RestRespDTO.success();
 	}
 
@@ -159,7 +165,7 @@ public class ActivityApiController {
 	@PostMapping("{activityId}/release")
 	public RestRespDTO marketRelease(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.release(activityId, loginUser);
+		activityHandleService.release(activityId, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 
@@ -175,7 +181,7 @@ public class ActivityApiController {
 	@PostMapping("{activityId}/release/cancel")
 	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.cancelRelease(activityId, loginUser);
+		activityHandleService.cancelRelease(activityId, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 

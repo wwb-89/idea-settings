@@ -26,7 +26,7 @@ public interface MarketMapper extends BaseMapper<Market> {
     */
     Integer getMaxSequence(@Param("fid") Integer fid);
 
-    /**
+    /**查询机构下关联了指定活动的市场id列表
     * @Description 
     * @author huxiaolong
     * @Date 2021-08-12 18:10:53
@@ -34,5 +34,5 @@ public interface MarketMapper extends BaseMapper<Market> {
     * @param activityId
     * @return java.util.List<java.lang.Integer>
     */
-    List<Integer> listMarketIdsByActivityIdFid(@Param("fid") Integer fid, @Param("activityId") Integer activityId);
+    List<Integer> listOrgAssociatedActivityMarketId(@Param("fid") Integer fid, @Param("activityId") Integer activityId);
 }

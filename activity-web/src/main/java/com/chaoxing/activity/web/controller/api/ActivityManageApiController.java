@@ -2,6 +2,7 @@ package com.chaoxing.activity.web.controller.api;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
@@ -61,7 +62,7 @@ public class ActivityManageApiController {
 	@RequestMapping("{activityId}/release")
 	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.release(activityId, loginUser);
+		activityHandleService.release(activityId, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 
@@ -77,7 +78,7 @@ public class ActivityManageApiController {
 	@RequestMapping("{activityId}/release/cancel")
 	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.cancelRelease(activityId, loginUser);
+		activityHandleService.cancelRelease(activityId, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 
@@ -92,8 +93,12 @@ public class ActivityManageApiController {
 	@LoginRequired
 	@RequestMapping("{activityId}/delete")
 	public RestRespDTO delete(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.delete(activityId, marketId, loginUser);
+		OperateUserDTO operateUser = LoginUtils.getLoginUser(request).buildOperateUserDTO();
+		if (marketId == null) {
+			activityHandleService.deleteActivity(activityId, operateUser);
+		} else {
+			activityHandleService.deleteMarketActivity(activityId, marketId, operateUser);
+		}
 		return RestRespDTO.success();
 	}
 

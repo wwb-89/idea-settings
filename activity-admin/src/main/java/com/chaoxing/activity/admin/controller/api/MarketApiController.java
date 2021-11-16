@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
+import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityMarketService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -31,6 +32,8 @@ public class MarketApiController {
 	private MarketHandleService marketHandleService;
 	@Resource
 	private ActivityMarketService activityMarketService;
+	@Resource
+	private ActivityHandleService activityHandleService;
 
 	/**创建活动市场（来源：微服务）
 	 * @Description 
@@ -91,7 +94,7 @@ public class MarketApiController {
 	@RequestMapping("{marketId}/release/activity/{activityId}")
 	public RestRespDTO releaseActivity(HttpServletRequest request, @PathVariable Integer marketId, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityMarketService.releaseActivity(marketId, activityId, loginUser);
+		activityHandleService.releaseMarketActivity(activityId, marketId, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 
@@ -107,7 +110,7 @@ public class MarketApiController {
 	@RequestMapping("{marketId}/cancel-release/activity/{activityId}")
 	public RestRespDTO cancelReleaseActivity(HttpServletRequest request, @PathVariable Integer marketId, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
+		activityHandleService.cancelReleaseMarketActivity(activityId, marketId, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 
