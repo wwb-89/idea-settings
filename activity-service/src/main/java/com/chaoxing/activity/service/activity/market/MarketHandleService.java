@@ -150,7 +150,6 @@ public class MarketHandleService {
 		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
 		marketMapper.insert(activityMarket);
-		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个模版
 		templateHandleService.cloneTemplate(activityMarket, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
 		return activityMarket;

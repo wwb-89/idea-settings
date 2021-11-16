@@ -120,13 +120,13 @@ public class UserSignedUpEventQueueService {
     }
 
     private String generateUserSignedUpNoticeContent(Activity activity) {
-        String content = "您好，您已成功报名活动！\n";
-        content += "活动名称：" + activity.getName() + "\n";
+        String content = "您好，您已成功报名活动！" + CommonConstant.NEW_LINE_CHAR;
+        content += "活动名称：" + activity.getName() + CommonConstant.NEW_LINE_CHAR;
         String address = Optional.ofNullable(activity.getAddress()).filter(StringUtils::isNotBlank).orElse("") + Optional.ofNullable(activity.getDetailAddress()).filter(StringUtils::isNotBlank).orElse("");
         if (StringUtils.isNotBlank(address)) {
-            content += "活动地点：" + address + "\n";
+            content += "活动地点：" + address + CommonConstant.NEW_LINE_CHAR;
         }
-        content += "会议时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
+        content += "会议时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + CommonConstant.NEW_LINE_CHAR;
         return content;
     }
 

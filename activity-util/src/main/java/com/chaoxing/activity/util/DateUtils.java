@@ -152,6 +152,18 @@ public class DateUtils {
 		return activityTimeScope(startTime, endTime, WAVE_SEPARATOR);
 	}
 
+	/**时间范围
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-16 17:29:45
+	 * @param startTime
+	 * @param endTime
+	 * @return java.lang.String
+	*/
+	public static String timeScope(LocalDateTime startTime, LocalDateTime endTime) {
+		return activityTimeScope(startTime, endTime, WAVE_SEPARATOR);
+	}
+
 	public static String activityTimeScope(LocalDateTime startTime, LocalDateTime endTime, String separator) {
 		String activityTimeScope = "";
 		LocalDateTime now = LocalDateTime.now();

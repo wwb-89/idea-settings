@@ -2,25 +2,22 @@ package com.chaoxing.activity.service.queue.event.activity.handler;
 
 import com.chaoxing.activity.dto.event.activity.ActivityAboutStartEventOrigin;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
-import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
-import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.notice.MarketNoticeTemplateDTO;
+import com.chaoxing.activity.dto.notice.NoticeTemplateFieldDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.SystemNoticeTemplate;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
+import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
 import com.chaoxing.activity.service.queue.notice.ActivityCollectedUserNoticeQueue;
 import com.chaoxing.activity.service.queue.notice.ActivitySignedUpUserNoticeQueue;
-import com.chaoxing.activity.util.DateUtils;
-import com.google.common.collect.Lists;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,15 +34,10 @@ import java.util.Optional;
 @Service
 public class ActivityAboutStartEventQueueService {
 
-    /** 活动时间格式化 */
-    private static final DateTimeFormatter ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
-    /** 报名时间格式化 */
-    private static final DateTimeFormatter SIGN_UP_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
-
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private SignApiService signApiService;
+    private SystemNoticeTemplateService systemNoticeTemplateService;
 
     @Resource
     private ActivitySignedUpUserNoticeQueue activitySignedUpUserNoticeQueue;
@@ -61,24 +53,23 @@ public class ActivityAboutStartEventQueueService {
         if (!needHandle(eventOrigin.getStartTime(), activity, noticeTemplate)) {
             return;
         }
-        Integer signId = activity.getSignId();
-        List<SignUpCreateParamDTO> signUps = Lists.newArrayList();
-        if (signId != null) {
-            SignCreateParamDTO signCreateParam = signApiService.getCreateById(signId);
-            signUps = Optional.ofNullable(signCreateParam).map(SignCreateParamDTO::getSignUps).orElse(Lists.newArrayList());
-        }
-        String activityTime = getFormatTimeScope(activity.getStartTime(), activity.getEndTime(), ACTIVITY_TIME_FORMATTER);
-        handleSignedUpUserNotice(activity, activityTime, signUps, noticeTemplate);
-        handleCollectedUserNotice(activity, activityTime, signUps, noticeTemplate);
+        NoticeTemplateFieldDTO noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
+        handleSignedUpUserNotice(activity, noticeTemplateField, noticeTemplate);
+        handleCollectedUserNotice(activity, noticeTemplateField, noticeTemplate);
     }
 
-    private void handleSignedUpUserNotice(Activity activity, String activityTime, List<SignUpCreateParamDTO> signUps, MarketNoticeTemplateDTO noticeTemplate) {
-        String waitConvertTitle = Optional.ofNullable(noticeTemplate.getCodeTitle()).orElse(generateSignedUpNoticeTitle(activity));
-        String waitConvertContent = Optional.ofNullable(noticeTemplate.getCodeContent()).orElse(generateSignedUpNoticeContent(activity));
-        SignUpCreateParamDTO signUp = signUps.stream().findFirst().orElse(null);
-        String signUpTime = Optional.ofNullable(signUp).map(v -> getFormatTimeScope(v.getStartTime(), v.getEndTime(), SIGN_UP_TIME_FORMATTER)).orElse("");
-        String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, activity.getName(), activity.getActivityFullAddress(), activityTime, signUpTime);
-        String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, activity.getName(), activity.getActivityFullAddress(), activityTime, signUpTime);
+    private void handleSignedUpUserNotice(Activity activity, NoticeTemplateFieldDTO noticeTemplateField, MarketNoticeTemplateDTO noticeTemplate) {
+        String waitConvertTitle;
+        String waitConvertContent;
+        if (noticeTemplate == null) {
+            waitConvertTitle = generateSignedUpNoticeTitle(noticeTemplateField);
+            waitConvertContent = generateSignedUpNoticeContent(noticeTemplateField);
+        } else {
+            waitConvertTitle = Optional.ofNullable(noticeTemplate.getCodeTitle()).orElse("");
+            waitConvertContent = Optional.ofNullable(noticeTemplate.getCodeContent()).orElse("");
+        }
+        String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, noticeTemplateField);
+        String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, noticeTemplateField);
         ActivitySignedUpUserNoticeQueue.QueueParamDTO queueParam = ActivitySignedUpUserNoticeQueue.QueueParamDTO.builder()
                 .activityId(activity.getId())
                 .title(title)
@@ -88,32 +79,23 @@ public class ActivityAboutStartEventQueueService {
         activitySignedUpUserNoticeQueue.push(queueParam);
     }
 
-    private void handleCollectedUserNotice(Activity activity, String activityTime, List<SignUpCreateParamDTO> signUps, MarketNoticeTemplateDTO noticeTemplate) {
-        String waitConvertTitle = Optional.ofNullable(noticeTemplate.getCodeTitle()).orElse(generateCollectedNoticeTitle(activity));
-        if (CollectionUtils.isNotEmpty(signUps)) {
-            for (SignUpCreateParamDTO signUp : signUps) {
-                String waitConvertContent = Optional.ofNullable(noticeTemplate.getCodeContent()).orElse(generateCollectedNoticeContent(activity, signUp));
-                String signUpTime = getFormatTimeScope(signUp.getStartTime(), signUp.getEndTime(), SIGN_UP_TIME_FORMATTER);
-                String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, activity.getName(), activity.getActivityFullAddress(), activityTime, signUpTime);
-                String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, activity.getName(), activity.getActivityFullAddress(), activityTime, signUpTime);
-                ActivityCollectedUserNoticeQueue.QueueParamDTO queueParam = ActivityCollectedUserNoticeQueue.QueueParamDTO.builder()
-                        .activityId(activity.getId())
-                        .title(title)
-                        .content(content)
-                        .attachment(NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl()))
-                        .build();
-                activityCollectedUserNoticeQueue.push(queueParam);
-            }
-            return;
+    private void handleCollectedUserNotice(Activity activity, NoticeTemplateFieldDTO noticeTemplateField, MarketNoticeTemplateDTO noticeTemplate) {
+        String waitConvertTitle;
+        String waitConvertContent;
+        if (noticeTemplate == null) {
+            waitConvertTitle = generateCollectedNoticeTitle(noticeTemplateField);
+            waitConvertContent = generateCollectedNoticeContent(noticeTemplateField);
+        } else {
+            waitConvertTitle = Optional.ofNullable(noticeTemplate.getCodeTitle()).orElse("");
+            waitConvertContent = Optional.ofNullable(noticeTemplate.getCodeContent()).orElse("");
         }
-        // 无报名的情况
-        String waitConvertContent = Optional.ofNullable(noticeTemplate.getCodeContent()).orElse(generateCollectedNoticeContent(activity, null));
-        String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, activity.getName(), activity.getActivityFullAddress(), activityTime);
-        String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, activity.getName(), activity.getActivityFullAddress(), activityTime);
+        String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, noticeTemplateField);
+        String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, noticeTemplateField);
         ActivityCollectedUserNoticeQueue.QueueParamDTO queueParam = ActivityCollectedUserNoticeQueue.QueueParamDTO.builder()
                 .activityId(activity.getId())
                 .title(title)
                 .content(content)
+                .attachment(NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl()))
                 .build();
         activityCollectedUserNoticeQueue.push(queueParam);
     }
@@ -131,42 +113,24 @@ public class ActivityAboutStartEventQueueService {
         return Objects.equals(activity.getStartTime(), activityStartTime);
     }
 
-    private String generateSignedUpNoticeTitle(Activity activity) {
-        return "您报名的" + activity.getName() + "即将开始！";
+    private String generateSignedUpNoticeTitle(NoticeTemplateFieldDTO noticeTemplateField) {
+        return "您报名的" + noticeTemplateField.getActivityName() + "即将开始！";
     }
 
-    private String generateSignedUpNoticeContent(Activity activity) {
-        return "活动名称：" + activity.getName() + "\n" +
-                "活动时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
+    private String generateSignedUpNoticeContent(NoticeTemplateFieldDTO noticeTemplateField) {
+        return "活动名称：" + noticeTemplateField.getActivityName() + CommonConstant.NEW_LINE_CHAR +
+                "活动时间：" + noticeTemplateField.getActivityTime() + CommonConstant.NEW_LINE_CHAR;
     }
 
-    private String generateCollectedNoticeTitle(Activity activity) {
-        return "您收藏的" + activity.getName() + "即将开始！";
+    private String generateCollectedNoticeTitle(NoticeTemplateFieldDTO noticeTemplateField) {
+        return "您收藏的" + noticeTemplateField.getActivityName() + "即将开始！";
     }
 
-
-    private String getFormatTimeScope(Long startTimeStamp, Long endTimeStamp, DateTimeFormatter dateTimeFormatter) {
-        LocalDateTime startTime = Optional.ofNullable(startTimeStamp).map(DateUtils::timestamp2Date).orElse(null);
-        LocalDateTime endTime = Optional.ofNullable(endTimeStamp).map(DateUtils::timestamp2Date).orElse(null);
-        return getFormatTimeScope(startTime, endTime, dateTimeFormatter);
-    }
-    private String getFormatTimeScope(LocalDateTime startTime, LocalDateTime endTime, DateTimeFormatter dateTimeFormatter) {
-        if (startTime == null && endTime == null) {
-            return "";
-        }
-        if (startTime == null) {
-            return endTime.format(dateTimeFormatter);
-        }
-        if (endTime == null) {
-            return startTime.format(dateTimeFormatter);
-        }
-        return startTime.format(dateTimeFormatter) + "- " + endTime.format(dateTimeFormatter);
-    }
-
-    private String generateCollectedNoticeContent(Activity activity, SignUpCreateParamDTO signUp) {
-        String content = "活动名称：" + activity.getName() + "\n" + "活动时间：" + getFormatTimeScope(activity.getStartTime(), activity.getEndTime(), ACTIVITY_TIME_FORMATTER) + "\n";
-        if (signUp != null) {
-            content += "报名时间：" + getFormatTimeScope(signUp.getStartTime(), signUp.getEndTime(), ACTIVITY_TIME_FORMATTER) + "\n";
+    private String generateCollectedNoticeContent(NoticeTemplateFieldDTO noticeTemplateField) {
+        String content = "活动名称：" + noticeTemplateField.getActivityName() + CommonConstant.NEW_LINE_CHAR + "活动时间：" + noticeTemplateField.getActivityTime() + CommonConstant.NEW_LINE_CHAR;
+        List<NoticeTemplateFieldDTO.SignUpNoticeTemplateFieldDTO> signUps = noticeTemplateField.getSignUps();
+        if (CollectionUtils.isNotEmpty(signUps)) {
+            content += "报名时间：" + signUps.get(0).getTime();
         }
         return content;
     }

@@ -3,19 +3,19 @@ package com.chaoxing.activity.service.queue.event.activity.handler;
 import com.chaoxing.activity.dto.event.activity.ActivityAboutEndEventOrigin;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
 import com.chaoxing.activity.dto.notice.MarketNoticeTemplateDTO;
+import com.chaoxing.activity.dto.notice.NoticeTemplateFieldDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.SystemNoticeTemplate;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
+import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,15 +32,14 @@ import java.util.Optional;
 @Service
 public class ActivityAboutEndEventQueueService {
 
-    /** 活动时间格式化 */
-    private static final DateTimeFormatter ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
-
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
     private XxtNoticeApiService xxtNoticeApiService;
     @Resource
     private MarketNoticeTemplateService marketNoticeTemplateService;
+    @Resource
+    private SystemNoticeTemplateService systemNoticeTemplateService;
 
     public void handle(ActivityAboutEndEventOrigin eventOrigin) {
         if (eventOrigin == null) {
@@ -66,37 +65,32 @@ public class ActivityAboutEndEventQueueService {
         if (CollectionUtils.isEmpty(noRateSignedUpUids)) {
             return;
         }
-        MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_START.getValue());
-        String waitConvertTitle = Optional.ofNullable(noticeTemplate.getCodeTitle()).orElse(generateActivityEndNoticeTitle(activity));
-        String waitConvertContent = Optional.ofNullable(noticeTemplate.getCodeContent()).orElse(generateActivityEndNoticeContent(activity));
-        String activityTime = getFormatTimeScope(activity.getStartTime(), activity.getEndTime(), ACTIVITY_TIME_FORMATTER);
-        String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, activity.getName(), activity.getActivityFullAddress(), activityTime);
-        String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, activity.getName(), activity.getActivityFullAddress(), activityTime);
+        MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_END.getValue());
+        NoticeTemplateFieldDTO noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
+
+        String title = generateTitle(noticeTemplateField, noticeTemplate);
+        String content = generateContent(noticeTemplateField, noticeTemplate);
+
         String attachment = NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl());
         xxtNoticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, noRateSignedUpUids);
     }
 
-    private String getFormatTimeScope(LocalDateTime startTime, LocalDateTime endTime, DateTimeFormatter dateTimeFormatter) {
-        if (startTime == null && endTime == null) {
-            return "";
-        }
-        if (startTime == null) {
-            return endTime.format(dateTimeFormatter);
-        }
-        if (endTime == null) {
-            return startTime.format(dateTimeFormatter);
-        }
-        return startTime.format(dateTimeFormatter) + "- " + endTime.format(dateTimeFormatter);
+    private String generateTitle(NoticeTemplateFieldDTO noticeTemplateField, MarketNoticeTemplateDTO noticeTemplate) {
+        return Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getCodeTitle).orElse(generateActivityEndNoticeTitle(noticeTemplateField));
     }
 
-    private String generateActivityEndNoticeTitle(Activity activity) {
-        return "活动评价：" + activity.getName();
+    private String generateContent(NoticeTemplateFieldDTO noticeTemplateField, MarketNoticeTemplateDTO noticeTemplate) {
+        return Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getCodeContent).orElse(generateActivityEndNoticeContent(noticeTemplateField));
     }
 
-    private String generateActivityEndNoticeContent(Activity activity) {
-        return "你好，感谢参与，请给本次活动评分" + "\n" +
-                "活动名称：" + activity.getName() + "\n" +
-                "活动时间：" + getFormatTimeScope(activity.getStartTime(), activity.getEndTime(), ACTIVITY_TIME_FORMATTER) + "\n";
+    private String generateActivityEndNoticeTitle(NoticeTemplateFieldDTO noticeTemplateField) {
+        return "活动评价：" + noticeTemplateField.getActivityName();
+    }
+
+    private String generateActivityEndNoticeContent(NoticeTemplateFieldDTO noticeTemplateField) {
+        return "你好，感谢参与，请给本次活动评分" + CommonConstant.NEW_LINE_CHAR +
+                "活动名称：" + noticeTemplateField.getActivityName() + CommonConstant.NEW_LINE_CHAR +
+                "活动时间：" + noticeTemplateField.getActivityTime();
     }
 
 }

@@ -4,8 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.notice.NoticeTemplateFieldDTO;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -54,6 +59,7 @@ public class SystemNoticeTemplate {
     @Getter
     public enum NoticeTypeEnum {
 
+        /** 活动信息变更 */
         ACTIVITY_INFO_CHANGE("活动信息变更", "activity_info_change"),
         ACTIVITY_ABOUT_START("活动即将开始", "activity_about_start"),
         ACTIVITY_ABOUT_END("活动即将结束", "activity_about_end"),
@@ -82,7 +88,8 @@ public class SystemNoticeTemplate {
     @Getter
     public enum NoticeFieldEnum {
 
-        PARTICIPANT("参与人", "user"),
+        /** 参与热 */
+//        PARTICIPANT("参与人", "user"),
         ACTIVITY_NAME("活动名称", "activity_name"),
         ACTIVITY_ADDRESS("活动地点", "activity_address"),
         ACTIVITY_TIME("活动时间", "activity_time"),
@@ -99,47 +106,83 @@ public class SystemNoticeTemplate {
         /**
          * 转换通知字段
          * @param waitConvertStr
-         * @param participant
-         * @param activityName
-         * @param address
-         * @param activityTime
-         * @param signUpTime
+         * @param noticeTemplateField
          * @return
          */
-        public static String convertNoticeField(String waitConvertStr, String participant,
-                                                String activityName, String address,
-                                                String activityTime, String signUpTime) {
+        public static String convertNoticeField(String waitConvertStr, NoticeTemplateFieldDTO noticeTemplateField) {
+            waitConvertStr = Optional.ofNullable(waitConvertStr).orElse("");
+            String activityName = Optional.ofNullable(noticeTemplateField.getActivityName()).orElse("");
+            String address = Optional.ofNullable(noticeTemplateField.getAddress()).orElse("");
+            String activityTime = Optional.ofNullable(noticeTemplateField.getActivityTime()).orElse("");
+            StringBuilder signUpTime = new StringBuilder();
+            List<NoticeTemplateFieldDTO.SignUpNoticeTemplateFieldDTO> signUps = noticeTemplateField.getSignUps();
+            if (CollectionUtils.isNotEmpty(signUps)) {
+                int signUpSize = signUps.size();
+                if (signUpSize > 1) {
+                    for (int i = 0; i < signUpSize; i++) {
+                        NoticeTemplateFieldDTO.SignUpNoticeTemplateFieldDTO signUp = signUps.get(i);
+                        boolean last = (i == signUpSize - 1);
+                        signUpTime.append(signUp.getName());
+                        signUpTime.append("：");
+                        signUpTime.append(signUp.getTime());
+                        signUpTime.append(last ? "" : CommonConstant.NEW_LINE_CHAR);
+                    }
+                } else {
+                    signUpTime.append(signUps.get(0).getTime());
+                }
+            }
             for (NoticeFieldEnum fieldEnum : NoticeFieldEnum.values()) {
-                String noticeField = "\\{" + fieldEnum.getValue() + "}";
+                String noticeField = "{" + fieldEnum.getValue() + "}";
+                String regNoticeField = "\\" + noticeField;
+                String value = "";
                 switch (fieldEnum) {
-                    case PARTICIPANT:
-                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(participant).orElse(""));
-                        break;
                     case ACTIVITY_NAME:
-                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(activityName).orElse(""));
+                        value = activityName;
                         break;
                     case ACTIVITY_ADDRESS:
-                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(address).orElse(""));
+                        value = address;
                         break;
                     case ACTIVITY_TIME:
-                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(activityTime).orElse(""));
+                        value = activityTime;
                         break;
                     case SIGN_UP_TIME:
-                        waitConvertStr = waitConvertStr.replaceAll(noticeField, Optional.ofNullable(signUpTime).orElse(""));
+                        value = signUpTime.toString();
                         break;
                     default:
                         break;
                 }
+                waitConvertStr = replacePlaceholder(waitConvertStr, noticeField, regNoticeField, value);
             }
             return waitConvertStr;
         }
 
-        public static String convertNoticeField(String waitConvertStr, String activityName, String address,
-                                                String activityTime, String signUpTime) {
-            return convertNoticeField(waitConvertStr, null, activityName, address, activityTime, signUpTime);
-        }
-        public static String convertNoticeField(String waitConvertStr, String activityName, String address, String activityTime) {
-            return convertNoticeField(waitConvertStr, null, activityName, address, activityTime, null);
+        private static String replacePlaceholder(String waitConvertStr, String key, String regKey, String value) {
+            String[] lines = waitConvertStr.split(CommonConstant.NEW_LINE_CHAR);
+            StringBuilder result = new StringBuilder();
+            int length = lines.length;
+            for (int i = 0; i < length; i++) {
+                String line = lines[i];
+                boolean lastLine = (i == length - 1);
+                if (line.contains(key)) {
+                    if (StringUtils.isNotBlank(value)) {
+                        boolean containNewLine = value.contains(CommonConstant.NEW_LINE_CHAR);
+                        if (containNewLine) {
+                            result.append(line.replaceAll(regKey, ""));
+                            result.append(CommonConstant.NEW_LINE_CHAR);
+                            result.append(value);
+                        } else {
+                            result.append(line.replaceAll(regKey, value));
+                        }
+                    } else {
+                        // 没有值那么忽略该行
+                        continue;
+                    }
+                } else {
+                    result.append(line);
+                }
+                result.append(lastLine ? "" : CommonConstant.NEW_LINE_CHAR);
+            }
+            return result.toString();
         }
 
     }

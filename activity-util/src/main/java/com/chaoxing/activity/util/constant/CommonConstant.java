@@ -3,6 +3,7 @@ package com.chaoxing.activity.util.constant;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author wwb
@@ -64,5 +65,12 @@ public class CommonConstant {
 	// 活动相关
 	/** 活动考核配置签到默认分值 */
 	public static final BigDecimal DEFAULT_SIGNED_IN_SCORE = BigDecimal.valueOf(5);
+
+	/** 活动时间格式化 */
+	public static final DateTimeFormatter NOTICE_ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
+	/** 报名时间格式化 */
+	public static final DateTimeFormatter NOTICE_SIGN_UP_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
+	/** 换行符号 */
+	public static final String NEW_LINE_CHAR = "\n";
 
 }
