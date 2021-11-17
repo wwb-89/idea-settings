@@ -35,6 +35,8 @@ import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
+import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
+import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
@@ -112,6 +114,10 @@ public class ActivityApiController {
 	private MarketHandleService marketHandleService;
 	@Resource
 	private ActivityFormSyncService activityFormSyncService;
+	@Resource
+	private MarketNoticeTemplateService marketNoticeTemplateService;
+	@Resource
+	private SystemNoticeTemplateService systemNoticeTemplateService;
 
 	/**组活动推荐
 	 * @Description 
@@ -634,4 +640,36 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
+	/**根据signId获取通知类型为noticeType的通知模板
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-17 14:27:56
+	 * @param signId
+	 * @param noticeType
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("notice-template")
+	public RestRespDTO getNoticeTemplate(@RequestParam Integer signId, @RequestParam String noticeType) {
+		Activity activity = activityQueryService.getBySignId(signId);
+		if (activity == null) {
+			return RestRespDTO.success();
+		}
+		return RestRespDTO.success(marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), noticeType));
+	}
+
+	/**根据signId获取通知模板字段内容信息
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-17 14:27:48
+	 * @param signId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("notice-template/field")
+	public RestRespDTO getNoticeTemplate(@RequestParam Integer signId) {
+		Activity activity = activityQueryService.getBySignId(signId);
+		if (activity == null) {
+			return RestRespDTO.success();
+		}
+		return RestRespDTO.success(systemNoticeTemplateService.buildNoticeField(activity));
+	}
 }

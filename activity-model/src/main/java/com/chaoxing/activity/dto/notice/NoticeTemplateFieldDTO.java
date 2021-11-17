@@ -24,6 +24,7 @@ public class NoticeTemplateFieldDTO {
     private String activityName;
     private String address;
     private String activityTime;
+    private String previewUrl;
     private List<SignUpNoticeTemplateFieldDTO> signUps;
 
     @Data
