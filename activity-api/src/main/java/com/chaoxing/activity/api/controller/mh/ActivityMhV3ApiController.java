@@ -16,6 +16,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
@@ -67,6 +68,8 @@ public class ActivityMhV3ApiController {
     private SignApiService signApiService;
     @Resource
     private ActivityStatQueryService activityStatQueryService;
+    @Resource
+    private ActivityCollectionQueryService activityCollectionQueryService;
 
     @RequestMapping("activity/brief/info")
     public RestRespDTO briefInfo(@RequestBody String data) {
@@ -155,11 +158,17 @@ public class ActivityMhV3ApiController {
         }
         // 地址
         String address = "";
+        // 经纬度不为空时才显示地址
+        String activityAddressLink = "";
+        if (activity.getLongitude() != null && activity.getDimension() != null) {
+            activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activity.getId() +"/address";
+        }
         if (!Objects.equals(Activity.ActivityTypeEnum.ONLINE.getValue(), activity.getActivityType())) {
             address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
         }
         if (StringUtils.isNotBlank(address)) {
-            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, mainFields);
+            buildFieldWithUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, activityAddressLink, mainFields);
+
         }
         // 报名时间
         if (activity.getSignId() != null) {
@@ -206,14 +215,15 @@ public class ActivityMhV3ApiController {
             return RestRespDTO.success(jsonObject);
         }
         ActivityStatDTO statSummary = activityStatQueryService.activityStat(activity.getId());
-        String pvNum = "0", signedInNum = "0", signedUpNum = "0";
+        String pvNum = "0", signedUpNum = "0";
+        Integer collectedNum = Optional.ofNullable(activityCollectionQueryService.listCollectedUid(activity.getId())).orElse(Lists.newArrayList()).size();
         if (statSummary != null) {
             pvNum = Optional.ofNullable(statSummary.getPv()).map(String::valueOf).orElse("0");
-            signedInNum = Optional.ofNullable(statSummary.getSignedInNum()).map(String::valueOf).orElse("0");
             signedUpNum = Optional.ofNullable(statSummary.getSignedUpNum()).map(String::valueOf).orElse("0");
         }
         buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_IN_NUM.getValue()), "签到", signedInNum, mainFields);
+//        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_IN_NUM.getValue()), "签到", signedInNum, mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
         buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), "报名", signedUpNum, mainFields);
 
         jsonObject.put("results", mainFields);
@@ -446,12 +456,17 @@ public class ActivityMhV3ApiController {
                     continue;
                 }
                 String buttonIcon = "";
-                if (Objects.equals(workBtnDto.getButtonName(), "我的作品") || Objects.equals(workBtnDto.getButtonName(), "全部作品")) {
+                String btnName = workBtnDto.getButtonName();
+                if (Objects.equals(btnName, "我的作品") || Objects.equals(btnName, "全部作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue());
-                } else if (Objects.equals(workBtnDto.getButtonName(), "征集管理")) {
+                } else if (Objects.equals(btnName, "征集管理") || Objects.equals(btnName, "提交作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SUBMIT_WORK.getValue());
+                } else if (Objects.equals(btnName, "作品审核")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.WORK_REVIEW.getValue());
+                } else if (Objects.equals(btnName, "作品优选")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.WORK_PREFERRED_SELECTION.getValue());
                 }
-                result.add(buildBtnField(workBtnDto.getButtonName(), buttonIcon, workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
+                result.add(buildBtnField(btnName, buttonIcon, workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
             }
         }
         // 讨论小组
