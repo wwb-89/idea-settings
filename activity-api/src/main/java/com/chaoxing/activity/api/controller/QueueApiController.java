@@ -3,18 +3,24 @@ package com.chaoxing.activity.api.controller;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.event.activity.*;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
 import com.chaoxing.activity.service.queue.event.activity.*;
+import com.chaoxing.activity.service.queue.user.OrgUserDataPushQueue;
+import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**队列api服务
  * @author wwb
@@ -46,6 +52,10 @@ public class QueueApiController {
 	private ActivityStartTimeReachEventQueue activityStartTimeReachEventQueue;
 	@Resource
 	private ActivityEndTimeReachEventQueue activityEndTimeReachEventQueue;
+	@Resource
+	private OrgUserDataPushQueue orgUserDataPushQueue;
+	@Resource
+	private UserStatSummaryQueryService userStatSummaryQueryService;
 
 	/**初始化活动的汇总统计队列
 	 * @Description
@@ -208,6 +218,28 @@ public class QueueApiController {
 				activityEndTimeReachEventQueue.push(eventOrigin);
 			}
 		}
+		return RestRespDTO.success();
+	}
+
+	/**机构下所有活动的用户数据推送
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-17 17:08:35
+	 * @param fid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("org/{fid}/activity-user-data")
+	public RestRespDTO pushOrgActivityUserData(@PathVariable Integer fid) {
+		List<Activity> activities = activityQueryService.listByFid(fid);
+		List<Integer> activityIds = activities.stream().filter(v -> !Objects.equals(Activity.StatusEnum.DELETED.getValue(), v.getStatus())).map(Activity::getId).collect(Collectors.toList());
+		// 查询用户活动汇总数据
+		for (Integer activityId : activityIds) {
+			List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(activityId);
+			for (UserStatSummary userStatSummary : userStatSummaries) {
+				orgUserDataPushQueue.push(new OrgUserDataPushQueue.QueueParamDTO(userStatSummary.getUid(), userStatSummary.getActivityId()));
+			}
+		}
+
 		return RestRespDTO.success();
 	}
 
