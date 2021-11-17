@@ -99,7 +99,7 @@ public class OrgUserDataFormPushService {
         UserStatSummary userStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
         String wfwFormData;
         if (isSpecialFlag) {
-            wfwFormData = generateZjBusinessCollegeFormData(userStatSummary, formId, formFid);
+            wfwFormData = generateZjBusinessCollegeFormData(userStatSummary, activity.getName(), formId, formFid);
         } else {
             wfwFormData = generateWfwFormData(activity, userStatSummary, formId, formFid);
         }
@@ -260,11 +260,12 @@ public class OrgUserDataFormPushService {
      * @author wwb
      * @Date 2021-11-03 10:43:19
      * @param userStatSummary
+     * @param activityName
      * @param formId
      * @param fid
      * @return java.lang.String
     */
-    private String generateZjBusinessCollegeFormData(UserStatSummary userStatSummary, Integer formId, Integer fid) {
+    private String generateZjBusinessCollegeFormData(UserStatSummary userStatSummary, String activityName, Integer formId, Integer fid) {
         if (userStatSummary == null) {
             return null;
         }
@@ -303,6 +304,10 @@ public class OrgUserDataFormPushService {
                     }
                 } else if (Objects.equals(alias, "behavior")) {
                     data.add("信息素养线下活动");
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "remark")) {
+                    data.add(activityName);
                     item.put("val", data);
                     result.add(item);
                 }
