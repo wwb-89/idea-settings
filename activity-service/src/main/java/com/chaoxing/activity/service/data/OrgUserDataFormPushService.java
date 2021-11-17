@@ -106,32 +106,19 @@ public class OrgUserDataFormPushService {
         if (StringUtils.isBlank(wfwFormData)) {
             return;
         }
-        // 不是合格的需要删除
-        Boolean qualified = Optional.ofNullable(userStatSummary.getQualified()).orElse(false);
         if (formUserId == null) {
-            if (!isSpecialFlag || qualified) {
-                // 新增
-                formUserId = wfwFormApiService.fillForm(formId, formFid, uid, wfwFormData);
-                orgUserDataPushRecord = OrgUserDataPushRecord.builder()
-                        .uid(uid)
-                        .activityId(activityId)
-                        .formId(formId)
-                        .formUserId(formUserId)
-                        .build();
-                orgUserDataPushRecordService.addOrUpdate(orgUserDataPushRecord);
-            }
+            // 新增
+            formUserId = wfwFormApiService.fillForm(formId, formFid, uid, wfwFormData);
+            orgUserDataPushRecord = OrgUserDataPushRecord.builder()
+                    .uid(uid)
+                    .activityId(activityId)
+                    .formId(formId)
+                    .formUserId(formUserId)
+                    .build();
+            orgUserDataPushRecordService.addOrUpdate(orgUserDataPushRecord);
         } else {
-            if (isSpecialFlag) {
-                if (qualified) {
-                    wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
-                } else {
-                    wfwFormApiService.deleteFormRecord(formUserId, formId);
-                }
-            } else {
-                // 修改
-                wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
-            }
-
+            // 修改
+            wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
         }
     }
 
