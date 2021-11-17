@@ -266,7 +266,10 @@ public class ActivityApiController {
 	@RequestMapping("collected-uid")
 	public RestRespDTO listCollectedUidBySignId(Integer signId) {
 		Activity activity = activityQueryService.getBySignId(signId);
-		List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activity.getId());
+		List<Integer> collectedUids = Lists.newArrayList();
+		if (activity != null) {
+			collectedUids = activityCollectionQueryService.listCollectedUid(activity.getId());
+		}
 		return RestRespDTO.success(collectedUids);
 	}
 
