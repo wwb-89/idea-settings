@@ -22,8 +22,6 @@ import javax.annotation.Resource;
 public class ActivityCoverUrlSyncService {
 
 	@Resource
-	private ActivityQueryService activityQueryService;
-	@Resource
 	private ActivityHandleService activityHandleService;
 	@Resource
 	private ActivityValidationService activityValidationService;
