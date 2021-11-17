@@ -48,8 +48,8 @@ public class ActivityAboutStartEventQueue implements IDelayedQueue<ActivityAbout
         Activity activity = activityQueryService.getById(eventOrigin.getActivityId());
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_START.getValue());
         LocalDateTime startTime = eventOrigin.getStartTime();
-        Integer delayHour = Optional.ofNullable(noticeTemplate.getDelayHour()).orElse(0);
-        Integer delayMinute = Optional.ofNullable(noticeTemplate.getDelayMinute()).orElse(0);
+        Integer delayHour = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getDelayHour).orElse(ABOUT_START_HOURS);
+        Integer delayMinute = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getDelayMinute).orElse(0);
         LocalDateTime noticeTime = startTime.minusHours(delayHour).minusMinutes(delayMinute);
         if (noticeTime.isBefore(LocalDateTime.now())) {
             // 通知时间已经过了，忽略
