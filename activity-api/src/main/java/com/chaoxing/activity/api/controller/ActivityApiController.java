@@ -644,17 +644,13 @@ public class ActivityApiController {
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-11-17 14:27:56
-	 * @param signId
+	 * @param marketId
 	 * @param noticeType
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@RequestMapping("notice-template")
-	public RestRespDTO getNoticeTemplate(@RequestParam Integer signId, @RequestParam String noticeType) {
-		Activity activity = activityQueryService.getBySignId(signId);
-		if (activity == null) {
-			return RestRespDTO.success();
-		}
-		return RestRespDTO.success(marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), noticeType));
+	public RestRespDTO getNoticeTemplate(Integer marketId, String noticeType) {
+		return RestRespDTO.success(marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(marketId, noticeType));
 	}
 
 	/**根据signId获取通知模板字段内容信息

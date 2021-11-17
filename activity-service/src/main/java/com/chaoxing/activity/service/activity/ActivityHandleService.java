@@ -239,6 +239,7 @@ public class ActivityHandleService {
 	private SignCreateResultDTO handleSign(Activity activity, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
 		SignCreateResultDTO signCreateResultDto;
 		signCreateParam.perfectName(activity.getName());
+		signCreateParam.setMarketId(activity.getMarketId());
 		if (signCreateParam.getId() == null) {
 			signCreateParam.perfectCreator(loginUser);
 			signCreateResultDto = signApiService.create(signCreateParam);

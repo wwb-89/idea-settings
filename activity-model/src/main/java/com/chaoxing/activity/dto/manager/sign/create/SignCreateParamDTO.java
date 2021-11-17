@@ -41,6 +41,8 @@ public class SignCreateParamDTO {
 	private Integer fid;
 	/** 操作机构名 */
 	private String orgName;
+	/** 市场id */
+	private Integer marketId;
 
 	public static SignCreateParamDTO buildDefault() {
 		SignUpCreateParamDTO signUp = SignUpCreateParamDTO.buildDefault();
