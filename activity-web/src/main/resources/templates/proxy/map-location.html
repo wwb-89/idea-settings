@@ -208,7 +208,8 @@
                             enableMassClear: false,
                         }
                         if ($this.isMobileDevice()) {
-                            opts.offset = new BMap.Size(-166, -110)
+                            opts.offset = new BMap.Size(-166, -110);
+                            map.disableDragging();
                         }
                         if (!activityApp.isEmpty(pointObj.address)) {
                             var infoWindow = new BMap.Label('', opts);
