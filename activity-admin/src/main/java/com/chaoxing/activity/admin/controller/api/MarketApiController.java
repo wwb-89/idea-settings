@@ -6,11 +6,12 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.activity.ActivityMarketService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
+import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -31,9 +32,9 @@ public class MarketApiController {
 	@Resource
 	private MarketHandleService marketHandleService;
 	@Resource
-	private ActivityMarketService activityMarketService;
-	@Resource
 	private ActivityHandleService activityHandleService;
+	@Resource
+	private MarketSignupConfigService marketSignupConfigService;
 
 	/**创建活动市场（来源：微服务）
 	 * @Description 
@@ -76,9 +77,25 @@ public class MarketApiController {
 	*/
 	@LoginRequired
 	@RequestMapping("{marketId}/update/sign-up-activity-limit")
-	public RestRespDTO updateSignUpActivityLimit(HttpServletRequest request, @PathVariable Integer marketId, Integer signUpActivityLimit) {
+	public RestRespDTO updateSignUpActivityLimit(HttpServletRequest request, @PathVariable Integer marketId, @RequestParam Integer signUpActivityLimit) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		marketHandleService.updateSignUpActivityLimit(marketId, signUpActivityLimit, loginUser.buildOperateUserDTO());
+		marketSignupConfigService.updateSignUpActivityLimit(marketId, signUpActivityLimit, loginUser.buildOperateUserDTO());
+		return RestRespDTO.success();
+	}
+
+	/** 更新活动市场报名配置的报名按钮名称
+	 * @className MarketApiController
+	 * @description 
+	 * @author wwb
+	 * @blame wwb
+	 * @date 2021-11-17 16:13:38
+	 * @version ver 1.0
+	 */
+	@LoginRequired
+	@RequestMapping("{marketId}/update/sign-up-btn-name")
+	public RestRespDTO updateSignUpBtnName(HttpServletRequest request, @PathVariable Integer marketId, @RequestParam String btnName, @RequestParam String keyWord) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		marketSignupConfigService.updateSignUpBtnName(marketId, btnName, keyWord, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 

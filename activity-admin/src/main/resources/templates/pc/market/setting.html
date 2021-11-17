@@ -25,7 +25,7 @@
                     <label class="label">报名限制</label>
                     <div class="input-box">
                         <span class="lineTips">可同时报名</span>
-                        <el-select v-model="signUpActivityLimit" size="small" class="width120" placeholder="不限">
+                        <el-select v-model="marketSignUpConfig.signUpActivityLimit" size="small" class="width120" placeholder="不限">
                             <el-option v-for="(item, index) of signUpActivityLimits" :key="'sign_up_activity_limit-' + index" :label="item.name" :value="item.value"></el-option>
                         </el-select>
                         <span class="lineTips">个活动</span>
@@ -65,6 +65,27 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-item">
+                    <label class="label">黑名单</label>
+                    <div class="input-box">
+                        <p class="colorTips"><i class="icon-setting"></i>已拉黑{{blacklistNum}}人</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--报名按钮-->
+        <div class="item-block">
+            <div class="item-title">报名按钮</div>
+            <form action="" class="el-form">
+                <div class="form-item">
+                    <label class="label">报名按钮</label>
+                    <div class="input-box">
+                        <el-select v-model="marketSignUpConfig.signUpBtnName" size="small" class="width162" placeholder="请选择">
+                            <el-option v-for="(signUpBtn, index) of signUpBtns" :label="signUpBtn.name" :value="signUpBtn.name"></el-option>
+                        </el-select>
+                        <p class="bottomTips">用户可以在报名的页面看到的按钮</p>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="item-block">
@@ -92,13 +113,17 @@
                     marketId: [[${marketId}]],
                     oldBlacklistRule: null,
                     blacklistRule: [[${blacklistRule}]],
-                    oldSignUpActivityLimit: [[${signUpActivityLimit}]],
-                    signUpActivityLimit: [[${signUpActivityLimit}]],
                     signUpActivityLimits: [],
                     // 自动移除黑名单时间选择范围
                     autoRemoveBlackListTimeScope: [],
                     currBlackListTimeScope: [],
-                    blacklistNumbers: []
+                    blacklistNumbers: [],
+                    // 已加入黑名单的人数
+                    blacklistNum: [[${blacklistNum}]],
+                    marketSignUpConfig: [[${marketSignUpConfig}]],
+                    oldSignUpActivityLimit: [[${marketSignUpConfig.signUpActivityLimit}]],
+                    oldSignUpBtnName: [[${marketSignUpConfig.signUpBtnName}]],
+                    signUpBtns: [[${signUpBtns}]]
                 },
                 created: function () {
                     var $this = this;
@@ -167,11 +192,18 @@
                         var $this = this;
                         $this.updateBlacklistRule();
                     },
-                    "signUpActivityLimit": function (newVal, oldVal) {
+                    "marketSignUpConfig.signUpActivityLimit": function (newVal, oldVal) {
                         var $this = this;
                         if (newVal != $this.oldSignUpActivityLimit) {
                             $this.oldSignUpActivityLimit = oldVal;
                             $this.signUpActivityLimitChange();
+                        }
+                    },
+                    "marketSignUpConfig.signUpBtnName": function (newVal, oldVal) {
+                        var $this = this;
+                        if (newVal != $this.oldSignUpBtnName) {
+                            $this.oldSignUpBtnName = oldVal;
+                            $this.signUpBtnNameChange();
                         }
                     }
                 },
@@ -235,7 +267,7 @@
                         var $this = this;
                         var url = ctx + "/api/market/" + $this.marketId + "/update/sign-up-activity-limit";
                         var params = {
-                            signUpActivityLimit: $this.signUpActivityLimit
+                            signUpActivityLimit: $this.marketSignUpConfig.signUpActivityLimit
                         };
                         app.ajaxPostWithLoading(url, params, function (data) {
                             if (data.success) {
@@ -246,11 +278,43 @@
                                     message = "更新报名限制失败";
                                 }
                                 app.showMsg(message);
-                                $this.signUpActivityLimit = $this.oldSignUpActivityLimit;
+                                $this.$set($this.marketSignUpConfig, "signUpActivityLimit", $this.oldSignUpActivityLimit);
                             }
                         }, function () {
                             app.showMsg("更新报名限制失败");
-                            $this.signUpActivityLimit = $this.oldSignUpActivityLimit;
+                            $this.$set($this.marketSignUpConfig, "signUpActivityLimit", $this.oldSignUpActivityLimit);
+                        });
+                    },
+                    // 报名按钮名称改变
+                    signUpBtnNameChange: function () {
+                        var $this = this;
+                        var signUpBtn = null;
+                        $($this.signUpBtns).each(function () {
+                            if (this.name == $this.marketSignUpConfig.signUpBtnName) {
+                                signUpBtn = this;
+                                return false;
+                            }
+                        });
+                        var $this = this;
+                        var url = ctx + "/api/market/" + $this.marketId + "/update/sign-up-btn-name";
+                        var params = {
+                            btnName: signUpBtn.name,
+                            keyWord: signUpBtn.keyWord
+                        };
+                        app.ajaxPostWithLoading(url, params, function (data) {
+                            if (data.success) {
+
+                            } else {
+                                var message = data.message;
+                                if (activityApp.isEmpty(message)) {
+                                    message = "更新报名按钮失败";
+                                }
+                                app.showMsg(message);
+                                $this.$set($this.marketSignUpConfig, "signUpBtnName", $this.oldSignUpBtnName);
+                            }
+                        }, function () {
+                            app.showMsg("更新报名按钮失败");
+                            $this.$set($this.marketSignUpConfig, "signUpBtnName", $this.oldSignUpBtnName);
                         });
                     }
                 }
