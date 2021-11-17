@@ -1,9 +1,12 @@
 package com.chaoxing.activity.admin.controller.general;
 
+import com.chaoxing.activity.dto.SignUpBtnDTO;
 import com.chaoxing.activity.dto.blacklist.BlacklistRuleDTO;
 import com.chaoxing.activity.model.BlacklistRule;
 import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.model.MarketSignUpConfig;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.blacklist.BlacklistQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,6 +35,8 @@ public class RuleSettingController {
     private BlacklistQueryService blacklistQueryService;
     @Resource
     private MarketQueryService marketQueryService;
+    @Resource
+    private MarketSignupConfigService marketSignupConfigService;
 
     /**规则配置主页
     * @Description
@@ -46,7 +52,14 @@ public class RuleSettingController {
         Market market = marketQueryService.getById(marketId);
         model.addAttribute("blacklistRule", blacklistRuleDto);
         model.addAttribute("marketId", marketId);
-        model.addAttribute("signUpActivityLimit", Optional.ofNullable(market.getSignUpActivityLimit()).orElse(0));
+        // 黑名单的人数
+        int blacklistNum = blacklistQueryService.countMarketBlackNum(marketId);
+        model.addAttribute("blacklistNum", blacklistNum);
+        MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
+        model.addAttribute("marketSignUpConfig", marketSignUpConfig);
+        // 报名按钮列表
+        List<SignUpBtnDTO> signUpBtns = SignUpBtnDTO.list();
+        model.addAttribute("signUpBtns", signUpBtns);
         return "pc/market/setting";
     }
 

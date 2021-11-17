@@ -145,4 +145,17 @@ public class BlacklistQueryService {
         return Optional.ofNullable(blacklists).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
     }
 
+    /**统计已经加入黑名单的人数
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-17 15:22:48
+     * @param marketId
+     * @return int
+    */
+    public int countMarketBlackNum(Integer marketId) {
+        return blacklistMapper.selectCount(new LambdaQueryWrapper<Blacklist>()
+                .eq(Blacklist::getMarketId, marketId)
+        );
+    }
+
 }

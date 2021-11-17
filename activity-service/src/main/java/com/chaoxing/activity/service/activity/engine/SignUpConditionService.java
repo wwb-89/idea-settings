@@ -11,6 +11,7 @@ import com.chaoxing.activity.mapper.TemplateSignUpConditionMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
@@ -65,6 +66,8 @@ public class SignUpConditionService {
 	private MarketQueryService marketQueryService;
 	@Resource
 	private SignApiService signApiService;
+	@Resource
+	private MarketSignupConfigService marketSignupConfigService;
 
 	/**新增报名条件
 	 * @Description
@@ -290,8 +293,8 @@ public class SignUpConditionService {
 		if (marketId == null) {
 			return;
 		}
-		Market market = marketQueryService.getById(marketId);
-		Integer signUpActivityLimit = Optional.ofNullable(market).map(Market::getSignUpActivityLimit).orElse(0);
+		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
+		Integer signUpActivityLimit = Optional.ofNullable(marketSignUpConfig).map(MarketSignUpConfig::getSignUpActivityLimit).orElse(0);
 		if (signUpActivityLimit < 1) {
 			// 没做限制
 			return;

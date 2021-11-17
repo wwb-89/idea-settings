@@ -202,23 +202,6 @@ public class MarketHandleService {
 		);
 	}
 
-	/**更新同时报名活动数量限制
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-08-18 16:16:46
-	 * @param marketId
-	 * @param signUpActivityLimit
-	 * @param operateUserDto
-	 * @return void
-	*/
-	public void updateSignUpActivityLimit(Integer marketId, Integer signUpActivityLimit, OperateUserDTO operateUserDto) {
-		marketValidationService.manageAble(marketId, operateUserDto);
-		marketMapper.update(null, new LambdaUpdateWrapper<Market>()
-				.eq(Market::getId, marketId)
-				.set(Market::getSignUpActivityLimit, signUpActivityLimit)
-		);
-	}
-
 	/**根据机构id，活动标识查询模板,判断市场是否存在; 市场不存在则创建市场
 	 * 返回市场id
 	 * @Description
