@@ -93,6 +93,7 @@ public class SystemNoticeTemplateService {
 				.activityName(activityName)
 				.address(address)
 				.activityTime(activityTime)
+				.previewUrl(activity.getPreviewUrl())
 				.signUps(signUpNoticeTemplateFields)
 				.build();
 	}
