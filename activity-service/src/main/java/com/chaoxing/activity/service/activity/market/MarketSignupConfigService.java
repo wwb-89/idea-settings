@@ -89,11 +89,11 @@ public class MarketSignupConfigService {
      * @Date 2021-11-17 16:18:18
      * @param marketId
      * @param name
-     * @param keyWord
+     * @param keyword
      * @param operateUser
      * @return void
     */
-    public void updateSignUpBtnName(Integer marketId, String name, String keyWord, OperateUserDTO operateUser) {
+    public void updateSignUpBtnName(Integer marketId, String name, String keyword, OperateUserDTO operateUser) {
         marketValidationService.manageAble(marketId, operateUser);
         MarketSignUpConfig existMarketSignUpConfig = get(marketId);
         if (existMarketSignUpConfig == null) {
@@ -102,7 +102,7 @@ public class MarketSignupConfigService {
         marketSignUpConfigMapper.update(null, new LambdaUpdateWrapper<MarketSignUpConfig>()
                 .eq(MarketSignUpConfig::getMarketId, marketId)
                 .set(MarketSignUpConfig::getSignUpBtnName, name)
-                .set(MarketSignUpConfig::getSignUpKeyWord, keyWord)
+                .set(MarketSignUpConfig::getSignUpKeyword, keyword)
         );
     }
 

@@ -342,7 +342,8 @@
                         sign: [[${sign}]],
                         signUpTemplateComponents: [[${signUpTemplateComponents}]],
                         templateComponentMap: {},
-
+                        defaultSignUpBtnName: [[${marketSignUpConfig != null ? marketSignUpConfig.signUpBtnName : ""}]],
+                        defaultSignUpKeyword: [[${marketSignUpConfig != null ? marketSignUpConfig.signUpKeyword : ""}]],
                         // 报名: { originId: signUp }
                         signUpMap: {},
                         // 报名信息填写类型: { templateComponentId: signUpFillInfoType }
@@ -431,6 +432,9 @@
 
                     // 报名
                     $($this.sign.signUps).each(function (i) {
+                        // 处理报名按钮名称和按钮关键字
+                        this.btnName = $this.defaultSignUpBtnName ? $this.defaultSignUpBtnName : this.btnName;
+                        this.keyword = $this.defaultSignUpKeyword ? $this.defaultSignUpKeyword : this.keyword;
                         if (!activityApp.isEmpty(this.id)) {
                             if (this.wfwParticipateScopes) {
                                 $(this.wfwParticipateScopes).each(function () {

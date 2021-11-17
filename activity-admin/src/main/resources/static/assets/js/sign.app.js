@@ -30,9 +30,11 @@
     /**
      * 创建报名
      * @param activityFlagSignModule
+     * @param btnName
+     * @param btnNameKeyword
      * @returns {{btnName: string, fillInfoFormId: null, limitPerson: boolean, publicList: boolean, moduleName: (*|string), signId: null, deleted: boolean, openAudit: boolean, personLimit: number, fillInfo: boolean, startTime: number, id: null, endTime: number, endTimestamp: string, startTimestamp: string}}
      */
-    signApp.prototype.newSignUp = function (tplComponent) {
+    signApp.prototype.newSignUp = function (tplComponent, btnName, btnNameKeyword) {
         return {
             id: null,
             signId: null,
@@ -49,7 +51,8 @@
             pcUrl: null,
             wechatUrl: null,
             publicList: false,
-            btnName: "报名参与",
+            btnName: btnName ? btnName : "报名参与",
+            keyword: btnNameKeyword ? btnNameKeyword : "报名",
             endAllowCancel: true,
             endNotAllowCancel: false,
             notAllowCancelType: "after_sign_up_end",
@@ -118,100 +121,6 @@
             typeName: "签退",
             btnName: "签退"
         });
-    };
-    /**
-     * 修改报名签到
-     * @param sign
-     * @param activitySignModules
-     * @param activityFlagSignModules
-     */
-    signApp.prototype.editSign = function (sign, activitySignModules, activityFlagSignModules) {
-        var $this = this;
-        var oldSignUps = sign.signUps;
-        var oldSignIns = sign.signIns;
-        var signUps = [];
-        var signIns = [];
-        // 活动规定了要显示多少报名和签到的模块， 现有报名签到中不存在的需要补上（deleted设置为false）
-        // 处理报名
-        $(oldSignUps).each(function () {
-            this.enable = !this.deleted;
-            var signUpId = this.id;
-            var exist = false;
-            $(activitySignModules).each(function () {
-                if (this.moduleType == $this.signUpModuleType && this.moduleId == signUpId) {
-                    exist = true;
-                    return false;
-                }
-            });
-            if (exist) {
-                signUps.push(this);
-            }
-        });
-        // 处理签到、签退
-        $(oldSignIns).each(function () {
-            this.typeName = this.type == $this.signInModuleType ? "签到" : "签退";
-            this.enable = !this.deleted;
-            var signInId = this.id;
-            var moduleType = this.type;
-            var exist = false;
-            $(activitySignModules).each(function () {
-                if (this.moduleType == moduleType && this.moduleId == signInId) {
-                    exist = true;
-                    return false;
-                }
-            });
-            if (exist) {
-                signIns.push(this);
-            }
-        });
-        // 判断当前的活动标示应该有多少个报名和签到， 多了忽略，少了补上
-        var needSignUpNum = 0;
-        var needSignInNum = 0;
-        var needSignOutNum = 0;
-        $(activityFlagSignModules).each(function () {
-            if (this.moduleType == $this.signUpModuleType) {
-                needSignUpNum++;
-            }else if (this.moduleType == $this.signInModuleType) {
-                needSignInNum++;
-            }else if (this.moduleType == $this.signOutModuleType) {
-                needSignOutNum++;
-            }
-        });
-        var existSignUpNum = 0;
-        var existSignInNum = 0;
-        var existSignOutNum = 0;
-        $(activitySignModules).each(function () {
-            if (this.moduleType == $this.signUpModuleType) {
-                existSignUpNum++;
-            }else if (this.moduleType == $this.signInModuleType) {
-                existSignInNum++;
-            }else if (this.moduleType == $this.signOutModuleType) {
-                existSignOutNum++;
-            }
-        });
-        for (var i = 0; i < (needSignUpNum - existSignUpNum); i++) {
-            var signUp = $this.newSignUp();
-            signUp.deleted = true;
-            signUps.push(signUp);
-        }
-        for (var i = 0; i < (needSignInNum - existSignInNum); i++) {
-            var signIn = $this.newSignIn();
-            signIn.deleted = true;
-            signIns.push(signIn);
-        }
-        for (var i = 0; i < (needSignOutNum - existSignOutNum); i++) {
-            var signOut = $this.newSignOut();
-            signOut.deleted = true;
-            signIns.push(signOut);
-        }
-        $(signUps).each(function () {
-            var participateScopes = this.participateScopes;
-            if (activityApp.isEmpty(participateScopes)) {
-                this.participateScopes = [];
-            }
-        });
-        sign.signUps = signUps;
-        sign.signIns = signIns;
     };
     W['signApp'] = new signApp();
 })(window, jQuery);

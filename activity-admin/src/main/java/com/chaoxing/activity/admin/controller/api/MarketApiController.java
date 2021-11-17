@@ -93,9 +93,9 @@ public class MarketApiController {
 	 */
 	@LoginRequired
 	@RequestMapping("{marketId}/update/sign-up-btn-name")
-	public RestRespDTO updateSignUpBtnName(HttpServletRequest request, @PathVariable Integer marketId, @RequestParam String btnName, @RequestParam String keyWord) {
+	public RestRespDTO updateSignUpBtnName(HttpServletRequest request, @PathVariable Integer marketId, @RequestParam String btnName, @RequestParam String keyword) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		marketSignupConfigService.updateSignUpBtnName(marketId, btnName, keyWord, loginUser.buildOperateUserDTO());
+		marketSignupConfigService.updateSignUpBtnName(marketId, btnName, keyword, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 

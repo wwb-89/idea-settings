@@ -299,7 +299,7 @@
                         var url = ctx + "/api/market/" + $this.marketId + "/update/sign-up-btn-name";
                         var params = {
                             btnName: signUpBtn.name,
-                            keyWord: signUpBtn.keyWord
+                            keyword: signUpBtn.keyword
                         };
                         app.ajaxPostWithLoading(url, params, function (data) {
                             if (data.success) {

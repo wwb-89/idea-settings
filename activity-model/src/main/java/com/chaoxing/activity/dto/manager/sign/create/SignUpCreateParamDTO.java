@@ -24,6 +24,7 @@ public class SignUpCreateParamDTO {
 
 	private static final String DEFAULT_SIGN_UP_NAME = "报名";
 	private static final String DEFAULT_SIGN_UP_BTN_NAME = "报名参与";
+	private static final String DEFAULT_SIGN_UP_BTN_KEY_WORD = "报名";
 
 	/** 主键 */
 	private Integer id;
@@ -57,6 +58,8 @@ public class SignUpCreateParamDTO {
 	private Boolean publicList;
 	/** 报名按钮名称 */
 	private String btnName;
+	/** 报名按钮关键字 */
+	private String keyword;
 	/** 是否报名结束后允许取消报名 */
 	private Boolean endAllowCancel;
 	/** 不允许取消报名的类型 */
@@ -98,6 +101,7 @@ public class SignUpCreateParamDTO {
 				.fillInfo(false)
 				.publicList(false)
 				.btnName(DEFAULT_SIGN_UP_BTN_NAME)
+				.keyword(DEFAULT_SIGN_UP_BTN_KEY_WORD)
 				.endAllowCancel(true)
 				.onSiteSignUp(false)
 				.enableWfwParticipateScope(false)

@@ -10,6 +10,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
@@ -58,6 +59,8 @@ public class ActivitySettingController {
     private WfwContactApiService wfwContactApiService;
     @Resource
     private ActivityMenuService activityMenuService;
+    @Resource
+    private MarketSignupConfigService marketSignupConfigService;
 
     @RequestMapping("index")
     public String settingIndex(Model model, @PathVariable Integer activityId) {
@@ -155,6 +158,9 @@ public class ActivitySettingController {
         model.addAttribute("contactGroups", WfwGroupDTO.perfectWfwGroups(wfwContactApiService.listUserContactOrgsByFid(loginUser.getFid())));
         String activityFlag = activity.getActivityFlag();
         model.addAttribute("activityFlag", activityFlag);
+        // 市场报名配置
+        MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(createParamDTO.getMarketId());
+        model.addAttribute("marketSignUpConfig", marketSignUpConfig);
         return "pc/activity/setting/sign-up";
     }
 

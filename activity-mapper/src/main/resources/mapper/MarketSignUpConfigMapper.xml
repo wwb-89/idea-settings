@@ -6,9 +6,9 @@
         <result column="market_id" jdbcType="INTEGER" property="marketId" />
         <result column="sign_up_activity_limit" jdbcType="INTEGER" property="signUpActivityLimit" />
         <result column="sign_up_btn_name" jdbcType="VARCHAR" property="signUpBtnName" />
-        <result column="sign_up_key_word" jdbcType="VARCHAR" property="signUpKeyWord" />
+        <result column="sign_up_keyword" jdbcType="VARCHAR" property="signUpKeyword" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.market_id, t.sign_up_activity_limit, t.sign_up_btn_name, t.sign_up_key_word
+        t.id, t.market_id, t.sign_up_activity_limit, t.sign_up_btn_name, t.sign_up_keyword
     </sql>
 </mapper>

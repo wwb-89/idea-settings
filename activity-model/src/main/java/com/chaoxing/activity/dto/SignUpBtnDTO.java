@@ -24,7 +24,7 @@ import java.util.List;
 public class SignUpBtnDTO {
 
     private String name;
-    private String keyWord;
+    private String keyword;
 
     public static List<SignUpBtnDTO> list() {
         List<SignUpBtnDTO> signUpBtns = Lists.newArrayList();
@@ -32,7 +32,7 @@ public class SignUpBtnDTO {
         for (SignUpBtnEnum value : values) {
             signUpBtns.add(SignUpBtnDTO.builder()
                             .name(value.getName())
-                            .keyWord(value.getKeyWord())
+                            .keyword(value.getKeyword())
                     .build());
         }
         return signUpBtns;

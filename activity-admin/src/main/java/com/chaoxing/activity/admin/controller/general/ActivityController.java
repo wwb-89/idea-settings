@@ -10,16 +10,14 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
-import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
-import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
-import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -30,7 +28,10 @@ import org.springframework.ui.Model;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -64,6 +65,8 @@ public class ActivityController {
 	private SignUpConditionService signUpConditionService;
 	@Resource
 	private WfwFormApiService formApiService;
+	@Resource
+	private MarketSignupConfigService marketSignupConfigService;
 
 	/**新活动管理主页
 	 * @Description
@@ -148,6 +151,9 @@ public class ActivityController {
 		model.addAttribute("formFieldStructures", formFieldStructures);
 		model.addAttribute("signUpConditions", signUpConditions);
 		model.addAttribute("conditionEnums", ConditionDTO.list());
+		// 活动市场报名配置
+		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
+		model.addAttribute("marketSignUpConfig", marketSignUpConfig);
 		return "pc/activity-add-edit-new";
 	}
 }

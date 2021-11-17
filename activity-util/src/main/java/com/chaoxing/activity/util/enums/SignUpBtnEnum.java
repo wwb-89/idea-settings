@@ -20,11 +20,11 @@ public enum SignUpBtnEnum {
     BTN_4("立即申请", "申请");
 
     private final String name;
-    private final String keyWord;
+    private final String keyword;
 
-    SignUpBtnEnum(String name, String keyWord) {
+    SignUpBtnEnum(String name, String keyword) {
         this.name = name;
-        this.keyWord = keyWord;
+        this.keyword = keyword;
     }
 
 }

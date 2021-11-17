@@ -32,7 +32,7 @@ public class MarketSignUpConfig {
     private Integer signUpActivityLimit;
     /** 报名按钮名称; column: sign_up_btn_name*/
     private String signUpBtnName;
-    /** 报名关键字; column: sign_up_key_word*/
-    private String signUpKeyWord;
+    /** 报名关键字; column: sign_up_keyword*/
+    private String signUpKeyword;
 
 }

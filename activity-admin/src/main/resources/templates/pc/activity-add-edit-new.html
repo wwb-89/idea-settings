@@ -822,6 +822,8 @@
                 fid: [[${session._login_user_.fid}]],
                 templateId: [[${templateId}]],
                 marketId: [[${marketId}]],
+                defaultSignUpBtnName: [[${marketSignUpConfig != null ? marketSignUpConfig.signUpBtnName : ""}]],
+                defaultSignUpKeyword: [[${marketSignUpConfig != null ? marketSignUpConfig.signUpKeyword : ""}]],
                 activity: [[${activity}]],
                 templateComponents: [[${templateComponents}]],
                 tplComponentPartitions: [],
@@ -1146,7 +1148,8 @@
                     // 根据模板组件关联关系，初始化数据
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
-                            var signUp = signApp.newSignUp(this);
+                            var signUp = signApp.newSignUp(this, $this.defaultSignUpBtnName, $this.defaultSignUpKeyword);
+                            debugger;
                             if (this.code == 'company_sign_up') {
                                 signUp.fillInfo = true;
                                 signUp.customSignUpType = "company";
@@ -1231,7 +1234,7 @@
                         var originId = this.id;
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             if (!$this.signUpMap[originId]) {
-                                var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
+                                var signUp = signApp.newSignUp($this.templateComponentMap[originId], $this.defaultSignUpBtnName, $this.defaultSignUpKeyword);
                                 signUp.originId = originId;
                                 if (this.code == 'company_sign_up') {
                                     signUp.fillInfo = true;
@@ -1270,7 +1273,8 @@
                 }
                 $.each($this.signUpMap, function (key, item) {
                     item.enable = !item.deleted;
-                    item.btnName = "报名参与";
+                    item.btnName = $this.defaultSignUpBtnName ? $this.defaultSignUpBtnName : item.btnName;
+                    item.keyword = $this.defaultSignUpKeyword ? $this.defaultSignUpKeyword : item.keyword;
                     if (!activityApp.isEmpty(item.startTime)) {
                         // 若报名签到非不限制
                         $this.$set(item, "timeScope", [item.startTime, item.endTime]);
