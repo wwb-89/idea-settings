@@ -59,6 +59,10 @@ public class XxtNoticeApiService {
 	 * @return void
 	 */
 	public void sendNotice(String title, String content, String attachment, Integer senderUid, List<Integer> receiverUids) {
+		if (StringUtils.isBlank(content)) {
+			log.error("通知内容不能为空");
+			return;
+		}
 		Optional.ofNullable(content).filter(StringUtils::isNotBlank).orElseThrow(() -> new BusinessException("通知内容不能为空"));
 		Optional.ofNullable(senderUid).orElseThrow(() -> new BusinessException("消息发送者不能为空"));
 		Optional.ofNullable(receiverUids).filter(CollectionUtils::isNotEmpty).orElseThrow(() -> new BusinessException("接收消息的用户不能为空"));
