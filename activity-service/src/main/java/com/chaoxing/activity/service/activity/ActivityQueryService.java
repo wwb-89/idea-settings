@@ -1279,4 +1279,17 @@ public class ActivityQueryService {
 		);
 	}
 
+	/**查询机构创建的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-17 17:07:12
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listByFid(Integer fid) {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getCreateFid, fid)
+		);
+	}
+
 }
