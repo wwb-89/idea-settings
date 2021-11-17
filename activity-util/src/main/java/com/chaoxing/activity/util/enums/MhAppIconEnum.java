@@ -17,7 +17,7 @@ public enum MhAppIconEnum {
     public enum ONE {
 
         /** 收藏 */
-        COLLECTED("collected", "fd55f9794e52c4125b9c885e4b8297c8"),
+        COLLECTED("collected", "70a0bc103aedda1f1cd5fcc1b0524595"),
         /** 浏览 */
         BROWSE("browse", "465489a8bbcb36d493c98b5ff7066def"),
         /** 签到数 */
