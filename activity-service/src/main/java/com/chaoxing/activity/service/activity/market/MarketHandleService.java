@@ -48,11 +48,11 @@ public class MarketHandleService {
 	@Resource
 	private WfwAppApiService wfwAppApiService;
 	@Resource
-	private MarketValidationService marketValidationService;
-	@Resource
 	private ActivityMarketService activityMarketService;
 	@Resource
 	private ActivityHandleService activityHandleService;
+	@Resource
+	private MarketSignupConfigService marketSignupConfigService;
 
 
 	/**单独创建活动市场
@@ -68,8 +68,14 @@ public class MarketHandleService {
 		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
 		activityMarket.perfectSequence(marketMapper.getMaxSequence(operateUserDto.getFid()));
-		marketMapper.insert(activityMarket);
+		add(activityMarket);
 		return activityMarket;
+	}
+
+	private void add(Market market) {
+		marketMapper.insert(market);
+		// 活动市场报名配置
+		marketSignupConfigService.init(market.getId());
 	}
 
 	/**创建活动市场且克隆一个模板
@@ -149,7 +155,7 @@ public class MarketHandleService {
 	public Market add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, Activity.ActivityFlagEnum activityFlagEnum, OperateUserDTO operateUserDto) {
 		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
-		marketMapper.insert(activityMarket);
+		add(activityMarket);
 		// 给市场克隆一个模版
 		templateHandleService.cloneTemplate(activityMarket, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
 		return activityMarket;
@@ -240,7 +246,7 @@ public class MarketHandleService {
 
 		Market newMarket = Market.cloneMarket(originMarket, targetFid);
 		newMarket.perfectCreator(loginUser.buildOperateUserDTO());
-		marketMapper.insert(newMarket);
+		add(newMarket);
 
 		// 给市场克隆一个模版
 		templateHandleService.cloneTemplate(newMarket, originTemplateId);
