@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.SignUpWfwFormTemplateMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.SignUpWfwFormTemplate">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="sign" jdbcType="VARCHAR" property="sign" />
+        <result column="key" jdbcType="VARCHAR" property="key" />
+        <result column="form_id" jdbcType="INTEGER" property="formId" />
+        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="is_system" jdbcType="BIT" property="system" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.name, t.code, t.sign, t.key, t.form_id, t.fid, t.market_id, t.is_system,
+        t.create_time, t.update_time
+    </sql>
+</mapper>

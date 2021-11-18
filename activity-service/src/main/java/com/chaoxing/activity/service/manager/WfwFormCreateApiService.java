@@ -1,5 +1,9 @@
 package com.chaoxing.activity.service.manager;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -7,12 +11,16 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 
 /**微服务表单创建服务
  * @author wwb
@@ -34,6 +42,8 @@ public class WfwFormCreateApiService {
 	private static final String CREATE_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/manager/third/user/login/apps/create";
 	/** 表单后台地址 */
 	private static final String FORM_ADMIN_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/manager/third/user/login/apps/manager?fid=%d&uid=%d&datetime=%s&sign=%s&formId=%d&formType=%d&enc=%s";
+	/** 接口创建表单url */
+	private static final String CREATE_FORM_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/app/thirdcreate";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -109,6 +119,46 @@ public class WfwFormCreateApiService {
 		endBuilder.append(key);
 		endBuilder.append("]");
 		return DigestUtils.md5Hex(endBuilder.toString());
+	}
+
+	/**创建万能表单
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-11-18 17:21:24
+	 * @param wfwFormCreateParam
+	 * @return com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO
+	 */
+	public WfwFormCreateResultDTO create(WfwFormCreateParamDTO wfwFormCreateParam) {
+		Map<String, Object> params = new TreeMap<>();
+		params.put("formId", wfwFormCreateParam.getFormId());
+		params.put("originalFid", wfwFormCreateParam.getOriginalFid());
+		params.put("uid", wfwFormCreateParam.getUid());
+		params.put("fid", wfwFormCreateParam.getFid());
+		params.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+		params.put("sign", SIGN);
+		params.put("enc", getEnc(params));
+		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
+		paramMap.setAll(params);
+		String result = restTemplate.postForObject(CREATE_FORM_URL, paramMap, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return JSON.parseObject(jsonObject.getString("data"), WfwFormCreateResultDTO.class);
+		} else {
+			String message = jsonObject.getString("msg");
+			log.error("根据参数:{} 创建万能表单error:{}", JSON.toJSONString(wfwFormCreateParam), message);
+			throw new BusinessException(message);
+		}
+	}
+
+	private String getEnc(Map<String, Object> encParamMap) {
+		StringBuilder enc = new StringBuilder();
+		for (Map.Entry<String, Object> entry : encParamMap.entrySet()) {
+			enc.append("[").append(entry.getKey()).append("=")
+					.append(entry.getValue()).append("]");
+		}
+		return DigestUtils.md5Hex(enc + "[" + KEY + "]");
 	}
 
 }
