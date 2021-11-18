@@ -181,9 +181,13 @@ public class ActivityFormSyncService {
         // 新增活动
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
-        // 立即发布
-        OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
-        activityHandleService.release(activityId, operateUser);
+        String releaseStatus = FormUtils.getValue(formUserRecord, "release_status");
+        // 发布状态值不存在或不为未发布，发布活动
+        if (!Objects.equals(releaseStatus, "未发布")) {
+            // 立即发布
+            OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
+            activityHandleService.release(activityId, operateUser);
+        }
         activity = activityQueryService.getById(activityId);
         // 获取参与者列表, 进行用户报名
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
