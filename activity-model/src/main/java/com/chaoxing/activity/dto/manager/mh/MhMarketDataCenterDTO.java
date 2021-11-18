@@ -1,7 +1,7 @@
 package com.chaoxing.activity.dto.manager.mh;
 
 import com.chaoxing.activity.model.Market;
-import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,15 +44,15 @@ public class MhMarketDataCenterDTO {
     }
 
     private static String buildDivUrl(Integer marketId) {
-        return UrlConstant.API_DOMAIN + "/mh/data-center/market/" + marketId;
+        return DomainConstant.API_DOMAIN + "/mh/data-center/market/" + marketId;
     }
 
     private static String buildClassifyUrl(Integer marketId) {
-        return UrlConstant.API_DOMAIN + "/mh/data-center/market/" + marketId + "/classifies";
+        return DomainConstant.API_DOMAIN + "/mh/data-center/market/" + marketId + "/classifies";
     }
 
     private static String buildMoreUrl(Integer marketId) {
-        return UrlConstant.DOMAIN + "?marketId=" + marketId;
+        return DomainConstant.WEB_DOMAIN + "?marketId=" + marketId;
     }
 
 

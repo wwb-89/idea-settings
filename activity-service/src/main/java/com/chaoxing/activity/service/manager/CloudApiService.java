@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.util.Base64Utils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -34,15 +35,15 @@ import java.io.IOException;
 public class CloudApiService {
 
 	/** 上传url */
-	private static final String UPLOAD_URL = "http://cs.ananas.chaoxing.com/upload?uid=-1&clientip=%s&prdid=40";
+	private static final String UPLOAD_URL = DomainConstant.CLOUD_API_DOMAIN + "/upload?uid=-1&clientip=%s&prdid=40";
 	/** 资源状态url */
-	private static final String GET_CLOUD_RESOURCE_STATUS_URL = "http://cs.ananas.chaoxing.com/status/";
+	private static final String GET_CLOUD_RESOURCE_STATUS_URL = DomainConstant.CLOUD_API_DOMAIN + "/status/";
 	/** 云盘图片状态url key */
 	private static final String CLOUD_IMAGE_STATUS_URL_KEY = "http";
 	/** 下载url key */
 	private static final String DOWNLOAD_URL_KEY = "download";
 	/** 图片url前缀 */
-	private static final String IMAGE_URL_SUFFIX = "http://p.ananas.chaoxing.com/star3/origin/";
+	private static final String IMAGE_URL_SUFFIX = DomainConstant.CLOUD_RESOURCE_DOMAIN + "/star3/origin/";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;

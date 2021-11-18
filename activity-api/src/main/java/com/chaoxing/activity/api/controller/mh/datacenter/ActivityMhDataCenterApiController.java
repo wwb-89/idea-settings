@@ -28,7 +28,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
-import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -98,8 +98,8 @@ public class ActivityMhDataCenterApiController {
         }
         result.add(MhMarketDataCenterDTO.builder()
                 .name("我的活动")
-                .divUrl(UrlConstant.API_DOMAIN + "/mh/data-center/my")
-                .searchClassifyUrl(UrlConstant.API_DOMAIN + "/mh/activity-market/classifies/with-extra-params")
+                .divUrl(DomainConstant.API_DOMAIN + "/mh/data-center/my")
+                .searchClassifyUrl(DomainConstant.API_DOMAIN + "/mh/activity-market/classifies/with-extra-params")
                 .build());
         return RestRespDTO.success(result);
     }

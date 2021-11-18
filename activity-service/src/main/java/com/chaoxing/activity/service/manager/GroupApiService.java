@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.group.GroupCreateParamDTO;
 import com.chaoxing.activity.dto.manager.group.GroupCreateResultDTO;
 import com.chaoxing.activity.dto.manager.group.GroupDTO;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,16 +28,15 @@ import java.util.Objects;
 @Service
 public class GroupApiService {
 
-    private static final String DOMAIN = "https://groupyd.chaoxing.com";
     /** 创建小组yrl */
-    private static final String CREATE_URL = DOMAIN + "/apis/circle/addCircle";
+    private static final String CREATE_URL = DomainConstant.GROUP_API_DOMAIN + "/apis/circle/addCircle";
     /** 获取小组信息url */
-    private static final String GET_URL = DOMAIN + "/apis/circle/getCircle";
+    private static final String GET_URL = DomainConstant.GROUP_API_DOMAIN + "/apis/circle/getCircle";
     
     /** 小组PC地址url */
-    private static final String GROUP_PC_URL = "http://groupweb.chaoxing.com/pc/topic/topiclist/index?bbsid=%s";
+    private static final String GROUP_PC_URL = DomainConstant.GROUP_WEB_DOMAIN + "/pc/topic/topiclist/index?bbsid=%s";
     /** 小组移动端地址url */
-    private static final String GROUP_MOBILE_URL = "https://groupweb.chaoxing.com/app/circle/showCircle?bbsid=%s";
+    private static final String GROUP_MOBILE_URL = DomainConstant.GROUP_WEB_DOMAIN + "/app/circle/showCircle?bbsid=%s";
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;

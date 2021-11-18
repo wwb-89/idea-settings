@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.form.FormAdvanceSearchFilterConditionDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
 import com.google.common.collect.Lists;
@@ -41,8 +42,6 @@ public class WfwFormApiService {
 
 	/** 日期格式化 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
-	/** 全日期格式化 */
-	public static final DateTimeFormatter DATA_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 	/** sign */
 	private static final String SIGN = "appsFormsData_hdpt";
 	/** key */
@@ -51,22 +50,20 @@ public class WfwFormApiService {
 	private static final int MAX_PAGE_SIZE_LIMIT = 100;
 	private static final int MAX_DELETE_SIZE_LIMIT = 100;
 
-	/** 表单api域名 */
-	private static final String FORM_API_DOMAIN = "https://m.oa.chaoxing.com";
 	/** 获取机构下表单列表url */
-	private static final String GET_ORG_FORMS_URL = FORM_API_DOMAIN + "/api/apps/forms/app/list";
+	private static final String GET_ORG_FORMS_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/app/list";
 	/** 获取表单字段信息url */
-	private static final String GET_FORM_STRUCTURE_URL = FORM_API_DOMAIN + "/api/apps/forms/app/config/values";
+	private static final String GET_FORM_STRUCTURE_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/app/config/values";
 	/** 获取表单指定数据url */
-	private static final String LIST_FORM_SPECIFIED_DATA_URL = FORM_API_DOMAIN + "/api/apps/forms/user/data/list";
+	private static final String LIST_FORM_SPECIFIED_DATA_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/data/list";
 	/** 填写表单url */
-	private static final String FILL_FORM_URL = FORM_API_DOMAIN + "/api/apps/forms/user/save";
+	private static final String FILL_FORM_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/save";
 	/** 修改表单url */
-	private static final String UPDATE_FORM_URL = FORM_API_DOMAIN + "/api/apps/forms/user/edit";
+	private static final String UPDATE_FORM_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/edit";
 	/** 删除表单记录url */
-	private static final String DELETE_FORM_RECORD_URL = FORM_API_DOMAIN + "/api/apps/forms/user/del";
+	private static final String DELETE_FORM_RECORD_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/del";
 	/** 高级检索 */
-	private static final String ADVANCED_SEARCH_URL = FORM_API_DOMAIN + "/api/apps/forms/user/advanced/search/list";
+	private static final String ADVANCED_SEARCH_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/advanced/search/list";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;

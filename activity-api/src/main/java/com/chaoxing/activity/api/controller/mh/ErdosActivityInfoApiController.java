@@ -10,6 +10,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,7 +38,6 @@ import java.util.Optional;
 public class ErdosActivityInfoApiController {
 
     private static final Integer MULTI_BTN_MAX_FLAG = 115;
-    private static final String WORK_BTN_URL = "http://api.reading.chaoxing.com/activity/user/permission?activityId=%d&uid=%s&fid=%d";
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -125,7 +125,7 @@ public class ErdosActivityInfoApiController {
             mhGeneralAppResultDataFields.add(buildField("", "", remainFlag));
             remainFlag = getFlag(availableFlags);
         }
-        String activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activityId +"/address";
+        String activityAddressLink = DomainConstant.API_DOMAIN +  "/redirect/activity/"+ activityId +"/address";
         // 活动地点链接（线下的活动有）
         mhGeneralAppResultDataFields.add(buildField("活动地点链接", activityAddressLink, "117"));
         mhGeneralAppResultDataFields.add(buildField("", "", "118"));
@@ -137,7 +137,7 @@ public class ErdosActivityInfoApiController {
     }
 
     private String getReadingTestUrl(Activity activity) {
-        return "http://xueya.chaoxing.com/school-base/school-reading/" + activity.getReadingId() + "/" + activity.getReadingModuleId() + "/book-list";
+        return DomainConstant.XUEYA_DOMAIN + "/school-base/school-reading/" + activity.getReadingId() + "/" + activity.getReadingModuleId() + "/book-list";
     }
 
     private String getFlag(List<Integer> availableFlags) {

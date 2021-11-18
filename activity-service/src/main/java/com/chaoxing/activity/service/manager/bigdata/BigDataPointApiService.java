@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager.bigdata;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Maps;
 import lombok.Data;
@@ -32,9 +33,9 @@ import java.util.TreeMap;
 public class BigDataPointApiService {
 
     /** 新增积分接口 */
-    private static final String ADD_POINT_URL = "http://bigdata-api.chaoxing.com/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
+    private static final String ADD_POINT_URL = DomainConstant.BIGDATA_SCORE_DOMAIN + "/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
     /** 消耗积分接口 */
-    private static final String SPEND_POINT_URL = "http://bigdata-score.chaoxing.com/house/gt/point/spend?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
+    private static final String SPEND_POINT_URL = DomainConstant.BIGDATA_SCORE_DOMAIN + "/house/gt/point/spend?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
     private static final Map<Integer, String> KEY_MAP = Maps.newHashMap();
 
     static {

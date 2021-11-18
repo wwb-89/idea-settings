@@ -1,5 +1,6 @@
 package com.chaoxing.activity.api.controller;
 
+import com.chaoxing.activity.dto.manager.sign.SignDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
@@ -9,6 +10,7 @@ import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
 import org.springframework.stereotype.Controller;
@@ -101,7 +103,7 @@ public class RedirectController {
         BigDecimal lng = activity.getLongitude();
         BigDecimal lat = activity.getDimension();
         if (UserAgentUtils.isMobileAccess(request)) {
-            String url = "https://reading.chaoxing.com/qd/map/location?address=%s&lng=%s&lat=%s";
+            String url = DomainConstant.SIGN_WEB_DOMAIN +  "/map/location?address=%s&lng=%s&lat=%s";
             url = String.format(url, activityAddress, lng, lat);
             return "redirect:" + url;
         } else {
@@ -138,7 +140,7 @@ public class RedirectController {
     @RequestMapping("activity-index/from/wfw-form")
     public String redirectToActivityIndex(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
-        return "redirect:http://manage.hd.chaoxing.com/activity/" + activity.getId();
+        return "redirect:" + activity.getAdminUrl();
     }
 
     /**重定向签到管理列表
@@ -153,7 +155,7 @@ public class RedirectController {
     @RequestMapping("sign-in-list/from/wfw-form")
     public String redirectToSignInList(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
-        return "redirect:http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + activity.getSignId();
+        return "redirect:" + SignDTO.getSignInListUrl(activity.getSignId());
     }
 
     /**重定向到报名管理
@@ -168,7 +170,7 @@ public class RedirectController {
     @RequestMapping("sign-up-manage/from/wfw-form")
     public String redirectToActivityIndex1(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
-        return "redirect:http://reading.chaoxing.com/qd/manage/sign-up" + activity.getSignId();
+        return "redirect:" + SignDTO.getSignUpManageUrl(activity.getSignId());
     }
 
     /**门户活动海报地址

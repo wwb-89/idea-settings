@@ -7,7 +7,7 @@ import com.alibaba.fastjson.parser.ParserConfig;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.stat.MhViewNumDailyStatDTO;
-import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
@@ -35,17 +35,17 @@ import java.util.Optional;
 public class MhApiService {
 
 	/** 根据模版id（templateId）克隆模板的url http://mh.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
-	private static final String CLONE_TEMPLATE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d&websiteName=%s&forceCheckDomain=false";
+	private static final String CLONE_TEMPLATE_URL = DomainConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d&websiteName=%s&forceCheckDomain=false";
 	/** 根据网站id（website_id）克隆模版url */
-	private static final String CLONE_TEMPLATE_URL_BY_WEBSITE_ID = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivityNew?wfwfid=%d&uid=%d&websiteName=%s&forceCheckDomain=false";
+	private static final String CLONE_TEMPLATE_URL_BY_WEBSITE_ID = DomainConstant.MH_DOMAIN + "/web-others/%d/cloneActivityNew?wfwfid=%d&uid=%d&websiteName=%s&forceCheckDomain=false";
 	/** 更新网站title url http://portal.chaoxing.com/web-others/{pageId}/page-name?name={name}&uid={uid} */
-	private static final String UPDATE_WEB_TITLE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/page-name?name=%s&uid=%d";
+	private static final String UPDATE_WEB_TITLE_URL = DomainConstant.MH_DOMAIN + "/web-others/%d/page-name?name=%s&uid=%d";
 	/** 根据pageId查询website */
-	public static final String GET_WEBSITE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/website/%d/get-by-page";
+	public static final String GET_WEBSITE_URL = DomainConstant.MH_DOMAIN + "/website/%d/get-by-page";
 	/** 网站总访问量 */
-	private static final String WEBSITE_TOTAL_VIEW_NUM_URL = ActivityMhUrlConstant.MH_DOMAIN + "/data-count/website/%d/homepage/pv";
+	private static final String WEBSITE_TOTAL_VIEW_NUM_URL = DomainConstant.MH_DOMAIN + "/data-count/website/%d/homepage/pv";
 	/** 网站按天访问量统计 */
-	public static final String WEBSITE_DAILY_VIEW_NUM_STAT_URL = ActivityMhUrlConstant.MH_DOMAIN + "/data-count/website/%d/daily-uv?startTime=%s&endTime=%s";
+	public static final String WEBSITE_DAILY_VIEW_NUM_STAT_URL = DomainConstant.MH_DOMAIN + "/data-count/website/%d/daily-uv?startTime=%s&endTime=%s";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;

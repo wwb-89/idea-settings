@@ -2,6 +2,7 @@ package com.chaoxing.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class ActivityCloneTests {
 
     @Resource
     private RestTemplate restTemplate;
-    private static final String CLONE_URL = "https://api.hd.chaoxing.com/activity/%d/clone?uid=28186469&fid=%d";
+    private static final String CLONE_URL = DomainConstant.API_DOMAIN + "/activity/%d/clone?uid=28186469&fid=%d";
 
     @Test
     public void cloneRegionActivity() throws InterruptedException {

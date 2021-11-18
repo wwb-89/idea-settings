@@ -26,6 +26,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.google.common.collect.Lists;
@@ -161,7 +162,7 @@ public class ActivityMhV3ApiController {
         // 经纬度不为空时才显示地址
         String activityAddressLink = "";
         if (activity.getLongitude() != null && activity.getDimension() != null) {
-            activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activity.getId() +"/address";
+            activityAddressLink = DomainConstant.API_DOMAIN +  "/redirect/activity/"+ activity.getId() +"/address";
         }
         if (!Objects.equals(Activity.ActivityTypeEnum.ONLINE.getValue(), activity.getActivityType())) {
             address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");

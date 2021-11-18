@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
 import com.chaoxing.activity.service.queue.notice.XxtNoticeQueue;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 public class XxtNoticeApiService {
 
-	private static final String SEND_NOTICE_URL = "https://notice.chaoxing.com/apis/pp/notice_SendNotice";
+	private static final String SEND_NOTICE_URL = DomainConstant.NOTICE_DOMAIN + "/apis/pp/notice_SendNotice";
 	/** 每次最大发送数量（接收通知的人的数量） */
 	private static final int EACH_MAX_SEND_NUM = 200;
 

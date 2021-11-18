@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.manager;
 
 import com.chaoxing.activity.model.SignUpFillInfoType;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +30,10 @@ public class WfwFormCreateApiService {
 	private static final String KEY = "SObtv7P3d$UVuBkTjg";
 	/** 日期格式化 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
-	/** 表单api域名 */
-	private static final String FORM_API_DOMAIN = "http://m.oa.chaoxing.com";
-	private static final String CREATE_URL = FORM_API_DOMAIN + "/api/manager/third/user/login/apps/create";
+
+	private static final String CREATE_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/manager/third/user/login/apps/create";
 	/** 表单后台地址 */
-	private static final String FORM_ADMIN_URL = FORM_API_DOMAIN + "/api/manager/third/user/login/apps/manager?fid=%d&uid=%d&datetime=%s&sign=%s&formId=%d&formType=%d&enc=%s";
+	private static final String FORM_ADMIN_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/manager/third/user/login/apps/manager?fid=%d&uid=%d&datetime=%s&sign=%s&formId=%d&formType=%d&enc=%s";
 
 	@Resource
 	private RestTemplate restTemplate;

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
@@ -492,6 +493,10 @@ public class Activity {
      */
     public String getActivityFullAddress() {
         return Optional.ofNullable(getAddress()).orElse("") + Optional.ofNullable(getDetailAddress()).orElse("");
+    }
+
+    public String getAdminUrl() {
+        return DomainConstant.ADMIN_DOMAIN + "/activity/" + id;
     }
 
 }

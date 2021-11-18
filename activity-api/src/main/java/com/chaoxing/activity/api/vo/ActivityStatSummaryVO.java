@@ -1,5 +1,6 @@
 package com.chaoxing.activity.api.vo;
 
+import com.chaoxing.activity.dto.manager.sign.SignDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.Activity;
@@ -101,7 +102,7 @@ public class ActivityStatSummaryVO {
         String signUpUrl = "";
         String signUpStartEndTime = "";
         if (signUp != null && actStatSummary.getSignId() != null) {
-            signUpUrl = "https://reading.chaoxing.com/qd/sign/" + actStatSummary.getSignId() + "/to-sign-up";
+            signUpUrl = SignDTO.getToSignUpUrl(actStatSummary.getSignId());
             signUpStartEndTime = DateUtils.activityTimeScope(DateUtils.timestamp2Date(signUp.getStartTime()), DateUtils.timestamp2Date(signUp.getEndTime()));
         }
         return ActivityStatSummaryVO.builder()

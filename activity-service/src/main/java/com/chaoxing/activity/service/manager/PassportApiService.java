@@ -7,6 +7,7 @@ import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -45,15 +46,15 @@ import java.util.Optional;
 public class PassportApiService {
 
 	/** 获取用户信息地址 */
-	private static final String GET_USER_URL = "http://passport2.chaoxing.com/api/userinfo?uid=%s&enc=%s&last=true";
+	private static final String GET_USER_URL = DomainConstant.PASSPORT_DOMAIN + "/api/userinfo?uid=%s&enc=%s&last=true";
 	private static final String KEY = "uWwjeEKsri";
 	/** 免密登录key */
 	private static final String AVOID_CLOSE_LOGIN_KEY = "jsDyctOCn7qHzRvrtcJ6";
 	public static final DateTimeFormatter YYYYMMDD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	/** 获取机构名称url */
-	private static final String ORG_NAME_URL = "https://passport2.chaoxing.com/org/getName?schoolid=";
+	private static final String ORG_NAME_URL = DomainConstant.PASSPORT_DOMAIN + "/org/getName?schoolid=";
 	/** passport免密登录url */
-	public static final String AVOID_CLOSE_LOGIN_URL = "http://passport2.chaoxing.com/api/login";
+	public static final String AVOID_CLOSE_LOGIN_URL = DomainConstant.PASSPORT_DOMAIN + "/api/login";
 	
 	/** 登录成功状态 */
 	private static final String LOGIN_SUCCESS_RESULT_STATUS = "0";
