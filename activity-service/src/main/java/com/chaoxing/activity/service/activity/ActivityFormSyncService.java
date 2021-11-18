@@ -13,6 +13,7 @@ import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
@@ -31,6 +32,7 @@ import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
@@ -90,6 +92,8 @@ public class ActivityFormSyncService {
     private WfwContactApiService wfwContactApiService;
     @Resource
     private MarketQueryService marketQueryService;
+    @Resource
+    private WorkApiService workApiService;
 
 
     /**
@@ -155,6 +159,9 @@ public class ActivityFormSyncService {
         activityCreateParam.setOriginFormUserId(formUserId);
         activityCreateParam.setStatus(Activity.StatusEnum.RELEASED.getValue());
         activityCreateParam.setSignedUpNotice(true);
+        if (activityCreateParam.getOpenWork()) {
+            activityCreateParam.setWorkId(workApiService.createDefault(loginUser.getUid(), fid));
+        }
         // 补充额外必要信息
         Integer templateId = template.getId();
         activityCreateParam.setAdditionalAttrs(webTemplateId, marketId, templateId, flag);
@@ -351,6 +358,32 @@ public class ActivityFormSyncService {
                 data.add(Activity.StatusEnum.fromValue(activity.getStatus()).getName());
                 item.put("val", data);
                 result.add(item);
+            } else if (Objects.equals(alias, "sign_up_status")) {
+                SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
+                if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
+                    String signUpStatus = "";
+                    if (signStat.getSignUpStartTime() != null && signStat.getSignUpEndTime() != null) {
+                        LocalDateTime now = LocalDateTime.now();
+                        LocalDateTime startTime = signStat.getSignUpStartTime();
+                        LocalDateTime endTime = signStat.getSignUpEndTime();
+                        if (startTime.isAfter(now)) {
+                            signUpStatus = "未开始" ;
+                        } else if (now.isAfter(endTime)) {
+                            signUpStatus = "已结束";
+                        } else {
+                            signUpStatus = "报名中";
+                        }
+                    }
+                    data.add(signUpStatus);
+                    item.put("val", data);
+                    result.add(item);
+                }
+            } else if (Objects.equals(alias, "preview_url")) {
+                if (StringUtils.isNotBlank(activity.getPreviewUrl())) {
+                    data.add(activity.getPreviewUrl());
+                    item.put("val", data);
+                    result.add(item);
+                }
             }
         }
         if (result.isEmpty()) {
