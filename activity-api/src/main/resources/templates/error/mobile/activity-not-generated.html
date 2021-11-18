@@ -39,12 +39,15 @@
     </style>
 </head>
 
-<body>
+<body onclick="refresh()">
 <div class="bgc">
     <img src="/static/mobile/assets/images/m404.png" th:src="@{/mobile/assets/images/m404.png}">
     <p th:text="${message}">异常提示文案，替换此文字。</p>
 </div>
-
 </body>
-
+<script>
+    function refresh() {
+        window.location.reload();
+    }
+</script>
 </html>

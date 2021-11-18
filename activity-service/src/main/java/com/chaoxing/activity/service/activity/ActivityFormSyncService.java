@@ -40,6 +40,7 @@ import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -119,7 +120,7 @@ public class ActivityFormSyncService {
             activity = activityQueryService.getById(activityId);
         }
         if (activity == null) {
-            throw new BusinessException("表单记录对应活动不存在");
+            throw new WfwFormActivityNotGeneratedException();
         }
         return activity;
     }
