@@ -11,11 +11,12 @@
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="market_id" jdbcType="INTEGER" property="marketId" />
         <result column="is_system" jdbcType="BIT" property="system" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.code, t.sign, t.key, t.form_id, t.fid, t.market_id, t.is_system,
+        t.id, t.name, t.code, t.sign, t.key, t.form_id, t.fid, t.market_id, t.is_system, t.is_deleted,
         t.create_time, t.update_time
     </sql>
 </mapper>

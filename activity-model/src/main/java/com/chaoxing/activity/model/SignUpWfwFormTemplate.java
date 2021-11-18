@@ -47,6 +47,9 @@ public class SignUpWfwFormTemplate {
     /** 是否系统表单; column: is_system*/
     @TableField(value = "is_system")
     private Boolean system;
+    /** 是否被删除; column: is_deleted*/
+    @TableField(value = "is_deleted")
+    private Boolean deleted;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/

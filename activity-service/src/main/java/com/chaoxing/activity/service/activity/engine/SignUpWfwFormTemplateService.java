@@ -35,6 +35,7 @@ public class SignUpWfwFormTemplateService {
     public List<SignUpWfwFormTemplate> listSystem() {
         return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
                 .eq(SignUpWfwFormTemplate::getSystem, true)
+                .eq(SignUpWfwFormTemplate::getDeleted, false)
         );
     }
 
@@ -51,6 +52,7 @@ public class SignUpWfwFormTemplateService {
         result.addAll(systemSignUpWfwFormTemplates);
         List<SignUpWfwFormTemplate> marketSignUpWfwFormTemplates = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
                 .eq(SignUpWfwFormTemplate::getMarketId, marketId)
+                .eq(SignUpWfwFormTemplate::getDeleted, false)
         );
         result.addAll(marketSignUpWfwFormTemplates);
         return result;
