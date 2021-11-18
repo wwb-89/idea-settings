@@ -11,6 +11,7 @@ import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.FormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -204,11 +205,29 @@ public class ActivityCreateParamDTO {
 	 * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
 	 */
 	public static ActivityCreateParamDTO buildFromActivity(Activity activity) {
+		ActivityCreateParamDTO activityCreateParam = cloneFromActivity(activity);
+		activityCreateParam.setId(activity.getId());
+		activityCreateParam.setWorkId(activity.getWorkId());
+		activityCreateParam.setReadingId(activity.getReadingId());
+		activityCreateParam.setReadingModuleId(activity.getReadingModuleId());
+		activityCreateParam.setPreviewUrl(activity.getPreviewUrl());
+		activityCreateParam.setEditUrl(activity.getEditUrl());
+		activityCreateParam.setOriginActivityId(activity.getOriginActivityId());
+		return activityCreateParam;
+	}
+
+	/**克隆活动对象
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-07-19 10:42:48
+	 * @param activity
+	 * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
+	 */
+	public static ActivityCreateParamDTO cloneFromActivity(Activity activity) {
 		LocalDateTime startTime = activity.getStartTime();
 		LocalDateTime endTime = activity.getEndTime();
 		LocalDateTime timingReleaseTime = activity.getTimingReleaseTime();
 		return ActivityCreateParamDTO.builder()
-				.id(activity.getId())
 				.name(activity.getName())
 				.startTimeStamp(startTime == null ? null : startTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
 				.endTimeStamp(endTime == null ? null : endTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
@@ -232,24 +251,21 @@ public class ActivityCreateParamDTO {
 				.ratingNeedAudit(activity.getRatingNeedAudit())
 				.integral(activity.getIntegral())
 				.openWork(activity.getOpenWork())
-				.workId(activity.getWorkId())
 				.openReading(activity.getOpenReading())
-				.readingId(activity.getReadingId())
-				.readingModuleId(activity.getReadingModuleId())
 				.originType(activity.getOriginType())
 				.origin(activity.getOrigin())
 				.originFormUserId(activity.getOriginFormUserId())
 				.webTemplateId(activity.getWebTemplateId())
-				.previewUrl(activity.getPreviewUrl())
-				.editUrl(activity.getEditUrl())
 				.activityClassifyName(activity.getActivityClassifyName())
 				.marketId(activity.getMarketId())
 				.templateId(activity.getTemplateId())
 				.signedUpNotice(activity.getSignedUpNotice())
 				.activityFlag(activity.getActivityFlag())
-				.originActivityId(activity.getOriginActivityId())
 				.openGroup(activity.getOpenGroup())
 				.createFid(activity.getCreateFid())
+				.sucTemplateComponentIds(Lists.newArrayList())
+				.signUpConditions(Lists.newArrayList())
+				.activityComponentValues(Lists.newArrayList())
 				.build();
 	}
 

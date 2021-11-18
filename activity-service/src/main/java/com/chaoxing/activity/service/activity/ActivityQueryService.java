@@ -40,6 +40,7 @@ import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
@@ -123,6 +124,8 @@ public class ActivityQueryService {
 	private InspectionConfigQueryService inspectionConfigQueryService;
 	@Resource
 	private ActivityMenuService activityMenuService;
+	@Resource
+	private WorkApiService workApiService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -1290,6 +1293,63 @@ public class ActivityQueryService {
 		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.eq(Activity::getCreateFid, fid)
 		);
+	}
+
+
+	/**根据现有活动activityId，查询活动信息，克隆出一个活动创建实例
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-18 17:21:22
+	 * @param originActivityId
+	 * @return com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO
+	 */
+	public ActivityCreateParamDTO cloneActivity(Integer originActivityId) {
+		// 查询活动
+		Activity originActivity = getById(originActivityId);
+		if (originActivity == null) {
+			return ActivityCreateParamDTO.buildDefault();
+		}
+		// 克隆活动
+		ActivityCreateParamDTO activityCreateParam = ActivityCreateParamDTO.cloneFromActivity(originActivity);
+		activityCreateParam.setOriginActivityId(originActivityId);
+		// 克隆活动的活动开始时间当前开始，一个月后结束
+		LocalDateTime now = LocalDateTime.now();
+		activityCreateParam.setStartTimeStamp(DateUtils.date2Timestamp(now));
+		activityCreateParam.setEndTimeStamp(DateUtils.date2Timestamp(now.plusMonths(1)));
+		// 开启了定时发布，则设置定时发布时间
+		if (activityCreateParam.getTimingRelease()) {
+			activityCreateParam.setTimingReleaseTimeStamp(DateUtils.date2Timestamp(now));
+		}
+		// 判断作品征集是否开启，开启则创建新的作品征集，并设置克隆活动新的作品征集信息
+		if (activityCreateParam.getOpenWork()) {
+			activityCreateParam.setWorkId(workApiService.createDefault(originActivity.getCreateUid(), originActivity.getCreateFid()));
+		}
+		// 判断阅读是否开启，开启则创建新的阅读，并设置克隆活动阅读信息
+//		if (activityCreateParam.getOpenReading()) {
+//		}
+		//活动简介
+		ActivityDetail originActivityDetail = getDetailByActivityId(originActivityId);
+		activityCreateParam.setIntroduction(originActivityDetail.getIntroduction());
+		// 查询活动自定义组件值对象列表， 且置空自定义组件值列表中的活动id
+		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValues(originActivityId, originActivity.getTemplateId());
+		if (CollectionUtils.isNotEmpty(activityComponentValues)) {
+			activityComponentValues.forEach(v -> v.setActivityId(null));
+			activityCreateParam.setActivityComponentValues(activityComponentValues);
+		}
+		// 启用的报名条件
+		List<Integer> enableSucTplComponentIds = signUpConditionService.listActivityEnabledTemplateComponentId(originActivityId);
+		activityCreateParam.setSucTemplateComponentIds(enableSucTplComponentIds);
+		// 启用的报名条件列表
+		List<SignUpCondition> signUpConditions = signUpConditionService.listEditActivityConditions(originActivityId, originActivity.getTemplateId());
+		activityCreateParam.setSignUpConditions(signUpConditions);
+		// set 考核管理id
+//		InspectionConfig inspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
+//		if (inspectionConfig != null) {
+//			createParamDTO.setInspectionConfigId(inspectionConfig.getId());
+//		}
+//		List<String> menus = activityMenuService.listMenus(originActivityId).stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+//		createParamDTO.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.RESULTS_MANAGE.getValue()));
+		return activityCreateParam;
 	}
 
 }

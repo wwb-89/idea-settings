@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${activity == null ? '创建活动' : '编辑活动'}">创建活动</title>
+    <title th:text="${isClone != null && isClone ? '克隆活动' : (activity == null ? '创建活动' : '编辑活动')}">创建活动</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
@@ -818,6 +818,7 @@
         vm = new Vue({
             el: "#activity-vue",
             data: {
+                isClone: [[${isClone}]],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${session._login_user_.fid}]],
                 templateId: [[${templateId}]],
@@ -1149,7 +1150,6 @@
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             var signUp = signApp.newSignUp(this, $this.defaultSignUpBtnName, $this.defaultSignUpKeyword);
-                            debugger;
                             if (this.code == 'company_sign_up') {
                                 signUp.fillInfo = true;
                                 signUp.customSignUpType = "company";
@@ -1171,7 +1171,7 @@
                             var signIn = signApp.newSignIn(this);
                             signIn.originId = this.id;
                             $this.$set($this.signInMap, this.id, signIn);
-                        } else if (this.type == 'text' || this.type == 'radio' || this.type == 'checkbox') {
+                        } else if ((this.type == 'text' || this.type == 'radio' || this.type == 'checkbox') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
                                 templateId: this.templateId,
@@ -1991,7 +1991,7 @@
                 },
                 ignoreOfflineEmptyAddress: function () {
                     var $this = this;
-                    if (activityApp.isEmpty($this.activity.id)) {
+                    if (activityApp.isEmpty($this.activity.id) || $this.isClone) {
                         // 新增
                         $this.addSubmit(false);
                     } else {

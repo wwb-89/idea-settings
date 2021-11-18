@@ -1060,28 +1060,29 @@ public class ActivityHandleService {
 			targetTemplate = templateQueryService.getMarketFirstTemplate(newMarket.getId());
 		}
 		Integer marketId = targetTemplate.getMarketId();
+		ActivityCreateParamDTO targetActivity = ActivityCreateParamDTO.cloneFromActivity(originActivity);
+
 		// 重新设定活动的活动市场和模板id
-		originActivity.setOriginActivityId(originActivity.getId());
-		originActivity.setTemplateId(targetTemplate.getId());
-		originActivity.setMarketId(marketId);
+		targetActivity.setOriginActivityId(originActivity.getId());
+		targetActivity.setTemplateId(targetTemplate.getId());
+		targetActivity.setMarketId(marketId);
 		// 处理克隆分类
 		if (StringUtils.isNotBlank(originActivity.getActivityClassifyName())) {
 			Classify classify = classifyHandleService.getOrAddMarketClassify(marketId, originActivity.getActivityClassifyName());
-			originActivity.setActivityClassifyId(classify.getId());
+			targetActivity.setActivityClassifyId(classify.getId());
 		}
 		// 判断是否开启作品征集
-		if (originActivity.getOpenWork()) {
-			originActivity.setWorkId(workApiService.createDefault(uid, fid));
+		if (targetActivity.getOpenWork()) {
+			targetActivity.setWorkId(workApiService.createDefault(uid, fid));
 		}
 		// 阅读默认关闭
-		originActivity.setOpenReading(Boolean.FALSE);
-		originActivity.setReadingId(null);
-		originActivity.setReadingModuleId(null);
+		targetActivity.setOpenReading(Boolean.FALSE);
+		targetActivity.setReadingId(null);
+		targetActivity.setReadingModuleId(null);
 		// 主办方
-		originActivity.setOrganisers(loginUser.getOrgName());
-		ActivityCreateParamDTO targetActivity = ActivityCreateParamDTO.buildFromActivity(originActivity);
+		targetActivity.setOrganisers(loginUser.getOrgName());
 		activityDetailMapper.selectList(new LambdaQueryWrapper<ActivityDetail>()
-				.eq(ActivityDetail::getActivityId, originActivity.getOriginActivityId()))
+				.eq(ActivityDetail::getActivityId, targetActivity.getOriginActivityId()))
 				.stream().findFirst()
 				.ifPresent(originDetail -> targetActivity.setIntroduction(originDetail.getIntroduction()));
 		// 报名签到
