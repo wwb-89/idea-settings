@@ -506,14 +506,16 @@ public class ActivityFormSyncService {
      * @Description
      * @author huxiaolong
      * @Date 2021-11-13 00:36:58
-     * @param activityFormSyncParam
+     * @param fid
+     * @param formId
+     * @param uid
+     * @param formUserId
+     * @param marketId
+     * @param flag
      * @param released
      * @return void
      */
-    public void syncUpdateReleaseStatus(ActivityCreateFromFormParamDTO activityFormSyncParam, Integer marketId, boolean released) {
-        Integer fid = activityFormSyncParam.getDeptId();
-        Integer formId = activityFormSyncParam.getFormId();
-        Integer formUserId = activityFormSyncParam.getIndexID();
+    public void syncUpdateReleaseStatus(Integer fid, Integer formId, Integer uid, Integer formUserId, Integer marketId, String flag, boolean released) {
         // 获取表单数据
         FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
@@ -533,7 +535,6 @@ public class ActivityFormSyncService {
             log.error("表单记录:" + formUserId + "不存在对应的活动");
             return;
         }
-        String flag = activityFormSyncParam.getFlag();
         if (marketId == null && StringUtils.isNotBlank(flag)) {
             marketId = marketQueryService.getMarketIdByFlag(fid, flag);
         }

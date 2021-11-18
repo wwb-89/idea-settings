@@ -632,14 +632,18 @@ public class ActivityApiController {
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-11-13 01:12:47
-	 * @param activityFormSyncParam
+	 * @param fid
+	 * @param formId
+	 * @param uid
+	 * @param formUserId
 	 * @param marketId
+	 * @param flag
 	 * @param released
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@RequestMapping("update/release-status/from/wfw-form")
-	public RestRespDTO updateReleaseStatusFromWfwForm(ActivityCreateFromFormParamDTO activityFormSyncParam, Integer marketId, boolean released) {
-		activityFormSyncService.syncUpdateReleaseStatus(activityFormSyncParam, marketId, released);
+	public RestRespDTO updateReleaseStatusFromWfwForm(Integer fid, Integer formId, Integer uid, Integer formUserId, Integer marketId, String flag, boolean released) {
+		activityFormSyncService.syncUpdateReleaseStatus(fid, formId, uid, formUserId, marketId, flag, released);
 		return RestRespDTO.success();
 	}
 
