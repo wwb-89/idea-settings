@@ -182,7 +182,8 @@ public class ActivityFormSyncService {
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
         String releaseStatus = FormUtils.getValue(formUserRecord, "release_status");
-        if (Objects.equals(releaseStatus, "已发布")) {
+        // 发布状态值不存在或不为未发布，发布活动
+        if (!Objects.equals(releaseStatus, "未发布")) {
             // 立即发布
             OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
             activityHandleService.release(activityId, operateUser);
