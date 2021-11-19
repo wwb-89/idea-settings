@@ -81,7 +81,7 @@
             </li>
         </ul>
         <div class="page-container">
-            <el-pagination background layout="sizes, prev, pager, next" :total="total" :page-sizes="[8, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
+            <el-pagination background layout="prev, pager, next, sizes" :total="total" :page-sizes="[8, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
         </div>
     </div>
     <!-- 删除弹窗 -->
