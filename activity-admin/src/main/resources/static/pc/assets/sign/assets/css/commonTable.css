@@ -242,11 +242,19 @@ body {
   margin-right: 4px;
 }
 
+.export-box .icon-column .path2{
+  margin-right: 4px;
+}
+
 .export-box:hover {
   color: #0084FF;
 }
 
-.export-box:hover i .path2::before {
+.export-box:hover .icon-column .path2::before {
+  color: #0084FF;
+}
+
+.export-box .el-dropdown:hover{
   color: #0084FF;
 }
 
@@ -896,13 +904,14 @@ body {
   border-radius: 4px;
   text-align: center;
   margin-left: 16px;
+  cursor: pointer;
 }
 
 .setting-box:hover {
   background: #ECEEEF;
 }
 
-.setting-box .icon-setting:before {
+.setting-box .icon-setting::before {
   margin-right: 4px;
   color: #666666;
 }

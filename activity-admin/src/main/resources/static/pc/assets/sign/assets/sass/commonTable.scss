@@ -211,14 +211,24 @@ body {
   i{
     margin-right: 4px;
   }
+  .icon-column{
+    .path2{
+      margin-right: 4px;
+    }
+  }
   &:hover {
     color: #0084FF;
-    i{
+    .icon-column{
       .path2{
         &::before{
           color: #0084FF;
         }
       }
+    }
+  }
+  .el-dropdown{
+    &:hover {
+      color: #0084FF;
     }
   }
 }
@@ -750,11 +760,12 @@ body {
   border-radius: 4px;
   text-align: center;
   margin-left: 16px;
+  cursor: pointer;
   &:hover{
     background: #ECEEEF;
   }
   .icon-setting{
-    &:before{
+    &::before{
       margin-right: 4px;
       color: #666666;
     }
