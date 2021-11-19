@@ -40,6 +40,7 @@ import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -119,7 +120,7 @@ public class ActivityFormSyncService {
             activity = activityQueryService.getById(activityId);
         }
         if (activity == null) {
-            throw new BusinessException("表单记录对应活动不存在");
+            throw new WfwFormActivityNotGeneratedException();
         }
         return activity;
     }
@@ -180,9 +181,13 @@ public class ActivityFormSyncService {
         // 新增活动
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
-        // 立即发布
-        OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
-        activityHandleService.release(activityId, operateUser);
+        String releaseStatus = FormUtils.getValue(formUserRecord, "release_status");
+        // 发布状态值不存在或不为未发布，发布活动
+        if (!Objects.equals(releaseStatus, "未发布")) {
+            // 立即发布
+            OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
+            activityHandleService.release(activityId, operateUser);
+        }
         activity = activityQueryService.getById(activityId);
         // 获取参与者列表, 进行用户报名
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
@@ -501,14 +506,16 @@ public class ActivityFormSyncService {
      * @Description
      * @author huxiaolong
      * @Date 2021-11-13 00:36:58
-     * @param activityFormSyncParam
+     * @param fid
+     * @param formId
+     * @param uid
+     * @param formUserId
+     * @param marketId
+     * @param flag
      * @param released
      * @return void
      */
-    public void syncUpdateReleaseStatus(ActivityCreateFromFormParamDTO activityFormSyncParam, Integer marketId, boolean released) {
-        Integer fid = activityFormSyncParam.getDeptId();
-        Integer formId = activityFormSyncParam.getFormId();
-        Integer formUserId = activityFormSyncParam.getIndexID();
+    public void syncUpdateReleaseStatus(Integer fid, Integer formId, Integer uid, Integer formUserId, Integer marketId, String flag, Boolean released) {
         // 获取表单数据
         FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
@@ -528,7 +535,6 @@ public class ActivityFormSyncService {
             log.error("表单记录:" + formUserId + "不存在对应的活动");
             return;
         }
-        String flag = activityFormSyncParam.getFlag();
         if (marketId == null && StringUtils.isNotBlank(flag)) {
             marketId = marketQueryService.getMarketIdByFlag(fid, flag);
         }
@@ -542,6 +548,32 @@ public class ActivityFormSyncService {
         } else {
             activityHandleService.cancelReleaseMarketActivity(activityId, marketId, operateUser);
         }
+        String data = packageReleaseStatus(fid, formId, released);
+        wfwFormApiService.updateForm(formId, formUserId, data);
+    }
 
+    private String packageReleaseStatus(Integer fid, Integer formId, Boolean released) {
+        List<FormStructureDTO> formFieldInfos = wfwFormApiService.getFormStructure(formId, fid);
+        JSONArray result = new JSONArray();
+        for (FormStructureDTO formInfo : formFieldInfos) {
+            String alias = formInfo.getAlias();
+            JSONObject item = new JSONObject();
+            item.put("id", formInfo.getId());
+            item.put("compt", formInfo.getCompt());
+            item.put("comptId", formInfo.getId());
+            item.put("alias", alias);
+            JSONArray data = new JSONArray();
+            if (Objects.equals(alias, "release_status")) {
+                data.add(released ? "已发布" : "未发布");
+                item.put("val", data);
+                result.add(item);
+                break;
+            }
+        }
+        if (result.isEmpty()) {
+            // 没有配置任何别名则放过
+            return null;
+        }
+        return result.toJSONString();
     }
 }

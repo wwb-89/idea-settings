@@ -28,6 +28,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -68,12 +69,11 @@ public class WfwFormApprovalApiService {
     private static final String KEY = "XtTpP2MjfoHZa^5!s8";
     /** 是 */
     private static final String YES = "是";
-    /** 表单api域名 */
-    private static final String FORM_API_DOMAIN = "https://m.oa.chaoxing.com";
+
     /** 获取表单指定数据url */
-    private static final String LIST_FORM_SPECIFIED_DATA_URL = FORM_API_DOMAIN + "/api/approve/forms/user/data/list";
+    private static final String LIST_FORM_SPECIFIED_DATA_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/approve/forms/user/data/list";
     /** 获取表单数据列表 */
-    private static final String ADVANCED_SEARCH_URL = FORM_API_DOMAIN + "/api/approve/forms/advanced/search/list";
+    private static final String ADVANCED_SEARCH_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/approve/forms/advanced/search/list";
     /** 表单每页数据限制 */
     private static final int MAX_PAGE_SIZE_LIMIT = 100;
 

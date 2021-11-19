@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager.module;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class TpkApiService {
 	 *  originId：活动id，允许不传
 	 *  identify：活动标识，允许不传
 	 */
-	private static final String CREATE_URL = "https://teacher2.chaoxing.com/tpk3-activity/admin/create/activity?name=%s&uid=%s&fid=%s";
+	private static final String CREATE_URL = DomainConstant.TEACHER_DOMAIN + "/tpk3-activity/admin/create/activity?name=%s&uid=%s&fid=%s";
 	private static final String RESPONSE_CODE_SUCCESS = "1";
 
 	@Resource

@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager.module;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.module.ReadingModuleDataDTO;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
@@ -29,7 +30,7 @@ import java.util.Objects;
 public class ReadingApiService {
 
     /** 阅读创建更新地址 */
-    private static final String CREATE_URL = "http://xueya.chaoxing.com/xy-ucr/school-reading-module/add-or-update-module";
+    private static final String CREATE_URL = DomainConstant.XUEYA_DOMAIN + "/xy-ucr/school-reading-module/add-or-update-module";
 
     @Resource
     private RestTemplate restTemplate;

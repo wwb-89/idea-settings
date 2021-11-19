@@ -28,7 +28,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
-import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -98,8 +98,8 @@ public class ActivityMhDataCenterApiController {
         }
         result.add(MhMarketDataCenterDTO.builder()
                 .name("我的活动")
-                .divUrl(UrlConstant.API_DOMAIN + "/mh/data-center/my")
-                .searchClassifyUrl(UrlConstant.API_DOMAIN + "/mh/activity-market/classifies/with-extra-params")
+                .divUrl(DomainConstant.API_DOMAIN + "/mh/data-center/my")
+                .searchClassifyUrl(DomainConstant.API_DOMAIN + "/mh/activity-market/classifies/with-extra-params")
                 .build());
         return RestRespDTO.success(result);
     }
@@ -267,6 +267,10 @@ public class ActivityMhDataCenterApiController {
             fields.add(buildField("发布时间", Optional.ofNullable(record.getReleaseTime()).map(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM::format).orElse(""), ++fieldFlag));
             fields.add(buildField("typeID", record.getActivityClassifyId(), 102));
             fields.add(buildField("活动时间段", DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime(), DateUtils.MIDDLE_LINE_SEPARATOR), 102));
+            Boolean needStatusValue = urlParams.getBoolean("needStatusValue");
+            if (needStatusValue) {
+                fields.add(buildField("活动状态value", getStatusValue(record), ++fieldFlag));
+            }
             activityJsonArray.add(activity);
         }
         return activityJsonArray;
@@ -440,6 +444,19 @@ public class ActivityMhDataCenterApiController {
         }
         customText = urlParams.getString("signUpOngoing");
         return StringUtils.isNotBlank(customText)? customText : "报名中";
+    }
+
+    public static Integer getStatusValue(Activity activity) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = activity.getStartTime();
+        LocalDateTime endTime = activity.getEndTime();
+        if (startTime.isAfter(now)) {
+            return 1;
+        }
+        if (now.isAfter(endTime)) {
+           return 3;
+        }
+        return 2;
     }
 
     private JSONObject buildField(String key, Object value, Integer flag) {

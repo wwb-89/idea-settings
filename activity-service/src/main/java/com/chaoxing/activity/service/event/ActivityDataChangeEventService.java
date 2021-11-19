@@ -64,8 +64,6 @@ public class ActivityDataChangeEventService {
 	public void dataChange(Activity activity, Activity oldActivity, LoginUserDTO loginUser) {
 		// 活动标题修改
 		activityNameChangeHandle(activity, oldActivity);
-		// 活动封面改变处理
-		activityCoverChangeHandle(activity, oldActivity);
 		// 活动积分改变处理
 		activityIntegralChangeHandle(activity, oldActivity);
 		// 活动时间改变处理
@@ -84,6 +82,8 @@ public class ActivityDataChangeEventService {
 				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
 				.build();
 		activityChangeEventQueue.push(activityChangeEventOrigin);
+		// 活动封面改变处理
+		activityCoverChangeHandle(activity, oldActivity);
 	}
 
 	/**活动封面改变处理

@@ -17,6 +17,7 @@ import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
@@ -147,7 +148,6 @@ public class IndexController {
 	 */
 	@RequestMapping("lib")
 	public String libIndex(HttpServletRequest request, Model model, String code, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
-		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
 		if (StringUtils.isBlank(code)) {
 			// todo 后续移除code参数，改用flag获取
 			code = activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag());
@@ -252,9 +252,6 @@ public class IndexController {
 		model.addAttribute("timeOrder", activitySquareParam.getTimeOrder());
 		// 验证style是否存在
 		String style = activitySquareParam.getStyle();
-		if (!STYLES.contains(style)) {
-			style = DEFAULT_STYLE;
-		}
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/index-" + style;
 		}else {
@@ -284,7 +281,7 @@ public class IndexController {
 		model.addAttribute("hide", myActivityParam.getHide());
 		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
 		model.addAttribute("managAble", myActivityParam.getManagAble());
-		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl("https://hd.chaoxing.com/my"), StandardCharsets.UTF_8.name());
+		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl(DomainConstant.WEB_DOMAIN + "/my"), StandardCharsets.UTF_8.name());
 		myActivityParam.setWfwFormUrl(myActivityParam.getWfwFormUrl() + "&backurl=" + backUrl);
 		model.addAttribute("wfwFormUrl", myActivityParam.getWfwFormUrl());
 		if (UserAgentUtils.isMobileAccess(request)) {

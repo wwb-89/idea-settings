@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.module.WorkFormDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -38,19 +39,17 @@ import java.util.stream.Collectors;
 @Service
 public class WorkApiService {
 
-	/** 作品征集接口域名 */
-	private static final String DOMAIN = "http://api.reading.chaoxing.com";
 	/** 创建作品征集地址 */
-	private static final String CREATE_URL = DOMAIN + "/activity/engine/create";
+	private static final String CREATE_URL = DomainConstant.WORK_API_DOMAIN + "/activity/engine/create";
 	/** 清空活动发布范围 */
-	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = DOMAIN + "/cache/activity/clear/participate-fid";
+	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = DomainConstant.WORK_API_DOMAIN + "/cache/activity/clear/participate-fid";
 	/** 统计活动提交作品数量url */
-	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = DOMAIN + "/activity/stat/submited-work-num";
+	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = DomainConstant.WORK_API_DOMAIN + "/activity/stat/submited-work-num";
 	/** 更新作品征集信息url */
-	private static final String UPDATE_WORK_URL = DOMAIN + "/activity/update";
+	private static final String UPDATE_WORK_URL = DomainConstant.WORK_API_DOMAIN + "/activity/update";
 	/** 作品征集按钮yrl（鄂尔多斯定制） */
-	private static final String ERDOS_WORK_BTN_URL = DOMAIN + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
-	private static final String WORK_BTN_URL = DOMAIN + "/activity/user/custom/permission?activityId=%d&uid=%s&fid=%d";
+	private static final String ERDOS_WORK_BTN_URL = DomainConstant.WORK_API_DOMAIN + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
+	private static final String WORK_BTN_URL = DomainConstant.WORK_API_DOMAIN + "/activity/user/custom/permission?activityId=%d&uid=%s&fid=%d";
 
 	@Resource
 	private RestTemplate restTemplate;

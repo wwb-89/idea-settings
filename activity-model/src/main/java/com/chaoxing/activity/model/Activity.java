@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
@@ -481,9 +482,10 @@ public class Activity {
         setReleased(existActivity.getReleased());
         setReleaseTime(existActivity.getReleaseTime());
         setGroupBbsid(existActivity.getGroupBbsid());
+        setMarketId(existActivity.getMarketId());
     }
 
-    /**获取活动全地址(address + detailAdress)
+    /**获取活动全地址(address + detailAddress)
      * @Description
      * @author huxiaolong
      * @Date 2021-11-12 17:11:26
@@ -492,6 +494,10 @@ public class Activity {
      */
     public String getActivityFullAddress() {
         return Optional.ofNullable(getAddress()).orElse("") + Optional.ofNullable(getDetailAddress()).orElse("");
+    }
+
+    public String getAdminUrl() {
+        return DomainConstant.ADMIN_DOMAIN + "/activity/" + id;
     }
 
 }

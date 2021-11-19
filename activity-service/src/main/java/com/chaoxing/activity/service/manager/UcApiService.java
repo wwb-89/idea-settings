@@ -1,32 +1,18 @@
 package com.chaoxing.activity.service.manager;
 
-import cn.hutool.core.net.url.UrlQuery;
-import cn.hutool.core.util.URLUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
 import com.chaoxing.activity.dto.manager.uc.ClazzDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwClassDTO;
-import com.chaoxing.activity.util.CookieUtils;
-import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,9 +29,9 @@ import java.util.stream.Collectors;
 public class UcApiService {
 
 	/** 获取用户额外信息url */
-	private static final String USER_EXTRA_INFO_URL = "https://uc.chaoxing.com/userInter/getUserExtraInfo?fid=%d&uid=%d";
+	private static final String USER_EXTRA_INFO_URL = DomainConstant.UC_DOMAIN + "/userInter/getUserExtraInfo?fid=%d&uid=%d";
 	/** 判断是不是管理员 */
-	private static final String USER_MANAGER_JUDGE_URL = "https://uc.chaoxing.com/siteInter/checkUserManage?fid=%d&uid=%d";
+	private static final String USER_MANAGER_JUDGE_URL = DomainConstant.UC_DOMAIN + "/siteInter/checkUserManage?fid=%d&uid=%d";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;

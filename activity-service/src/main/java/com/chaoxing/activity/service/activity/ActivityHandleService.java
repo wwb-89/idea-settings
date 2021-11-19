@@ -44,7 +44,6 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
-import com.chaoxing.activity.service.queue.event.activity.ActivityWebTemplateChangeEventQueue;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
@@ -100,8 +99,6 @@ public class ActivityHandleService {
 	private ActivityDataChangeEventService activityChangeEventService;
 	@Resource
 	private ActivityManagerService activityManagerService;
-	@Resource
-	private ActivityWebTemplateChangeEventQueue activityWebTemplateChangeEventQueue;
 	@Resource
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
 	@Resource

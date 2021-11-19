@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.manager.module;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -23,7 +24,7 @@ import javax.annotation.Resource;
 public class StarApiService {
 
 	/** 创建星阅读的url */
-	private static final String CREATE_URL = "http://star.chaoxing.com/manage/createActivity";
+	private static final String CREATE_URL = DomainConstant.START_READ_DOMAIN + "/manage/createActivity";
 
 	@Resource
 	private RestTemplate restTemplate;

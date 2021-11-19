@@ -14,7 +14,7 @@ import lombok.Getter;
 public class WfwFormActivityNotGeneratedException extends BusinessException {
 
     public WfwFormActivityNotGeneratedException() {
-        super("生成中，请稍后");
+        super("生成中，请稍后。点击页面刷新");
     }
 
 }

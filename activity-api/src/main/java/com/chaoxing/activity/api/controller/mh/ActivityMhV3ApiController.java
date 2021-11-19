@@ -26,6 +26,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.google.common.collect.Lists;
@@ -161,7 +162,7 @@ public class ActivityMhV3ApiController {
         // 经纬度不为空时才显示地址
         String activityAddressLink = "";
         if (activity.getLongitude() != null && activity.getDimension() != null) {
-            activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activity.getId() +"/address";
+            activityAddressLink = DomainConstant.API_DOMAIN +  "/redirect/activity/"+ activity.getId() +"/address";
         }
         if (!Objects.equals(Activity.ActivityTypeEnum.ONLINE.getValue(), activity.getActivityType())) {
             address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
@@ -457,8 +458,10 @@ public class ActivityMhV3ApiController {
                 }
                 String buttonIcon = "";
                 String btnName = workBtnDto.getButtonName();
-                if (Objects.equals(btnName, "我的作品") || Objects.equals(btnName, "全部作品")) {
+                if (Objects.equals(btnName, "我的作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue());
+                } else if (Objects.equals(btnName, "全部作品")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.ALL_WORK.getValue());
                 } else if (Objects.equals(btnName, "征集管理") || Objects.equals(btnName, "提交作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SUBMIT_WORK.getValue());
                 } else if (Objects.equals(btnName, "作品审核")) {

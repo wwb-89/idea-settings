@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知设置</title>
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
+    <link rel="stylesheet" href="../../assets/css/commonTable.css">
+    <link rel="stylesheet" href="../../assets/css/notice-setting.css">
+</head>
+<style>
+    body,html{
+        background: #F3F3F6;
+    }
+</style>
+<body>
+    <div class="tab-page" id="index" v-cloak>
+        <div class="page-header">活动引擎后台设置</div>
+        <div class="main-container" >
+            <div class="left-content fl">
+                <ul class="menu-lists">
+                    <li class="menu-list" v-for="(item, index) in menulist" :key="index" :class="{'active':active===index}" @click="menuFunc(index)">{{item.name}}</li>
+                </ul>
+            </div>
+            <div class="right-content fl">
+                <iframe :src="iframelink" id="externalIframe" frameborder="0" border="0"></iframe>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    
+</body>
+</html>
+<script type="text/javascript" src="../../assets/lib/vue.js"></script>
+<script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#index',
+        data: function () {
+            return {
+                menulist:[
+                    {id: 1, name:'报名规则'},
+                    {id: 2, name:'数据推送'},
+                    {id: 3, name:'自动通知'},
+                ],
+                active: 2,
+                iframelink: './通知设置.html',
+            }
+        },
+        created: function () {
+        },
+        mounted: function () {
+            var _this=this;
+
+            this.$nextTick(function (){
+
+            });
+            window.onload = function () {
+                _this.setIframeHeight(document.getElementById('externalIframe'));
+            };
+        },
+        methods: {
+            menuFunc: function (index) {
+                this.active = index;
+                if(index===2){
+                    this.iframelink = './通知设置.html'
+                }else if(index===0){
+                    this.iframelink = ''
+                }else if(index===1){
+                    this.iframelink = ''
+                }
+            },
+            setIframeHeight: function (iframe) {
+                if (iframe) {
+                    var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                    if (iframeWin.document.body) {
+                        iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                    }
+                }
+            }
+        }
+    });
+</script>

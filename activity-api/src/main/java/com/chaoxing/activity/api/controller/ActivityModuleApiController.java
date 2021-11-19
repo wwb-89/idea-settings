@@ -2,6 +2,7 @@ package com.chaoxing.activity.api.controller;
 
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ModuleTypeEnum;
 import com.chaoxing.activity.util.exception.WxAccessException;
@@ -73,16 +74,16 @@ public class ActivityModuleApiController {
 	}
 
 	private String getWorkAccessUrl(Integer activityId, HttpServletRequest request) {
-		return "http://reading.chaoxing.com/zj/activity/forward/" + activityId;
+		return DomainConstant.WORK_DOMAIN +  "/zj/activity/forward/" + activityId;
 	}
 
 	private String getStarAccessUrl(Integer starId, HttpServletRequest request) {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = "https://star.chaoxing.com/app/map/" + starId + "/index";
+			accessUrl = DomainConstant.START_READ_DOMAIN + "/app/map/" + starId + "/index";
 		} else {
-			accessUrl = "http://star.chaoxing.com/pc/map/" + starId + "/index";
+			accessUrl = DomainConstant.START_READ_DOMAIN + "/pc/map/" + starId + "/index";
 		}
 		return accessUrl;
 	}
@@ -91,9 +92,9 @@ public class ActivityModuleApiController {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = "https://appcd.chaoxing.com/punch/" + punchId + "/handleable-detail";
+			accessUrl = DomainConstant.PUNCH_DOMAIN + "/" + punchId + "/handleable-detail";
 		} else {
-			accessUrl = "http://new.ydhd.chaoxing.com/punch-qr/" + punchId;
+			accessUrl = DomainConstant.ACTIVITY_DOMAIN + "/punch-qr/" + punchId;
 		}
 		return accessUrl;
 	}
@@ -102,9 +103,9 @@ public class ActivityModuleApiController {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = "https://teacher2.chaoxing.com/tpk3-activity/?activityId=" + tpkId;
+			accessUrl = DomainConstant.TEACHER_DOMAIN + "/tpk3-activity/?activityId=" + tpkId;
 		} else {
-			accessUrl = "http://teacher2.chaoxing.com/tpk3-activity/admin/statistics/activity/" + tpkId;
+			accessUrl = DomainConstant.TEACHER_DOMAIN + "/tpk3-activity/admin/statistics/activity/" + tpkId;
 		}
 		return accessUrl;
 	}

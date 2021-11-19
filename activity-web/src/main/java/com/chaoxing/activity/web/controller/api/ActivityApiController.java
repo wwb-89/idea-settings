@@ -15,6 +15,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
@@ -191,7 +192,7 @@ public class ActivityApiController {
 				.startTime(LocalDateTime.parse("2021-05-31 00:00", dateTimeFormatter))
 				.endTime(LocalDateTime.parse("2022-07-01 23:59", dateTimeFormatter))
 				.status(3)
-				.coverUrl("http://p.ananas.chaoxing.com/star3/origin/c9f16401f786b2357e98a6f37b13830e.png")
+				.coverUrl(DomainConstant.CLOUD_RESOURCE_DOMAIN + "/star3/origin/c9f16401f786b2357e98a6f37b13830e.png")
 				.previewUrl("https://tsjy.chaoxing.com/plaza/x?courseId=218798245&classId=42416979")
 				.build();
 	}

@@ -6,6 +6,7 @@ import com.chaoxing.activity.mapper.IntegralPushScopeMapper;
 import com.chaoxing.activity.model.IntegralPushScope;
 import com.chaoxing.activity.service.queue.IntegralPushQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 public class IntegralApiService {
 
 	/** 积分回收地址 */
-	private static final String INTEGRAL_PUSH_URL = "http://score.jxlll.chaoxing.com/services/ScoreService/addScore?fid=%d&uid=%d&sType=%d&resourceId=%s&resourceName=%s";
+	private static final String INTEGRAL_PUSH_URL = DomainConstant.SCORE_DOMAIN + "/services/ScoreService/addScore?fid=%d&uid=%d&sType=%d&resourceId=%s&resourceName=%s";
 
 	/** 积分回收范围缓存 */
 	private static final String INTEGRAL_PUSH_SCOPE_CACHE_NAME = CacheConstant.CACHE_KEY_PREFIX + "integral_push_scope";

@@ -20,6 +20,7 @@ import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ import java.util.stream.Collectors;
 public class ActivityMhAppController {
 
 	/** 签到按钮地址 */
-	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/sign/%d/btn?activityId=%s";
+	private static final String QD_BTN_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/btn?activityId=%s";
 	private static final Integer RECOMMEND_ACTIVITY_PAGE_SIZE = 4;
 
 	@Resource

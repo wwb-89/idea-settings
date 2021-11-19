@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager.wfw;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ import java.math.BigDecimal;
 @Service
 public class WfwCoordinateApiService {
 
-	private static final String GET_DISTANCE_URL = "http://v1.chaoxing.com/mobileSet/libraryList?wfwfid=%d&startLng=%s&startLat=%s";
+	private static final String GET_DISTANCE_URL = DomainConstant.WFW_DOMAIN + "/mobileSet/libraryList?wfwfid=%d&startLng=%s&startLat=%s";
 
 	@Resource
 	private RestTemplate restTemplate;

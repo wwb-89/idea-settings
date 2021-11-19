@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.dto.OperateUserDTO;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -89,7 +90,7 @@ public class Market {
     }
 
     public String buildAppUrl() {
-        return "https://hd.chaoxing.com?marketId=" + getId();
+        return DomainConstant.WEB_DOMAIN +  "?marketId=" + getId();
     }
 
     public String buildPcUrl() {
@@ -97,7 +98,7 @@ public class Market {
     }
 
     public String buildMarketmanageUrl() {
-        return "https://manage.hd.chaoxing.com/market/" + getId();
+        return DomainConstant.ADMIN_DOMAIN + "/market/" + getId();
     }
 
     public static Market cloneMarket(Market originMarket, Integer fid) {

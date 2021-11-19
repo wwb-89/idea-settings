@@ -68,9 +68,10 @@ public class ActivityAboutEndEventQueueService {
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_END.getValue());
         NoticeTemplateFieldDTO noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
 
-        String title = generateTitle(noticeTemplateField, noticeTemplate);
-        String content = generateContent(noticeTemplateField, noticeTemplate);
-
+        String waitConvertTitle = generateTitle(noticeTemplateField, noticeTemplate);
+        String waitConvertContent = generateContent(noticeTemplateField, noticeTemplate);
+        String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, noticeTemplateField);
+        String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, noticeTemplateField);
         String attachment = NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl());
         xxtNoticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, noRateSignedUpUids);
     }

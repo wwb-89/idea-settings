@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromActivityReleaseParamDTO;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ import java.util.Objects;
 @Service
 public class ActivityReleaseApiService {
 
-    private static final String GET_ACTIVITY_CREATE_URL = "http://new.ydhd.chaoxing.com/api/activity/%d/to-activity-engine-param";
+    private static final String GET_ACTIVITY_CREATE_URL = DomainConstant.ACTIVITY_DOMAIN + "/api/activity/%d/to-activity-engine-param";
 
     @Resource
     private RestTemplate restTemplate;

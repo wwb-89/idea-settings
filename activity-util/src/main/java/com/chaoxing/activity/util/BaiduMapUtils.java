@@ -1,5 +1,7 @@
 package com.chaoxing.activity.util;
 
+import com.chaoxing.activity.util.constant.DomainConstant;
+
 import java.math.BigDecimal;
 
 /**百度地图工具类
@@ -12,7 +14,7 @@ import java.math.BigDecimal;
  */
 public class BaiduMapUtils {
 	
-	private static final String ADDRESS_URL = "http://api.map.baidu.com/marker?location=%s&title=%s&content=%s&output=html";
+	private static final String ADDRESS_URL = DomainConstant.BAIDU_MAP_API_DOMAIN + "/marker?location=%s&title=%s&content=%s&output=html";
 
 	private BaiduMapUtils() {
 

@@ -85,6 +85,8 @@ public enum MhAppIconEnum {
         WORK_PREFERRED_SELECTION("work_preferred_selection", "f9bd7f66745711533ea305d940226884"),
         /** 我的作品icon */
         MY_WORK("my_work", "54eb45f8017e868f59447dee034994a6"),
+        /** 全部作品icon */
+        ALL_WORK("all_work", "5dccca6da428a8193af5b879a2ba820c"),
         /** 报名信息icon */
         SIGN_UP_INFO("sign_up_info", "fb296c77da3e7dfd56bcf9dfbb0eda6c"),
         /** 报名详情icon */
