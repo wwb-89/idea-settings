@@ -68,7 +68,7 @@
                 <div class="form-item">
                     <label class="label">黑名单</label>
                     <div class="input-box">
-                        <p class="colorTips"><i class="icon-setting"></i>已拉黑{{blacklistNum}}人</p>
+                        <p class="colorTips" style="cursor: pointer;" @click="blacklist"><i class="icon-setting"></i>已拉黑{{blacklistNum}}人</p>
                     </div>
                 </div>
             </form>
@@ -316,6 +316,12 @@
                             app.showMsg("更新报名按钮失败");
                             $this.$set($this.marketSignUpConfig, "signUpBtnName", $this.oldSignUpBtnName);
                         });
+                    },
+                    // 黑名单
+                    blacklist: function () {
+                        var $this = this;
+                        var url = ctx + "/market/" + $this.marketId + "/blacklist/list";
+                        window.open(url);
                     }
                 }
             });

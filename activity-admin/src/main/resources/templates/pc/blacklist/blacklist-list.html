@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="/static/pc/assets/css/choose-dialog.css" th:href="@{/pc/assets/css/choose-dialog.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/limits-manage.css" th:href="@{/pc/assets/css/limits-manage.css}">
 	<link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/notice-setting.css" th:href="@{/pc/assets/css/notice-setting.css}">
 	<style>
         [v-cloak] {
             display: none;
@@ -20,7 +21,8 @@
 	</style>
 </head>
 <body>
-<div id="vm" v-cloak>
+<div class="tab-page" id="vm" v-cloak>
+	<div class="page-header">{{market.name}}黑名单</div>
 	<div style="display: block">
 		<!-- 选项卡内容 -->
 		<div class="tab-content-box">
@@ -101,6 +103,7 @@
 		vm = new Vue({
 			el: '#vm',
 			data: {
+                market: [[${market}]],
 				marketId: [[${marketId}]],
 				blacklists: [],
 				loaded: false,

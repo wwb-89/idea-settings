@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<title th:text="|${market.name}设置|">后台设置</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/confirm_dialog.css" th:href="@{/pc/assets/css/confirm_dialog.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/commonTable.css" th:href="@{/pc/assets/css/commonTable.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/notice-setting.css" th:href="@{/pc/assets/css/notice-setting.css}">
+	<style>
+        body,html{
+            background: #F3F3F6;
+        }
+        [v-cloak] {
+            display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="tab-page" id="vm" v-cloak>
+	<div class="page-header">{{market.name}}设置</div>
+	<div class="main-container" >
+		<div class="left-content fl">
+			<ul class="menu-lists">
+				<li class="menu-list" v-for="(menu, index) of menus" :key="'menu-' + index" :class="{'active': menu.active}" @click="changeMenu(index)">{{menu.name}}</li>
+			</ul>
+		</div>
+		<div class="right-content fl">
+			<iframe :src="activeMenu.url" id="externalIframe" style="border-style: none;" border="0"></iframe>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script th:inline="javascript">
+        vm = new Vue({
+            el: "#vm",
+            data: {
+                market: [[${market}]],
+                menus: [
+                    {name: "报名规则", url: ctx + "/market/" + [[${market.id}]] + "/rule" , active: true},
+                    {name: "自动通知", url: ctx + "/market/" + [[${market.id}]] + "/notice-template", active: false}
+                ],
+	            activeMenu: null
+            },
+            created: function () {
+                var $this = this;
+                $this.activeMenu = $this.menus[0];
+            },
+            mounted: function () {
+                var $this = this;
+                window.onload = function () {
+                    $this.setIframeHeight(document.getElementById('externalIframe'));
+                };
+            },
+            methods: {
+                setIframeHeight: function (iframe) {
+                    if (iframe) {
+                        var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                        if (iframeWin.document.body) {
+                            iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                        }
+                    }
+                },
+                changeMenu: function (index) {
+                    var $this = this;
+                    $this.activeMenu = $this.menus[index];
+                    $($this.menus).each(function (i) {
+                        $this.$set($this.menus[i], "active", i == index);
+                    });
+                }
+            }
+        });
+	</script>
+</div>
+</body>
+</html>
