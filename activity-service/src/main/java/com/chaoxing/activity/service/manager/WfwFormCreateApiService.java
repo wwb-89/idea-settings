@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
+import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
+import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -50,6 +52,8 @@ public class WfwFormCreateApiService {
 	private RestTemplate restTemplate;
 	@Resource
 	private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+	@Resource
+	private SignUpFillInfoTypeService signUpFillInfoTypeService;
 
 	/**构建表单创建地址
 	* @Description
@@ -77,10 +81,10 @@ public class WfwFormCreateApiService {
 		}
 		LocalDateTime now = LocalDateTime.now();
 		params.put("datetime", now.format(DATE_TIME_FORMATTER));
-		params.put("sign", wfwFormTemplate.getSign());
+		params.put("sign", SIGN);
 		params.put("isCopy", 0);
 		params.put("formType", 2);
-		String enc = getEnc(params, wfwFormTemplate.getKey());
+		String enc = getEnc(params, KEY);
 		params.put("enc", enc);
 		// 封装url
 		StringBuilder url = new StringBuilder(CREATE_URL + "?");
@@ -90,6 +94,30 @@ public class WfwFormCreateApiService {
 		return url.toString();
 	}
 
+
+	/**
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-11-19 17:05:12
+	* @param originFid
+	* @param formId
+	* @param fid
+	* @param uid
+	* @param tplComponentId
+	* @return com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO
+	*/
+	public WfwFormCreateResultDTO create(Integer originFid, Integer formId, Integer fid, Integer uid, Integer tplComponentId) {
+		Integer wfwFormTemplateId = Optional.ofNullable(signUpFillInfoTypeService.getByTemplateComponentId(tplComponentId)).map(SignUpFillInfoType::getWfwFormTemplateId).orElse(null);
+		if (formId == null) {
+			return createWfwFormWithEditUrl(fid, uid, wfwFormTemplateId);
+		}
+		return create(WfwFormCreateParamDTO.builder()
+				.originalFid(originFid)
+				.fid(fid)
+				.formId(formId)
+				.uid(uid)
+				.build());
+	}
 
 
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
@@ -165,7 +193,7 @@ public class WfwFormCreateApiService {
 		params.put("uid", wfwFormCreateParam.getUid());
 		params.put("fid", wfwFormCreateParam.getFid());
 		params.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-		params.put("sign", SIGN);
+		params.put("sign", "deptManager_hdbm_hb");
 		params.put("enc", getEnc(params));
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
 		paramMap.setAll(params);
@@ -188,7 +216,7 @@ public class WfwFormCreateApiService {
 			enc.append("[").append(entry.getKey()).append("=")
 					.append(entry.getValue()).append("]");
 		}
-		return DigestUtils.md5Hex(enc + "[" + KEY + "]");
+		return DigestUtils.md5Hex(enc + "[" + "s$WmvjE!aDA$sfv5xd" + "]");
 	}
 
 }

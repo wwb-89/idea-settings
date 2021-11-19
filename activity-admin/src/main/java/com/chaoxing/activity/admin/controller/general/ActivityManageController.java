@@ -181,15 +181,16 @@ public class ActivityManageController {
 	@GetMapping("{activityId}/clone")
 	public String clone(Model model, @PathVariable Integer activityId, HttpServletRequest request, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Activity activity = activityQueryService.getById(activityId);
 		ActivityCreateParamDTO createParam = activityQueryService.cloneActivity(activityId);
 		model.addAttribute("isClone", true);
 		model.addAttribute("activity", createParam);
 		// 报名签到
-//		Integer signId = activity.getSignId();
+		Integer signId = activity.getSignId();
 		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
-//		if (signId != null) {
-//			sign = signApiService.getCreateById(signId);
-//		}
+		if (signId != null) {
+			sign = signApiService.getCloneSign(signId, loginUser.getUid(), loginUser.getFid());
+		}
 		model.addAttribute("sign", sign);
 		return activityAddEditView(model,
 				activityId,

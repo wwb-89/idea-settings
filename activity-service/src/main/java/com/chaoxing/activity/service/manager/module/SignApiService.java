@@ -58,6 +58,8 @@ public class SignApiService {
 	private static final String UPDATE_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/update";
 	/** 获取签到报名信息的地址 */
 	private static final String DETAIL_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/detail";
+	/** 克隆签到报名信息的地址 */
+	private static final String CLONE_SIGN_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/clone?fid=%d&uid=%d";
 	/** 获取签到报名信息的地址 */
 	private static final String LIST_DETAIL_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/list/detail";
 	/** 参与情况 */
@@ -861,4 +863,16 @@ public class SignApiService {
 		});
 	}
 
+    public SignCreateParamDTO getCloneSign(Integer signId, Integer fid, Integer uid) {
+		String url = String.format(CLONE_SIGN_URL, signId, fid, uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> {
+			String data = jsonObject.getString("data");
+			return JSON.parseObject(data, SignCreateParamDTO.class);
+		}, (message) -> {
+			log.error("根据签到报名id:{}查询签到报名失败:{}", signId, message);
+			throw new BusinessException(message);
+		});
+    }
 }
