@@ -458,8 +458,10 @@ public class ActivityMhV3ApiController {
                 }
                 String buttonIcon = "";
                 String btnName = workBtnDto.getButtonName();
-                if (Objects.equals(btnName, "我的作品") || Objects.equals(btnName, "全部作品")) {
+                if (Objects.equals(btnName, "我的作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue());
+                } else if (Objects.equals(btnName, "全部作品")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.ALL_WORK.getValue());
                 } else if (Objects.equals(btnName, "征集管理") || Objects.equals(btnName, "提交作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SUBMIT_WORK.getValue());
                 } else if (Objects.equals(btnName, "作品审核")) {
