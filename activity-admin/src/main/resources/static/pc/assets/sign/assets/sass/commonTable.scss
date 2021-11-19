@@ -206,25 +206,18 @@ body {
 .export-box {
   line-height: 30px;
   margin-left: 20px;
-  color: #999999;
+  color: #666666;
   cursor: pointer;
   i{
     margin-right: 4px;
   }
   .icon-column{
-    .path2{
+    &::before{
       margin-right: 4px;
     }
   }
   &:hover {
     color: #0084FF;
-    .icon-column{
-      .path2{
-        &::before{
-          color: #0084FF;
-        }
-      }
-    }
   }
   .el-dropdown{
     &:hover {

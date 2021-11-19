@@ -234,7 +234,7 @@ body {
 .export-box {
   line-height: 30px;
   margin-left: 20px;
-  color: #999999;
+  color: #666666;
   cursor: pointer;
 }
 
@@ -242,15 +242,11 @@ body {
   margin-right: 4px;
 }
 
-.export-box .icon-column .path2{
+.export-box .icon-column::before{
   margin-right: 4px;
 }
 
 .export-box:hover {
-  color: #0084FF;
-}
-
-.export-box:hover .icon-column .path2::before {
   color: #0084FF;
 }
 
