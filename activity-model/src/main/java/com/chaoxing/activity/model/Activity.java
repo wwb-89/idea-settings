@@ -482,9 +482,10 @@ public class Activity {
         setReleased(existActivity.getReleased());
         setReleaseTime(existActivity.getReleaseTime());
         setGroupBbsid(existActivity.getGroupBbsid());
+        setMarketId(existActivity.getMarketId());
     }
 
-    /**获取活动全地址(address + detailAdress)
+    /**获取活动全地址(address + detailAddress)
      * @Description
      * @author huxiaolong
      * @Date 2021-11-12 17:11:26

@@ -180,6 +180,8 @@
 						// 修改通知模版的值
 						$this.$set($this.editMarketNoticeTemplate, "title", $("#editTitleDiv").html());
 						$this.$set($this.editMarketNoticeTemplate, "content", $("#editContentDiv").html());
+                        // 清空"可插入字段"
+                        $this.selectedNoticeField = "";
 					}
 				},
 				toEdit: function (index) {
