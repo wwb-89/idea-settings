@@ -940,12 +940,12 @@
                 document.domain = "chaoxing.com";
                 window.addEventListener("message", function (e) {
                     if (e.origin.indexOf("m.oa.chaoxing.com") > -1) {
-                        var { data } = activityApp.getJsonObject(e.data);
-                        var originId = $this.operateSignUpOriginId;
-                        $this.$set($this.signUpMap[originId], 'openAddr', data.openAddr);
-                        $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
-                        $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
-                        $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
+                        // var { data } = activityApp.getJsonObject(e.data);
+                        // var originId = $this.operateSignUpOriginId;
+                        // $this.$set($this.signUpMap[originId], 'openAddr', data.openAddr);
+                        // $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
+                        // $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
+                        // $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
                         $this.wfwFormConfigWindow.close();
                     } else {
                         try {
@@ -2184,20 +2184,30 @@
                     var signUp = $this.signUpMap[signUpTplComponentId];
                     var formId = "";
                     $this.operateSignUpOriginId = signUpTplComponentId;
-                    if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
-                        formId = signUp.fillInfoFormId;
+                    var url = ctx + '/api/wfw-form/build/create-edit-url';
+                    // 是否需要创建新的表单，表单id为空，则需要
+                    var needCreateForm = activityApp.isEmpty(signUp.fillInfoFormId);
+                    if (needCreateForm) {
+                        url = ctx + '/api/wfw-form/create/from/wfw-form-template'
                     }
-                    var url = ctx + '/api/wfw-form/build/create-url';
-                    var templateType = ($this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].templateType) || '';
+                    formId = signUp.fillInfoFormId || '';
+                    var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
                     var params = {
                         fid: $this.fid,
                         uid: [[${session._login_user_.uid}]],
                         formId: formId,
-                        templateType: templateType
+                        wfwFormTemplateId: wfwFormTemplateId
                     }
-                    app.ajaxPost(url,params, function (res) {
+                    app.ajaxPost(url, params, function (res) {
                         if (res.success) {
-                            $this.wfwFormConfigWindow = window.open(res.data);
+                            var { formId, openAddr, pcUrl, wechatUrl, editUrl } = res.data
+                            if (needCreateForm) {
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'openAddr', openAddr);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'pcUrl', pcUrl);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'wechatUrl', wechatUrl);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'fillInfoFormId', formId);
+                            }
+                            $this.wfwFormConfigWindow = window.open(editUrl);
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {

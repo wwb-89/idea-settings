@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.FormUtils;
@@ -76,12 +77,27 @@ public class WfwFormApiController {
 	* @Date 2021-08-17 17:50:13
 	* @param fid
 	* @param uid
-	* @param templateType
+	* @param wfwFormTemplateId
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("build/create-url")
-	public RestRespDTO getWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam String templateType, Integer formId) {
-		return RestRespDTO.success(formCreateApiService.buildCreateFormUrl(fid, uid, formId, templateType));
+	@RequestMapping("build/create-edit-url")
+	public RestRespDTO getWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId, Integer formId) {
+		String createEditUrl = formCreateApiService.buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplateId);
+		return RestRespDTO.success(WfwFormCreateResultDTO.builder().editUrl(createEditUrl).build());
+	}
+
+	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-19 16:20:09
+	 * @param fid
+	 * @param uid
+	 * @param wfwFormTemplateId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("create/from/wfw-form-template")
+	public RestRespDTO createWfwFormWithEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId) {
+		return RestRespDTO.success(formCreateApiService.createWfwFormWithEditUrl(fid, uid, wfwFormTemplateId));
 	}
 
 	/**获取表单管理地址

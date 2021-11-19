@@ -25,6 +25,14 @@ public class SignUpWfwFormTemplateService {
     @Resource
     private SignUpWfwFormTemplateMapper signUpWfwFormTemplateMapper;
 
+
+    public SignUpWfwFormTemplate getById(Integer wfwFormTemplateId) {
+        if (wfwFormTemplateId == null) {
+            return null;
+        }
+        return signUpWfwFormTemplateMapper.selectById(wfwFormTemplateId);
+    }
+
     /**获取系统报名万能表单模版
      * @Description 
      * @author wwb

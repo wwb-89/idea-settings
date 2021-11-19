@@ -27,5 +27,7 @@ public class WfwFormCreateResultDTO {
     private String pcUrl;
     /** 微信端填写地址 */
     private String wechatUrl;
+    /** 表单编辑地址 */
+    private String editUrl;
 
 }

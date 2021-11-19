@@ -4,7 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
-import com.chaoxing.activity.model.SignUpFillInfoType;
+import com.chaoxing.activity.model.SignUpWfwFormTemplate;
+import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Maps;
@@ -47,6 +48,8 @@ public class WfwFormCreateApiService {
 
 	@Resource
 	private RestTemplate restTemplate;
+	@Resource
+	private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
 
 	/**构建表单创建地址
 	* @Description
@@ -54,13 +57,17 @@ public class WfwFormCreateApiService {
 	* @Date 2021-08-17 17:49:15
 	* @param fid
 	* @param uid
-	* @param templateType
+	* @param wfwFormTemplateId
 	* @return java.lang.String
 	*/
-	public String buildCreateFormUrl(Integer fid, Integer uid, Integer formId, String templateType) {
-		SignUpFillInfoType.WfwFormTemplateEnum wfwFormTemplateEnum = SignUpFillInfoType.WfwFormTemplateEnum.fromValue(templateType);
-		if (wfwFormTemplateEnum == null) {
-			throw new BusinessException("模板类型：" + templateType + "不存在!");
+	public String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, Integer wfwFormTemplateId) {
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
+		return buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplate);
+	}
+
+	public String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
+		if (wfwFormTemplate == null) {
+			throw new BusinessException("机构: " + fid + "报名万能表单模板不存在!");
 		}
 		Map<String, Object> params = Maps.newTreeMap();
 		params.put("fid", fid);
@@ -70,10 +77,10 @@ public class WfwFormCreateApiService {
 		}
 		LocalDateTime now = LocalDateTime.now();
 		params.put("datetime", now.format(DATE_TIME_FORMATTER));
-		params.put("sign", wfwFormTemplateEnum.getSign());
+		params.put("sign", wfwFormTemplate.getSign());
 		params.put("isCopy", 0);
 		params.put("formType", 2);
-		String enc = getEnc(params, wfwFormTemplateEnum.getKey());
+		String enc = getEnc(params, wfwFormTemplate.getKey());
 		params.put("enc", enc);
 		// 封装url
 		StringBuilder url = new StringBuilder(CREATE_URL + "?");
@@ -81,6 +88,29 @@ public class WfwFormCreateApiService {
 			url.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
 		}
 		return url.toString();
+	}
+
+
+
+	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
+ 	 * @Description
+ 	 * @author huxiaolong
+ 	 * @Date 2021-11-19 16:16:40
+ 	 * @param fid
+ 	 * @param uid
+ 	 * @param wfwFormTemplateId
+ 	 * @return java.lang.String
+ 	 */
+	public WfwFormCreateResultDTO createWfwFormWithEditUrl(Integer fid, Integer uid, Integer wfwFormTemplateId) {
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
+		if (wfwFormTemplate == null) {
+			throw new BusinessException("报名万能表单模板：" + wfwFormTemplateId + "不存在!");
+		}
+		// 创建新的表单
+		WfwFormCreateResultDTO wfwFormCreateResult = create(WfwFormCreateParamDTO.builder().formId(wfwFormTemplate.getFormId()).originalFid(wfwFormTemplate.getFid()).uid(uid).fid(fid).build());
+		String formEditUrl = buildCreateEditFormUrl(fid, wfwFormCreateResult.getFormId(), uid, wfwFormTemplate);
+		wfwFormCreateResult.setEditUrl(formEditUrl);
+		return wfwFormCreateResult;
 	}
 
 	/**获取表单管理地址

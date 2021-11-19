@@ -14,3 +14,11 @@ CREATE TABLE `t_sign_up_wfw_form_template`  (
     PRIMARY KEY (`id`)
 ) COMMENT = '报名万能表单模版表';
 
+
+
+ALTER TABLE t_sign_up_fill_info_type ADD wfw_form_template_id INT(11) COMMENT '报名万能表单模板id';
+UPDATE t_sign_up_fill_info_type SET wfw_form_template_id = 1 WHERE type = 'wfw_form' AND template_type = 'normal'
+UPDATE t_sign_up_fill_info_type SET wfw_form_template_id = 2 WHERE type = 'wfw_form' AND template_type = 'dual_select_company'
+UPDATE t_sign_up_fill_info_type SET wfw_form_template_id = 3 WHERE type = 'wfw_form' AND template_type = 'wfw_form_1'
+UPDATE t_sign_up_fill_info_type SET wfw_form_template_id = 4 WHERE type = 'wfw_form' AND template_type = 'hubei_qun_art_museum'
+

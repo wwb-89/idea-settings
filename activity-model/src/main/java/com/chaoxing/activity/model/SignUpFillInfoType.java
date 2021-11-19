@@ -34,14 +34,14 @@ public class SignUpFillInfoType {
     private Integer templateComponentId;
     /** 类型; column: type*/
     private String type;
-    /** 模板类型; column: template_type*/
-    private String templateType;
+    /** 报名万能表单模板id; column: wfw_form_template_id*/
+    private Integer wfwFormTemplateId;
 
     public SignUpFillInfoType cloneToNewTemplateComponentId(Integer templateComponentId) {
         return SignUpFillInfoType.builder()
                 .templateComponentId(templateComponentId)
                 .type(getType())
-                .templateType(getTemplateType())
+                .wfwFormTemplateId(getWfwFormTemplateId())
                 .build();
     }
 
@@ -74,46 +74,6 @@ public class SignUpFillInfoType {
             return null;
         }
 
-    }
-
-    /** 万能表单模版类型
-     * @className SignUpFillInfoType
-     * @description 
-     * @author wwb
-     * @blame wwb
-     * @date 2021-08-17 10:58:16
-     * @version ver 1.0
-     */
-    @Getter
-    public enum WfwFormTemplateEnum {
-
-        /** 通用 */
-        NORMAL("通用", "normal", "deptManager_hdbm", "P!L%%Eq5&fGsfQ7t*A"),
-        DUAL_SELECT_COMPANY("双选会企业报名", "dual_select_company", "deptManager_hdsxh", "XVI0uDX43ry%wEnBIW"),
-        WFW_FORM_1("万能表单1", "wfw_form_1", "deptManager_hdbm_plus", "BcXW9*th2gNFocpUy8"),
-        HUBEI_QUN_ART_MUSEUM("湖北群艺馆", "hubei_qun_art_museum", "deptManager_hdbm_hb", "s$WmvjE!aDA$sfv5xd");
-
-        private final String name;
-        private final String value;
-        private final String sign;
-        private final String key;
-
-        WfwFormTemplateEnum(String name, String value, String sign, String key) {
-            this.name = name;
-            this.value = value;
-            this.sign = sign;
-            this.key = key;
-        }
-
-        public static WfwFormTemplateEnum fromValue(String value) {
-            WfwFormTemplateEnum[] values = WfwFormTemplateEnum.values();
-            for (WfwFormTemplateEnum wfwFormTemplateEnum : values) {
-                if (Objects.equals(wfwFormTemplateEnum.getValue(), value)) {
-                    return wfwFormTemplateEnum;
-                }
-            }
-            return null;
-        }
     }
 
 }
