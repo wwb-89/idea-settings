@@ -246,6 +246,10 @@ body {
   color: #0084FF;
 }
 
+.export-box:hover i .path2::before {
+  color: #0084FF;
+}
+
 .search-Box {
   float: right;
   position: relative;
@@ -880,28 +884,31 @@ body {
 .table-count-box {
   position: relative;
   margin-bottom: 16px;
-  line-height: 16px;
+  line-height: 30px;
 }
 
-.table-count-box .setting-box {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-      -ms-transform: translateY(-50%);
-          transform: translateY(-50%);
+.setting-box {
+  width: 64px;
+  height: 30px;
+  line-height: 30px;
+  color: #333333;
+  background: #ffffff;
+  border-radius: 4px;
+  text-align: center;
+  margin-left: 16px;
 }
 
-.table-count-box .setting-box .el-dropdown {
+.setting-box:hover {
+  background: #ECEEEF;
+}
+
+.setting-box .icon-setting:before {
+  margin-right: 4px;
+  color: #666666;
+}
+
+.setting-box .el-dropdown {
   cursor: pointer;
-}
-
-.table-count-box .setting-box .el-dropdown:hover {
-  color: #0084FF;
-}
-
-.table-count-box .setting-box .el-dropdown:hover .icon-setting:before {
-  color: #0084FF;
 }
 
 .set-dropdown {
