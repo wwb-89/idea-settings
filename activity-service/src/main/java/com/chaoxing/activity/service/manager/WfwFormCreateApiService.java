@@ -55,7 +55,7 @@ public class WfwFormCreateApiService {
 	@Resource
 	private SignUpFillInfoTypeService signUpFillInfoTypeService;
 
-	/**构建表单创建地址
+	/**构建表单创建编辑地址
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-08-17 17:49:15
@@ -81,10 +81,10 @@ public class WfwFormCreateApiService {
 		}
 		LocalDateTime now = LocalDateTime.now();
 		params.put("datetime", now.format(DATE_TIME_FORMATTER));
-		params.put("sign", SIGN);
+		params.put("sign", wfwFormTemplate.getSign());
 		params.put("isCopy", 0);
 		params.put("formType", 2);
-		String enc = getEnc(params, KEY);
+		String enc = getEnc(params, wfwFormTemplate.getKey());
 		params.put("enc", enc);
 		// 封装url
 		StringBuilder url = new StringBuilder(CREATE_URL + "?");
@@ -94,51 +94,64 @@ public class WfwFormCreateApiService {
 		return url.toString();
 	}
 
+	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-19 16:16:40
+	 * @param fid
+	 * @param uid
+	 * @param wfwFormTemplateId
+	 * @return java.lang.String
+	 */
+	public WfwFormCreateResultDTO createWfwFormWithEditUrl(Integer fid, Integer uid, Integer wfwFormTemplateId) {
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
+		return createWfwFormWithEditUrl(fid, uid, wfwFormTemplate);
+	}
 
-	/**
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-11-19 17:05:12
-	* @param originFid
-	* @param formId
-	* @param fid
-	* @param uid
-	* @param tplComponentId
-	* @return com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO
-	*/
-	public WfwFormCreateResultDTO create(Integer originFid, Integer formId, Integer fid, Integer uid, Integer tplComponentId) {
+	public WfwFormCreateResultDTO createWfwFormWithEditUrl(Integer fid, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
+		if (wfwFormTemplate == null) {
+			throw new BusinessException("报名万能表单模板不存在!");
+		}
+		// 创建新的表单
+		WfwFormCreateResultDTO wfwFormCreateResult = create(WfwFormCreateParamDTO.builder()
+				.formId(wfwFormTemplate.getFormId())
+				.originalFid(wfwFormTemplate.getFid())
+				.uid(uid)
+				.fid(fid)
+				.sign(wfwFormTemplate.getSign())
+				.key(wfwFormTemplate.getKey())
+				.build());
+		String formEditUrl = buildCreateEditFormUrl(fid, wfwFormCreateResult.getFormId(), uid, wfwFormTemplate);
+		wfwFormCreateResult.setEditUrl(formEditUrl);
+		return wfwFormCreateResult;
+	}
+
+
+	/**为报名克隆万能表单
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-19 17:05:12
+	 * @param originFid 源表单机构fid
+	 * @param formId 源表单id
+	 * @param fid 创建表单的机构fid
+	 * @param uid 创建表单的用户
+	 * @param tplComponentId 报名的模板组件id
+	 * @return com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO
+	 */
+	public WfwFormCreateResultDTO cloneSignUpWfwForm(Integer originFid, Integer formId, Integer fid, Integer uid, Integer tplComponentId) {
 		Integer wfwFormTemplateId = Optional.ofNullable(signUpFillInfoTypeService.getByTemplateComponentId(tplComponentId)).map(SignUpFillInfoType::getWfwFormTemplateId).orElse(null);
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
 		if (formId == null) {
-			return createWfwFormWithEditUrl(fid, uid, wfwFormTemplateId);
+			return createWfwFormWithEditUrl(fid, uid, wfwFormTemplate);
 		}
 		return create(WfwFormCreateParamDTO.builder()
 				.originalFid(originFid)
 				.fid(fid)
 				.formId(formId)
 				.uid(uid)
+				.sign(wfwFormTemplate.getSign())
+				.key(wfwFormTemplate.getKey())
 				.build());
-	}
-
-
-	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
- 	 * @Description
- 	 * @author huxiaolong
- 	 * @Date 2021-11-19 16:16:40
- 	 * @param fid
- 	 * @param uid
- 	 * @param wfwFormTemplateId
- 	 * @return java.lang.String
- 	 */
-	public WfwFormCreateResultDTO createWfwFormWithEditUrl(Integer fid, Integer uid, Integer wfwFormTemplateId) {
-		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
-		if (wfwFormTemplate == null) {
-			throw new BusinessException("报名万能表单模板：" + wfwFormTemplateId + "不存在!");
-		}
-		// 创建新的表单
-		WfwFormCreateResultDTO wfwFormCreateResult = create(WfwFormCreateParamDTO.builder().formId(wfwFormTemplate.getFormId()).originalFid(wfwFormTemplate.getFid()).uid(uid).fid(fid).build());
-		String formEditUrl = buildCreateEditFormUrl(fid, wfwFormCreateResult.getFormId(), uid, wfwFormTemplate);
-		wfwFormCreateResult.setEditUrl(formEditUrl);
-		return wfwFormCreateResult;
 	}
 
 	/**获取表单管理地址
@@ -164,20 +177,7 @@ public class WfwFormCreateApiService {
 		return String.format(FORM_ADMIN_URL, fid, uid, dateTimeStr, SIGN, formId, formType, enc);
 	}
 
-	private String getEnc(Map<String, Object> params, String key) {
-		StringBuilder endBuilder = new StringBuilder();
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			endBuilder.append("[");
-			endBuilder.append(entry.getKey());
-			endBuilder.append("=");
-			endBuilder.append(entry.getValue());
-			endBuilder.append("]");
-		}
-		endBuilder.append("[");
-		endBuilder.append(key);
-		endBuilder.append("]");
-		return DigestUtils.md5Hex(endBuilder.toString());
-	}
+
 
 	/**创建万能表单
 	 * @Description
@@ -193,8 +193,8 @@ public class WfwFormCreateApiService {
 		params.put("uid", wfwFormCreateParam.getUid());
 		params.put("fid", wfwFormCreateParam.getFid());
 		params.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-		params.put("sign", "deptManager_hdbm_hb");
-		params.put("enc", getEnc(params));
+		params.put("sign", wfwFormCreateParam.getSign());
+		params.put("enc", getEnc(params, wfwFormCreateParam.getKey()));
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
 		paramMap.setAll(params);
 		String result = restTemplate.postForObject(CREATE_FORM_URL, paramMap, String.class);
@@ -210,13 +210,17 @@ public class WfwFormCreateApiService {
 		}
 	}
 
-	private String getEnc(Map<String, Object> encParamMap) {
+	private String getEnc(Map<String, Object> encParamMap, String key) {
 		StringBuilder enc = new StringBuilder();
 		for (Map.Entry<String, Object> entry : encParamMap.entrySet()) {
 			enc.append("[").append(entry.getKey()).append("=")
 					.append(entry.getValue()).append("]");
 		}
-		return DigestUtils.md5Hex(enc + "[" + "s$WmvjE!aDA$sfv5xd" + "]");
+		return DigestUtils.md5Hex(enc + "[" + key + "]");
+	}
+
+	private String getEnc(Map<String, Object> encParamMap) {
+		return getEnc(encParamMap, KEY);
 	}
 
 }
