@@ -515,7 +515,7 @@ public class ActivityFormSyncService {
      * @param released
      * @return void
      */
-    public void syncUpdateReleaseStatus(Integer fid, Integer formId, Integer uid, Integer formUserId, Integer marketId, String flag, boolean released) {
+    public void syncUpdateReleaseStatus(Integer fid, Integer formId, Integer uid, Integer formUserId, Integer marketId, String flag, Boolean released) {
         // 获取表单数据
         FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
@@ -548,6 +548,32 @@ public class ActivityFormSyncService {
         } else {
             activityHandleService.cancelReleaseMarketActivity(activityId, marketId, operateUser);
         }
+        String data = packageReleaseStatus(fid, formId, released);
+        wfwFormApiService.updateForm(formId, formUserId, data);
+    }
 
+    private String packageReleaseStatus(Integer fid, Integer formId, Boolean released) {
+        List<FormStructureDTO> formFieldInfos = wfwFormApiService.getFormStructure(formId, fid);
+        JSONArray result = new JSONArray();
+        for (FormStructureDTO formInfo : formFieldInfos) {
+            String alias = formInfo.getAlias();
+            JSONObject item = new JSONObject();
+            item.put("id", formInfo.getId());
+            item.put("compt", formInfo.getCompt());
+            item.put("comptId", formInfo.getId());
+            item.put("alias", alias);
+            JSONArray data = new JSONArray();
+            if (Objects.equals(alias, "release_status")) {
+                data.add(released ? "已发布" : "未发布");
+                item.put("val", data);
+                result.add(item);
+                break;
+            }
+        }
+        if (result.isEmpty()) {
+            // 没有配置任何别名则放过
+            return null;
+        }
+        return result.toJSONString();
     }
 }
