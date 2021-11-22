@@ -1,5 +1,7 @@
 package com.chaoxing.activity.api.resolver;
 
+import com.alibaba.fastjson.support.spring.FastJsonJsonView;
+import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ExceptionConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -9,6 +11,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
@@ -41,6 +45,15 @@ public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 			modelAndView.setViewName(getViewName(request, ex));
 			modelAndView.addObject("message", message);
 			return modelAndView;
+		} else if (ex instanceof BindException){
+			BindException e = (BindException) ex;
+			FieldError fieldError = e.getBindingResult().getFieldError();
+			RestRespDTO restResp = RestRespDTO.error(fieldError.getDefaultMessage());
+			FastJsonJsonView fastJsonJsonView = new FastJsonJsonView();
+			fastJsonJsonView.setExtractValueFromSingleKeyModel(true);
+			ModelAndView modelAndView = new ModelAndView(fastJsonJsonView);
+			modelAndView.addObject(restResp);
+			return modelAndView;
 		}
 		return null;
 	}
@@ -63,6 +76,10 @@ public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 	private String getMessage(Exception ex) {
 		if (ex == null || !(ex instanceof BusinessException)) {
 			return ExceptionConstant.DEFAULT_ERROR_MESSAGE;
+		} else if (ex instanceof  BindException) {
+			BindException e = (BindException) ex;
+			FieldError fieldError = e.getBindingResult().getFieldError();
+			return fieldError.getDefaultMessage();
 		}
 		return ex.getMessage();
 	}

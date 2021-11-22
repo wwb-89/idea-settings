@@ -33,7 +33,7 @@ public class WfwFormSynOperateQueueService {
     * @param queueParam
     * @return void
     */
-    public void addActivityFormSyncOperateTask(ActivityCreateFromFormParamDTO queueParam) {
+    public void push(ActivityCreateFromFormParamDTO queueParam) {
         ListOperations listOperations = redisTemplate.opsForList();
         listOperations.leftPush(ACTIVITY_FORM_SYNC_OPERATE_KEY, queueParam);
     }
@@ -45,7 +45,7 @@ public class WfwFormSynOperateQueueService {
     * @param 
     * @return com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO
     */
-    public ActivityCreateFromFormParamDTO getActivityFormSyncOperateTask() {
+    public ActivityCreateFromFormParamDTO pop() {
         ListOperations<String, ActivityCreateFromFormParamDTO> listOperations = redisTemplate.opsForList();
         return listOperations.rightPop(ACTIVITY_FORM_SYNC_OPERATE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
     }

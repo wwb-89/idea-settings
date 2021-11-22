@@ -32,7 +32,7 @@ public class WfwFormSyncOperateTask {
 
     @Scheduled(fixedDelay = 1L)
     public void handleWfwUserSignUpInfoDelete() {
-        ActivityCreateFromFormParamDTO queueParam = wfwFormSynOperateQueueService.getActivityFormSyncOperateTask();
+        ActivityCreateFromFormParamDTO queueParam = wfwFormSynOperateQueueService.pop();
         if (queueParam == null) {
             return;
         }

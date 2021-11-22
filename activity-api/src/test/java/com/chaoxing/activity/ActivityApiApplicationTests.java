@@ -18,7 +18,7 @@ class ActivityApiApplicationTests {
 
 	@Test
 	public void xxx() {
-		wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(ActivityCreateFromFormParamDTO.builder().deptId(139378).formId(99082).indexID(97157355).webTemplateId(22).op("data_create").build());
+		wfwFormSynOperateQueueService.push(ActivityCreateFromFormParamDTO.builder().deptId(139378).formId(99082).indexID(97157355).webTemplateId(22).op("data_create").build());
 	}
 
 }

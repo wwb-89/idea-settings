@@ -2,6 +2,7 @@ package com.chaoxing.activity.dto.activity.create;
 
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 /**活动表单同步参数
@@ -18,10 +19,13 @@ import java.util.Objects;
 public class ActivityCreateFromFormParamDTO {
 
     /** 机构单位id */
+    @NotNull(message = "机构id不能为空")
     private Integer deptId;
     /** 表单id */
+    @NotNull(message = "表单id不能为空")
     private Integer formId;
     /** 表单记录id */
+    @NotNull(message = "表单记录id不能为空")
     private Integer indexID;
     /** 操作用户id */
     private Integer uid;

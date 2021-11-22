@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -550,8 +551,8 @@ public class ActivityApiController {
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("sync/from/wfw-form")
-	public RestRespDTO activitySyncOperate(ActivityCreateFromFormParamDTO activityFormSyncParam) {
-		wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(activityFormSyncParam);
+	public RestRespDTO activitySyncOperate(@Valid ActivityCreateFromFormParamDTO activityFormSyncParam) {
+		wfwFormSynOperateQueueService.push(activityFormSyncParam);
 		return RestRespDTO.success();
 	}
 
