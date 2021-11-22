@@ -73,7 +73,7 @@
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
-                        <div class="fr fs14 export-box" @click="exportRecord"><i class="icon-history-export"></i>导出记录</div>
+                        <div class="fr fs14 export-box" @click="exportRecord"><i class="icon-history-export"></i>导出历史</div>
                         <div class="fr fs14 export-box" @click="exportData"><i class="icon-export"></i>导出</div>
                         <div class="clear"></div>
                     </div>
@@ -251,7 +251,7 @@
     <!--去选择模版-->
     <vue-confirm-common ref="selectTemlateWindow" :message="'活动还未选择模板，请选择模板后发布'" :cancel="'取消'" :sure="'去选择'" @callback="toSelectTemplate"></vue-confirm-common>
     <!--    导出成功-->
-    <vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出记录”中，请稍后下载'" :cancel="'完成'" :sure="'导出记录'" @callback="exportRecord"></vue-confirm-common>
+    <vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出历史”中，请稍后下载'" :cancel="'完成'" :sure="'导出历史'" @callback="exportRecord"></vue-confirm-common>
 
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -932,7 +932,7 @@
                         app.showMsg("导出失败");
                     });
                 },
-                // 导出记录
+                // 导出历史
                 exportRecord: function () {
                     window.open(ctx + '/export-record?exportType=activity_manage');
                 },
