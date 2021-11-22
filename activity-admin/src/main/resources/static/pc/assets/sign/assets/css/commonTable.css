@@ -1240,3 +1240,7 @@ body {
   line-height: 32px;
   border-radius: 2px;
 }
+.el-pagination__sizes .el-input__inner {
+  background-color: #F5F5F5;
+  border: none;
+}

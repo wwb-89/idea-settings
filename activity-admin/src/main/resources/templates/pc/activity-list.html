@@ -33,7 +33,7 @@
                             <i class="el-icon-plus inlineMiddle"></i>
                             <span class="inlineMiddle" style="margin-left: unset;">新建</span>
                         </el-button>
-                        <div class="setting-box fr fs16" @click="setting">
+                        <div class="setting-box fr fs16" v-show="marketId" @click="setting">
                             <i class="icon-setting"></i>设置
                         </div>
                         <div class="search-Box">
@@ -41,6 +41,7 @@
                                       icon="search"
                                       class="search"
                                       v-model.trim="sw"
+                                      prefix-icon="el-icon-search"
                                       @keyup.enter.native="search"
                             >
                             </el-input>
@@ -54,9 +55,7 @@
                         </div>
                         <div class="fr fs14 export-box" v-show="marketId">
                             <el-dropdown :hide-on-click="false" trigger="click">
-                                <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
-                                    <span class="icon-column fs14"><span class="path1"></span><span class="path2"></span></i>列设置</span>
-                                </el-tooltip>
+                                <span class="icon-column fs14"><span class="path1"></span><span class="path2"></span></i>列设置</span>
                                 <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                     <div class="dropdown-lists">
                                         <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
@@ -74,6 +73,7 @@
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
+                        <div class="fr fs14 export-box" @click="exportRecord"><i class="icon-history-export"></i>导出记录</div>
                         <div class="fr fs14 export-box" @click="exportData"><i class="icon-export"></i>导出</div>
                         <div class="clear"></div>
                     </div>

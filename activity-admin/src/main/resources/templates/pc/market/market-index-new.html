@@ -45,8 +45,13 @@
 
 	        },
             created: function () {
+                var $this = this;
                 // 解决跨域
                 document.domain = "chaoxing.com";
+                // 如果被嵌入则跳转到活动管理列表页面
+                if (app.isEmbedded()) {
+                    window.replace(ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&pageMode=" + $this.pageMode)
+                }
             },
             mounted: function () {
                 var $this = this;
