@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.queue.activity.handler;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormActivityWriteBackDataDTO;
@@ -49,7 +50,7 @@ public class WfwFormActivityDataUpdateQueueService {
         Integer fid = queueParam.getFid();
         Integer formId = queueParam.getFormId();
         Integer formUserId = queueParam.getFormUserId();
-        String data = packagePushUpdateData(fid, formId, buildWriteBackData(activity));
+        String data = packagePushUpdateData(buildWriteBackData(activity), formUserId, formId, fid);
         wfwFormApiService.updateForm(formId, formUserId, data);
     }
 
@@ -84,13 +85,18 @@ public class WfwFormActivityDataUpdateQueueService {
      * @Description
      * @author huxiaolong
      * @Date 2021-08-26 18:16:25
-     * @param fid
-     * @param formId
      * @param wfwFormActivityWriteBackData
+     * @param formUserId
+     * @param formId
+     * @param fid
      * @return java.lang.String
      */
-    private String packagePushUpdateData(Integer fid, Integer formId, WfwFormActivityWriteBackDataDTO wfwFormActivityWriteBackData) {
+    private String packagePushUpdateData(WfwFormActivityWriteBackDataDTO wfwFormActivityWriteBackData, Integer formUserId, Integer formId, Integer fid) {
         List<FormStructureDTO> formFieldInfos = wfwFormApiService.getFormStructure(formId, fid);
+        // 如果数据没发生改变则忽略（不更新）
+        if (!isWfwFormDataChanged(fid, formId, formUserId, wfwFormActivityWriteBackData)) {
+            return null;
+        }
         JSONArray result = new JSONArray();
         for (FormStructureDTO formInfo : formFieldInfos) {
             String alias = formInfo.getAlias();
@@ -133,6 +139,35 @@ public class WfwFormActivityDataUpdateQueueService {
             return null;
         }
         return result.toJSONString();
+    }
+
+    private boolean isWfwFormDataChanged(Integer fid, Integer formId,Integer formUserId, WfwFormActivityWriteBackDataDTO wfwFormActivityWriteBackData) {
+        // 查询表单记录
+        FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
+        if (formRecord == null) {
+            return false;
+        }
+        String activityId = formRecord.getStringValue("activity_id");
+        if (!Objects.equals(String.valueOf(wfwFormActivityWriteBackData.getActivityId()), activityId)) {
+            return true;
+        }
+        String status = formRecord.getStringValue("status");
+        if (!Objects.equals(wfwFormActivityWriteBackData.getActivityStatus(), status)) {
+            return true;
+        }
+        String signUpStatus = formRecord.getStringValue("sign_up_status");
+        if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus)) {
+            return true;
+        }
+        String previewUrl = formRecord.getStringValue("preview_url");
+        if (!Objects.equals(wfwFormActivityWriteBackData.getPreviewUrl(), previewUrl)) {
+            return true;
+        }
+        String releaseStatus = formRecord.getStringValue("release_status");
+        if (!Objects.equals(wfwFormActivityWriteBackData.getActivityReleaseStatus(), releaseStatus)) {
+            return true;
+        }
+        return false;
     }
 
 }
