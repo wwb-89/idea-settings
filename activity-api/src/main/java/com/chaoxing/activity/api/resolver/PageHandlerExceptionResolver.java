@@ -48,15 +48,15 @@ public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 	private String getViewName(HttpServletRequest request, Exception e) {
 		if (UserAgentUtils.isMobileAccess(request)) {
 			if (e instanceof WfwFormActivityNotGeneratedException) {
-				return "/error/mobile/activity-not-generated";
+				return "error/mobile/activity-not-generated";
 			} else {
-				return "/error/mobile/50x";
+				return "error/mobile/50x";
 			}
 		}
 		if (e instanceof WfwFormActivityNotGeneratedException) {
-			return "/error/pc/activity-not-generated";
+			return "error/pc/activity-not-generated";
 		} else {
-			return "/error/pc/50x";
+			return "error/pc/50x";
 		}
 	}
 
