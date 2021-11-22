@@ -31,13 +31,13 @@ public class ActivityCreatePermissionApiController {
     private ActivityCreatePermissionService activityCreatePermissionService;
 
     @LoginRequired
-    @PostMapping("/{roleId}")
+    @PostMapping("{roleId}")
     public RestRespDTO getPermissionByFidRoleId(Integer fid, Integer marketId, @PathVariable Integer roleId) {
         return RestRespDTO.success(activityCreatePermissionService.getPermissionByFidRoleId(fid, marketId, roleId));
     }
 
     @LoginRequired
-    @PostMapping("/add")
+    @PostMapping("add")
     public RestRespDTO add(HttpServletRequest request, ActivityCreatePermission activityCreatePermission) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         activityCreatePermission.setCreateUid(loginUser.getUid());
@@ -47,7 +47,7 @@ public class ActivityCreatePermissionApiController {
     }
 
     @LoginRequired
-    @PostMapping("/edit")
+    @PostMapping("edit")
     public RestRespDTO edit(HttpServletRequest request, ActivityCreatePermission activityCreatePermission) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         activityCreatePermission.setUpdateUid(loginUser.getUid());
@@ -56,7 +56,7 @@ public class ActivityCreatePermissionApiController {
     }
 
     @LoginRequired
-    @PostMapping("/batchConfig")
+    @PostMapping("batchConfig")
     public RestRespDTO batchConfig(HttpServletRequest request, String roleIds, String config) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityCreatePermission permissionConfig = JSON.parseObject(config, ActivityCreatePermission.class);
