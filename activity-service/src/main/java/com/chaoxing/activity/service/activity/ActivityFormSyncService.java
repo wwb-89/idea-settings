@@ -12,7 +12,6 @@ import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
-import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
@@ -35,6 +34,7 @@ import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
 import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
@@ -95,6 +95,9 @@ public class ActivityFormSyncService {
     @Resource
     private WorkApiService workApiService;
 
+    @Resource
+    private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
+
 
     /**
     * @Description
@@ -128,8 +131,13 @@ public class ActivityFormSyncService {
         flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
         Activity activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
         // 回写数据
-        String data = packagePushUpdateData(fid, formId, activity);
-        wfwFormApiService.updateForm(formId, formUserId, data);
+        WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
+                .activityId(activity.getId())
+                .fid(fid)
+                .formId(formId)
+                .formUserId(formUserId)
+                .build();
+        wfwFormActivityDataUpdateQueue.push(queueParam);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -275,8 +283,14 @@ public class ActivityFormSyncService {
             activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).syncUpdateActivity(formUserRecord, fid, activity.getId());
         }
         // 回写数据
-        String data = packagePushUpdateData(fid, formId, activity);
-        wfwFormApiService.updateForm(formId, formUserId, data);
+        // 回写数据
+        WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
+                .activityId(activity.getId())
+                .fid(fid)
+                .formId(formId)
+                .formUserId(formUserId)
+                .build();
+        wfwFormActivityDataUpdateQueue.push(queueParam);
     }
 
     /**
@@ -330,102 +344,6 @@ public class ActivityFormSyncService {
             }
         });
         return participateUids;
-    }
-
-    /**封装回写数据
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-08-26 18:16:25
-     * @param fid
-     * @param formId
-     * @param activity
-     * @return java.lang.String
-     */
-    private String packagePushUpdateData(Integer fid, Integer formId, Activity activity) {
-        List<FormStructureDTO> formFieldInfos = wfwFormApiService.getFormStructure(formId, fid);
-        JSONArray result = new JSONArray();
-        for (FormStructureDTO formInfo : formFieldInfos) {
-            String alias = formInfo.getAlias();
-            JSONObject item = new JSONObject();
-            item.put("id", formInfo.getId());
-            item.put("compt", formInfo.getCompt());
-            item.put("comptId", formInfo.getId());
-            item.put("alias", alias);
-            JSONArray data = new JSONArray();
-            if (Objects.equals(alias, "activity_id")) {
-                data.add(activity.getId());
-                item.put("val", data);
-                result.add(item);
-            } else if (Objects.equals(alias, "status")) {
-                data.add(Activity.StatusEnum.fromValue(activity.getStatus()).getName());
-                item.put("val", data);
-                result.add(item);
-            } else if (Objects.equals(alias, "sign_up_status")) {
-                SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
-                if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                    String signUpStatus = "";
-                    if (signStat.getSignUpStartTime() != null && signStat.getSignUpEndTime() != null) {
-                        LocalDateTime now = LocalDateTime.now();
-                        LocalDateTime startTime = signStat.getSignUpStartTime();
-                        LocalDateTime endTime = signStat.getSignUpEndTime();
-                        if (startTime.isAfter(now)) {
-                            signUpStatus = "未开始" ;
-                        } else if (now.isAfter(endTime)) {
-                            signUpStatus = "已结束";
-                        } else {
-                            signUpStatus = "报名中";
-                        }
-                    }
-                    data.add(signUpStatus);
-                    item.put("val", data);
-                    result.add(item);
-                }
-            } else if (Objects.equals(alias, "preview_url")) {
-                if (StringUtils.isNotBlank(activity.getPreviewUrl())) {
-                    data.add(activity.getPreviewUrl());
-                    item.put("val", data);
-                    result.add(item);
-                }
-            }
-        }
-        if (result.isEmpty()) {
-            // 没有配置任何别名则放过
-            return null;
-        }
-        return result.toJSONString();
-    }
-
-    /**封装回写数据
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-08-26 18:16:25
-     * @param fid
-     * @param formId
-     * @param activity
-     * @return java.lang.String
-     */
-    private String packagePushCreateData(Integer fid, Integer formId, Activity activity) {
-        List<FormStructureDTO> formFieldInfos = wfwFormApiService.getFormStructure(formId, fid);
-        JSONArray result = new JSONArray();
-        for (FormStructureDTO formInfo : formFieldInfos) {
-            String alias = formInfo.getAlias();
-            JSONObject item = new JSONObject();
-            item.put("id", formInfo.getId());
-            item.put("compt", formInfo.getCompt());
-            item.put("comptId", formInfo.getId());
-            item.put("alias", alias);
-            JSONArray data = new JSONArray();
-            if (Objects.equals(alias, "activity_id")) {
-                data.add(activity.getId());
-                item.put("val", data);
-                result.add(item);
-            } else if (Objects.equals(alias, "status")) {
-                data.add(Activity.StatusEnum.fromValue(activity.getStatus()).getName());
-                item.put("val", data);
-                result.add(item);
-            }
-        }
-        return result.toJSONString();
     }
 
     /**
