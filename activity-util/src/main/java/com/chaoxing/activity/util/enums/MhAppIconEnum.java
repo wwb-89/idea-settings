@@ -17,9 +17,9 @@ public enum MhAppIconEnum {
     public enum ONE {
 
         /** 收藏 */
-        COLLECTED("collected", "70a0bc103aedda1f1cd5fcc1b0524595"),
+        COLLECTED("collected", "265c36f8e17688c48bcea1290ae5b272"),
         /** 浏览 */
-        BROWSE("browse", "465489a8bbcb36d493c98b5ff7066def"),
+        BROWSE("browse", "7337c2c2951fbcd5ab3ec84b0ce87609"),
         /** 签到数 */
         SIGNED_IN_NUM("signed-in-num", "70a0bc103aedda1f1cd5fcc1b0524595"),
         /** 时间 */
@@ -39,7 +39,7 @@ public enum MhAppIconEnum {
         /** 主办方 */
         ORGANISER("organiser", "b8aa41af62d0dc9e2e873b13ebcf4949"),
         /** 报名数 */
-        SIGNED_UP_NUM("signed-up-num", "cce3d846e1cfc2e59f8352bc99495668"),
+        SIGNED_UP_NUM("signed-up-num", "4ccd8f1195ca7712ac806ac441d14991"),
         /** 评价 */
         RATING("rating", "c840a53bfc108db42b80710af8567465"),
         /** 管理 */
