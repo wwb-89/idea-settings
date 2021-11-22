@@ -142,6 +142,9 @@
                     if ($this.market.enableRegional) {
                         $this.organizationalStructures.push("regional");
                     }
+                } else {
+                    $this.$set($this.market, "enableOrganization", false);
+                    $this.$set($this.market, "enableRegional", false);
                 }
             },
 			mounted: function () {
