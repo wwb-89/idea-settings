@@ -220,6 +220,7 @@ public class Activity {
         /** 通用 */
         NORMAL("通用", "normal"),
         ACTIVITY_DECLARATION("活动申报", "activity_declaration"),
+        WFW_FORM("万能表单", "wfw_form"),
         ACTIVITY_RELEASE("活动发布", "activity_release");
 
         private final String name;

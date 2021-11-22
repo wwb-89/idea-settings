@@ -191,6 +191,7 @@ public class ActivityCreateParamDTO {
 				.activityFlag(getActivityFlag())
 				.originType(getOriginType())
 				.origin(getOrigin())
+				.originFormUserId(getOriginFormUserId())
 				.originActivityId(getOriginActivityId())
 				.openGroup(getOpenGroup())
 				.build();
@@ -316,7 +317,6 @@ public class ActivityCreateParamDTO {
 	public static ActivityCreateParamDTO buildFromFormData(FormDataDTO formData, Integer classifyId, String orgName) {
 		ActivityCreateParamDTO activityCreateParamDto = ActivityCreateParamDTO.buildDefault();
 		Integer fid = formData.getFid();
-		Integer formUserId = formData.getFormUserId();
 		// 活动名称
 		String activityName = FormUtils.getValue(formData, "activity_name");
 		activityCreateParamDto.setName(activityName);
@@ -402,6 +402,9 @@ public class ActivityCreateParamDTO {
 			activityCreateParamDto.setTimeLengthUpperLimit(timeLengthUpperLimit);
 		}
 		activityCreateParamDto.buildLoginUser(formData.getUid(), formData.getUname(), fid, orgName);
+		activityCreateParamDto.setOriginType(Activity.OriginTypeEnum.WFW_FORM.getValue());
+		activityCreateParamDto.setOrigin(String.valueOf(formData.getFormId()));
+		activityCreateParamDto.setOriginFormUserId(formData.getFormUserId());
 		return activityCreateParamDto;
 	}
 

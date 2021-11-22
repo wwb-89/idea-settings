@@ -6,10 +6,9 @@ import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
-import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
-import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
@@ -156,8 +155,6 @@ public class ActivityFormSyncService {
         Classify classify = classifyHandleService.getOrAddMarketClassify(marketId, activityClassifyName);
         // 封装活动创建信息数据
         ActivityCreateParamDTO activityCreateParam = ActivityCreateParamDTO.buildFromFormData(formUserRecord, classify.getId(), orgName);
-        activityCreateParam.setOrigin(String.valueOf(formId));
-        activityCreateParam.setOriginFormUserId(formUserId);
         activityCreateParam.setStatus(Activity.StatusEnum.RELEASED.getValue());
         activityCreateParam.setSignedUpNotice(true);
         if (activityCreateParam.getOpenWork()) {
