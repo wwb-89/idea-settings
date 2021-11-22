@@ -267,7 +267,7 @@ public class ActivityMhDataCenterApiController {
             fields.add(buildField("发布时间", Optional.ofNullable(record.getReleaseTime()).map(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM::format).orElse(""), ++fieldFlag));
             fields.add(buildField("typeID", record.getActivityClassifyId(), 102));
             fields.add(buildField("活动时间段", DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime(), DateUtils.MIDDLE_LINE_SEPARATOR), 102));
-            Boolean needStatusValue = urlParams.getBoolean("needStatusValue");
+            Boolean needStatusValue = Optional.ofNullable(urlParams.getBoolean("needStatusValue")).orElse(false);
             if (needStatusValue) {
                 fields.add(buildField("活动状态value", getStatusValue(record), ++fieldFlag));
             }
