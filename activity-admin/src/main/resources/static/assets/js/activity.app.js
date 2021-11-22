@@ -482,5 +482,5 @@ Vue.filter("percentageFormat", function (value) {
     if (!value || typeof value != "number") {
         return 0;
     }
-    return (value * 100) + '%';
+    return Decimal.mul(value, 100).toNumber() + '%';
 });

@@ -98,6 +98,7 @@
                                 <span class="table-img-top" v-show="scope.row.top">置顶</span>
                             </template>
                         </el-table-column>
+                        <!--活动名称-->
                         <el-table-column
                                 v-else-if="item.code === 'name'"
                                 :fixed="item.defaultTop"
@@ -109,6 +110,7 @@
                                 <span style="cursor: pointer; color: #0084FF" @click="previewPage(scope.row)">{{scope.row.name}}</span>
                             </template>
                         </el-table-column>
+                        <!--签到率-->
                         <el-table-column
                                 v-else-if="item.code === 'signedInRate'"
                                 :fixed="item.defaultTop"
@@ -120,6 +122,7 @@
                                 <span>{{scope.row.signedInRate | percentageFormat}}</span>
                             </template>
                         </el-table-column>
+                        <!--状态-->
                         <el-table-column
                                 v-else-if="item.code === 'status'"
                                 class-name="th-dropdwon-radio"
@@ -148,6 +151,7 @@
                                 <el-button type="text" @click="toPoster(scope.row.id)">查看</el-button>
                             </template>
                         </el-table-column>
+                        <!--人数限制-->
                         <el-table-column
                                 v-else-if="item.code === 'personLimit'"
                                 :prop="item.code"
@@ -161,6 +165,7 @@
                                 <span v-else>{{scope.row.personLimit}}</span>
                             </template>
                         </el-table-column>
+                        <!--活动分类-->
                         <el-table-column
                                 v-else-if="item.code === 'activityClassify'"
                                 class-name="th-dropdwon-radio"
@@ -191,6 +196,7 @@
                                 </div>
                             </template>
                         </el-table-column>
+                        <!--开始时间-->
                         <el-table-column
                                 v-else-if="item.code === 'startTime' || item.code === 'endTime'"
                                 :prop="item.code"
