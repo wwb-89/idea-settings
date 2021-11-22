@@ -269,7 +269,7 @@
             case 1:
                 return "未发布";
             case 2:
-                return "活动预告";
+                return "即将开始";
             case 3:
                 return "进行中";
             default:

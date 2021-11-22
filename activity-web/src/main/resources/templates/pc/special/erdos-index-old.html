@@ -57,7 +57,7 @@
                         <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
                             <div class="img-box">
                                 <img class="jqthumbImg" :src="item | getCloudImgUrl">
-                                <div class="tag" v-if="item.status == 2">活动预告</div>
+                                <div class="tag" v-if="item.status == 2">即将开始</div>
                                 <div class="tag green" v-if="item.status == 3">进行中</div>
                                 <div class="tag black" v-if="item.status == 4">已结束</div>
                             </div>
