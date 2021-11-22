@@ -1,6 +1,7 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -10,6 +11,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
@@ -17,7 +19,12 @@ import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +69,10 @@ public class ActivitySettingController {
     private ActivityMenuService activityMenuService;
     @Resource
     private MarketSignupConfigService marketSignupConfigService;
+    @Resource
+    private SignUpConditionService signUpConditionService;
+    @Resource
+    private WfwFormApiService formApiService;
 
     @RequestMapping("index")
     public String settingIndex(Model model, @PathVariable Integer activityId) {
@@ -158,6 +170,22 @@ public class ActivitySettingController {
         model.addAttribute("contactGroups", WfwGroupDTO.perfectWfwGroups(wfwContactApiService.listUserContactOrgsByFid(loginUser.getFid())));
         String activityFlag = activity.getActivityFlag();
         model.addAttribute("activityFlag", activityFlag);
+        List<SignUpCondition> signUpConditions = signUpConditionService.listEditActivityConditions(activityId, activity.getTemplateId());
+        // 获取表单结构map
+        List<String> formIds = signUpConditions.stream().map(SignUpCondition::getOriginIdentify).filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
+        Map<String, List<WfwFormFieldVO>> formFieldStructures = Maps.newHashMap();
+        if (CollectionUtils.isNotEmpty(formIds)) {
+            formFieldStructures = formIds.stream().collect(Collectors.toMap(
+                    v -> v,
+                    v -> formApiService.getFormStructure(Integer.valueOf(v), activity.getCreateFid())
+                            .stream().map(WfwFormFieldVO::buildFromWfwFormFieldDTO)
+                            .collect(Collectors.toList()),
+                    (v1, v2) -> v2));
+        }
+        model.addAttribute("formFieldStructures", formFieldStructures);
+        model.addAttribute("sucTplComponentIds", signUpConditionService.listActivityEnabledTemplateComponentId(activityId));
+        model.addAttribute("signUpConditions", signUpConditions);
+        model.addAttribute("conditionEnums", ConditionDTO.list());
         // 市场报名配置
         MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(createParamDTO.getMarketId());
         model.addAttribute("marketSignUpConfig", marketSignUpConfig);

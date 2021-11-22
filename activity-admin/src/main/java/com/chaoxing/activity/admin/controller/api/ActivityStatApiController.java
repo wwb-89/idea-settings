@@ -39,7 +39,7 @@ public class ActivityStatApiController {
      * @param endDate
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
-    @PostMapping("/org/{fid}/query")
+    @PostMapping("org/{fid}/query")
     public RestRespDTO getOrgActivityStatInfo(@PathVariable Integer fid, String startDate, String endDate) {
         ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(fid, startDate, endDate);
         return RestRespDTO.success(activityOrgStat);
@@ -52,7 +52,7 @@ public class ActivityStatApiController {
      * @param queryParamStr
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
-    @PostMapping("/top-activity")
+    @PostMapping("top-activity")
     public RestRespDTO listTopActivity(String queryParamStr) {
         ActivityStatQueryDTO statQueryParams = JSON.parseObject(queryParamStr, ActivityStatQueryDTO.class);
         List<ActivityStat> topActivityStat = activityStatQueryService.listTopActivity(statQueryParams);
@@ -69,7 +69,7 @@ public class ActivityStatApiController {
      * @param endDate
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
-    @PostMapping("/region/{fid}/query")
+    @PostMapping("region/{fid}/query")
     public RestRespDTO getRegionalActivityStatInfo(@PathVariable Integer fid, String startDate, String endDate) {
         ActivityOrgStatDTO activityOrgStat = activityStatQueryService.regionalActivityStat(fid, startDate, endDate);
         return RestRespDTO.success(activityOrgStat);
@@ -82,7 +82,7 @@ public class ActivityStatApiController {
     * @param queryParamStr
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @PostMapping("/region/detail")
+    @PostMapping("region/detail")
     public RestRespDTO listRegionStatDetail(String queryParamStr) {
         ActivityRegionStatQueryDTO queryParams = JSON.parseObject(queryParamStr, ActivityRegionStatQueryDTO.class);
         List<ActivityRegionalStatDTO> regionalStats = activityStatQueryService.listRegionStatDetail(queryParams);
@@ -96,7 +96,7 @@ public class ActivityStatApiController {
     * @param queryParamStr
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @PostMapping("/region/org/detail")
+    @PostMapping("region/org/detail")
     public RestRespDTO listRegionOrgStatDetail(String queryParamStr) {
         ActivityRegionStatQueryDTO queryParams = JSON.parseObject(queryParamStr, ActivityRegionStatQueryDTO.class);
         List<ActivityRegionalStatDTO> regionalOrgStats = activityStatQueryService.listRegionOrgStatDetail(queryParams);

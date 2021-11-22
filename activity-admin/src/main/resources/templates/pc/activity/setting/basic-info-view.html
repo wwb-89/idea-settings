@@ -51,7 +51,7 @@
                 <el-form-item v-else-if="item.code == 'introduction'" v-show="isNotEmpty(activity.introduction)" :label="item.name">
                     <div class="input-box">
                         <div class="txt">
-                            <div class="width640 overHidden2">{{activity.introduction}}</div>
+                            <div class="width640 overHidden2" th:utext="activity.introduction">活动简介</div>
                         </div>
                     </div>
                 </el-form-item>

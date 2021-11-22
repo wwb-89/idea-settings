@@ -78,7 +78,7 @@
 								<p v-if="item.hasSignUp && signUpAble && item.signUpStatus == 2" :class="{'tips sign': true, 'color6': (item.signUpStatus == 2), 'color2': (item.signUpStatus != 2)}"><span class="sign-dot"></span>报名中</p>
 								<p class="tips color1" v-if="item.status == 3">进行中</p>
 								<p class="tips color3" v-if="item.status == 4">已结束</p>
-								<p class="tips color5" v-if="item.status == 2">活动预告</p>
+								<p class="tips color5" v-if="item.status == 2">即将开始</p>
 							</div>
 							<p class="num" v-if="item.openSignUp"><i></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
 							<div class="js-crop-img" @click="detail(index)">
@@ -167,7 +167,7 @@
 				//状态
 				$this.statuses = [
 					{name: "全部", value: "", selected: true},
-					{name: "活动预告", value: "2", selected: false},
+					{name: "即将开始", value: "2", selected: false},
 					{name: "进行中", value: "3", selected: false},
 					{name: "已结束", value: "4", selected: false}
 				];

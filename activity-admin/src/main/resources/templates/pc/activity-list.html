@@ -33,7 +33,7 @@
                             <i class="el-icon-plus inlineMiddle"></i>
                             <span class="inlineMiddle" style="margin-left: unset;">新建</span>
                         </el-button>
-                        <div class="setting-box fr fs16" @click="setting">
+                        <div class="setting-box fr fs16" v-show="marketId" @click="setting">
                             <i class="icon-setting"></i>设置
                         </div>
                         <div class="search-Box">
@@ -41,6 +41,7 @@
                                       icon="search"
                                       class="search"
                                       v-model.trim="sw"
+                                      prefix-icon="el-icon-search"
                                       @keyup.enter.native="search"
                             >
                             </el-input>
@@ -54,9 +55,7 @@
                         </div>
                         <div class="fr fs14 export-box" v-show="marketId">
                             <el-dropdown :hide-on-click="false" trigger="click">
-                                <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
-                                    <span class="icon-column fs14"><span class="path1"></span><span class="path2"></span></i>列设置</span>
-                                </el-tooltip>
+                                <span class="icon-column fs14"><span class="path1"></span><span class="path2"></span></i>列设置</span>
                                 <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                     <div class="dropdown-lists">
                                         <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
@@ -74,6 +73,7 @@
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
+                        <div class="fr fs14 export-box" @click="exportRecord"><i class="icon-history-export"></i>导出历史</div>
                         <div class="fr fs14 export-box" @click="exportData"><i class="icon-export"></i>导出</div>
                         <div class="clear"></div>
                     </div>
@@ -98,6 +98,7 @@
                                 <span class="table-img-top" v-show="scope.row.top">置顶</span>
                             </template>
                         </el-table-column>
+                        <!--活动名称-->
                         <el-table-column
                                 v-else-if="item.code === 'name'"
                                 :fixed="item.defaultTop"
@@ -109,6 +110,7 @@
                                 <span style="cursor: pointer; color: #0084FF" @click="previewPage(scope.row)">{{scope.row.name}}</span>
                             </template>
                         </el-table-column>
+                        <!--签到率-->
                         <el-table-column
                                 v-else-if="item.code === 'signedInRate'"
                                 :fixed="item.defaultTop"
@@ -120,6 +122,7 @@
                                 <span>{{scope.row.signedInRate | percentageFormat}}</span>
                             </template>
                         </el-table-column>
+                        <!--状态-->
                         <el-table-column
                                 v-else-if="item.code === 'status'"
                                 class-name="th-dropdwon-radio"
@@ -148,6 +151,7 @@
                                 <el-button type="text" @click="toPoster(scope.row.id)">查看</el-button>
                             </template>
                         </el-table-column>
+                        <!--人数限制-->
                         <el-table-column
                                 v-else-if="item.code === 'personLimit'"
                                 :prop="item.code"
@@ -161,6 +165,7 @@
                                 <span v-else>{{scope.row.personLimit}}</span>
                             </template>
                         </el-table-column>
+                        <!--活动分类-->
                         <el-table-column
                                 v-else-if="item.code === 'activityClassify'"
                                 class-name="th-dropdwon-radio"
@@ -191,6 +196,7 @@
                                 </div>
                             </template>
                         </el-table-column>
+                        <!--开始时间-->
                         <el-table-column
                                 v-else-if="item.code === 'startTime' || item.code === 'endTime'"
                                 :prop="item.code"
@@ -245,7 +251,7 @@
     <!--去选择模版-->
     <vue-confirm-common ref="selectTemlateWindow" :message="'活动还未选择模板，请选择模板后发布'" :cancel="'取消'" :sure="'去选择'" @callback="toSelectTemplate"></vue-confirm-common>
     <!--    导出成功-->
-    <vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出记录”中，请稍后下载'" :cancel="'完成'" :sure="'导出记录'" @callback="exportRecord"></vue-confirm-common>
+    <vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出历史”中，请稍后下载'" :cancel="'完成'" :sure="'导出历史'" @callback="exportRecord"></vue-confirm-common>
 
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -940,7 +946,7 @@
                         app.showMsg("导出失败");
                     });
                 },
-                // 导出记录
+                // 导出历史
                 exportRecord: function () {
                     window.open(ctx + '/export-record?exportType=activity_manage');
                 },

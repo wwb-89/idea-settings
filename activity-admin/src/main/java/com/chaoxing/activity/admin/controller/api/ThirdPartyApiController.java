@@ -31,7 +31,7 @@ public class ThirdPartyApiController {
     * @param url
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @RequestMapping("/query/teaching/clazz")
+    @RequestMapping("query/teaching/clazz")
     public RestRespDTO searchDataFormThirdPartyUrl(String url) {
         List<ClazzDTO> clazzes = thirdPartyApiService.getDataFromThirdPartyUrl(url, ClazzDTO.class);
         return RestRespDTO.success(clazzes);

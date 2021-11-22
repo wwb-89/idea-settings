@@ -77,8 +77,10 @@ public class DomainConstant {
     public static final String NOTICE_DOMAIN = "https://notice.chaoxing.com";
 
     //大数据
-    /** 大数据积分域名 */
-    public static final String BIGDATA_SCORE_DOMAIN = "http://bigdata-score.chaoxing.com";
+    /** 大数据积分（新增）域名 */
+    public static final String BIGDATA_SCORE_ADD_DOMAIN = "http://bigdata-api.chaoxing.com";
+    /** 大数据积分（消耗）域名 */
+    public static final String BIGDATA_SCORE_SPEND_DOMAIN = "http://bigdata-score.chaoxing.com";
 
     // 用户中心
     /** 用户中心域名 */

@@ -498,7 +498,7 @@ public class ActivityApiController {
 	* @param activityCreateDTO
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("/partial-info/update")
+	@RequestMapping("partial-info/update")
 	public RestRespDTO updatePartialActivityInfo(@RequestBody ActivityCreateFromPreachParamDTO activityCreateDTO) {
 		PassportUserDTO passportUserDTO = passportApiService.getByUid(activityCreateDTO.getUid());
 		LoginUserDTO loginUserDTO = LoginUserDTO.buildDefault(activityCreateDTO.getUid(), passportUserDTO.getRealName(), activityCreateDTO.getFid(), "");
@@ -542,14 +542,14 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
-	/** 万能表单数据修改后同步修改活动
+	/** 万能表单数据新增/修改/删除后同步修改活动
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-08-26 16:46:53
 	* @param activityFormSyncParam
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("/sync/from/wfw-form")
+	@RequestMapping("sync/from/wfw-form")
 	public RestRespDTO activitySyncOperate(ActivityCreateFromFormParamDTO activityFormSyncParam) {
 		wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(activityFormSyncParam);
 		return RestRespDTO.success();
