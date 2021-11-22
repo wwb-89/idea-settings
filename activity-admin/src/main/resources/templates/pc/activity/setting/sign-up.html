@@ -93,6 +93,29 @@
             cursor: pointer;
             margin-bottom: 2px;
         }
+
+        .setForm .form-item .item-tips {
+            line-height: 20px;
+            background: #F0F0F0;
+            border-radius: 2px;
+            color: #999999;
+            font-size: 12px;
+            padding: 0 4px;
+            display: inline-block;
+            border: none;
+            margin: 6px 16px 0;
+            font-weight: normal;
+        }
+
+        .setForm .form-item .select-form {
+            margin-left: 122px;
+        }
+
+        .setForm .form-item .select-form .el-select {
+            width: 120px;
+        }
+
+
         [v-cloak]{
             display: none;
         }
@@ -264,15 +287,43 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
-                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                        <div class="input-box">
-                            <div class="set-box">
-                                <el-switch v-model="signUpConditionActiveMap[it.id]"></el-switch>
+                    <template v-else-if="it.code == 'sign_up_condition'">
+                        <div class="form-item">
+                            <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                            <div class="input-box">
+                                <el-switch v-model="signUpConditionMap[it.id].enable"></el-switch>
+                                <el-tooltip class="item-tips fl" effect="dark" :content="signUpConditionTips(it.name, it.id)" placement="top">
+                                    <el-button>报名条件</el-button>
+                                </el-tooltip>
                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                             </div>
                         </div>
-                    </div>
+                        <div class="form-item" v-if="signUpConditionMap[it.id].enable && signUpConditionMap[it.id].allowSignedUp && signUpConditionMap[it.id].configOnActivity">
+                            <el-form label-position='left' label-width="72px" class="select-form" onsubmit="return false">
+                                <el-form-item :label="detail.fieldName" v-for="(detail, dIndex) in signUpConditionMap[it.id].activityConditionDetails">
+                                    <el-select v-model="detail.condition" placeholder="请选择">
+                                        <el-option v-for="(ce, ceIdx) in conditionEnums"
+                                                   :key="ceIdx"
+                                                   :label="ce.name"
+                                                   :value="ce.value"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                    <template v-if="detail.condition && detail.condition != 'empty' && detail.condition != 'un_empty'">
+                                        <el-select v-if="detail.compt == 'selectbox' || detail.compt == 'selectmultibox'" v-model="detail.value" placeholder="请选择" style="width: 152px">
+                                            <el-option  v-for="(it, index) in detail.options"
+                                                        :key="index"
+                                                        :label="it"
+                                                        :value="it"
+                                            >
+                                            </el-option>
+                                        </el-select>
+                                        <el-input v-else v-model="detail.value" placeholder="请输入" style="width: 152px"></el-input>
+                                    </template>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                    </template>
                 </template>
                 <el-divider v-if="index !== signUpTemplateComponents.length - 1"></el-divider>
             </div>
@@ -349,7 +400,10 @@
                         // 报名信息填写类型: { templateComponentId: signUpFillInfoType }
                         fillInfoTypeMap: {},
                         // 报名条件
-                        signUpConditionActiveMap: {},
+                        signUpConditionMap: {},
+                        sucTplComponentIds: [[${sucTplComponentIds}]],
+                        signUpConditions: [[${signUpConditions}]],
+                        conditionEnums: [[${conditionEnums}]],
                         notAllowCancelTypes: [
                             {value: 'after_sign_up_end', label: '报名结束后'},
                             {value: 'after_activity_start', label: '活动开始后'},
@@ -405,15 +459,41 @@
                             }
                         }
                     });
+                    // 表单字段map封装
+                    var formFields = [[${formFieldStructures}]] || {}
+                    var formIds = Object.keys(formFields);
+                    var formStructureMap = {}
+                    $(formIds).each(function (i) {
+                        var formId = formIds[i];
+                        if (formFields[formId]) {
+                            var fieldNameCompObj = {};
+                            $(formFields[formId]).each(function () {
+                                fieldNameCompObj[this.name] = this;
+                            });
+                            formStructureMap[formId] = fieldNameCompObj;
+                        }
+                    });
+                    // 报名条件map封装
+                    var sucTplComponentIds = $this.sucTplComponentIds || [];
+                    $($this.signUpConditions).each(function () {
+                        var _this = this;
+                        $this.$set(_this, "enable", sucTplComponentIds.includes(_this.templateComponentId));
+                        if (_this.activityConditionDetails) {
+                            $(_this.activityConditionDetails).each(function () {
+                                var fieldObj = formStructureMap[_this.originIdentify];
+                                $this.$set(this, "compt", fieldObj[this.fieldName].compt);
+                                $this.$set(this, "options", fieldObj[this.fieldName].options || []);
+                            })
+                        }
+                        $this.$set($this.signUpConditionMap, this.templateComponentId, _this);
+                    });
                     $($this.signUpTemplateComponents).each(function() {
                         var _this = this;
                         $this.templateComponentMap[_this.id] = _this;
 
                         if (_this.children && _this.children.length > 0) {
                             $(_this.children).each(function () {
-                                if (this.code == 'sign_up_condition') {
-                                    $this.$set($this.signUpConditionActiveMap, this.id, false);
-                                } else if (this.code == 'sign_up_fill_info' && this.signUpFillInfoType) {
+                                if (this.code == 'sign_up_fill_info' && this.signUpFillInfoType) {
                                     // 一个报名目前只有一个报名信息填写，故map的映射为 { signUpTplComponentId : signUpFillInfoType }
                                     $this.fillInfoTypeMap[_this.id] = this.signUpFillInfoType
                                 }
@@ -421,14 +501,6 @@
                             });
                         }
                     });
-
-                    if ($this.activity.sucTemplateComponentIds) {
-                        var sucTemplateComponentIds = $this.activity.sucTemplateComponentIds;
-                        for (var i = 0; i < sucTemplateComponentIds.length; i++) {
-                            var tplComponentId = sucTemplateComponentIds[i];
-                            $this.$set($this.signUpConditionActiveMap, tplComponentId, true);
-                        }
-                    }
 
                     // 报名
                     $($this.sign.signUps).each(function (i) {
@@ -531,6 +603,18 @@
                             $this.$set($this.sign.signUps[i], "wfwOrgScope", "no_limit");
                         }
                     },
+                    signUpConditionTips: function (name, tplComponentId) {
+                        var $this = this;
+                        var signUpCondition = $this.signUpConditionMap[tplComponentId];
+                        if (!signUpCondition.activityConditionDetails || signUpCondition.activityConditionDetails.length == 0) {
+                            return '';
+                        }
+                        var conditionFields = [];
+                        $(signUpCondition.activityConditionDetails).each(function () {
+                            conditionFields.push(this.fieldName);
+                        })
+                        return '在' + name + '中，匹配' + conditionFields.join(',') + '的条件可进行报名';
+                    },
                     initWfwGroups: function () {
                         var $this = this;
                         var nodeSoncountMap = {}
@@ -574,18 +658,32 @@
                     },
                     packageSignUpConditionEnable: function () {
                         var $this = this;
-                        var keys = Object.keys($this.signUpConditionActiveMap);
-                        if (keys.length == 0) {
-                            return null;
-                        }
+                        var keys = Object.keys($this.signUpConditionMap);
                         var sucTemplateComponentIds = [];
+                        var signUpConditions = [];
+                        if (keys.length == 0) {
+                            return;
+                        }
                         for (var i = 0; i < keys.length; i++) {
                             var tplComponentId = keys[i];
-                            if ($this.signUpConditionActiveMap[tplComponentId]) {
-                                sucTemplateComponentIds.push(tplComponentId)
+                            var item = $this.signUpConditionMap[tplComponentId];
+                            if (item.enable) {
+                                sucTemplateComponentIds.push(tplComponentId);
+                                if (item.allowSignedUp && item.configOnActivity) {
+                                    $(item.activityConditionDetails).each(function () {
+                                        // 条件是不限、为空、不为空, 清空value
+                                        if (!this.condition || this.condition == 'empty' || this.condition == 'un_empty') {
+                                            this.value = "";
+                                        }
+                                    });
+                                    signUpConditions.push(item);
+                                }
                             }
                         }
-                        return sucTemplateComponentIds;
+                        return {
+                            signUpConditionStr: activityApp.getJsonStr(signUpConditions),
+                            sucTemplateComponentIdStr:activityApp.getJsonStr(sucTemplateComponentIds)
+                        }
                     },
                     packageSubmitSign: function () {
                         var $this = this;
@@ -877,10 +975,11 @@
                         }
                         var url = ctx + "/api/activity/setting/sign-up";
                         var sign = $this.packageSubmitSign();
-                        var sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
+                        var signUpConditionObj = $this.packageSignUpConditionEnable();
                         var params = {
                             activityId: $this.activity.id,
-                            sucTemplateComponentIdStr: activityApp.getJsonStr(sucTemplateComponentIds),
+                            sucTemplateComponentIdStr: signUpConditionObj.sucTemplateComponentIdStr,
+                            signUpConditionStr: signUpConditionObj.signUpConditionStr,
                             signJsonStr: activityApp.getJsonStr(sign)
                         };
                         app.ajaxPostWithLoading(url, params, function (data) {

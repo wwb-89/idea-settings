@@ -370,7 +370,7 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void updateSignUp(Integer activityId, List<Integer> sucTemplateComponentIds, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
+	public void updateSignUp(Integer activityId, List<Integer> sucTemplateComponentIds, List<SignUpCondition> signUpConditions, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
 		String activityEditLockKey = getActivityEditLockKey(activityId);
 		distributedLock.lock(activityEditLockKey, () -> {
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
@@ -378,7 +378,12 @@ public class ActivityHandleService {
 			signCreateParam.setId(existActivity.getSignId());
 			handleSign(existActivity, signCreateParam, loginUser);
 			// 更新
-			signUpConditionService.updateActivitySignUpEnables(activityId, sucTemplateComponentIds);
+			if (CollectionUtils.isNotEmpty(sucTemplateComponentIds)) {
+				signUpConditionService.updateActivitySignUpEnables(activityId, sucTemplateComponentIds);
+			}
+			if (CollectionUtils.isNotEmpty(signUpConditions)) {
+				signUpConditionService.updateActivitySignUpConditionsFromConditions(activityId, signUpConditions);
+			}
 			return null;
 		}, e -> {
 			log.error("更新报名:{} error:{}", JSON.toJSONString(signCreateParam.getSignUps()), e.getMessage());

@@ -8,6 +8,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -75,11 +76,12 @@ public class ActivitySettingApiController {
      */
     @LoginRequired
     @PostMapping("sign-up")
-    public RestRespDTO signUpEdit(HttpServletRequest request, Integer activityId, String sucTemplateComponentIdStr, String signJsonStr) {
+    public RestRespDTO signUpEdit(HttpServletRequest request, Integer activityId, String sucTemplateComponentIdStr, String signUpConditionStr, String signJsonStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
         List<Integer> sucTemplateComponentIds = JSONArray.parseArray(sucTemplateComponentIdStr, Integer.class);
-        activityHandleService.updateSignUp(activityId, sucTemplateComponentIds, signAddEdit, loginUser);
+        List<SignUpCondition> signUpConditions = JSONArray.parseArray(signUpConditionStr, SignUpCondition.class);
+        activityHandleService.updateSignUp(activityId, sucTemplateComponentIds, signUpConditions, signAddEdit, loginUser);
         return RestRespDTO.success();
     }
 

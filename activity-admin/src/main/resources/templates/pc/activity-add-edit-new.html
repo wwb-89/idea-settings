@@ -874,7 +874,6 @@
                 sucTplComponentIds: [[${sucTplComponentIds}]],
                 signUpConditions: [[${signUpConditions}]],
                 conditionEnums: [[${conditionEnums}]],
-                currFormField: { type: 'input', options: []},
                 notAllowCancelTypes: [
                     {value: 'after_sign_up_end', label: '报名结束后'},
                     {value: 'after_activity_start', label: '活动开始后'},
@@ -1096,12 +1095,6 @@
                             }
                             $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
                         });
-                    }
-                    if (this.code == 'sign_up_condition') {
-                        var signUpCondition = this.signUpCondition;
-                        if (signUpCondition) {
-                            $this.$set($this.signUpConditionMap, this.id, signUpCondition);
-                        }
                     }
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
@@ -1935,7 +1928,6 @@
                 packageSignUpConditionEnable: function () {
                     var $this = this;
                     var keys = Object.keys($this.signUpConditionMap);
-                    var sucTemplateComponentIds = [];
                     $this.activity.sucTemplateComponentIds = [];
                     $this.activity.signUpConditions = [];
                     if (keys.length == 0) {
