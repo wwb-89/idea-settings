@@ -33,8 +33,9 @@
                             <i class="el-icon-plus inlineMiddle"></i>
                             <span class="inlineMiddle" style="margin-left: unset;">新建</span>
                         </el-button>
-                        <el-button class="btn-customize" round @click="exportData">导出</el-button>
-                        <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
+                        <div class="setting-box fr fs16" @click="setting">
+                            <i class="icon-setting"></i>设置
+                        </div>
                         <div class="search-Box">
                             <el-input placeholder="名称/创建人/创建单位"
                                       icon="search"
@@ -51,10 +52,10 @@
                         <div class="count-info fl">
                             <span class="color999">共 {{ total }} 个</span>
                         </div>
-                        <div class="setting-box" v-show="marketId">
+                        <div class="fr fs14 export-box" v-show="marketId">
                             <el-dropdown :hide-on-click="false" trigger="click">
                                 <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
-                                    <span class="icon-setting fs16"></span>
+                                    <span class="icon-column fs14"><span class="path1"></span><span class="path2"></span></i>列设置</span>
                                 </el-tooltip>
                                 <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                     <div class="dropdown-lists">
@@ -73,6 +74,7 @@
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
+                        <div class="fr fs14 export-box" @click="exportData"><i class="icon-export"></i>导出</div>
                         <div class="clear"></div>
                     </div>
                 </div>
@@ -229,7 +231,7 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-pagination class="fixPage" background layout="sizes, prev, pager, next" :total="total" :page-sizes="[8, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
+                <el-pagination class="fixPage" background layout="prev, pager, next, sizes" :total="total" :page-sizes="[8, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
             </div>
         </div>
         <!-- 表格内容 -->
@@ -941,6 +943,11 @@
                 // 导出记录
                 exportRecord: function () {
                     window.open(ctx + '/export-record?exportType=activity_manage');
+                },
+                setting: function () {
+                    var $this = this;
+                    var url = ctx + "/market/" + $this.marketId + "/setting";
+                    window.open(url);
                 }
             }
         });

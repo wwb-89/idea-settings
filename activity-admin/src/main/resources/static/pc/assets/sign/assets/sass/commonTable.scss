@@ -206,13 +206,23 @@ body {
 .export-box {
   line-height: 30px;
   margin-left: 20px;
-  color: #999999;
+  color: #666666;
   cursor: pointer;
   i{
     margin-right: 4px;
   }
+  .icon-column{
+    &::before{
+      margin-right: 4px;
+    }
+  }
   &:hover {
     color: #0084FF;
+  }
+  .el-dropdown{
+    &:hover {
+      color: #0084FF;
+    }
   }
 }
 .search-Box {
@@ -731,21 +741,30 @@ body {
 .table-count-box {
   position: relative;
   margin-bottom: 16px;
-  line-height: 16px;
-  .setting-box {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    .el-dropdown {
-      cursor: pointer;
-      &:hover {
-        color: $color0;
-        .icon-setting:before{
-          color: $color0;
-        }
-      }
+  line-height: 30px;
+}
+
+.setting-box {
+  width: 64px;
+  height: 30px;
+  line-height: 30px;
+  color: #333333;
+  background: #ffffff;
+  border-radius: 4px;
+  text-align: center;
+  margin-left: 16px;
+  cursor: pointer;
+  &:hover{
+    background: #ECEEEF;
+  }
+  .icon-setting{
+    &::before{
+      margin-right: 4px;
+      color: #666666;
     }
+  }
+  .el-dropdown {
+    cursor: pointer;
   }
 }
 

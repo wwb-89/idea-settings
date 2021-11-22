@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../../assets/table-icomoon/style.css">
     <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <link rel="stylesheet" href="../../assets/sign/assets/css/commonTable.css">
@@ -74,7 +74,10 @@
                         <el-button class="btn-customize" round>批量不通过</el-button>
                         <el-button class="btn-customize disabled" round disabled="disabled">批量不通过</el-button>
                         <el-button class="btn-customize" round @click="changeTimePop=true">修改签到时间</el-button>
-                        <div class="fr fs14 export-box"><i class="icon-export"></i>导出</div>
+                        
+                        <div class="setting-box fr fs16">
+                            <i class="icon-setting"></i>设置
+                        </div>
                         <div class="search-Box">
                             <el-input placeholder="搜索"
                                       icon="search"
@@ -120,10 +123,10 @@
                             <span class="colorBlue marginr8">已选择 {{selectNumber}} 人</span>
                             <span class="color999">共 100 人，剩余名额 20</span>
                         </div>
-                        <div class="setting-box">
+                        <div class="fr fs14 export-box">
                             <el-dropdown :hide-on-click="false" trigger="click">
                                 <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
-                                    <span class="icon-setting fs16"></span>
+                                    <span class="icon-column fs14">列设置</span>
                                 </el-tooltip>
                                 <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                     <div class="dropdown-lists">
@@ -144,6 +147,7 @@
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
+                        <div class="fr fs14 export-box"><i class="icon-export"></i>导出</div>
                         <div class="clear"></div>
                     </div>
 

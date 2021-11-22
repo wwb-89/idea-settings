@@ -2,9 +2,11 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.market.MarketValidationService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -28,9 +30,11 @@ public class BlacklistController {
 
 	@LoginRequired
 	@RequestMapping("list")
-	public String list(HttpServletRequest request, @PathVariable Integer marketId) {
+	public String list(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
+		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
+		model.addAttribute("market", market);
+		model.addAttribute("marketId", marketId);
 		return "pc/blacklist/blacklist-list";
 	}
 

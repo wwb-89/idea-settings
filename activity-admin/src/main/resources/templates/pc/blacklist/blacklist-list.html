@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="/static/pc/assets/css/choose-dialog.css" th:href="@{/pc/assets/css/choose-dialog.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/limits-manage.css" th:href="@{/pc/assets/css/limits-manage.css}">
 	<link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/notice-setting.css" th:href="@{/pc/assets/css/notice-setting.css}">
 	<style>
         [v-cloak] {
             display: none;
@@ -20,7 +21,8 @@
 	</style>
 </head>
 <body>
-<div id="vm" v-cloak>
+<div class="tab-page" id="vm" v-cloak>
+	<div class="page-header">{{market.name}}黑名单</div>
 	<div style="display: block">
 		<!-- 选项卡内容 -->
 		<div class="tab-content-box">
@@ -69,7 +71,7 @@
 						</template>
 					</el-table-column>
 				</el-table>
-				<el-pagination class="fixPage" background layout="sizes, prev, pager, next" :total="total"  :page-sizes="[10, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
+				<el-pagination class="fixPage" background layout="prev, pager, next, sizes" :total="total"  :page-sizes="[10, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
 			</div>
 		</div>
 	</div>
@@ -101,6 +103,7 @@
 		vm = new Vue({
 			el: '#vm',
 			data: {
+                market: [[${market}]],
 				marketId: [[${marketId}]],
 				blacklists: [],
 				loaded: false,

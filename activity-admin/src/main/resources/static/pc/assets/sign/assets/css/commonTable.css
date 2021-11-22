@@ -234,7 +234,7 @@ body {
 .export-box {
   line-height: 30px;
   margin-left: 20px;
-  color: #999999;
+  color: #666666;
   cursor: pointer;
 }
 
@@ -242,7 +242,15 @@ body {
   margin-right: 4px;
 }
 
+.export-box .icon-column::before{
+  margin-right: 4px;
+}
+
 .export-box:hover {
+  color: #0084FF;
+}
+
+.export-box .el-dropdown:hover{
   color: #0084FF;
 }
 
@@ -880,28 +888,32 @@ body {
 .table-count-box {
   position: relative;
   margin-bottom: 16px;
-  line-height: 16px;
+  line-height: 30px;
 }
 
-.table-count-box .setting-box {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-      -ms-transform: translateY(-50%);
-          transform: translateY(-50%);
-}
-
-.table-count-box .setting-box .el-dropdown {
+.setting-box {
+  width: 64px;
+  height: 30px;
+  line-height: 30px;
+  color: #333333;
+  background: #ffffff;
+  border-radius: 4px;
+  text-align: center;
+  margin-left: 16px;
   cursor: pointer;
 }
 
-.table-count-box .setting-box .el-dropdown:hover {
-  color: #0084FF;
+.setting-box:hover {
+  background: #ECEEEF;
 }
 
-.table-count-box .setting-box .el-dropdown:hover .icon-setting:before {
-  color: #0084FF;
+.setting-box .icon-setting::before {
+  margin-right: 4px;
+  color: #666666;
+}
+
+.setting-box .el-dropdown {
+  cursor: pointer;
 }
 
 .set-dropdown {

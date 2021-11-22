@@ -22,22 +22,9 @@
 					<div class="after-login">
 						<img class="login-tx" th:src="|http://photo.chaoxing.com/p/${session._login_user_.uid}_80|">
 						<span class="user-name" th:text="${session._login_user_.realName}">王小明</span>
-						<!--<ul class="login-downlist-info">
-							<li class="login-downlist-item">
-								<a href="#">进入空间</a>
-							</li>
-							<li class="login-downlist-item">
-								<a href="#">退出登录</a>
-							</li>
-						</ul>-->
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="menu">
-			<ul>
-				<li v-for="(menu, index) of menus" :key="'menu-' + index" :class="{'current': menu.active}" @click="activeMenu(index)">{{menu.name}}</li>
-			</ul>
 		</div>
 	</div>
 	<!--    右侧内容栏-->
@@ -52,11 +39,7 @@
 	        el: "#vm",
 	        data: {
                 market: [[${market}]],
-		        menus: [
-			        {"name": [[${market.name}]], url: ctx + "/?marketId=[[${market.id}]]&fullScreen=true&pageMode=[[${pageMode}]]", active: true},
-			        {"name": "规则设置", url: ctx + "/market/[[${market.id}]]/rule", active: false},
-			        {"name": "黑名单", url: ctx + "/market/[[${market.id}]]/blacklist/list", active: false}
-		        ],
+                pageMode: [[${pageMode}]],
                 isEmbedded: activityApp.isEmbedded(),
 		        url: "",
 
@@ -68,7 +51,7 @@
             mounted: function () {
                 var $this = this;
                 $this.resetFrameHeight();
-                $this.url = $this.menus[0].url;
+                $this.url = ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&pageMode=" + $this.pageMode;
             },
             watch: {
                 "url": function () {
@@ -78,19 +61,6 @@
                 }
             },
 	        methods: {
-	            // 激活菜单
-                activeMenu: function (index) {
-                    var $this = this;
-                    var menu = $this.menus[index];
-                    if (menu.active) {
-                        return;
-                    }
-                    $($this.menus).each(function (i) {
-                        $this.$set($this.menus[i], "active", false);
-                    });
-                    $this.$set($this.menus[index], "active", true);
-                    $this.url = menu.url;
-                },
                 resetFrameHeight: function () {
                     $("#content").height($(window).height() - 68 - 20 - 5);
                 }
