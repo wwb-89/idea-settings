@@ -1342,13 +1342,6 @@ public class ActivityQueryService {
 		// 启用的报名条件列表
 		List<SignUpCondition> signUpConditions = signUpConditionService.listEditActivityConditions(originActivityId, originActivity.getTemplateId());
 		activityCreateParam.setSignUpConditions(signUpConditions);
-		// set 考核管理id
-//		InspectionConfig inspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
-//		if (inspectionConfig != null) {
-//			createParamDTO.setInspectionConfigId(inspectionConfig.getId());
-//		}
-//		List<String> menus = activityMenuService.listMenus(originActivityId).stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
-//		createParamDTO.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.RESULTS_MANAGE.getValue()));
 		return activityCreateParam;
 	}
 

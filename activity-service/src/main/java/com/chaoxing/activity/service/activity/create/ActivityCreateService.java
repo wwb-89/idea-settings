@@ -71,7 +71,7 @@ public class ActivityCreateService {
         List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);
         for (ActivityCreateParamDTO activityCreateParamDto : activityCreateParamDtos) {
             SignCreateParamDTO signCreateParamDto = SignCreateParamDTO.buildDefault();
-            activityHandleService.add(activityCreateParamDto, signCreateParamDto, wfwAreaDtos, null, loginUserDto);
+            activityHandleService.add(activityCreateParamDto, signCreateParamDto, wfwAreaDtos, loginUserDto);
         }
     }
 

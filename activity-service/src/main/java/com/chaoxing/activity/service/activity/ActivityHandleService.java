@@ -149,8 +149,13 @@ public class ActivityHandleService {
 	 * @return java.lang.Integer
 	 */
 	@Transactional(rollbackFor = Exception.class)
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser, boolean isClone) {
+		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser, isClone);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
 	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
-		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser);
+		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser, false);
 	}
 
 	/**新增活动
@@ -164,7 +169,7 @@ public class ActivityHandleService {
 	 * @return java.lang.Integer 活动id
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser) {
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser, boolean isClone) {
 		Activity activity = activityCreateParamDto.buildActivity();
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
@@ -189,7 +194,13 @@ public class ActivityHandleService {
 		// 考核配置
 		boolean openInspectionConfig = Optional.ofNullable(activityCreateParamDto.getOpenInspectionConfig()).orElse(false);
 		boolean existInspectionConfigCp = templateComponentService.existTemplateComponent(activity.getTemplateId(), "inspection_config");
-		List<String> defaultMenus = activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+		List<ActivityMenuDTO> activityMenus;
+		if (isClone && activity.getOriginActivityId() != null) {
+			activityMenus = activityMenuService.listMenus(activity.getOriginActivityId());
+		} else {
+			activityMenus = activityMenuService.listMenu();
+		}
+		List<String> defaultMenus = activityMenus.stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
 		if (!openInspectionConfig || activityCreateParamDto.getInspectionConfigId() == null) {
 			inspectionConfigHandleService.initInspectionConfig(activityId);
 			if (existInspectionConfigCp && !openInspectionConfig) {
