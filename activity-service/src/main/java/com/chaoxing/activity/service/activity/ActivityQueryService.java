@@ -988,13 +988,18 @@ public class ActivityQueryService {
 		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValues(activityId, activity.getTemplateId());
 		createParamDTO.setActivityComponentValues(activityComponentValues);
 		// set 考核管理id
+		packageInspectConfig(createParamDTO, activityId);
+		return createParamDTO;
+	}
+
+	private void packageInspectConfig(ActivityCreateParamDTO activityCreateParam, Integer activityId) {
+		// set 考核管理id
 		InspectionConfig inspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
 		if (inspectionConfig != null) {
-			createParamDTO.setInspectionConfigId(inspectionConfig.getId());
+			activityCreateParam.setInspectionConfigId(inspectionConfig.getId());
 		}
 		List<String> menus = activityMenuService.listMenus(activityId).stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
-		createParamDTO.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.RESULTS_MANAGE.getValue()));
-		return createParamDTO;
+		activityCreateParam.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.RESULTS_MANAGE.getValue()));
 	}
 
 	/**根据报名签到id列表和活动市场id统计正在进行中的活动数量
@@ -1342,6 +1347,8 @@ public class ActivityQueryService {
 		// 启用的报名条件列表
 		List<SignUpCondition> signUpConditions = signUpConditionService.listEditActivityConditions(originActivityId, originActivity.getTemplateId());
 		activityCreateParam.setSignUpConditions(signUpConditions);
+		// 考核配置
+		packageInspectConfig(activityCreateParam, originActivityId);
 		return activityCreateParam;
 	}
 

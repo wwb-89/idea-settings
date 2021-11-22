@@ -189,7 +189,7 @@ public class ActivityManageController {
 		Integer signId = activity.getSignId();
 		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
 		if (signId != null) {
-			sign = signApiService.getCloneSign(signId, loginUser.getUid(), loginUser.getFid());
+			sign = signApiService.getCloneSign(signId, loginUser.getFid(), loginUser.getUid());
 		}
 		model.addAttribute("sign", sign);
 		return activityAddEditView(model,
