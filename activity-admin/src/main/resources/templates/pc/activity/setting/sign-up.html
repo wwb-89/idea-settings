@@ -292,7 +292,7 @@
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                             <div class="input-box">
                                 <el-switch v-model="signUpConditionMap[it.id].enable"></el-switch>
-                                <el-tooltip class="item-tips fl" effect="dark" :content="signUpConditionTips(it.name, it.id)" placement="top">
+                                <el-tooltip class="item-tips fl" effect="dark" disabled :content="signUpConditionTips(it.name, it.id)" placement="top">
                                     <el-button>报名条件</el-button>
                                 </el-tooltip>
                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
