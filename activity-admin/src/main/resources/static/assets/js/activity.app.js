@@ -13,7 +13,7 @@
     }
 
     /** 需要展示线上线下活动类型的市场id列表 */
-    activityApp.prototype.other_activity_type_marketids = [293, 305, 1149];
+    activityApp.prototype.other_activity_type_marketids = [293, 305, 1149, 1267];
 
     /** 判断是否需要展示线上线下活动类型 */
     activityApp.prototype.showOtherActivityType = function (marketId) {

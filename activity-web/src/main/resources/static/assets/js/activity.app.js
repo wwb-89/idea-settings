@@ -30,7 +30,7 @@
         return typeof (str) == 'undefined' || str == null || "" === $.trim(str);
     };
 
-    activityApp.prototype.other_activity_type_marketids = [293, 305, 1149];
+    activityApp.prototype.other_activity_type_marketids = [293, 305, 1149, 1267];
 
     activityApp.prototype.showOtherActivityType = function (marketId) {
         var $this = this;
