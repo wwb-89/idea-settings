@@ -158,7 +158,7 @@
                                 <template v-else-if="item.code == 'introduction'">
                                     <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
                                 </template>
-                                <template v-else-if="item.type == 'text' || item.type == 'number'">
+                                <template v-else-if="item.type == 'text' || item.type == 'int' || item.type == 'decimal'">
                                     <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
                                     <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
@@ -418,7 +418,7 @@
                     </div>
                     <template v-for="(item, index) in (componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].advanceCompts) || []">
                         <div class="field-item" :style="index % 2 == 0 ? {'margin-right': '24px'} : {'margin-right': '0px'}" @click="addAdvanceComponentAssociate(item)">
-                            <p class="field overHidden1">{{item.name || ((item.type == 'text' || item.type == 'number') ? '自定义输入' : '自定义选择')}}</p>
+                            <p class="field overHidden1">{{item.name || ((item.type == 'text' || item.type == 'int' || item.type == 'decimal') ? '自定义输入' : '自定义选择')}}</p>
                         </div>
                     </template>
                 </div>
@@ -440,11 +440,11 @@
                     <el-form class="form" label-width="72px">
                         <el-input v-model="addEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
                         <el-input v-model="addEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <template v-if="addEditItem.type == 'text' || addEditItem.type == 'number'">
+                        <template v-if="addEditItem.type == 'text' || addEditItem.type == 'int' || addEditItem.type == 'decimal'">
                             <el-form-item label="类型" class="marginBottom20">
                             <el-select v-model="addEditItem.type" placeholder="请选择">
                                 <el-option
-                                        v-for="item in [{label: '文本', value: 'text'}, {label: '数字', value: 'number'}]"
+                                        v-for="item in [{label: '文本', value: 'text'}, {label: '整数', value: 'int'}, {label: '小数', value: 'decimal'}]"
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value"
@@ -991,7 +991,7 @@
                     addAdvanceComponentAssociate: function (item) {
                         var $this = this;
                         $this.isAddComponent = true;
-                        if (item.code == 'sign_up' || item.code == 'partition' || item.type == 'text' || item.type == 'number') {
+                        if (item.code == 'sign_up' || item.code == 'partition' || item.type == 'text' || item.type == 'int' || item.type == 'decimal') {
                             $this.openTextDialog(item)
                         } else if (item.code == 'sign_up_condition') {
                             $this.setDialogTitle(item, '报名条件')
@@ -1112,7 +1112,7 @@
                         }
                         // 编辑操作
                         $this.currEditIndex = index;
-                        $this.addEditItem = (item.type == 'text' || item.type == 'number')
+                        $this.addEditItem = (item.type == 'text' || item.type == 'int' || item.type == 'decimal')
                             ? $.extend({}, $.grep($this.components, function (it) { return it.id == item.componentId; })[0])
                             : $this.addEditItem = $.extend({}, item);
                     },
@@ -1187,7 +1187,7 @@
                             app.showMsg("发布范围接口地址未填");
                             return;
                         }
-                        if ($this.addEditItem.type == 'text' || $this.addEditItem.type == 'number') {
+                        if ($this.addEditItem.type == 'text' || $this.addEditItem.type == 'int' || $this.addEditItem.type == 'decimal') {
                             // 自定义文本组件新增、编辑，需要处理
                             $this.submitCustomComponent($this.addEditItem)
                             return;

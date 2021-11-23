@@ -115,7 +115,7 @@
                         {{activity.timingReleaseTimeStamp | timestampFormat}}
                     </div>
                 </el-form-item>
-                <el-form-item :label="item.name" v-else-if="item.type == 'text' || item.type == 'checkbox' || item.type == 'radio'">
+                <el-form-item :label="item.name" v-else-if="item.type == 'text' || item.type == 'int' || item.type == 'decimal' || item.type == 'checkbox' || item.type == 'radio'">
                     <div class="txt">
                         {{activityComponentValueMap[item.id] && activityComponentValueMap[item.id].value}}
                     </div>
