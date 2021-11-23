@@ -58,4 +58,6 @@ WHERE
 UPDATE t_sign_up_fill_info_type t
     INNER JOIN temp_res AS res ON t.template_component_id = res.id
     SET t.template_component_id = res.pid;
+-- 删除临时存储表
+DROP TABLE temp_res;
 -- 刷数据
