@@ -87,6 +87,8 @@ public class Component {
 
         /** 文本 */
         TEXT("文本", "text"),
+        INT("整数", "int"),
+        DECIMAL("小数", "decimal"),
         RADIO("单选", "radio"),
         CHECKBOX("多选", "checkbox");
 
