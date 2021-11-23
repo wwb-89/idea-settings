@@ -138,7 +138,7 @@
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
                                 <!-- 考核管理：inspection_manage -->
-                                <template v-else-if="item.code == 'inspection_manage'">
+                                <template v-else-if="item.code == 'inspection_config'">
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
@@ -776,7 +776,7 @@
                     activityType:'创新创业',
                     person:'自定义人数',
                     inputModel:'',
-                    switchModel:false
+                    switchModel: true
                 },
                 created: function () {
                     var $this = this;

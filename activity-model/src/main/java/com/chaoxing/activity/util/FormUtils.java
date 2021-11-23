@@ -181,7 +181,7 @@ public class FormUtils {
 		return result;
 	}
 
-	private static LocalDateTime getTime(String value) {
+	public static LocalDateTime getTime(String value) {
 		LocalDateTime result = null;
 		if (StringUtils.isNotBlank(value)) {
 			for (DateTimeFormatter dateTimeFormatter : FormUtils.FORM_DATE_TIME_FORMATTERS) {
