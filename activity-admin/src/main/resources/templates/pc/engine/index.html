@@ -658,11 +658,11 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="模板" class="marginBottom20" v-show="innerAddEditItem.type == 'wfw_form'">
-                            <el-select v-model="innerAddEditItem.templateType" placeholder="请选择关联表单">
+                            <el-select v-model="innerAddEditItem.wfwFormTemplateId" placeholder="请选择关联表单">
                                 <el-option v-for="item in wfwFormTemplateList"
-                                           :key="item.value"
+                                           :key="item.id"
                                            :label="item.name"
-                                           :value="item.value"
+                                           :value="item.id"
                                 >
                                 </el-option>
                             </el-select>
@@ -892,7 +892,7 @@
                         return { fid: this.fid, originIdentify: '', fieldName: '', allowSignedUp: false, configOnActivity: false, templateConditionDetails: [] }
                     },
                     getInitSignUpFillInfoType: function () {
-                        return { type: 'form', templateType: '' }
+                        return { type: 'form', wfwFormTemplateId: '' }
                     },
 
                     // 内部属性的判断补充初始化

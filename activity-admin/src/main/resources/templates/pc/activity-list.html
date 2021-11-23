@@ -314,7 +314,8 @@
                     configPage: {name: "页面配置", value: "configPage"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"},
-                    dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport"}
+                    dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport"},
+                    clone: {name: "克隆", value: "clone"}
                 },
                 // 活动标示
                 flag: [[${flag}]],
@@ -451,6 +452,7 @@
                                     activity.operations.push($this.operations.delete);
                                 }
                             }
+                            activity.operations.push($this.operations.clone);
                         });
                     }
                 },
@@ -474,6 +476,15 @@
                 toEdit: function (id) {
                     var $this = this;
                     var url = ctx + "/activity/" + id + "/edit?strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen");
+                    if (activityApp.isEmbedded()) {
+                        window.location = url;
+                    } else {
+                        window.open(url);
+                    }
+                },
+                toCloneActivity: function (id) {
+                    var $this = this;
+                    var url = ctx + "/activity/" + id + "/clone?strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen");
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {
@@ -592,6 +603,9 @@
                             break;
                         case "configPage":
                             $this.configPage(activity);
+                            break;
+                        case "clone":
+                            $this.toCloneActivity(id)
                             break;
                         default:
                     }

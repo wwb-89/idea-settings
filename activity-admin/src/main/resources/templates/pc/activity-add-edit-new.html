@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${activity == null ? '创建活动' : '编辑活动'}">创建活动</title>
+    <title th:text="${isClone != null && isClone ? '克隆活动' : (activity == null ? '创建活动' : '编辑活动')}">创建活动</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
@@ -818,6 +818,7 @@
         vm = new Vue({
             el: "#activity-vue",
             data: {
+                isClone: [[${isClone}]],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${session._login_user_.fid}]],
                 templateId: [[${templateId}]],
@@ -938,12 +939,12 @@
                 document.domain = "chaoxing.com";
                 window.addEventListener("message", function (e) {
                     if (e.origin.indexOf("m.oa.chaoxing.com") > -1) {
-                        var { data } = activityApp.getJsonObject(e.data);
-                        var originId = $this.operateSignUpOriginId;
-                        $this.$set($this.signUpMap[originId], 'openAddr', data.openAddr);
-                        $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
-                        $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
-                        $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
+                        // var { data } = activityApp.getJsonObject(e.data);
+                        // var originId = $this.operateSignUpOriginId;
+                        // $this.$set($this.signUpMap[originId], 'openAddr', data.openAddr);
+                        // $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
+                        // $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
+                        // $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
                         $this.wfwFormConfigWindow.close();
                     } else {
                         try {
@@ -1135,14 +1136,13 @@
                     {name: "参与者扫码", value: 1},
                     {name: "管理员扫码", value: 2}
                 ];
-                if (activityApp.isEmpty($this.sign.id)) {
+                if (!$this.isClone && activityApp.isEmpty($this.sign.id)) {
                     // 生成新的报名签到
                     $this.sign = signApp.newSign();
                     // 根据模板组件关联关系，初始化数据
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             var signUp = signApp.newSignUp(this, $this.defaultSignUpBtnName, $this.defaultSignUpKeyword);
-                            debugger;
                             if (this.code == 'company_sign_up') {
                                 signUp.fillInfo = true;
                                 signUp.customSignUpType = "company";
@@ -1164,7 +1164,7 @@
                             var signIn = signApp.newSignIn(this);
                             signIn.originId = this.id;
                             $this.$set($this.signInMap, this.id, signIn);
-                        } else if (this.type == 'text' || this.type == 'radio' || this.type == 'checkbox') {
+                        } else if ((this.type == 'text' || this.type == 'radio' || this.type == 'checkbox') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
                                 templateId: this.templateId,
@@ -1174,7 +1174,9 @@
                         }
                     });
                 } else {
-                    $this.countSignInNum();
+                    if (!$this.isClone) {
+                        $this.countSignInNum();
+                    }
                     // 报名签到
                     var signUpTplComponentIds = [];
                     var signInTplComponentIds = [];
@@ -1199,7 +1201,7 @@
                         if (!this.endAllowCancel && !this.notAllowCancelType) {
                             $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
                         }
-                        if (!activityApp.isEmpty(this.id) && signUpTplComponentIds.indexOf(this.originId) != -1) {
+                        if (($this.isClone || !activityApp.isEmpty(this.id)) && signUpTplComponentIds.indexOf(this.originId) != -1) {
                             if (this.wfwParticipateScopes) {
                                 $(this.wfwParticipateScopes).each(function () {
                                     if (this.leaf && $this.virtualNodeMap[this.externalId]) {
@@ -1983,7 +1985,7 @@
                 },
                 ignoreOfflineEmptyAddress: function () {
                     var $this = this;
-                    if (activityApp.isEmpty($this.activity.id)) {
+                    if (activityApp.isEmpty($this.activity.id) || $this.isClone) {
                         // 新增
                         $this.addSubmit(false);
                     } else {
@@ -2016,7 +2018,8 @@
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: participateScopeJsonStr,
                         releaseClassIdJsonStr: releaseClassIdJsonStr,
-                        signJsonStr: activityApp.getJsonStr(sign)
+                        signJsonStr: activityApp.getJsonStr(sign),
+                        isClone: $this.isClone
                     }
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
@@ -2176,20 +2179,30 @@
                     var signUp = $this.signUpMap[signUpTplComponentId];
                     var formId = "";
                     $this.operateSignUpOriginId = signUpTplComponentId;
-                    if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
-                        formId = signUp.fillInfoFormId;
+                    var url = ctx + '/api/wfw-form/build/create-edit-url';
+                    // 是否需要创建新的表单，表单id为空，则需要
+                    var needCreateForm = activityApp.isEmpty(signUp.fillInfoFormId);
+                    if (needCreateForm) {
+                        url = ctx + '/api/wfw-form/create/from/wfw-form-template'
                     }
-                    var url = ctx + '/api/wfw-form/build/create-url';
-                    var templateType = ($this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].templateType) || '';
+                    formId = signUp.fillInfoFormId || '';
+                    var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
                     var params = {
                         fid: $this.fid,
                         uid: [[${session._login_user_.uid}]],
                         formId: formId,
-                        templateType: templateType
+                        wfwFormTemplateId: wfwFormTemplateId
                     }
-                    app.ajaxPost(url,params, function (res) {
+                    app.ajaxPost(url, params, function (res) {
                         if (res.success) {
-                            $this.wfwFormConfigWindow = window.open(res.data);
+                            var { formId, openAddr, pcUrl, wechatUrl, editUrl } = res.data
+                            if (needCreateForm) {
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'openAddr', openAddr);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'pcUrl', pcUrl);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'wechatUrl', wechatUrl);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'fillInfoFormId', formId);
+                            }
+                            $this.wfwFormConfigWindow = window.open(editUrl);
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -2427,7 +2440,9 @@
                         return;
                     }
                     var url = ctx + '/activity/inspection/config';
-                    if (!activityApp.isEmpty($this.activity.inspectionConfigId)) {
+                    if ($this.isClone && activityApp.isEmpty($this.activity.inspectionConfigId)) {
+                        url += '?activityId=' + $this.activity.originActivityId + '&isClone=true';
+                    } else if (!activityApp.isEmpty($this.activity.inspectionConfigId)) {
                         url += '?configId=' + $this.activity.inspectionConfigId;
                     }
                     $this.inspectionConfigWindow = window.open(url);

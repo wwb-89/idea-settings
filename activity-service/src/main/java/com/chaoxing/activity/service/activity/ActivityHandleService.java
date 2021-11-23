@@ -149,8 +149,13 @@ public class ActivityHandleService {
 	 * @return java.lang.Integer
 	 */
 	@Transactional(rollbackFor = Exception.class)
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser, boolean isClone) {
+		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser, isClone);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
 	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
-		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser);
+		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser, false);
 	}
 
 	/**新增活动
@@ -164,7 +169,7 @@ public class ActivityHandleService {
 	 * @return java.lang.Integer 活动id
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser) {
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser, boolean isClone) {
 		Activity activity = activityCreateParamDto.buildActivity();
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
@@ -189,7 +194,13 @@ public class ActivityHandleService {
 		// 考核配置
 		boolean openInspectionConfig = Optional.ofNullable(activityCreateParamDto.getOpenInspectionConfig()).orElse(false);
 		boolean existInspectionConfigCp = templateComponentService.existTemplateComponent(activity.getTemplateId(), "inspection_config");
-		List<String> defaultMenus = activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+		List<ActivityMenuDTO> activityMenus;
+		if (isClone && activity.getOriginActivityId() != null) {
+			activityMenus = activityMenuService.listMenus(activity.getOriginActivityId());
+		} else {
+			activityMenus = activityMenuService.listMenu();
+		}
+		List<String> defaultMenus = activityMenus.stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
 		if (!openInspectionConfig || activityCreateParamDto.getInspectionConfigId() == null) {
 			inspectionConfigHandleService.initInspectionConfig(activityId);
 			if (existInspectionConfigCp && !openInspectionConfig) {
@@ -1062,28 +1073,29 @@ public class ActivityHandleService {
 			targetTemplate = templateQueryService.getMarketFirstTemplate(newMarket.getId());
 		}
 		Integer marketId = targetTemplate.getMarketId();
+		ActivityCreateParamDTO targetActivity = ActivityCreateParamDTO.cloneFromActivity(originActivity);
+
 		// 重新设定活动的活动市场和模板id
-		originActivity.setOriginActivityId(originActivity.getId());
-		originActivity.setTemplateId(targetTemplate.getId());
-		originActivity.setMarketId(marketId);
+		targetActivity.setOriginActivityId(originActivity.getId());
+		targetActivity.setTemplateId(targetTemplate.getId());
+		targetActivity.setMarketId(marketId);
 		// 处理克隆分类
 		if (StringUtils.isNotBlank(originActivity.getActivityClassifyName())) {
 			Classify classify = classifyHandleService.getOrAddMarketClassify(marketId, originActivity.getActivityClassifyName());
-			originActivity.setActivityClassifyId(classify.getId());
+			targetActivity.setActivityClassifyId(classify.getId());
 		}
 		// 判断是否开启作品征集
-		if (originActivity.getOpenWork()) {
-			originActivity.setWorkId(workApiService.createDefault(uid, fid));
+		if (targetActivity.getOpenWork()) {
+			targetActivity.setWorkId(workApiService.createDefault(uid, fid));
 		}
 		// 阅读默认关闭
-		originActivity.setOpenReading(Boolean.FALSE);
-		originActivity.setReadingId(null);
-		originActivity.setReadingModuleId(null);
+		targetActivity.setOpenReading(Boolean.FALSE);
+		targetActivity.setReadingId(null);
+		targetActivity.setReadingModuleId(null);
 		// 主办方
-		originActivity.setOrganisers(loginUser.getOrgName());
-		ActivityCreateParamDTO targetActivity = ActivityCreateParamDTO.buildFromActivity(originActivity);
+		targetActivity.setOrganisers(loginUser.getOrgName());
 		activityDetailMapper.selectList(new LambdaQueryWrapper<ActivityDetail>()
-				.eq(ActivityDetail::getActivityId, originActivity.getOriginActivityId()))
+				.eq(ActivityDetail::getActivityId, targetActivity.getOriginActivityId()))
 				.stream().findFirst()
 				.ifPresent(originDetail -> targetActivity.setIntroduction(originDetail.getIntroduction()));
 		// 报名签到

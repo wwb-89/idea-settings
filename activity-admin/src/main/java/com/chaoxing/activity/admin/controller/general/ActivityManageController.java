@@ -29,6 +29,7 @@ import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -40,10 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +52,7 @@ import java.util.stream.Collectors;
  * @blame wwb
  * @date 2020-12-29 17:08:04
  */
+@Slf4j
 @Controller
 @RequestMapping("activity")
 public class ActivityManageController {
@@ -148,16 +147,8 @@ public class ActivityManageController {
 	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
-		ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
-		model.addAttribute("activity", createParamDTO);
-		model.addAttribute("templateComponents", templateComponentService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
-		// 活动类型列表
-		model.addAttribute("activityTypes", activityQueryService.listActivityType());
-		String activityFlag = activity.getActivityFlag();
-		model.addAttribute("activityFlag", activityFlag);
-		// 当前用户创建活动权限
-		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(loginUser.getFid(), activity.getMarketId(), loginUser.getUid());
-		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(createParamDTO.getMarketId(), activityFlag, permission.getClassifies()));
+		ActivityCreateParamDTO createParam = activityQueryService.packageActivityCreateParamByActivity(activity);
+		model.addAttribute("activity", createParam);
 		// 报名签到
 		Integer signId = activity.getSignId();
 		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
@@ -165,11 +156,68 @@ public class ActivityManageController {
 			sign = signApiService.getCreateById(signId);
 		}
 		model.addAttribute("sign", sign);
+		return activityAddEditView(model,
+				activityId,
+				loginUser.getFid(),
+				activity.getCreateFid(),
+				activity.getMarketId(),
+				loginUser.getUid(),
+				activity.getActivityFlag(),
+				activity.getTemplateId(),
+				activity.getWebTemplateId(),
+				strict);
+	}
+
+	/**活动复制
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-18 14:40:22
+	 * @param model
+	 * @param activityId
+	 * @param request
+	 * @param strict
+	 * @return java.lang.String
+	 */
+	@GetMapping("{activityId}/clone")
+	public String clone(Model model, @PathVariable Integer activityId, HttpServletRequest request, @RequestParam(defaultValue = "0") Integer strict) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Activity activity = activityQueryService.getById(activityId);
+		ActivityCreateParamDTO createParam = activityQueryService.cloneActivity(activityId);
+		model.addAttribute("isClone", true);
+		model.addAttribute("activity", createParam);
+		// 报名签到
+		Integer signId = activity.getSignId();
+		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
+		if (signId != null) {
+			sign = signApiService.getCloneSign(signId, loginUser.getFid(), loginUser.getUid());
+		}
+		model.addAttribute("sign", sign);
+		return activityAddEditView(model,
+				activityId,
+				loginUser.getFid(),
+				createParam.getCreateFid(),
+				createParam.getMarketId(),
+				loginUser.getUid(),
+				createParam.getActivityFlag(),
+				createParam.getTemplateId(),
+				createParam.getWebTemplateId(),
+				strict);
+	}
+
+
+	private String activityAddEditView(Model model, Integer activityId, Integer userFid, Integer activityFid, Integer marketId, Integer uid, String activityFlag, Integer templateId, Integer webTemplateId, Integer strict) {
+		// 活动对应的模板组件列表
+		model.addAttribute("templateComponents", templateComponentService.listTemplateComponentTree(templateId, activityFid));
+		// 活动类型列表
+		model.addAttribute("activityTypes", activityQueryService.listActivityType());
+		model.addAttribute("activityFlag", activityFlag);
+		// 当前用户创建活动权限
+		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(userFid, marketId, uid);
+		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(marketId, activityFlag, permission.getClassifies()));
 		// 模板列表，使用的模版和可选的模版
-		Integer webTemplateId = activity.getWebTemplateId();
 		WebTemplate usedWebTemplate = Optional.ofNullable(webTemplateId).map(v -> webTemplateService.getById(v)).orElse(null);
 		model.addAttribute("usedWebTemplate", usedWebTemplate);
-		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activityFlag);
+		List<WebTemplate> webTemplates = webTemplateService.listAvailable(userFid, activityFlag);
 		model.addAttribute("webTemplates", webTemplates);
 		// 活动发布班级id集合
 		List<Integer> releaseClassIds = activityClassService.listClassIdsByActivity(activityId);
@@ -177,20 +225,19 @@ public class ActivityManageController {
 		// 活动发布范围
 		List<WfwAreaDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
-		// 报名范围
 		// 微服务组织架构
 		model.addAttribute("wfwGroups", permission.getWfwGroups());
 		// 通讯录组织架构
 		model.addAttribute("contactGroups", permission.getContactsGroups());
 		model.addAttribute("strict", strict);
-		List<SignUpCondition> signUpConditions = signUpConditionService.listEditActivityConditions(activityId, activity.getTemplateId());
+		List<SignUpCondition> signUpConditions = signUpConditionService.listEditActivityConditions(activityId, templateId);
 		// 获取表单结构map
 		List<String> formIds = signUpConditions.stream().map(SignUpCondition::getOriginIdentify).filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
 		Map<String, List<WfwFormFieldVO>> formFieldStructures = Maps.newHashMap();
 		if (CollectionUtils.isNotEmpty(formIds)) {
 			formFieldStructures = formIds.stream().collect(Collectors.toMap(
 					v -> v,
-					v -> formApiService.getFormStructure(Integer.valueOf(v), activity.getCreateFid())
+					v -> formApiService.getFormStructure(Integer.valueOf(v), activityFid)
 							.stream().map(WfwFormFieldVO::buildFromWfwFormFieldDTO)
 							.collect(Collectors.toList()),
 					(v1, v2) -> v2));
@@ -200,7 +247,7 @@ public class ActivityManageController {
 		model.addAttribute("signUpConditions", signUpConditions);
 		model.addAttribute("conditionEnums", ConditionDTO.list());
 		// 活动市场报名配置
-		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(createParamDTO.getMarketId());
+		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
 		model.addAttribute("marketSignUpConfig", marketSignUpConfig);
 		return "pc/activity-add-edit-new";
 	}

@@ -3,9 +3,9 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormTemplateDTO;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
+import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -37,6 +37,8 @@ public class ActivityEngineController {
     private WfwFormApiService formApiService;
     @Resource
     private TemplateQueryService templateQueryService;
+    @Resource
+    private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
 
     @LoginRequired
     @RequestMapping("{templateId}")
@@ -65,7 +67,7 @@ public class ActivityEngineController {
         ActivityEngineDTO templateInfo = activityEngineQueryService.findEngineTemplateInfo(templateId, marketId);
         model.addAttribute("templateInfo", templateInfo);
         model.addAttribute("wfwForms", wfwForms);
-        model.addAttribute("wfwFormTemplateList", WfwFormTemplateDTO.wfwFormTemplateList());
+        model.addAttribute("wfwFormTemplateList", signUpWfwFormTemplateService.listMarket(marketId));
         model.addAttribute("conditionEnums", ConditionDTO.listWithoutNoLimit());
         return "pc/engine/index";
     }

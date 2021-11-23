@@ -27,5 +27,9 @@ public class WfwFormCreateParamDTO {
     private Integer uid;
     /** 创建机构id */
     private Integer fid;
+    /** sign */
+    private String sign;
+    /** key */
+    private String key;
 
 }

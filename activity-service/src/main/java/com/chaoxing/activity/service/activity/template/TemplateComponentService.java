@@ -168,7 +168,8 @@ public class TemplateComponentService {
             if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue())) {
                 sucTplComponentIds.add(v.getId());
             } else if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
-                sufiTplComponentIds.add(v.getId());
+                // 报名填报信息的模板组件id为报名的模板组件id
+                sufiTplComponentIds.add(v.getPid());
             }
         });
         Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listWithTemplateDetailsByTplComponentIds(sucTplComponentIds).stream()
@@ -179,8 +180,9 @@ public class TemplateComponentService {
             if (!signUpConditionMap.isEmpty()) {
                 v.setSignUpCondition(Optional.ofNullable(signUpConditionMap.get(v.getId())).orElse(null));
             }
-            if (!signUpFillInfoTypeMap.isEmpty()) {
-                v.setSignUpFillInfoType(Optional.ofNullable(signUpFillInfoTypeMap.get(v.getId())).orElse(null));
+            if (!signUpFillInfoTypeMap.isEmpty() && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
+                // 报名填报信息的模板组件id为报名的模板组件id
+                v.setSignUpFillInfoType(Optional.ofNullable(signUpFillInfoTypeMap.get(v.getPid())).orElse(null));
             }
         });
     }
@@ -188,7 +190,7 @@ public class TemplateComponentService {
      * @Description
      * @author huxiaolong
      * @Date 2021-11-03 17:23:34
-     * @param activityId
+     * @param fid
      * @param templateId
      * @param fid
      * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
@@ -271,7 +273,8 @@ public class TemplateComponentService {
                 .collect(Collectors.toList());
         templateComponents.forEach(v -> {
             if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
-                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getId()));
+                // 报名填报信息的模板组件id为报名的模板组件id
+                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getPid()));
             }
         });
         return TemplateComponentDTO.buildTrees(templateComponents);
@@ -303,7 +306,8 @@ public class TemplateComponentService {
                 v.setComponentFields(componentFieldMap.get(v.getComponentId()));
             }
             if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
-                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getId()));
+                // 报名填报信息的模板组件id为报名的模板组件id
+                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getPid()));
             }
             if (StringUtils.isNotBlank(v.getDataOrigin()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
                 v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));
@@ -370,7 +374,8 @@ public class TemplateComponentService {
                 }
             }
             if (signUpFillInfoType != null) {
-                signUpFillInfoType.setTemplateComponentId(tplComponent.getId());
+                // 设置报名填报信息的pid-报名的模板组件id
+                signUpFillInfoType.setTemplateComponentId(tplComponent.getPid());
                 if (signUpFillInfoType.getId() == null) {
                     signUpFillInfoTypeService.add(signUpFillInfoType);
                 } else {
@@ -394,7 +399,8 @@ public class TemplateComponentService {
             signUpConditionService.add(templateComponent.getSignUpCondition());
         }
         if (templateComponent.getSignUpFillInfoType() != null) {
-            templateComponent.getSignUpFillInfoType().setTemplateComponentId(templateComponent.getId());
+            // 报名填报信息的模板组件id为报名的模板组件id
+            templateComponent.getSignUpFillInfoType().setTemplateComponentId(templateComponent.getPid());
             signUpFillInfoTypeService.add(templateComponent.getSignUpFillInfoType());
         }
     }

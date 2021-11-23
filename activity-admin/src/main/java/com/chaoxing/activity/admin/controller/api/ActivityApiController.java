@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 /**活动api服务
  * @author wwb
@@ -52,13 +53,14 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@PostMapping("new")
-	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr) {
+	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr, Boolean isClone) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityCreateParamDTO activityCreateParamDto = JSON.parseObject(activityJsonStr, ActivityCreateParamDTO.class);
 		List<WfwAreaDTO> wfwRegionalArchitectures = StringUtils.isBlank(participateScopeJsonStr) ? null : JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
 		List<Integer> releaseClassIds = StringUtils.isBlank(releaseClassIdJsonStr) ? null : JSON.parseArray(releaseClassIdJsonStr, Integer.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
-		Integer activityId = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser);
+		isClone = Optional.ofNullable(isClone).orElse(false);
+		Integer activityId = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser, isClone);
 		return RestRespDTO.success(activityId);
 	}
 

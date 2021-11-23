@@ -44,11 +44,15 @@ public class ReadingApiService {
     * @return com.chaoxing.activity.dto.module.ReadingModuleDataDTO
     */
     public ReadingModuleDataDTO create(HttpServletRequest request, String activityName) {
-        HttpHeaders httpHeaders = new HttpHeaders();
         List<String> cookies = Lists.newArrayList();
         for (Cookie cookie : request.getCookies()) {
             cookies.add(cookie.getName() + "=" + cookie.getValue());
         }
+        return create(cookies, activityName);
+    }
+
+    public ReadingModuleDataDTO create(List<String> cookies, String activityName) {
+        HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.put(HttpHeaders.COOKIE, cookies);
         JSONObject obj = new JSONObject();
         obj.put("name", activityName);

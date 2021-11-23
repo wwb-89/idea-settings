@@ -753,14 +753,13 @@
                         if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
                             formId = signUp.fillInfoFormId;
                         }
-                        var url = ctx + '/api/wfw-form/build/create-url';
-                        var templateType = ($this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].templateType) || '';
-                        console.log($this.activity);
+                        var url = ctx + '/api/wfw-form/build/create-edit-url';
+                        var wfwFormTemplateId = ($this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId) || '';
                         var params = {
                             fid: $this.activity.createFid,
                             uid: [[${session._login_user_.uid}]],
                             formId: formId,
-                            templateType: templateType
+                            wfwFormTemplateId: wfwFormTemplateId
                         }
                         app.ajaxPost(url,params, function (res) {
                             if (res.success) {
