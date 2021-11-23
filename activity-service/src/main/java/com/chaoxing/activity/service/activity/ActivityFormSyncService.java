@@ -275,6 +275,13 @@ public class ActivityFormSyncService {
             return;
         }
         Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+        if (activity == null) {
+            // 查找表单记录中的活动id
+            Integer activityId = formUserRecord.getIntegerValue("activity_id");
+            if (activityId != null) {
+                activity = activityQueryService.getById(activityId);
+            }
+        }
         // 若活动不存在，则新增
         if (activity == null) {
             flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
@@ -282,7 +289,6 @@ public class ActivityFormSyncService {
         } else {
             activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).syncUpdateActivity(formUserRecord, fid, activity.getId());
         }
-        // 回写数据
         // 回写数据
         WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
                 .activityId(activity.getId())
