@@ -52,6 +52,8 @@ import java.util.regex.Pattern;
 @CrossOrigin
 public class ActivityMhV3ApiController {
 
+    private static final Pattern IMG_TAG_PATTERN = Pattern.compile("<img.*src\\s*=\\s*(.*?)[^>]*?>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern IMG_TAG_SRC_PATTERN = Pattern.compile("src\\s*=\\s*\"?(.*?)(\"|>|\\s+)");
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -325,14 +327,12 @@ public class ActivityMhV3ApiController {
 
     private String filterFirstImgFromHtmlStr(String htmlStr) {
         Set<String> pics = new HashSet<>();
-        String regEx_img = "<img.*src\\s*=\\s*(.*?)[^>]*?>";
-        Pattern p_image = Pattern.compile(regEx_img, Pattern.CASE_INSENSITIVE);
-        Matcher m_image = p_image.matcher(htmlStr);
-        while (m_image.find()) {
+        Matcher imageTag = IMG_TAG_PATTERN.matcher(htmlStr);
+        while (imageTag.find()) {
             // 得到<img />数据
-            String img = m_image.group();
+            String img = imageTag.group();
             // 匹配<img>中的src数据
-            Matcher m = Pattern.compile("src\\s*=\\s*\"?(.*?)(\"|>|\\s+)").matcher(img);
+            Matcher m = IMG_TAG_SRC_PATTERN.matcher(img);
             while (m.find()) {
                 pics.add(m.group(1));
             }
