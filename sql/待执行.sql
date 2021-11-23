@@ -61,3 +61,42 @@ UPDATE t_sign_up_fill_info_type t
 -- 删除临时存储表
 DROP TABLE temp_res;
 -- 刷数据
+
+-- 标签
+CREATE TABLE `t_tag`  (
+    `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `name` varchar(50) NOT NULL COMMENT '标签名称',
+    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
+    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `idx_unique`(`name`)
+) COMMENT = '标签表';
+CREATE TABLE `t_org_tag`  (
+    `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `fid` int(0) NULL COMMENT '机构id',
+    `tag_id` int(0) NULL COMMENT '标签id',
+    `sequence` int(0) NULL COMMENT '顺序',
+    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
+    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    INDEX `idx_primary`(`fid`)
+) COMMENT = '机构标签表';
+CREATE TABLE `t_market_tag`  (
+    `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `market_id` int(0) NULL COMMENT '活动市场id',
+    `tag_id` int(0) NULL COMMENT '标签id',
+    `sequence` int(0) NULL COMMENT '顺序',
+    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
+    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    INDEX `idx_primary`(`market_id`)
+) COMMENT = '活动市场标签表';
+CREATE TABLE `t_activity_tag`  (
+    `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `activity_id` int(0) NULL COMMENT '活动id',
+    `tag_id` int(0) NULL COMMENT '标签id',
+    PRIMARY KEY (`id`),
+    INDEX `idx_activity`(`activity_id`),
+    INDEX `idx_tag`(`tag_id`)
+) COMMENT = '活动关联标签表';
+
