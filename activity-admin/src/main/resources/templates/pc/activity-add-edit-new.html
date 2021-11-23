@@ -592,11 +592,11 @@
                                 </template>
                             </form>
                         </div>
-                        <div class="form-item" v-else-if="item.type == 'text' || item.type == 'number'">
+                        <div class="form-item" v-else-if="item.type == 'text' || item.type == 'int' || item.type == 'decimal'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
-                            <div :class="{'input-box': true, 'setForm': item.type == 'number'}">
+                            <div :class="{'input-box': true, 'setForm': item.type == 'int' || item.type == 'decimal'}">
                                 <el-input v-if="item.type == 'text'" type="text" placeholder="请填写" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
-                                <input v-else type="number" v-model.trim="activityComponentValueMap[item.id].value" placeholder="请输入" class="score-input">
+                                <input v-else type="number" v-model.trim="activityComponentValueMap[item.id].value" :step="item.type == 'decimal' ? 0.1 : 1" placeholder="请输入" class="score-input" @change="inputDataParseByType($event, item.id, item.type)">
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
@@ -1165,12 +1165,12 @@
                             var signIn = signApp.newSignIn(this);
                             signIn.originId = this.id;
                             $this.$set($this.signInMap, this.id, signIn);
-                        } else if ((this.type == 'text' || this.type == 'radio' || this.type == 'checkbox' || this.type == 'number') && !$this.activityComponentValueMap[this.id]) {
+                        } else if ((this.type == 'text' || this.type == 'radio' || this.type == 'checkbox' || this.type == 'int' || this.type == 'decimal') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
                                 templateId: this.templateId,
                                 componentId: this.componentId,
-                                value: this.type == 'checkbox' ? [] : (this.type == 'number' ? 0 : '')
+                                value: this.type == 'checkbox' ? [] : (this.type == 'int' || this.type == 'decimal' ? 0 : '')
                             });
                         }
                     });
@@ -1186,12 +1186,12 @@
                             signUpTplComponentIds.push(this.id);
                         } else if (this.code == 'sign_in' || this.code == 'sign_out') {
                             signInTplComponentIds.push(this.id);
-                        } else if ((this.type == 'radio' || this.type == 'checkbox' || this.type == 'text' || this.type == 'number') && !$this.activityComponentValueMap[this.id]) {
+                        } else if ((this.type == 'radio' || this.type == 'checkbox' || this.type == 'text' || this.type == 'int' || this.type == 'decimal') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
                                 templateId: this.templateId,
                                 componentId: this.componentId,
-                                value: this.type == 'checkbox' ? [] : (this.type == 'number' ? 0 : '')
+                                value: this.type == 'checkbox' ? [] : (this.type == 'int' || this.type == 'decimal' ? 0 : '')
                             });
                         }
                     });
@@ -2476,6 +2476,19 @@
                         $this.signUpMap[tplComponentId].enableContactsParticipateScope = true;
                     } else if (value == 'only_self_unit') {
                         $this.signUpMap[tplComponentId].contactOnlySelfUnit = true;
+                    }
+                },
+                // 自定义输入整型、小数数据处理
+                inputDataParseByType: function (e, tplComponentId, type) {
+                    var $this = this;
+                    var value = e && e.target && e.target.value;
+                    if (typeof value == 'undefined' || value == null) {
+                        return;
+                    }
+                    if (type == 'int') {
+                        $this.activityComponentValueMap[tplComponentId].value = parseInt(value);
+                    } else if (type == 'decimal') {
+                        $this.activityComponentValueMap[tplComponentId].value = parseFloat(value);
                     }
                 }
             }

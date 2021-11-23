@@ -377,10 +377,11 @@
                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                 </div>
             </div>
-            <div class="form-item" v-else-if="item.type == 'text'">
+            <div class="form-item" v-else-if="item.type == 'text' || item.type == 'int' || item.type == 'decimal'">
                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
-                <div class="input-box">
-                    <el-input type="text" :placeholder="'请填写' + item.introduction" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
+                <div :class="{'input-box': true, 'setForm': item.type == 'int' || item.type == 'decimal'}">
+                    <el-input v-if="item.type == 'text'" type="text" :placeholder="'请填写' + item.introduction" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
+                    <input v-else type="number" v-model.trim="activityComponentValueMap[item.id].value" :step="item.type == 'decimal' ? 0.1 : 1" placeholder="请输入" class="score-input" @change="inputDataParseByType($event, item.id, item.type)">
                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                 </div>
             </div>
@@ -595,7 +596,7 @@
                         // 发布班级url不为空，则请求发布班级列表
                         $this.loadReleaseClassData(this.originIdentify);
                     }
-                    if (this.type == 'text' || this.type == 'checkbox' || this.type == 'radio') {
+                    if (this.type == 'text' || this.type == 'int' || this.type == 'decimal' || this.type == 'checkbox' || this.type == 'radio') {
                         $this.$set($this.activityComponentValueMap, this.id, {
                             activityId: $this.activity.id,
                             tplComponentId: this.id,
@@ -1149,6 +1150,19 @@
                     var $this = this;
                     var url = activityApp.getWorkManageUrl($this.activity.workId);
                     window.open(url);
+                },
+                // 自定义输入整型、小数数据处理
+                inputDataParseByType: function (e, tplComponentId, type) {
+                    var $this = this;
+                    var value = e && e.target && e.target.value;
+                    if (typeof value == 'undefined' || value == null) {
+                        return;
+                    }
+                    if (type == 'int') {
+                        $this.activityComponentValueMap[tplComponentId].value = parseInt(value);
+                    } else if (type == 'decimal') {
+                        $this.activityComponentValueMap[tplComponentId].value = parseFloat(value);
+                    }
                 }
             }
         });
