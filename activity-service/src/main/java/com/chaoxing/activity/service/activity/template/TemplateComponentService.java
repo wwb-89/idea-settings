@@ -201,33 +201,6 @@ public class TemplateComponentService {
         return TemplateComponentDTO.buildTrees(templateComponents);
     }
 
-    /**给报名条件模板组件封装活动报名条件明细
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-11-03 17:22:12
-     * @param activityId
-     * @param templateComponents
-     * @return void
-     */
-/*    private void buildTplComponentActivitySignUpCondition(Integer activityId, List<TemplateComponentDTO> templateComponents) {
-        List<Integer> signUpConditionTplComponentIds = templateComponents.stream()
-                .filter(v -> v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue()))
-                .map(TemplateComponentDTO::getId).collect(Collectors.toList());
-        List<SignUpCondition> signUpConditions;
-        if (activityId == null) {
-            signUpConditions = signUpConditionService.listNewActivityByTplComponentIds(signUpConditionTplComponentIds);
-        } else {
-            signUpConditions = signUpConditionService.listActivityEnableSignUpConditions(activityId);
-        }
-        if (CollectionUtils.isEmpty(signUpConditions)) {
-            return;
-        }
-        Map<Integer, SignUpCondition> signUpConditionMap = signUpConditions.stream().collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
-        templateComponents.forEach(v -> {
-            v.setSignUpCondition(Optional.ofNullable(signUpConditionMap.get(v.getId())).orElse(null));
-        });
-    }*/
-
     /**查询模板id下的报名条件模板组件列表
      * @Description
      * @author huxiaolong

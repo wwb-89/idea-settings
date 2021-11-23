@@ -65,10 +65,10 @@ public class TemplateComponent {
 
     @TableField(exist = false)
     private List<TemplateComponent> children;
-    // 选择组件自定义选项值列表
+    /** 选择组件自定义选项值列表 */
     @TableField(exist = false)
     private List<ComponentField> componentFields;
-    // 选择组件表单选项值列表
+    /** 选择组件表单选项值列表 */
     @TableField(exist = false)
     private List<String> fieldValues;
     @TableField(exist = false)

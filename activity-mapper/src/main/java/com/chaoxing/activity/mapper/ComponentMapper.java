@@ -17,7 +17,7 @@ import java.util.Collection;
 @Mapper
 public interface ComponentMapper extends BaseMapper<Component> {
 
-    /**
+    /**批量新增
     * @Description 
     * @author huxiaolong
     * @Date 2021-07-08 11:07:57

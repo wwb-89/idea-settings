@@ -22,6 +22,8 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
     * @Description 
     * @author huxiaolong
     * @Date 2021-05-11 15:42:38
+    * @param startDate
+    * @param endDate
     * @param activityIds
     * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
     */
@@ -34,6 +36,8 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
      * @author huxiaolong
      * @Date 2021-05-12 13:19:43
      * @param queryParams
+     * @param orderField
+     * @param orderType
      * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
      */
     List<ActivityStat> listTopActivity(@Param("queryParams") ActivityStatQueryDTO queryParams,
@@ -45,6 +49,8 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
      * @author huxiaolong
      * @Date 2021-05-12 13:19:43
      * @param queryParams
+     * @param orderField
+     * @param orderType
      * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
      */
     List<ActivityStat> activityStatList(@Param("queryParams") ActivityStatQueryDTO queryParams,
@@ -68,7 +74,7 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
     * @Description
     * @author huxiaolong
     * @Date 2021-08-03 15:32:52
-    * @param
+    * @param activityIds
     * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
     */
     List<ActivityStat> listActivityPvByActivityIds(@Param("activityIds") List<Integer> activityIds);

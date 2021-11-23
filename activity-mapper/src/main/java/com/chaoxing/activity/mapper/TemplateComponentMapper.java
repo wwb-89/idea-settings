@@ -19,7 +19,7 @@ import java.util.List;
 @Mapper
 public interface TemplateComponentMapper extends BaseMapper<TemplateComponent> {
 
-    /**
+    /**批量新增
     * @Description
     * @author huxiaolong
     * @Date 2021-07-08 11:54:17
@@ -28,7 +28,7 @@ public interface TemplateComponentMapper extends BaseMapper<TemplateComponent> {
     */
     void batchAdd(@Param("templateComponents") Collection<TemplateComponent> templateComponents);
 
-    /**
+    /**查询模版下的模版组件列表
     * @Description
     * @author huxiaolong
     * @Date 2021-07-15 14:43:01
