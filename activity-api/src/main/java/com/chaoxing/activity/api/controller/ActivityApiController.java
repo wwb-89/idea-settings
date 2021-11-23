@@ -507,7 +507,7 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 	
-	/**
+	/**删除活动（宣讲会）
 	* @Description 
 	* @author huxiaolong
 	* @Date 2021-08-12 17:50:59
