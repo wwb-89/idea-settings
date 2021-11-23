@@ -592,10 +592,11 @@
                                 </template>
                             </form>
                         </div>
-                        <div class="form-item" v-else-if="item.type == 'text'">
+                        <div class="form-item" v-else-if="item.type == 'text' || item.type == 'number'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
-                            <div class="input-box">
-                                <el-input type="text" placeholder="请填写" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
+                            <div :class="{'input-box': true, 'setForm': item.type == 'number'}">
+                                <el-input v-if="item.type == 'text'" type="text" placeholder="请填写" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
+                                <input v-else type="number" v-model.trim="activityComponentValueMap[item.id].value" placeholder="请输入" class="score-input">
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
@@ -1164,12 +1165,12 @@
                             var signIn = signApp.newSignIn(this);
                             signIn.originId = this.id;
                             $this.$set($this.signInMap, this.id, signIn);
-                        } else if ((this.type == 'text' || this.type == 'radio' || this.type == 'checkbox') && !$this.activityComponentValueMap[this.id]) {
+                        } else if ((this.type == 'text' || this.type == 'radio' || this.type == 'checkbox' || this.type == 'number') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
                                 templateId: this.templateId,
                                 componentId: this.componentId,
-                                value: this.type == 'checkbox' ? [] : ''
+                                value: this.type == 'checkbox' ? [] : (this.type == 'number' ? 0 : '')
                             });
                         }
                     });
@@ -1185,12 +1186,12 @@
                             signUpTplComponentIds.push(this.id);
                         } else if (this.code == 'sign_in' || this.code == 'sign_out') {
                             signInTplComponentIds.push(this.id);
-                        } else if ((this.type == 'radio' || this.type == 'checkbox' || this.type == 'text') && !$this.activityComponentValueMap[this.id]) {
+                        } else if ((this.type == 'radio' || this.type == 'checkbox' || this.type == 'text' || this.type == 'number') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
                                 templateId: this.templateId,
                                 componentId: this.componentId,
-                                value: this.type == 'checkbox' ? [] : ''
+                                value: this.type == 'checkbox' ? [] : (this.type == 'number' ? 0 : '')
                             });
                         }
                     });
