@@ -22,6 +22,7 @@ import java.util.List;
 @Mapper
 public interface ActivityMapper extends BaseMapper<Activity> {
 
+
 	/**
 	 * 查询参与的活动
 	 *

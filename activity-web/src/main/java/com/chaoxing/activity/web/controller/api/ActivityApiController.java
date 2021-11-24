@@ -69,23 +69,22 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		String areaCode = activityQuery.getAreaCode();
-		List<WfwAreaDTO> wfwRegionalArchitectures;
+		// 区域code不存在，且查询范围为1:所有，直接查询
+		boolean isZjLib = Objects.equals(activityQuery.getFlag(), Activity.ActivityFlagEnum.ZJ_LIB.getValue());
+		if ((isZjLib ||StringUtils.isBlank(areaCode)) && Objects.equals(activityQuery.getScope(), 1)) {
+			Page<Activity> page = HttpServletRequestUtils.buid(request);
+			if (isZjLib) {
+
+			}
+			page = activityQueryService.pageFlag(page, activityQuery);
+			packageActivitySignedStat(page);
+			return RestRespDTO.success(page);
+		}
+		List<WfwAreaDTO> wfwRegionalArchitectures = Lists.newArrayList();
 		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(areaCode)) {
 			// 区域的
 			wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
-		} else {
-			if (topFid == null) {
-				topFid = Optional.ofNullable(loginUser).map(LoginUserDTO::getFid).orElse(null);
-			}
-			wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
-		}
-		// 区域code不存在，且查询范围为1:所有，直接查询
-		if (StringUtils.isBlank(areaCode) && Objects.equals(activityQuery.getScope(), 1)) {
-			Page<Activity> page = HttpServletRequestUtils.buid(request);
-			page = activityQueryService.pageFlag(page, activityQuery);
-			packageActivitySignedStat(page);
-			return RestRespDTO.success(page);
 		}
 		List<Integer> fids = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {

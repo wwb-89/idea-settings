@@ -49,6 +49,7 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
+import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -127,6 +128,36 @@ public class ActivityQueryService {
 	@Resource
 	private WorkApiService workApiService;
 
+
+	/**查询所有预告中的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-24 15:17:18
+	 * @param
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	 */
+	public List<Activity> listAllForecastActivity() {
+
+	}
+
+
+	public Page<Activity> pageParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
+		return activityMapper.pageParticipate(page, activityQuery);
+	}
+
+	/**分页查询已结束活动和进行中的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-24 15:16:55
+	 * @param
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	 */
+	public Page<Activity> pageSpecialParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
+		activityQuery.setStatusList(Lists.newArrayList(3, 4));
+		activityQuery.setTimeOrder(OrderTypeEnum.DESC);
+		return activityMapper.pageParticipate(page, activityQuery);
+	}
+
 	/**查询参与的活动
 	 * @Description 
 	 * @author wwb
@@ -141,7 +172,7 @@ public class ActivityQueryService {
 		Boolean signUpAble = activityQuery.getSignUpAble();
 		if (currentUid != null && Optional.ofNullable(signUpAble).orElse(false)) {
 			page.setSize(Integer.MAX_VALUE);
-			page = activityMapper.pageParticipate(page, activityQuery);
+			page = pageSpecialParticipate(page, activityQuery);
 			List<Activity> records = page.getRecords();
 			// 只查询能报名的
 			List<Integer> signIds = Optional.ofNullable(records).orElse(Lists.newArrayList()).stream().map(Activity::getSignId).filter(v -> v != null).collect(Collectors.toList());
@@ -162,7 +193,7 @@ public class ActivityQueryService {
 			page.setRecords(activities);
 			page.setTotal(activities.size());
 		} else {
-			page = activityMapper.pageParticipate(page, activityQuery);
+			page = pageSpecialParticipate(page, activityQuery);
 		}
 		return page;
 	}
