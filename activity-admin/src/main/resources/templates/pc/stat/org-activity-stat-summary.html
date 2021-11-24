@@ -64,11 +64,9 @@
                     <div class="count-info fl">
                         <span class="color999">共 {{total}} 条</span>
                     </div>
-                    <div class="setting-box">
+                    <div class="fr fs14 export-box">
                         <el-dropdown :hide-on-click="false" trigger="click">
-                            <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
-                                <span class="icon-setting fs16"></span>
-                            </el-tooltip>
+                            <span class="icon-column fs14"><span class="path1"></span><span class="path2"></span></i>列设置</span>
                             <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                 <div class="dropdown-lists">
                                     <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
@@ -89,9 +87,10 @@
                     <div class="clear"></div>
                 </div>
 
-                <el-table
+                <el-table v-if="tbodyHeight > 0"
                         class="table-box"
                         :data="tableData"
+                        :height="tbodyHeight"
                         :empty-text="loaded && tableData.length === 0 ? '暂无数据' : '数据加载中'"
                         @sort-change="sortChange"
                         @filter-change="filterChange">
@@ -258,6 +257,8 @@
                 wfwGroups: [[${wfwGroups}]],
                 participateScopeTreeObj: null,
                 clearFlag: false,
+                bodyHeight: $(window).height(),
+                tbodyHeight: 0
             },
             created: function () {
                 var $this = this;
@@ -268,8 +269,9 @@
             },
             mounted: function () {
                 var $this = this;
+                $this.tbodyHeight = $this.bodyHeight - ($('.table-operate-box').height() + $('.table-search-box').height() + $('.table-count-box').height() + 48 + 48 + 48);
                 $this.loadData();
-                $this.reSortSettingData()
+                $this.reSortSettingData();
             },
             methods: {
                 filterChange: function (filterItem) {
@@ -344,7 +346,7 @@
                                 externalIds.push(parseInt(this.externalId));
                             }
                             if (participateScopes.length - 1 !== i) {
-                                participateScopeNames += ','
+                                participateScopeNames += ',';
                             }
                         })
                     }
@@ -447,7 +449,7 @@
                 sortChange: function (column) {
                     var $this = this;
                     var sortFieldItem = $($this.showTableFieldDetails).filter(function() {
-                        return this.code === column.prop
+                        return this.code === column.prop;
                     })[0];
                     $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
                     if (column.order === 'descending') {
@@ -483,7 +485,7 @@
                     if (!item.defaultChecked) {
                         item.defaultTop = item.defaultChecked;
                     }
-                    $this.reSortSettingData()
+                    $this.reSortSettingData();
                 },
                 // 取消置顶配置
                 topConfigChange: function(item) {
