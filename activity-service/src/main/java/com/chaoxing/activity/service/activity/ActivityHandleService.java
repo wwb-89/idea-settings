@@ -44,6 +44,7 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.tag.TagHandleService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
@@ -137,6 +138,8 @@ public class ActivityHandleService {
 	private CloudApiService cloudApiService;
 	@Resource
 	private ActivityStatusChangeEventService activityStatusChangeEventService;
+	@Resource
+	private TagHandleService tagHandleService;
 
 	/**
 	 * @Description
@@ -230,6 +233,8 @@ public class ActivityHandleService {
 		} else {
 			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
 		}
+		// 处理标签
+		handleActivityTags(activity, activityCreateParamDto.getTagNames());
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
 		return activityId;
@@ -361,6 +366,8 @@ public class ActivityHandleService {
 			} else {
 				activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
 			}
+			// 处理标签
+			handleActivityTags(existActivity, activityUpdateParamDto.getTagNames());
 			// 活动改变
 			activityChangeEventService.dataChange(activity, existActivity, loginUser);
 			return activity;
@@ -662,6 +669,16 @@ public class ActivityHandleService {
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
 				.set(Activity::getWebsiteId, null)
 		);
+	}
+
+	private void handleActivityTags(Activity activity, List<String> tagNames) {
+		Integer marketId = activity.getMarketId();
+		if (marketId != null) {
+			tagHandleService.marketAssociateTags(marketId, tagNames);
+		} else {
+			tagHandleService.orgAssociateTags(activity.getCreateFid(), tagNames);
+		}
+		tagHandleService.activityAssociateTags(activity.getId(), tagNames);
 	}
 
 	/**创建模块

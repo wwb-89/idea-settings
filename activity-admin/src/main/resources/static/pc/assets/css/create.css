@@ -317,8 +317,8 @@ input::placeholder {
   color: #cccccc;
 }
 
-input[type="text"],
-input[type="number"] {
+input[type="text"]:not(.el-select__input),
+input[type="number"]:not(.el-select__input) {
   width: 100%;
   background: #ffffff;
   border: 1px solid #e9e9e9;

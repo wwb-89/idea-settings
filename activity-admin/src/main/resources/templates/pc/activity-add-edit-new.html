@@ -330,12 +330,9 @@
                         <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <!--添加满3个后，隐藏添加按钮-->
-                                <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
-                                <div class="type-item add" @click="toAddTag">
-                                    <div class="add_btn"></div>
-                                    添加
-                                </div>
+                                <el-select v-model="activity.tagNames" style="width: 698px;" multiple filterable allow-create default-first-option placeholder="请选择标签">
+                                    <el-option v-for="(tag, index) of tags" :key="tag.name" :label="tag.name" :value="tag.name"></el-option>
+                                </el-select>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
@@ -701,24 +698,6 @@
                 </div>
             </div>
         </div>
-        <!--新增标签弹窗-->
-        <div class="dailog-box1" v-show="addTagWindowShow">
-            <div class="dailog">
-                <div class="header">
-                    <span>标签</span>
-                    <div @click="addTagWindowShow = false">
-                        <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
-                    </div>
-                </div>
-                <div class="body">
-                    <el-input type="text" class="fenlei-input" v-model.trim="addTag" placeholder="请输入" maxlength="8" show-word-limit></el-input>
-                </div>
-                <div class="footer">
-                    <div class="normal-btn cancle" @click="addTagWindowShow = false">取消</div>
-                    <div :class="{'normal-btn': true, 'before-sure': !addTag, 'after-sure': addTag}" @click="addTagSubmit">确定</div>
-                </div>
-            </div>
-        </div>
         <!-- 图片库弹窗 start -->
         <div class="dailog-box1" v-show="pictureShow">
             <div class="dailog picture-dialog">
@@ -747,8 +726,6 @@
 
         <!-- 删除分类弹窗 -->
         <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此' + activityClassifyTitle" :cancel="'保留'" :sure="'删除'" @callback="deleteActivityClassifySubmit"></vue-confirm>
-        <!--删除标签标签-->
-        <vue-confirm ref="deleteTagWindow" :message="'确认删除此标签'" :cancel="'保留'" :sure="'删除'" @callback="deleteTagSubmit"></vue-confirm>
         <!-- 活动地图弹窗 -->
         <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
         <!--签到-->
@@ -832,7 +809,6 @@
                 templateComponentMap: {},
                 needInitEditor: false,
                 isEmbedded: activityApp.isEmbedded(),
-                tags: [],
                 // 是否重新选择模版
                 isReselectConfig: false,
                 // 使用的模版
@@ -853,9 +829,7 @@
                 },
                 deleteActivityClassifyId: null,
                 // 标签
-                addTagWindowShow: false,
-                addTag: "",
-                deleteActivityTagIndex: "",
+                tags: [[${tags}]],
                 // 发布类型(org: 机构发布， class: 班级发布)
                 releaseType: "org",
                 classList: [],
@@ -1060,7 +1034,6 @@
                         timingRelease: false,
                         timingReleaseTimeStamp: "",
                         openAudit: false,
-                        tags: "",
                         openRating: false,
                         ratingNeedAudit: false,
                         integral: 0.0,
@@ -1076,7 +1049,11 @@
                         activityFlag: $this.activityFlag,
                         openGroup: false,
                         openInspectionConfig: false,
-                        inspectionConfigId: null
+                        inspectionConfigId: null,
+                        // 关联的标签id列表
+                        tagIds: [],
+                        // 选择的标签名称列表
+                        tagNames: []
                     };
                     // 展示模板页面 初始化默认选择第一个
                     var firstWebTemplate = $this.webTemplates && $this.webTemplates[0];
@@ -1098,16 +1075,18 @@
                             $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
                         });
                     }
+                    // 处理标签
+                    var tagIds = $this.activity.tagIds;
+                    tagIds = activityApp.isEmpty(tagIds) ? [] : tagIds;
+                    var tagNames = [];
+                    $($this.tags).each(function () {
+                        if (tagIds.indexOf(this.id) > -1) {
+                            tagNames.push(this.name);
+                        }
+                    });
+                    $this.$set($this.activity, "tagNames", tagNames);
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
-                // 标签
-                var tags = $this.activity.tags;
-                if (activityApp.isEmpty(tags)) {
-                    tags = [];
-                } else {
-                    tags = tags.split(",");
-                }
-                $this.tags = tags;
                 $($this.activityTypes).each(function (i) {
                     if ($this.activity.activityType == this.value) {
                         $this.$set($this.activityTypes[i], "selected", true);
@@ -1736,37 +1715,6 @@
                     }, function () {
                         app.showMsg("删除"+ $this.activityClassifyTitle +"失败");
                     });
-                },
-                // 添加标签
-                toAddTag: function () {
-                    var $this = this;
-                    $this.addTagWindowShow = true;
-                },
-                addTagSubmit: function () {
-                    var $this = this;
-                    if (activityApp.isEmpty($this.addTag)) {
-                        app.showMsg("标签不能为空");
-                        return;
-                    }
-                    if ($this.tags.indexOf($this.addTag) > -1) {
-                        app.showMsg("标签已存在");
-                        return;
-                    }
-                    $this.tags.push($this.addTag);
-                    $this.activity.tags = $this.tags.join(",");
-                    $this.addTag = "";
-                    $this.addTagWindowShow = false;
-                },
-                deleteTag: function (index) {
-                    var $this = this;
-                    $this.deleteTagIndex = index;
-                    $this.$refs.deleteTagWindow.show = true;
-                },
-                deleteTagSubmit: function () {
-                    var $this = this;
-                    $this.tags.splice($this.deleteTagIndex, 1);
-                    $this.activity.tags = $this.tags.join(",");
-                    $this.$refs.deleteTagWindow.show = false;
                 },
                 // 验证输入
                 validateForm: function (validateOfflineAddress) {

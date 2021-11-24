@@ -18,6 +18,7 @@ import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -67,6 +68,8 @@ public class ActivityController {
 	private WfwFormApiService formApiService;
 	@Resource
 	private MarketSignupConfigService marketSignupConfigService;
+	@Resource
+	private TagQueryService tagQueryService;
 
 	/**新活动管理主页
 	 * @Description
@@ -103,6 +106,17 @@ public class ActivityController {
 		return "pc/activity-list";
 	}
 
+	/**新增活动页面
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-24 14:16:24
+	 * @param request
+	 * @param model
+	 * @param marketId
+	 * @param flag
+	 * @param strict
+	 * @return java.lang.String
+	*/
 	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, Integer strict) {
 		flag = Optional.ofNullable(flag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -154,6 +168,9 @@ public class ActivityController {
 		// 活动市场报名配置
 		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
 		model.addAttribute("marketSignUpConfig", marketSignUpConfig);
+		// 活动标签
+		List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(fid));
+		model.addAttribute("tags", tags);
 		return "pc/activity-add-edit-new";
 	}
 }

@@ -43,6 +43,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -126,6 +127,8 @@ public class ActivityQueryService {
 	private ActivityMenuService activityMenuService;
 	@Resource
 	private WorkApiService workApiService;
+	@Resource
+	private TagQueryService tagQueryService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -989,6 +992,9 @@ public class ActivityQueryService {
 		createParamDTO.setActivityComponentValues(activityComponentValues);
 		// set 考核管理id
 		packageInspectConfig(createParamDTO, activityId);
+		// 封装标签
+		List<Integer> tagIds = tagQueryService.listActivityAssociateTagId(activityId);
+		createParamDTO.setTagIds(tagIds);
 		return createParamDTO;
 	}
 

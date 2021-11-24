@@ -25,6 +25,7 @@ import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
@@ -41,7 +42,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -87,6 +91,8 @@ public class ActivityManageController {
 	private WfwFormApiService formApiService;
 	@Resource
 	private MarketSignupConfigService marketSignupConfigService;
+	@Resource
+	private TagQueryService tagQueryService;
 
 	/**活动管理主页
 	 * @Description 
@@ -204,7 +210,22 @@ public class ActivityManageController {
 				strict);
 	}
 
-
+	/**活动修改页面
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-24 14:22:27
+	 * @param model
+	 * @param activityId
+	 * @param userFid
+	 * @param activityFid
+	 * @param marketId
+	 * @param uid
+	 * @param activityFlag
+	 * @param templateId
+	 * @param webTemplateId
+	 * @param strict
+	 * @return java.lang.String
+	*/
 	private String activityAddEditView(Model model, Integer activityId, Integer userFid, Integer activityFid, Integer marketId, Integer uid, String activityFlag, Integer templateId, Integer webTemplateId, Integer strict) {
 		// 活动对应的模板组件列表
 		model.addAttribute("templateComponents", templateComponentService.listTemplateComponentTree(templateId, activityFid));
@@ -249,6 +270,9 @@ public class ActivityManageController {
 		// 活动市场报名配置
 		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
 		model.addAttribute("marketSignUpConfig", marketSignUpConfig);
+		// 活动标签
+		List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(activityFid));
+		model.addAttribute("tags", tags);
 		return "pc/activity-add-edit-new";
 	}
 

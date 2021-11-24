@@ -10,4 +10,13 @@
     <sql id="Base_Column_List">
         t.id, t.name, t.create_time, t.update_time
     </sql>
+
+    <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_tag ( `name` )
+        VALUES
+            <foreach collection="tags" index="key" item="value" open="" close="" separator=",">
+                ( #{value.name} )
+            </foreach>
+    </insert>
+
 </mapper>

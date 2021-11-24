@@ -1,9 +1,11 @@
 package com.chaoxing.activity.service.tag;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.chaoxing.activity.mapper.ActivityTagMapper;
 import com.chaoxing.activity.mapper.MarketTagMapper;
 import com.chaoxing.activity.mapper.OrgTagMapper;
 import com.chaoxing.activity.mapper.TagMapper;
+import com.chaoxing.activity.model.ActivityTag;
 import com.chaoxing.activity.model.MarketTag;
 import com.chaoxing.activity.model.OrgTag;
 import com.chaoxing.activity.model.Tag;
@@ -35,6 +37,8 @@ public class TagQueryService {
     private OrgTagMapper orgTagMapper;
     @Resource
     private MarketTagMapper marketTagMapper;
+    @Resource
+    private ActivityTagMapper activityTagMapper;
 
     public Tag getByName(String name) {
         List<Tag> tags = tagMapper.selectList(new LambdaQueryWrapper<Tag>()
@@ -63,6 +67,13 @@ public class TagQueryService {
         return orgTags.stream().findFirst().orElse(null);
     }
 
+    public List<OrgTag> listOrgTag(Integer fid, List<Integer> tagIds) {
+        return orgTagMapper.selectList(new LambdaQueryWrapper<OrgTag>()
+                .eq(OrgTag::getFid, fid)
+                .in(OrgTag::getTagId, tagIds)
+        );
+    }
+
     public List<Tag> listOrgTag(Integer fid) {
         List<OrgTag> orgTags = orgTagMapper.selectList(new LambdaQueryWrapper<OrgTag>()
                 .eq(OrgTag::getFid, fid)
@@ -82,6 +93,13 @@ public class TagQueryService {
         return marketTags.stream().findFirst().orElse(null);
     }
 
+    public List<MarketTag> listMarketTag(Integer marketId, List<Integer> tagIds) {
+        return marketTagMapper.selectList(new LambdaQueryWrapper<MarketTag>()
+                .eq(MarketTag::getMarketId, marketId)
+                .in(MarketTag::getTagId, tagIds)
+        );
+    }
+
     public List<Tag> listMarketTag(Integer marketId) {
         List<MarketTag> marketTags = marketTagMapper.selectList(new LambdaQueryWrapper<MarketTag>()
                 .eq(MarketTag::getMarketId, marketId)
@@ -91,6 +109,23 @@ public class TagQueryService {
             return Lists.newArrayList();
         }
         return listByIds(Lists.newArrayList(tagIds));
+    }
+
+    public List<Integer> listActivityAssociateTagId(Integer activityId) {
+        List<ActivityTag> activityTags = activityTagMapper.selectList(new LambdaQueryWrapper<ActivityTag>()
+                .eq(ActivityTag::getActivityId, activityId)
+        );
+        return activityTags.stream().map(ActivityTag::getTagId).collect(Collectors.toList());
+    }
+
+    public List<Tag> listActivityAssociateTag(Integer activityId) {
+        List<Integer> tagIds = listActivityAssociateTagId(activityId);
+        if (CollectionUtils.isEmpty(tagIds)) {
+            return Lists.newArrayList();
+        }
+        return tagMapper.selectList(new LambdaQueryWrapper<Tag>()
+                .in(Tag::getId, tagIds)
+        );
     }
 
 }
