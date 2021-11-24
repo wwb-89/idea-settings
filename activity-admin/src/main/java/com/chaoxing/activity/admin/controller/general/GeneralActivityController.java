@@ -2,8 +2,6 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.Template;
-import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +33,6 @@ public class GeneralActivityController {
 	private ActivityController activityController;
 	@Resource
 	private MarketHandleService marketHandleService;
-	@Resource
-	private ActivityFlagCodeService activityFlagCodeService;
 
 	/**活动管理主页
 	 * @Description
@@ -56,13 +52,11 @@ public class GeneralActivityController {
 	 */
 	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, Integer marketId, Integer wfwfid, Integer unitId, Integer state, Integer fid,
-						@RequestParam(defaultValue = "0") Integer strict, String flag, @RequestParam(defaultValue = "0") Integer pageMode, @RequestParam(defaultValue = "false") Boolean direct) {
+						@RequestParam(defaultValue = "0") Integer strict, String flag, String code, @RequestParam(defaultValue = "0") Integer pageMode, @RequestParam(defaultValue = "false") Boolean direct) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
 		direct = Optional.ofNullable(direct).orElse(false);
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
-			// 判断是否存在flag对应code，若存在，直接返回index
 			// 若不存在，则判断市场是否存在，市场不存在则创建市场
-			String code = activityFlagCodeService.getCodeByFlag(flag);
 			if (StringUtils.isBlank(code)) {
 				Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
 				if (activityFlagEnum == null) {
@@ -74,7 +68,7 @@ public class GeneralActivityController {
 				}
 			}
 		}
-		return activityController.index(model, marketId, realFid, strict, flag, pageMode);
+		return activityController.index(model, marketId, realFid, strict, flag, code, pageMode);
 	}
 
 	/**活动新增页面
@@ -89,7 +83,7 @@ public class GeneralActivityController {
 	*/
 	@GetMapping("activity/add")
 	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, @RequestParam(defaultValue = "0") Integer strict) {
-		return activityController.add(request, model, marketId, flag, strict);
+		return activityController.add(request, model, marketId, flag, code, strict);
 	}
 
 }

@@ -79,11 +79,12 @@ public class ActivityController {
 	 * @param flag
 	 * @return java.lang.String
 	*/
-	public String index(Model model, Integer marketId, Integer fid, Integer strict, String flag, Integer pageMode) {
+	public String index(Model model, Integer marketId, Integer fid, Integer strict, String flag, String code, Integer pageMode) {
 		model.addAttribute("fid", fid);
 		model.addAttribute("strict", strict);
 		model.addAttribute("marketId", marketId);
 		model.addAttribute("flag", flag);
+		model.addAttribute("areaCode", code);
 		if (Objects.equals(pageMode, 1)) {
 			return "pc/activity-list-simple";
 		}
@@ -103,7 +104,7 @@ public class ActivityController {
 		return "pc/activity-list";
 	}
 
-	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, Integer strict) {
+	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, Integer strict) {
 		flag = Optional.ofNullable(flag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
@@ -132,7 +133,12 @@ public class ActivityController {
 		model.addAttribute("contactGroups", permission.getContactsGroups());
 		model.addAttribute("activityFlag", flag);
 		// 发布范围默认选中当前机构
-		List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);
+		List<WfwAreaDTO> wfwAreaDtos;
+		if (StringUtils.isNotBlank(code)) {
+			wfwAreaDtos = wfwAreaApiService.listByCode(code);
+		} else {
+			wfwAreaDtos = wfwAreaApiService.listByFid(fid);
+		}
 		List<WfwAreaDTO> participatedOrgs = Optional.ofNullable(wfwAreaDtos).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).collect(Collectors.toList());
 		model.addAttribute("participatedOrgs", participatedOrgs);
 

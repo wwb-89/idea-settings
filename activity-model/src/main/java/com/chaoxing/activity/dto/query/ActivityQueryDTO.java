@@ -72,4 +72,6 @@ public class ActivityQueryDTO {
 	/** 时间排序 */
 	private OrderTypeEnum timeOrder;
 
+	/** 活动市场样式 */
+	private Integer style;
 }

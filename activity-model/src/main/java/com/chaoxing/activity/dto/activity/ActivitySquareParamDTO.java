@@ -29,7 +29,7 @@ public class ActivitySquareParamDTO {
     /** 其他来源封装的fid */
     private Integer fid;
 //    /** 区域编码? */
-//    private String code;
+    private String code;
 //    /** 门户页面id */
 //    Integer pageId;
 

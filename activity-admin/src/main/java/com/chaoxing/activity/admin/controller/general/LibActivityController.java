@@ -43,7 +43,7 @@ public class LibActivityController {
 	@RequestMapping("")
 	public String index(Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag, @RequestParam(defaultValue = "0") Integer pageMode) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		return activityManagementController.index(model, marketId, realFid, strict, flag, pageMode);
+		return activityManagementController.index(model, marketId, realFid, strict, flag, code, pageMode);
 	}
 
 	/**活动新增页面
@@ -58,7 +58,7 @@ public class LibActivityController {
 	*/
 	@GetMapping("activity/add")
 	public String add(Model model, HttpServletRequest request, Integer templateId, String flag, String code, Integer strict) {
-		return activityManagementController.add(request, model, templateId, flag, strict);
+		return activityManagementController.add(request, model, templateId, flag, code, strict);
 	}
 
 }

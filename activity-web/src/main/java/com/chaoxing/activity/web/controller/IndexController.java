@@ -82,7 +82,7 @@ public class IndexController {
 	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, ActivitySquareParamDTO activitySquareParam) {
 		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
-		return handleData(request, model, null, null, activitySquareParam);
+		return handleData(request, model, null, activitySquareParam);
 	}
 
 	/**鄂尔多斯活动广场
@@ -141,18 +141,17 @@ public class IndexController {
 	 * @Date 2020-12-09 10:22:27
 	 * @param request
 	 * @param model
-	 * @param code
 	 * @param pageId
 	 * @param activitySquareParam 活动广场参数
 	 * @return java.lang.String
 	 */
 	@RequestMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, String code, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
-		if (StringUtils.isBlank(code)) {
+	public String libIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
+		if (StringUtils.isBlank(activitySquareParam.getCode())) {
 			// todo 后续移除code参数，改用flag获取
-			code = activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag());
+			activitySquareParam.setCode(activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag()));
 		}
-		return handleData(request, model, code, pageId, activitySquareParam);
+		return handleData(request, model, pageId, activitySquareParam);
 	}
 
 	/**基础教育
@@ -161,19 +160,18 @@ public class IndexController {
 	 * @Date 2020-12-09 10:22:36
 	 * @param request
 	 * @param model
-	 * @param code
 	 * @param pageId
 	 * @param activitySquareParam 活动广场参数
 	 * @return java.lang.String
 	 */
 	@RequestMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, String code, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
+	public String basIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
 		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
-		if (StringUtils.isBlank(code)) {
+		if (StringUtils.isBlank(activitySquareParam.getCode())) {
 			//	todo 后续移除code参数，改用flag获取
-			code = activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag());
+			activitySquareParam.setCode(activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag()));
 		}
-		return handleData(request, model, code, pageId, activitySquareParam);
+		return handleData(request, model, pageId, activitySquareParam);
 	}
 
 	/**高校
@@ -182,25 +180,25 @@ public class IndexController {
 	 * @Date 2020-12-09 10:22:44
 	 * @param request
 	 * @param model
-	 * @param code
 	 * @param pageId
 	 * @param activitySquareParam 活动广场参数
 	 * @return java.lang.String
 	 */
 	@RequestMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, String code, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
+	public String eduIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
 		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
-		if (StringUtils.isBlank(code)) {
+		if (StringUtils.isBlank(activitySquareParam.getCode())) {
 			//	todo 后续移除code参数，改用flag获取
-			code = activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag());
+			activitySquareParam.setCode(activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag()));
 		}
-		return handleData(request, model, code, pageId, activitySquareParam);
+		return handleData(request, model, pageId, activitySquareParam);
 	}
 
-	private String handleData(HttpServletRequest request, Model model, String code, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
+	private String handleData(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
 		Integer fid = activitySquareParam.getRealFid();
 		Integer marketId = activitySquareParam.getMarketId();
 		String flag = activitySquareParam.getFlag();
+		String code = activitySquareParam.getCode();
 		// 根据fid和flag查询模版
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			marketId = marketQueryService.getMarketIdByFlag(fid, flag);

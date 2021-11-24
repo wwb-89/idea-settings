@@ -146,6 +146,7 @@
                 activities: [],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${fid != null ? fid : session._login_user_.fid}]],
+                areaCode: [[${areaCode}]],
                 marketId: [[${marketId}]],
                 filterStatus: [],
                 selectedFilterStatusName: "全部",
@@ -256,7 +257,11 @@
                     if (activityApp.isEmpty(flag)) {
                         flag = "";
                     }
-                    var url = activityApp.getRelativeUrl("/activity/add?marketId=" + marketId + "&flag=" + flag + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
+                    var areaCode = $this.areaCode;
+                    if (activityApp.isEmpty(areaCode)) {
+                        areaCode = "";
+                    }
+                    var url = activityApp.getRelativeUrl("/activity/add?marketId=" + marketId + "&flag=" + flag + "&code=" + areaCode + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {
