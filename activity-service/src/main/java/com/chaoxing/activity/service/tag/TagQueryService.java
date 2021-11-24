@@ -48,12 +48,18 @@ public class TagQueryService {
     }
 
     public List<Tag> listByNames(List<String> names) {
+        if (CollectionUtils.isEmpty(names)) {
+            return Lists.newArrayList();
+        }
         return tagMapper.selectList(new LambdaQueryWrapper<Tag>()
                 .in(Tag::getName, names)
         );
     }
 
     public List<Tag> listByIds(List<Integer> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Lists.newArrayList();
+        }
         return tagMapper.selectList(new LambdaQueryWrapper<Tag>()
                 .in(Tag::getId, ids)
         );
@@ -68,6 +74,9 @@ public class TagQueryService {
     }
 
     public List<OrgTag> listOrgTag(Integer fid, List<Integer> tagIds) {
+        if (CollectionUtils.isEmpty(tagIds)) {
+            return Lists.newArrayList();
+        }
         return orgTagMapper.selectList(new LambdaQueryWrapper<OrgTag>()
                 .eq(OrgTag::getFid, fid)
                 .in(OrgTag::getTagId, tagIds)
@@ -94,6 +103,9 @@ public class TagQueryService {
     }
 
     public List<MarketTag> listMarketTag(Integer marketId, List<Integer> tagIds) {
+        if (CollectionUtils.isEmpty(tagIds)) {
+            return Lists.newArrayList();
+        }
         return marketTagMapper.selectList(new LambdaQueryWrapper<MarketTag>()
                 .eq(MarketTag::getMarketId, marketId)
                 .in(MarketTag::getTagId, tagIds)
