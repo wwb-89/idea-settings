@@ -61,7 +61,7 @@ public class ActivityStatusService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public void statusUpdate(Activity activity) {
-		if (activity != null) {
+		if (activity != null && !activity.isDeleted()) {
 			Integer oldStatus = activity.getStatus();
 			Integer activityId = activity.getId();
 			Activity.calAndSetActivityStatus(activity);

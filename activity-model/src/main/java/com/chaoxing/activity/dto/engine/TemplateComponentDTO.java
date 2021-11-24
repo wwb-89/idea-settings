@@ -1,6 +1,5 @@
 package com.chaoxing.activity.dto.engine;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.chaoxing.activity.model.ComponentField;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.model.SignUpFillInfoType;
@@ -58,9 +57,9 @@ public class TemplateComponentDTO {
 
     private List<TemplateComponentDTO> children;
 
-    // 选择组件自定义选项值列表
+    /** 选择组件自定义选项值列表 */
     private List<ComponentField> componentFields;
-    // 选择组件表单选项值列表
+    /** 选择组件表单选项值列表 */
     private List<String> fieldValues;
 
     private SignUpCondition signUpCondition;

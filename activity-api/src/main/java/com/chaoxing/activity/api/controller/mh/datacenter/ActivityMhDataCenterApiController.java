@@ -221,7 +221,7 @@ public class ActivityMhDataCenterApiController {
             fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()), ++fieldFlag));
             fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()), ++fieldFlag));
             // 报名数据封装
-            String emptySignUpText = urlParams.getString("emptySignUp");    // 空报名状态文字
+            String emptySignUpText = urlParams.getString("emptySignUp");
             String signUpStatus = Optional.ofNullable(emptySignUpText).orElse(""), signUpStartTime = "", signUpEndTime = "";
             int signedUpNum = 0, personLimit = 0;
             if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {

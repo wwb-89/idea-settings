@@ -17,7 +17,7 @@ import java.util.List;
 @Mapper
 public interface ActivitySignUpConditionMapper extends BaseMapper<ActivitySignUpCondition> {
 
-    /**
+    /**批量新增
      * @Description
      * @author huxiaolong
      * @Date 2021-11-04 17:03:34

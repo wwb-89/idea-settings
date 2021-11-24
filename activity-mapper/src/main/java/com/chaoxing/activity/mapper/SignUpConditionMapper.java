@@ -26,7 +26,7 @@ public interface SignUpConditionMapper extends BaseMapper<SignUpCondition> {
 	*/
 	int batchAdd(@Param("signUpConditions") List<SignUpCondition> signUpConditions);
 
-	/**
+	/**查询模版下的模版组件id列表
 	* @Description 
 	* @author huxiaolong
 	* @Date 2021-07-14 11:55:30

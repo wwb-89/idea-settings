@@ -39,7 +39,7 @@ public class Classify {
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
 
-    /* 是否是本机构或市场拥有 */
+    /** 是否是本机构或市场拥有 */
     @TableField(exist = false)
     private Boolean owner;
 

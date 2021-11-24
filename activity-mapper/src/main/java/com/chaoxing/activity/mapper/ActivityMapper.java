@@ -44,6 +44,14 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	*/
 	Page<Activity> pageFlag(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
+	/**鄂尔多斯定制的能参与的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-23 18:06:38
+	 * @param page
+	 * @param activityQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
 	Page<Activity> pageErdosParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
 	/**
@@ -159,6 +167,8 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * 根据报名签到id列表查询
 	 *
 	 * @param signIds
+	 * @param activityClassifyId
+	 * @param marketIds
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
 	 * @Description
 	 * @author wwb
@@ -168,6 +178,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 									   @Param("activityClassifyId") Integer activityClassifyId,
 									   @Param("marketIds") List<Integer> marketIds);
 
+	/**分页查询已报名的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-23 18:07:07
+	 * @param page
+	 * @param signIds
+	 * @param activityClassifyId
+	 * @param marketIds
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
 	Page<Activity> pageSignedUpActivities(@Param("page") Page<?> page,
 										@Param("signIds") List<Integer> signIds,
 									   @Param("activityClassifyId") Integer activityClassifyId,
@@ -179,6 +199,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @param page
 	 * @param uid
 	 * @param sw
+	 * @param marketId
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 * @Description
 	 * @author wwb

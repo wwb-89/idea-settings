@@ -17,7 +17,7 @@ import java.util.List;
 @Mapper
 public interface ActivityComponentValueMapper extends BaseMapper<ActivityComponentValue> {
 
-    /**
+    /**批量新增
     * @Description
     * @author huxiaolong
     * @Date 2021-07-19 15:46:45

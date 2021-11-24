@@ -17,6 +17,13 @@ import java.util.List;
 @Mapper
 public interface ActivityTagMapper extends BaseMapper<ActivityTag> {
 
+    /**批量新增
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-23 18:13:42
+     * @param activityTags
+     * @return int
+    */
     int batchAdd(@Param("activityTags") List<ActivityTag> activityTags);
 
 }

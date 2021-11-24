@@ -30,8 +30,6 @@ public class ActivitySquareParamDTO {
     private Integer fid;
 //    /** 区域编码? */
     private String code;
-//    /** 门户页面id */
-//    Integer pageId;
 
     private Integer banner;
     /** 风格,活动广场样式, 1和2 ,默认 2*/

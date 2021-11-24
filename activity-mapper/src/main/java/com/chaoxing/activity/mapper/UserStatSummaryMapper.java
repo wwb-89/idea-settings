@@ -87,11 +87,13 @@ public interface UserStatSummaryMapper extends BaseMapper<UserStatSummary> {
      */
     Page<UserStatSummary> pageUserStatResult(Page<UserStatSummary> page, @Param("fid") Integer fid, @Param("marketId") Integer marketId, @Param("uidList") List<Integer> uidList);
 
-    /**
+    /**分页查询用户活动汇总数据
     * @Description
     * @author huxiaolong
     * @Date 2021-10-22 14:31:45
     * @param page
+    * @param marketId
+    * @param fid
     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserSummaryStatDTO>
     */
     Page<UserSummaryStatDTO> pageUserSummaryStat(@Param("page") Page<UserSummaryStatDTO> page, @Param("marketId") Integer marketId, @Param("fid") Integer fid);

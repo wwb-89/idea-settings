@@ -16,7 +16,8 @@ import java.util.List;
  */
 @Mapper
 public interface ComponentFieldMapper extends BaseMapper<ComponentField> {
-    /**
+
+    /**批量新增
     * @Description
     * @author huxiaolong
     * @Date 2021-07-13 16:15:51
