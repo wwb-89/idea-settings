@@ -14,7 +14,7 @@
     </sql>
 
     <insert id="batchAdd">
-        INSERT INTO t_org_tag( market_id, tag_id )
+        INSERT INTO t_org_tag( fid, tag_id )
         VALUES
         <foreach collection="tagIds" index="key" item="value" open="" close="" separator=",">
             ( #{fid}, #{value} )
