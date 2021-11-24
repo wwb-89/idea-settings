@@ -924,7 +924,7 @@
             AND t1.fid = #{participateFid}
         WHERE
             t.create_fid = #{createdFid}
-            AND t.`status` IN ( 2, 3, 4 )
+            AND t.`status` IN ( 1, 2, 3, 4 )
             <if test="activityFlag != null and activityFlag != ''">
                 AND t.activity_flag = #{activityFlag}
             </if>
