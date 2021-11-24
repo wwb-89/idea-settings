@@ -73,7 +73,9 @@ public class TagHandleService {
         tagNames.removeAll(existTagNames);
         List<String> notExistTagNames = new ArrayList<>(tagNames);
         List<Tag> needAddTags = notExistTagNames.stream().map(v -> Tag.builder().name(v).build()).collect(Collectors.toList());
-        tagMapper.batchAdd(needAddTags);
+        if (CollectionUtils.isNotEmpty(needAddTags)) {
+            tagMapper.batchAdd(needAddTags);
+        }
         tags.addAll(needAddTags);
         return tags;
     }
@@ -141,7 +143,9 @@ public class TagHandleService {
             return;
         }
         List<ActivityTag> activityTags = tags.stream().map(tag -> ActivityTag.builder().activityId(activityId).tagId(tag.getId()).build()).collect(Collectors.toList());
-        activityTagMapper.batchAdd(activityTags);
+        if (CollectionUtils.isNotEmpty(activityTags)) {
+            activityTagMapper.batchAdd(activityTags);
+        }
     }
 
 }

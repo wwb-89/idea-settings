@@ -1228,9 +1228,6 @@ public class ActivityQueryService {
 					case "poster":
 						itemData.add(UrlConstant.getPosterUrl(record.getId()));
 						break;
-//					case "dualSelect":
-//						itemData.add()
-//						break;
 					case "startTime":
 						itemData.add(Optional.ofNullable(record.getStartTime()).map(v -> v.format(DateUtils.DATE_MINUTE_TIME_FORMATTER)).orElse(null));
 						break;
@@ -1335,9 +1332,6 @@ public class ActivityQueryService {
 		if (activityCreateParam.getOpenWork()) {
 			activityCreateParam.setWorkId(workApiService.createDefault(originActivity.getCreateUid(), originActivity.getCreateFid()));
 		}
-		// 判断阅读是否开启，开启则创建新的阅读，并设置克隆活动阅读信息
-//		if (activityCreateParam.getOpenReading()) {
-//		}
 		//活动简介
 		ActivityDetail originActivityDetail = getDetailByActivityId(originActivityId);
 		activityCreateParam.setIntroduction(originActivityDetail.getIntroduction());
@@ -1355,6 +1349,9 @@ public class ActivityQueryService {
 		activityCreateParam.setSignUpConditions(signUpConditions);
 		// 考核配置
 		packageInspectConfig(activityCreateParam, originActivityId);
+		// 封装标签
+		List<Integer> tagIds = tagQueryService.listActivityAssociateTagId(originActivityId);
+		activityCreateParam.setTagIds(tagIds);
 		return activityCreateParam;
 	}
 

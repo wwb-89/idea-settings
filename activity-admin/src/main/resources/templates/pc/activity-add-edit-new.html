@@ -86,7 +86,7 @@
                     <i class="icon-back"></i><span>返回</span>
                 </template>
             </div>
-            <div class="name-txt">{{activity.id ? '设置' : '新建'}}</div>
+            <div class="name-txt">{{isClone ? '克隆' : activity.id ? '设置' : '新建'}}</div>
             <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit(true)">保存</button>
             <button v-else type="button" class="create-btn" @click="addSubmit(true)">保存</button>
         </div>
@@ -1970,23 +1970,24 @@
                         signJsonStr: activityApp.getJsonStr(sign),
                         isClone: $this.isClone
                     }
+                    var action = $this.isClone ? "克隆" : "创建";
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             app.noticeActivityChange($this.activity.id);
                             var activityId = data.data;
                             $this.$set($this.activity, "id", activityId);
-                            app.showMsg("创建成功", function () {
+                            app.showMsg(action + "成功", function () {
                                 $this.returnBack();
                             });
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "创建失败";
+                                errorMessage = action + "失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("创建失败");
+                        app.showMsg(action + "失败");
                     });
                 },
                 // 编辑活动提交
