@@ -27,6 +27,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -141,6 +142,9 @@ public class ActivityMhDataCenterApiController {
         List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
         // flag
         String flag = urlParams.getString("flag");
+        // 标签名称
+        String tagNames = urlParams.getString("tags");
+        List<String> tags = Optional.ofNullable(tagNames).filter(StringUtils::isNotBlank).map(v -> Lists.newArrayList(v.split(CommonConstant.DEFAULT_SEPARATOR))).orElse(Lists.newArrayList());
         ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
                 .topFid(wfwfid)
                 .statusList(statusList)
@@ -149,6 +153,7 @@ public class ActivityMhDataCenterApiController {
                 .date(date)
                 .sw(sw)
                 .activityClassifyId(activityClassifyId)
+                .tags(tags)
                 .build();
         List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
         activityQuery.setFids(fids);

@@ -108,6 +108,12 @@
             <if test="params.sw != null and params.sw != ''">
                 LEFT JOIN t_activity_scope t5 ON t.id = t5.activity_id
             </if>
+            <if test="params.tagIds != null and params.tagIds.size() != 0">
+                INNER JOIN t_activity_tag t6 ON t.id = t6.activity_id AND t6.tag_id IN
+                <foreach collection="params.tagIds" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+            </if>
         WHERE
             <!--状态-->
             <choose>

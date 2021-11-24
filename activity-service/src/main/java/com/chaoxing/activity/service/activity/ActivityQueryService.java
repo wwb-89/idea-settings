@@ -104,8 +104,6 @@ public class ActivityQueryService {
 	@Resource
 	private ActivityComponentValueService activityComponentValueService;
 	@Resource
-	private SignUpConditionEnableMapper signUpConditionEnableMapper;
-	@Resource
 	private SignUpConditionService signUpConditionService;
 	@Resource
 	private ComponentQueryService componentQueryService;
@@ -142,6 +140,14 @@ public class ActivityQueryService {
 		calDateScope(activityQuery);
 		Integer currentUid = activityQuery.getCurrentUid();
 		Boolean signUpAble = activityQuery.getSignUpAble();
+		List<String> tagNames = activityQuery.getTags();
+		List<Tag> tags = tagQueryService.listByNames(tagNames);
+		List<Integer> tagIds = tags.stream().map(Tag::getId).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(tagNames) && CollectionUtils.isEmpty(tagIds)) {
+			// 填充一个不存在的tag
+			tagIds.add(-1);
+		}
+		activityQuery.setTagIds(tagIds);
 		if (currentUid != null && Optional.ofNullable(signUpAble).orElse(false)) {
 			page.setSize(Integer.MAX_VALUE);
 			page = activityMapper.pageParticipate(page, activityQuery);
