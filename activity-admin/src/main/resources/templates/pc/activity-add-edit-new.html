@@ -747,9 +747,6 @@
                 </div>
                 <div class="body">
                     <div class="tree">
-<!--                        <div class="tree-head">-->
-<!--                            <span>选择参与的范围</span>-->
-<!--                        </div>-->
                         <div class="tree-box">
                             <div id="sign-up-participate-scope-tree" class="ztree"></div>
                         </div>
@@ -1075,6 +1072,7 @@
                             $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
                         });
                     }
+                    $this.operateWebTemplateId = $this.activity.webTemplateId;
                     // 处理标签
                     var tagIds = $this.activity.tagIds;
                     tagIds = activityApp.isEmpty(tagIds) ? [] : tagIds;
