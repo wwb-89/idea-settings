@@ -114,7 +114,6 @@
                                         value-format="timestamp"
                                         :clearable="false"
                                         :editable="false"
-                                        :default-time="['00:00:00']"
                                         placeholder="开始时间">
                                 </el-date-picker>
                                 <span class="date-range-icon"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
@@ -125,7 +124,6 @@
                                         value-format="timestamp"
                                         :clearable="false"
                                         :editable="false"
-                                        :default-time="['23:59:59']"
                                         placeholder="结束时间">
                                 </el-date-picker>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
@@ -1014,8 +1012,8 @@
                     $this.activity = {
                         id: null,
                         name: "活动",
-                        startTimeStamp: activityApp.generateActivityDefaultStartTimeStamp(),
-                        endTimeStamp: activityApp.generateActivityDefaultEndTimeStamp(),
+                        startTimeStamp: null,
+                        endTimeStamp: null,
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
                         coverUrl: "",
                         organisers: [[${session._login_user_.orgName}]],
