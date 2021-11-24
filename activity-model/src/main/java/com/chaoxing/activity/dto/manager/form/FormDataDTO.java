@@ -107,7 +107,10 @@ public class FormDataDTO {
 
 	public Integer getIntegerValue(String alias) {
 		String value = FormUtils.getValue(this, alias);
-		return Integer.parseInt(value);
+		if (StringUtils.isNotBlank(value)) {
+			return Integer.parseInt(value);
+		}
+		return null;
 	}
 
 	public LocalDateTime getTimeAliasValue(String alias) {

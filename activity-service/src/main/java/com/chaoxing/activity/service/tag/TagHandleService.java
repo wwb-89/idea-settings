@@ -67,6 +67,9 @@ public class TagHandleService {
      * @return java.util.List<com.chaoxing.activity.model.Tag>
     */
     public List<Tag> addTags(List<String> tagNames) {
+        if (CollectionUtils.isEmpty(tagNames)) {
+            return Lists.newArrayList();
+        }
         tagNames = Lists.newCopyOnWriteArrayList(tagNames);
         List<Tag> tags = tagQueryService.listByNames(tagNames);
         List<String> existTagNames = tags.stream().map(Tag::getName).collect(Collectors.toList());
@@ -94,6 +97,9 @@ public class TagHandleService {
     }
 
     public void orgAssociateTags(Integer fid, List<String> tagNames) {
+        if (CollectionUtils.isEmpty(tagNames)) {
+            return;
+        }
         List<Tag> tags = addTags(tagNames);
         List<Integer> tagIds = tags.stream().map(Tag::getId).collect(Collectors.toList());
         List<OrgTag> existOrgTags = tagQueryService.listOrgTag(fid, tagIds);
@@ -119,6 +125,9 @@ public class TagHandleService {
     }
 
     public void marketAssociateTags(Integer marketId, List<String> tagNames) {
+        if (CollectionUtils.isEmpty(tagNames)) {
+            return;
+        }
         List<Tag> tags = addTags(tagNames);
         List<Integer> tagIds = tags.stream().map(Tag::getId).collect(Collectors.toList());
         List<MarketTag> existMarketTags = tagQueryService.listMarketTag(marketId, tagIds);
