@@ -43,8 +43,7 @@ public class ActivityCreateFromApprovalTask {
                     formCreateActivity.getWebTemplateId());
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("根据表单信息创建活动error:{}", e);
-            formActivityCreateQueueService.push(formCreateActivity);
+            log.error("根据参数:{} 创建活动error:{}", JSON.toJSONString(formCreateActivity), e);
         }
     }
 

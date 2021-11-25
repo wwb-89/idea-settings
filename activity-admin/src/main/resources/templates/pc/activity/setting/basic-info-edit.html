@@ -312,12 +312,9 @@
             <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
                 <label class="label">{{item.name}}</label>
                 <div class="input-box wrap">
-                    <!--添加满3个后，隐藏添加按钮-->
-                    <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
-                    <div class="type-item add" @click="toAddTag">
-                        <div class="add_btn"></div>
-                        添加
-                    </div>
+                    <el-select v-model="activity.tagNames" style="width: 698px;" multiple filterable allow-create default-first-option placeholder="请选择标签">
+                        <el-option v-for="(tag, index) of tags" :key="tag.name" :label="tag.name" :value="tag.name"></el-option>
+                    </el-select>
                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                 </div>
             </div>
@@ -435,25 +432,6 @@
             </div>
         </div>
     </div>
-    <!--新增标签弹窗-->
-    <div class="dailog-box1" v-show="addTagWindowShow">
-        <div class="dailog">
-            <div class="header">
-                <span>标签</span>
-                <div @click="addTagWindowShow = false">
-                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
-                </div>
-            </div>
-            <div class="body">
-                <el-input type="text" class="fenlei-input" v-model.trim="addTag" placeholder="请输入" maxlength="8" show-word-limit></el-input>
-            </div>
-            <div class="footer">
-                <div class="normal-btn cancle" @click="addTagWindowShow = false">取消</div>
-                <div :class="{'normal-btn': true, 'before-sure': !addTag, 'after-sure': addTag}" @click="addTagSubmit">确定</div>
-            </div>
-        </div>
-    </div>
-
     <!-- 图片库弹窗 start -->
     <div class="dailog-box1" v-show="pictureShow">
         <div class="dailog picture-dialog">
@@ -482,8 +460,6 @@
 
     <!-- 删除分类弹窗 -->
     <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此分类'" :cancel="'保留'" :sure="'删除'" @callback="deleteActivityClassifySubmit"></vue-confirm>
-    <!--删除标签标签-->
-    <vue-confirm ref="deleteTagWindow" :message="'确认删除此标签'" :cancel="'保留'" :sure="'删除'" @callback="deleteTagSubmit"></vue-confirm>
     <!-- 活动地图弹窗 -->
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
     <!-- 活动发布范围弹窗 -->
@@ -508,7 +484,7 @@
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script th:inline="javascript">
-        activityVue = new Vue({
+        vm = new Vue({
             el: "#activity-vue",
             data: {
                 fid: [[${session._login_user_.fid}]],
@@ -519,7 +495,7 @@
                 additionRequiredFields: [], // 补充必填字段
                 needInitEditor: false,
                 isEmbedded: activityApp.isEmbedded(),
-                tags: [],
+                tags: [[${tags}]],
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
                 // 文件上传
@@ -537,10 +513,6 @@
                 classList: [],
                 // 参与班级id列表
                 releaseClassIds: [[${releaseClassIds}]],
-                // 标签
-                addTagWindowShow: false,
-                addTag: "",
-                deleteActivityTagIndex: "",
                 // 参与机构列表
                 participatedOrgs: [[${participatedOrgs}]],
                 activityComponentValueMap: {},
@@ -553,24 +525,7 @@
                     }
                 },
                 activePicIndex: -1,
-                pictureCloudIds: [
-                    'aa5d1e5450f5b2cfa43c66f045ae0651',
-                    '2a3eed5a76cf12791cba01cbad531b52',
-                    '7195ced41ff6d2f6eed097289a940e06',
-                    'f888bdefb86b4d20921ea9348bad0296',
-                    'b08076f7034d7b0c9797911a2bf415cf',
-                    '8c4f75497953435411be2300e55232fc',
-                    '3b1a0ad40411c3c087d082899887850e',
-                    'be63693eccef0fdf98186090da101b6f',
-                    'bf9860bb0a78f9756f0090ad8747a19d',
-                    '65d6b3bb09de4624dfb788f9cb637506',
-                    '3c4b222ae3ef12bccc65ae76f082f2d7',
-                    '1b2defd466bdf6ee44a4bb5ff58f34be',
-                    'fd1e913908999e18acf9db71050e8bf2',
-                    'c14a07f03301e9996825ec3faf6b6757',
-                    '7e27cd8fdbd70b41ce5ef021517a59ad',
-                    '0e70e8ff055094b9ef16937fcb2e1137'
-                ],
+                pictureCloudIds: activityApp.default_cover_cloud_id_repo,
                 pictureShow: false,
                 // 需要显示其他类型的活动市场id列表
                 showOtherActivityType: activityApp.showOtherActivityType([[${activity.marketId}]])
@@ -625,33 +580,28 @@
                     });
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
-                // 标签
-                var tags = $this.activity.tags;
-                if (activityApp.isEmpty(tags)) {
-                    tags = [];
-                } else {
-                    tags = tags.split(",");
-                }
-                $this.tags = tags;
                 $($this.activityTypes).each(function (i) {
-                    if ($this.activity.activityType == this.value) {
-                        $this.$set($this.activityTypes[i], "selected", true);
-                    } else {
-                        $this.$set($this.activityTypes[i], "selected", false);
-                    }
+                    $this.$set($this.activityTypes[i], "selected", $this.activity.activityType == this.value);
                 });
                 var selectedActivityClassifyId = $this.activity.activityClassifyId;
                 $($this.activityClassifies).each(function (i) {
-                    if (this.id == selectedActivityClassifyId) {
-                        $this.$set($this.activityClassifies[i], "selected", true);
-                    } else {
-                        $this.$set($this.activityClassifies[i], "selected", false);
-                    }
+                    $this.$set($this.activityClassifies[i], "selected", this.id == selectedActivityClassifyId);
                 });
 
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
                 }
+
+                // 处理标签
+                var tagIds = $this.activity.tagIds;
+                tagIds = activityApp.isEmpty(tagIds) ? [] : tagIds;
+                var tagNames = [];
+                $($this.tags).each(function () {
+                    if (tagIds.indexOf(this.id) > -1) {
+                        tagNames.push(this.name);
+                    }
+                });
+                $this.$set($this.activity, "tagNames", tagNames);
             },
             mounted: function () {
                 var $this = this;
@@ -1016,28 +966,6 @@
                 toAddTag: function () {
                     var $this = this;
                     $this.addTagWindowShow = true;
-                },
-                addTagSubmit: function () {
-                    var $this = this;
-                    if ($this.tags.indexOf($this.addTag) > -1) {
-                        app.showMsg("标签已存在");
-                        return;
-                    }
-                    $this.tags.push($this.addTag);
-                    $this.activity.tags = $this.tags.join(",");
-                    $this.addTag = "";
-                    $this.addTagWindowShow = false;
-                },
-                deleteTag: function (index) {
-                    var $this = this;
-                    $this.deleteTagIndex = index;
-                    $this.$refs.deleteTagWindow.show = true;
-                },
-                deleteTagSubmit: function () {
-                    var $this = this;
-                    $this.tags.splice($this.deleteTagIndex, 1);
-                    $this.activity.tags = $this.tags.join(",");
-                    $this.$refs.deleteTagWindow.show = false;
                 },
                 submitForm: function () {
                     var $this = this;

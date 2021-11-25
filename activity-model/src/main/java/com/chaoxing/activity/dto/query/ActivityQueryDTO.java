@@ -72,6 +72,10 @@ public class ActivityQueryDTO {
 
 	/** 时间排序 */
 	private OrderTypeEnum timeOrder;
+	/** 标签 */
+	private List<String> tags;
+	/** 标签id列表（根据tags查询数据库来获取） */
+	private List<Integer> tagIds;
 
 	/** 活动市场样式 */
 	private String style;

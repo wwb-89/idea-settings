@@ -86,7 +86,7 @@
                     <i class="icon-back"></i><span>返回</span>
                 </template>
             </div>
-            <div class="name-txt">{{activity.id ? '设置' : '新建'}}</div>
+            <div class="name-txt">{{isClone ? '克隆' : activity.id ? '设置' : '新建'}}</div>
             <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit(true)">保存</button>
             <button v-else type="button" class="create-btn" @click="addSubmit(true)">保存</button>
         </div>
@@ -114,7 +114,6 @@
                                         value-format="timestamp"
                                         :clearable="false"
                                         :editable="false"
-                                        :default-time="['00:00:00']"
                                         placeholder="开始时间">
                                 </el-date-picker>
                                 <span class="date-range-icon"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
@@ -125,7 +124,6 @@
                                         value-format="timestamp"
                                         :clearable="false"
                                         :editable="false"
-                                        :default-time="['23:59:59']"
                                         placeholder="结束时间">
                                 </el-date-picker>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
@@ -330,12 +328,9 @@
                         <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <!--添加满3个后，隐藏添加按钮-->
-                                <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
-                                <div class="type-item add" @click="toAddTag">
-                                    <div class="add_btn"></div>
-                                    添加
-                                </div>
+                                <el-select v-model="activity.tagNames" style="width: 698px;" multiple filterable allow-create default-first-option placeholder="请选择标签">
+                                    <el-option v-for="(tag, index) of tags" :key="tag.name" :label="tag.name" :value="tag.name"></el-option>
+                                </el-select>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
@@ -701,24 +696,6 @@
                 </div>
             </div>
         </div>
-        <!--新增标签弹窗-->
-        <div class="dailog-box1" v-show="addTagWindowShow">
-            <div class="dailog">
-                <div class="header">
-                    <span>标签</span>
-                    <div @click="addTagWindowShow = false">
-                        <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
-                    </div>
-                </div>
-                <div class="body">
-                    <el-input type="text" class="fenlei-input" v-model.trim="addTag" placeholder="请输入" maxlength="8" show-word-limit></el-input>
-                </div>
-                <div class="footer">
-                    <div class="normal-btn cancle" @click="addTagWindowShow = false">取消</div>
-                    <div :class="{'normal-btn': true, 'before-sure': !addTag, 'after-sure': addTag}" @click="addTagSubmit">确定</div>
-                </div>
-            </div>
-        </div>
         <!-- 图片库弹窗 start -->
         <div class="dailog-box1" v-show="pictureShow">
             <div class="dailog picture-dialog">
@@ -747,8 +724,6 @@
 
         <!-- 删除分类弹窗 -->
         <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此' + activityClassifyTitle" :cancel="'保留'" :sure="'删除'" @callback="deleteActivityClassifySubmit"></vue-confirm>
-        <!--删除标签标签-->
-        <vue-confirm ref="deleteTagWindow" :message="'确认删除此标签'" :cancel="'保留'" :sure="'删除'" @callback="deleteTagSubmit"></vue-confirm>
         <!-- 活动地图弹窗 -->
         <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
         <!--签到-->
@@ -770,9 +745,6 @@
                 </div>
                 <div class="body">
                     <div class="tree">
-<!--                        <div class="tree-head">-->
-<!--                            <span>选择参与的范围</span>-->
-<!--                        </div>-->
                         <div class="tree-box">
                             <div id="sign-up-participate-scope-tree" class="ztree"></div>
                         </div>
@@ -832,7 +804,6 @@
                 templateComponentMap: {},
                 needInitEditor: false,
                 isEmbedded: activityApp.isEmbedded(),
-                tags: [],
                 // 是否重新选择模版
                 isReselectConfig: false,
                 // 使用的模版
@@ -853,9 +824,7 @@
                 },
                 deleteActivityClassifyId: null,
                 // 标签
-                addTagWindowShow: false,
-                addTag: "",
-                deleteActivityTagIndex: "",
+                tags: [[${tags}]],
                 // 发布类型(org: 机构发布， class: 班级发布)
                 releaseType: "org",
                 classList: [],
@@ -917,7 +886,7 @@
                     }
                 },
                 activePicIndex: -1,
-                pictureCloudIds: ['6918158e10d931e4b34c3a2005843343','cc6747c266990ae4623ee86b3580bdeb','a702ab20586128ee699c5b91be0ef327','334e2e1acc0e93a3e74e06266ef201b0','b13895d9cb4e8843ad73fbc2f98c5c20','b4b218b10d1f5482bb0cb21a04a79720','3c657a3e83e547547875ad77c5e650e7','18845df01f2b31a5230406071a2d26e7','c2f5af53ae71e6ade49b5349c8f3ad34','73c692ca3c6a8c596ac4353c933bdcce','c53deb05881621a5fd2fddd06c734f1f','6aee62c0290e2612d7a46ac90a53da89','776af507967361fb5385caf6c5e699b2','a843483e29c9e00b2bcd596e497838aa','54d1ada2a655689c15e2daa53072e996','9186c33388e760efa803768b3f9acb55','30ccf973c886947804b41da72296b276','bc46ba6f6729296779f41c06ebcaa40f','d42f5899c5f7761e0935c0036fa516d3','65cf2063eac37c48a09d0698da29c357','b4512fc47200ee1488a332d60ee99f32','fa6a3c3180ce04e49fe8835c4dd6c4d7','3431a538652d386e4902b6cab792ffe2'],
+                pictureCloudIds: activityApp.default_cover_cloud_id_repo,
                 pictureShow: false,
                 fullScreen: activityApp.getUrlParamter("fullScreen"),
                 showSignInListIframe: false,
@@ -940,12 +909,6 @@
                 document.domain = "chaoxing.com";
                 window.addEventListener("message", function (e) {
                     if (e.origin.indexOf("m.oa.chaoxing.com") > -1) {
-                        // var { data } = activityApp.getJsonObject(e.data);
-                        // var originId = $this.operateSignUpOriginId;
-                        // $this.$set($this.signUpMap[originId], 'openAddr', data.openAddr);
-                        // $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
-                        // $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
-                        // $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
                         $this.wfwFormConfigWindow.close();
                     } else {
                         try {
@@ -1043,8 +1006,8 @@
                     $this.activity = {
                         id: null,
                         name: "活动",
-                        startTimeStamp: activityApp.generateActivityDefaultStartTimeStamp(),
-                        endTimeStamp: activityApp.generateActivityDefaultEndTimeStamp(),
+                        startTimeStamp: null,
+                        endTimeStamp: null,
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
                         coverUrl: "",
                         organisers: [[${session._login_user_.orgName}]],
@@ -1060,7 +1023,6 @@
                         timingRelease: false,
                         timingReleaseTimeStamp: "",
                         openAudit: false,
-                        tags: "",
                         openRating: false,
                         ratingNeedAudit: false,
                         integral: 0.0,
@@ -1076,7 +1038,11 @@
                         activityFlag: $this.activityFlag,
                         openGroup: false,
                         openInspectionConfig: false,
-                        inspectionConfigId: null
+                        inspectionConfigId: null,
+                        // 关联的标签id列表
+                        tagIds: [],
+                        // 选择的标签名称列表
+                        tagNames: []
                     };
                     // 展示模板页面 初始化默认选择第一个
                     var firstWebTemplate = $this.webTemplates && $this.webTemplates[0];
@@ -1098,16 +1064,19 @@
                             $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
                         });
                     }
+                    $this.operateWebTemplateId = $this.activity.webTemplateId;
+                    // 处理标签
+                    var tagIds = $this.activity.tagIds;
+                    tagIds = activityApp.isEmpty(tagIds) ? [] : tagIds;
+                    var tagNames = [];
+                    $($this.tags).each(function () {
+                        if (tagIds.indexOf(this.id) > -1) {
+                            tagNames.push(this.name);
+                        }
+                    });
+                    $this.$set($this.activity, "tagNames", tagNames);
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
-                // 标签
-                var tags = $this.activity.tags;
-                if (activityApp.isEmpty(tags)) {
-                    tags = [];
-                } else {
-                    tags = tags.split(",");
-                }
-                $this.tags = tags;
                 $($this.activityTypes).each(function (i) {
                     if ($this.activity.activityType == this.value) {
                         $this.$set($this.activityTypes[i], "selected", true);
@@ -1737,37 +1706,6 @@
                         app.showMsg("删除"+ $this.activityClassifyTitle +"失败");
                     });
                 },
-                // 添加标签
-                toAddTag: function () {
-                    var $this = this;
-                    $this.addTagWindowShow = true;
-                },
-                addTagSubmit: function () {
-                    var $this = this;
-                    if (activityApp.isEmpty($this.addTag)) {
-                        app.showMsg("标签不能为空");
-                        return;
-                    }
-                    if ($this.tags.indexOf($this.addTag) > -1) {
-                        app.showMsg("标签已存在");
-                        return;
-                    }
-                    $this.tags.push($this.addTag);
-                    $this.activity.tags = $this.tags.join(",");
-                    $this.addTag = "";
-                    $this.addTagWindowShow = false;
-                },
-                deleteTag: function (index) {
-                    var $this = this;
-                    $this.deleteTagIndex = index;
-                    $this.$refs.deleteTagWindow.show = true;
-                },
-                deleteTagSubmit: function () {
-                    var $this = this;
-                    $this.tags.splice($this.deleteTagIndex, 1);
-                    $this.activity.tags = $this.tags.join(",");
-                    $this.$refs.deleteTagWindow.show = false;
-                },
                 // 验证输入
                 validateForm: function (validateOfflineAddress) {
                     var $this = this;
@@ -2022,23 +1960,24 @@
                         signJsonStr: activityApp.getJsonStr(sign),
                         isClone: $this.isClone
                     }
+                    var action = $this.isClone ? "克隆" : "创建";
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             app.noticeActivityChange($this.activity.id);
                             var activityId = data.data;
                             $this.$set($this.activity, "id", activityId);
-                            app.showMsg("创建成功", function () {
+                            app.showMsg(action + "成功", function () {
                                 $this.returnBack();
                             });
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "创建失败";
+                                errorMessage = action + "失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("创建失败");
+                        app.showMsg(action + "失败");
                     });
                 },
                 // 编辑活动提交

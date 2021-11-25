@@ -14,6 +14,8 @@
 
     /** 需要展示线上线下活动类型的市场id列表 */
     activityApp.prototype.other_activity_type_marketids = [293, 305, 1149, 1267];
+    /** 活动默认封面云盘id库 */
+    activityApp.prototype.default_cover_cloud_id_repo = ['6918158e10d931e4b34c3a2005843343','cc6747c266990ae4623ee86b3580bdeb','a702ab20586128ee699c5b91be0ef327','334e2e1acc0e93a3e74e06266ef201b0','b13895d9cb4e8843ad73fbc2f98c5c20','b4b218b10d1f5482bb0cb21a04a79720','3c657a3e83e547547875ad77c5e650e7','18845df01f2b31a5230406071a2d26e7','c2f5af53ae71e6ade49b5349c8f3ad34','73c692ca3c6a8c596ac4353c933bdcce','c53deb05881621a5fd2fddd06c734f1f','6aee62c0290e2612d7a46ac90a53da89','776af507967361fb5385caf6c5e699b2','a843483e29c9e00b2bcd596e497838aa','54d1ada2a655689c15e2daa53072e996','9186c33388e760efa803768b3f9acb55','30ccf973c886947804b41da72296b276','bc46ba6f6729296779f41c06ebcaa40f','d42f5899c5f7761e0935c0036fa516d3','65cf2063eac37c48a09d0698da29c357','b4512fc47200ee1488a332d60ee99f32','fa6a3c3180ce04e49fe8835c4dd6c4d7','3431a538652d386e4902b6cab792ffe2'];
 
     /** 判断是否需要展示线上线下活动类型 */
     activityApp.prototype.showOtherActivityType = function (marketId) {

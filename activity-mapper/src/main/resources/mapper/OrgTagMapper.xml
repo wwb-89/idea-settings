@@ -12,4 +12,13 @@
     <sql id="Base_Column_List">
         t.id, t.fid, t.tag_id, t.sequence, t.create_time, t.update_time
     </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_org_tag( fid, tag_id )
+        VALUES
+        <foreach collection="tagIds" index="key" item="value" open="" close="" separator=",">
+            ( #{fid}, #{value} )
+        </foreach>
+    </insert>
+
 </mapper>

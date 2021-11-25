@@ -54,7 +54,7 @@
                         <div class="clear"></div>
                     </div>
                     <div class="type-box">
-                        <span class="type-item" v-for="(tag, index) of resolveActivityTags(activity)">{{tag}}</span>
+                        <span class="type-item" v-for="(tagName, index) of activity.tagNames">{{tagName}}</span>
                     </div>
                     <p class="dec">{{activity.organisers}}</p>
                     <p class="address" >{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
@@ -490,9 +490,6 @@
                     my: function () {
                         var url = ctx + "/my";
                         app.openUrl(url);
-                    },
-                    resolveActivityTags: function (activity) {
-                        return activityApp.resolveActivityTags(activity);
                     }
                 }
             });

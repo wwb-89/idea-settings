@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
-import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
-import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
-import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.activity.*;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
@@ -43,6 +40,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -104,8 +102,6 @@ public class ActivityQueryService {
 	@Resource
 	private ActivityComponentValueService activityComponentValueService;
 	@Resource
-	private SignUpConditionEnableMapper signUpConditionEnableMapper;
-	@Resource
 	private SignUpConditionService signUpConditionService;
 	@Resource
 	private ComponentQueryService componentQueryService;
@@ -127,6 +123,8 @@ public class ActivityQueryService {
 	private ActivityMenuService activityMenuService;
 	@Resource
 	private WorkApiService workApiService;
+	@Resource
+	private TagQueryService tagQueryService;
 
 
 	/**查询所有预告中的活动
@@ -173,6 +171,14 @@ public class ActivityQueryService {
 		calDateScope(activityQuery);
 		Integer currentUid = activityQuery.getCurrentUid();
 		Boolean signUpAble = activityQuery.getSignUpAble();
+		List<String> tagNames = activityQuery.getTags();
+		List<Tag> tags = tagQueryService.listByNames(tagNames);
+		List<Integer> tagIds = tags.stream().map(Tag::getId).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(tagNames) && CollectionUtils.isEmpty(tagIds)) {
+			// 填充一个不存在的tag
+			tagIds.add(-1);
+		}
+		activityQuery.setTagIds(tagIds);
 		if (currentUid != null && Optional.ofNullable(signUpAble).orElse(false)) {
 			page.setSize(Integer.MAX_VALUE);
 			page = pageSpecialParticipate(page, activityQuery);
@@ -1017,6 +1023,9 @@ public class ActivityQueryService {
 		createParamDTO.setActivityComponentValues(activityComponentValues);
 		// set 考核管理id
 		packageInspectConfig(createParamDTO, activityId);
+		// 封装标签
+		List<Integer> tagIds = tagQueryService.listActivityAssociateTagId(activityId);
+		createParamDTO.setTagIds(tagIds);
 		return createParamDTO;
 	}
 
@@ -1250,9 +1259,6 @@ public class ActivityQueryService {
 					case "poster":
 						itemData.add(UrlConstant.getPosterUrl(record.getId()));
 						break;
-//					case "dualSelect":
-//						itemData.add()
-//						break;
 					case "startTime":
 						itemData.add(Optional.ofNullable(record.getStartTime()).map(v -> v.format(DateUtils.DATE_MINUTE_TIME_FORMATTER)).orElse(null));
 						break;
@@ -1357,9 +1363,6 @@ public class ActivityQueryService {
 		if (activityCreateParam.getOpenWork()) {
 			activityCreateParam.setWorkId(workApiService.createDefault(originActivity.getCreateUid(), originActivity.getCreateFid()));
 		}
-		// 判断阅读是否开启，开启则创建新的阅读，并设置克隆活动阅读信息
-//		if (activityCreateParam.getOpenReading()) {
-//		}
 		//活动简介
 		ActivityDetail originActivityDetail = getDetailByActivityId(originActivityId);
 		activityCreateParam.setIntroduction(originActivityDetail.getIntroduction());
@@ -1377,7 +1380,36 @@ public class ActivityQueryService {
 		activityCreateParam.setSignUpConditions(signUpConditions);
 		// 考核配置
 		packageInspectConfig(activityCreateParam, originActivityId);
+		// 封装标签
+		List<Integer> tagIds = tagQueryService.listActivityAssociateTagId(originActivityId);
+		activityCreateParam.setTagIds(tagIds);
 		return activityCreateParam;
+	}
+
+	/**填充活动的标签名称列表
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-11-25 09:42:22
+	 * @param activities
+	 * @return void
+	*/
+	public void fillTagNames(List<Activity> activities) {
+		if (CollectionUtils.isEmpty(activities)) {
+			return;
+		}
+		Map<Integer, Activity> activityIdObjectMap = activities.stream().collect(Collectors.toMap(Activity::getId, v -> v, (v1, v2) -> v2));
+		Set<Integer> activityIds = activityIdObjectMap.keySet();
+		List<ActivityTagNameDTO> activityTagNames = tagQueryService.listActivityTagNameByActivityIds(new ArrayList<>(activityIds));
+		Map<Integer, List<ActivityTagNameDTO>> activityIdTagNamesMap = activityTagNames.stream().collect(Collectors.groupingBy(ActivityTagNameDTO::getActivityId));
+		for (Activity activity : activities) {
+			Integer activityId = activity.getId();
+			List<ActivityTagNameDTO> activityAssociatedTagNames = activityIdTagNamesMap.get(activityId);
+			List<String> tagNames = Lists.newArrayList();
+			if (CollectionUtils.isNotEmpty(activityAssociatedTagNames)) {
+				tagNames = activityAssociatedTagNames.stream().map(ActivityTagNameDTO::getTagName).collect(Collectors.toList());
+			}
+			activity.setTagNames(tagNames);
+		}
 	}
 
 }

@@ -55,7 +55,7 @@
                             <h2 class="title overHidden2"><span class="info-top" v-show="activity.top">置顶</span>{{activity.name}}</h2>
                             <p class="time"><i class="icon-clock"></i>{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
                             <div class="type-box">
-                                <span class="type-item" v-for="(tag, index) of resolveActivityTags(activity)">{{tag}}</span>
+                                <span class="type-item" v-for="(tagName, index) of activity.tagNames">{{tagName}}</span>
                             </div>
                             <p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
                         </div>
@@ -497,9 +497,6 @@
                     my: function () {
                         var url = ctx + "/my";
                         app.openUrl(url);
-                    },
-                    resolveActivityTags: function (activity) {
-                        return activityApp.resolveActivityTags(activity);
                     }
                 }
             });

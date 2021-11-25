@@ -128,6 +128,10 @@ public class ActivityUpdateParamDTO {
 	private List<Integer> sucTemplateComponentIds;
 	/** 报名条件配置列表 */
 	private List<SignUpCondition> signUpConditions;
+	/** 关联的标签id列表 */
+	private List<Integer> tagIds;
+	/** 选择的标签名称列表 */
+	private List<String> tagNames;
 
 	/**构建活动
 	 * @Description 

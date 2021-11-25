@@ -95,6 +95,7 @@ public class ActivityApiController {
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
 		packageActivitySignedStat(page);
+		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}
 
@@ -127,7 +128,7 @@ public class ActivityApiController {
 		}
 	}
 
-	/**
+	/**可参与的活动（鄂尔多斯）
 	* @Description 
 	* @author huxiaolong
 	* @Date 2021-09-03 15:47:34
@@ -170,6 +171,7 @@ public class ActivityApiController {
 		page.setRecords(result);
 		page.setSize(page.getSize() + 1);
 		page.setTotal(page.getTotal() + 1);
+		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}
 
@@ -221,6 +223,7 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
+		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}
 
@@ -238,6 +241,7 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.pageCollected(page, loginUser, sw, flag);
+		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}
 

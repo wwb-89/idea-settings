@@ -7,7 +7,10 @@ import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
-import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.MarketSignUpConfig;
+import com.chaoxing.activity.model.SignUpCondition;
+import com.chaoxing.activity.model.Tag;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
@@ -20,6 +23,7 @@ import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +39,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -73,6 +78,8 @@ public class ActivitySettingController {
     private SignUpConditionService signUpConditionService;
     @Resource
     private WfwFormApiService formApiService;
+    @Resource
+    private TagQueryService tagQueryService;
 
     @RequestMapping("index")
     public String settingIndex(Model model, @PathVariable Integer activityId) {
@@ -116,6 +123,11 @@ public class ActivitySettingController {
         String activityFlag = activity.getActivityFlag();
         model.addAttribute("activityFlag", activityFlag);
         model.addAttribute("strict", strict);
+        // 活动标签
+        Integer marketId = activity.getMarketId();
+        Integer activityCreateFid = activity.getCreateFid();
+        List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(activityCreateFid));
+        model.addAttribute("tags", tags);
         return "pc/activity/setting/basic-info-edit";
     }
 

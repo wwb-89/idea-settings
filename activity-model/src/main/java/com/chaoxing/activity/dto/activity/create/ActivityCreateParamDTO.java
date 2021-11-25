@@ -119,7 +119,7 @@ public class ActivityCreateParamDTO {
 	private Integer webTemplateId;
 	/** 预览显示使用 */
 	private String activityClassifyName;
-
+	/** 状态 */
 	private Integer status;
 	/** 报名成功是否发送通知 */
 	private Boolean signedUpNotice;
@@ -131,20 +131,20 @@ public class ActivityCreateParamDTO {
 	private Boolean openInspectionConfig;
 	/** 考核管理id */
 	private Integer inspectionConfigId;
-
-
 	/** 活动组件值对象列表 */
 	private List<ActivityComponentValueDTO> activityComponentValues;
-
 	/** 活动报名条件启用模板组件id列表 */
 	private List<Integer> sucTemplateComponentIds;
-
 	/** 报名条件配置列表 */
 	private List<SignUpCondition> signUpConditions;
 	/** 操作用户 */
 	private LoginUserDTO loginUser;
 	/** 创建机构fid */
 	private Integer createFid;
+	/** 关联的标签id列表 */
+	private List<Integer> tagIds;
+	/** 选择的标签名称列表 */
+	private List<String> tagNames;
 
 	/**构建活动对象
 	 * @Description 

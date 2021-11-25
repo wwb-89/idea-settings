@@ -18,7 +18,7 @@
 </head>
 
 <body>
-<div id="resultManage" v-cloak>
+<div id="vm" v-cloak>
     <div style="display: block">
         <div class="header-box">
             <div class="header header-type-3">
@@ -49,9 +49,7 @@
                                       @keydown.enter.native="search"
                             >
                             </el-input>
-                            <i class="icon-cancel btn-cancel fs16"
-                               v-show="queryParams.sw && queryParams.sw.length > 0"
-                               @click="resetSearch"></i>
+                            <i class="icon-cancel btn-cancel fs16" v-show="queryParams.sw && queryParams.sw.length > 0" @click="resetSearch"></i>
                         </div>
                     </div>
                 <!-- 计数栏 -->
@@ -60,11 +58,9 @@
                             <span class="colorBlue marginr8" v-show="selections.length > 0">已选择 {{ selections.length }} 人</span>
                             <span class="color999">共 {{ total }} 人</span>
                         </div>
-                        <div class="setting-box">
+                        <div class="fr fs14 export-box">
                             <el-dropdown :hide-on-click="false" trigger="click">
-                                <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
-                                    <span class="icon-setting fs16"></span>
-                                </el-tooltip>
+                                <span class="icon-column fs14"><span class="path1"></span><span class="path2"></span></i>列设置</span>
                                 <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                     <div class="dropdown-lists">
                                         <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
@@ -210,8 +206,8 @@
             str += "%";
             return str;
         });
-        var resultManage = new Vue({
-            el: '#resultManage',
+        vm = new Vue({
+            el: '#vm',
             data: {
                 loaded: false,
                 activityId: [[${activityId}]],

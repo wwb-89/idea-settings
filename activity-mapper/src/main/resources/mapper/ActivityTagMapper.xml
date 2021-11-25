@@ -18,4 +18,18 @@
             </foreach>
     </insert>
 
+    <select id="listActivityTagNameByActivityIds" resultType="com.chaoxing.activity.dto.activity.ActivityTagNameDTO">
+        SELECT
+            t.activity_id activityId,
+            t1.`name` tagName
+        FROM
+            t_activity_tag t
+            LEFT JOIN t_tag t1 ON t.tag_id = t1.id
+        WHERE
+            t.activity_id IN
+            <foreach collection="activityIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+    </select>
+
 </mapper>
