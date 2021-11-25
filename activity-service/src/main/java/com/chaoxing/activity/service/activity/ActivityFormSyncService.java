@@ -373,17 +373,19 @@ public class ActivityFormSyncService {
             return null;
         }
         String openSignIn = formatData.getValues().get(0).getString("val");
-        if (!Objects.equals(openSignIn, "是")) {
+        if (Objects.equals(openSignIn, "否")) {
             return null;
         }
-        String way = formatData.getValues().get(1).getString("val");
         SignInCreateParamDTO signIn = SignInCreateParamDTO.buildDefaultSignIn();
-        if (Objects.equals(way, "普通签到")) {
-            signIn.setWay(1);
-            signIn.setName("直接签到");
-        } else if (Objects.equals(way, "扫码签到")){
-            signIn.setWay(3);
-            signIn.setName("扫码签到");
+        if (Objects.equals(openSignIn, "是")) {
+            String way = formatData.getValues().get(1).getString("val");
+            if (Objects.equals(way, "普通签到")) {
+                signIn.setWay(1);
+                signIn.setName("直接签到");
+            } else if (Objects.equals(way, "扫码签到")){
+                signIn.setWay(3);
+                signIn.setName("扫码签到");
+            }
         }
         return signIn;
     }
