@@ -239,11 +239,6 @@ public class IndexController {
 		model.addAttribute("timeOrder", activitySquareParam.getTimeOrder());
 		// 验证style是否存在
 		String style = activitySquareParam.getStyle();
-		List<Activity> forecastActivities = Lists.newArrayList();
-		if (Objects.equals(style, "1") || Objects.equals(style, "2")) {
-			forecastActivities = activityQueryService.listAllForecastActivity(activitySquareParam.convert2ActivityQuery());
-		}
-		model.addAttribute("forecastActivities", forecastActivities);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			if (StringUtils.isEmpty(style)) {
 				style = "1";

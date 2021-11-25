@@ -139,7 +139,11 @@
                     sw: "",
                     queryParams: {},
                     activities: [],
+                    forecastActivities: [],
+                    extraActivities: [],
+                    loadedNum: 0,
                     loaded: false,
+                    reloadForecast: true,
                     mescroll: null,
                     hideFilter: [[${hideFilter}]],
                     filterWindowShow: false,
@@ -244,6 +248,24 @@
                                 !activityApp.isEmpty($this.queryParams.status);
                     }
                 },
+                watch: {
+                    loadedNum: function (value) {
+                        var $this = this;
+                        if (value == 2) {
+                            $this.activities.pushArray($this.forecastActivities);
+                            $this.activities.pushArray($this.extraActivities);
+                            $this.$nextTick(function () {
+                                $('.jqthumbImg').jqthumb({
+                                    width: '100%',
+                                    height: '100%'
+                                });
+                            });
+                            $this.loadedNum = 0;
+                            $this.loaded = true;
+                            $this.reloadForecast = false;
+                        }
+                    }
+                },
                 methods: {
                     // 显示搜索输入框
                     showSearchInput: function () {
@@ -306,29 +328,33 @@
                                 }
                             });
                         }
-                    },//加载数据渲染页面
+                    },
+                    //加载数据渲染页面
                     loadData: function () {
                         var $this = this;
-                        var url = ctx + "/api/activity/list/participate";
-                        var params = $this.queryParams;
                         $this.loaded = false;
+                        $this.loadedNum = $this.reloadForecast ? 0 : 1;
+                        $this.forecastActivities = [];
+                        $this.extraActivities = [];
+                        if ($this.reloadForecast) {
+                            $this.loadForecastData();
+                        }
+                        $this.loadExtraData();
+                    },
+                    loadExtraData: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/list/participate";
                         var params = {
-                            data: activityApp.getJsonStr(params),
+                            data: activityApp.getJsonStr($this.queryParams),
                             pageNum: $this.queryParams.pageNum,
                             pageSize: $this.queryParams.pageSize,
                         };
                         app.ajaxPost(url, params, function (data) {
                             if (data.success) {
-                                $this.loaded = true;
+                                $this.extraActivities = data.data.records
                                 $this.mescroll.endByPage(data.data.records.length, $this.signUpAble ? data.data.records.length : data.data.pages);
-                                $this.activities.pushArray(data.data.records);
-                                $this.$nextTick(function () {
-                                    $('.jqthumbImg').jqthumb({
-                                        width: '100%',
-                                        height: '100%'
-                                    });
-                                });
                                 $this.queryParams.pageNum++;
+                                $this.loadedNum += 1;
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
@@ -340,6 +366,28 @@
                         }, function () {
                             $this.mescroll.endErr();
                             app.showMsg("加载活动列表失败");
+                        });
+                    },
+                    loadForecastData: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/list/forecast/activities";
+                        var params = {
+                            data: activityApp.getJsonStr($this.queryParams)
+                        };
+                        app.ajaxPost(url, params, function (data) {
+                            if (data.success) {
+                                $this.forecastActivities = data.data;
+                                $this.loadedNum += 1;
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载活动预告列表失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            $this.mescroll.endErr();
+                            app.showMsg("加载活动预告列表失败");
                         });
                     },
                     showFilterWindow: function () {
@@ -424,6 +472,7 @@
                         });
                         $this.activities = [];
                         $this.queryParams.pageNum = 1;
+                        $this.reloadForecast = true;
                         $this.mescroll.setPageNum(2);
                     },
                     queryParams2Condition: function () {

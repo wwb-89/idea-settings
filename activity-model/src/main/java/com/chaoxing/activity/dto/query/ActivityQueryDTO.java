@@ -79,8 +79,4 @@ public class ActivityQueryDTO {
 
 	/** 活动市场样式 */
 	private String style;
-
-	public boolean isMarketStyle() {
-		return Objects.equals(getStyle(), "1") || Objects.equals(getStyle(), "2");
-	}
 }

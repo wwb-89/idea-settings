@@ -56,14 +56,33 @@ public class ActivityApiController {
 	@Resource
 	private SignApiService signApiService;
 
+	/**加载预告的活动列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2020-11-25 15:58:40
+	 * @param request
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("list/forecast/activities")
+	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
+		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
+		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
+		List<Activity> activities = activityQueryService.listAllForecastActivity(activityQuery);
+		activityQueryService.fillTagNames(activities);
+		return RestRespDTO.success(activities);
+	}
+
 	/**可参与的活动列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 09:58:40
 	 * @param request
 	 * @param data
 	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
+	 */
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, String data) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -77,8 +96,17 @@ public class ActivityApiController {
 			packageActivitySignedStat(page);
 			return RestRespDTO.success(page);
 		}
+		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
+		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
+		Page<Activity> page = HttpServletRequestUtils.buid(request);
+		page = activityQueryService.listParticipate(page, activityQuery);
+		packageActivitySignedStat(page);
+		activityQueryService.fillTagNames(page.getRecords());
+		return RestRespDTO.success(page);
+	}
+
+	private List<Integer> getFidsByAreaCode(Integer topFid, String areaCode) {
 		List<WfwAreaDTO> wfwRegionalArchitectures = Lists.newArrayList();
-		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(areaCode)) {
 			// 区域的
 			wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
@@ -90,13 +118,7 @@ public class ActivityApiController {
 		} else {
 			fids.add(topFid);
 		}
-		activityQuery.setFids(fids);
-		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
-		Page<Activity> page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.listParticipate(page, activityQuery);
-		packageActivitySignedStat(page);
-		activityQueryService.fillTagNames(page.getRecords());
-		return RestRespDTO.success(page);
+		return fids;
 	}
 
 	/** 查询并设置活动已报名人数

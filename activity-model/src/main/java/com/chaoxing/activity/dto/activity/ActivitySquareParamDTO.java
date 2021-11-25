@@ -54,15 +54,4 @@ public class ActivitySquareParamDTO {
         return Optional.ofNullable(getWfwfid()).orElse(Optional.ofNullable(getUnitId()).orElse(Optional.ofNullable(getState()).orElse(getFid())));
     }
 
-    public ActivityQueryDTO convert2ActivityQuery() {
-        return ActivityQueryDTO.builder()
-                .topFid(getRealFid())
-                .fids(Lists.newArrayList(getRealFid()))
-                .marketId(getMarketId())
-                .flag(getFlag())
-                .areaCode(getCode())
-                .style(getStyle())
-                .scope(getScope())
-                .build();
-    }
 }
