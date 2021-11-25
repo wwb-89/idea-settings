@@ -598,19 +598,11 @@
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
                 $($this.activityTypes).each(function (i) {
-                    if ($this.activity.activityType == this.value) {
-                        $this.$set($this.activityTypes[i], "selected", true);
-                    } else {
-                        $this.$set($this.activityTypes[i], "selected", false);
-                    }
+                    $this.$set($this.activityTypes[i], "selected", $this.activity.activityType == this.value);
                 });
                 var selectedActivityClassifyId = $this.activity.activityClassifyId;
                 $($this.activityClassifies).each(function (i) {
-                    if (this.id == selectedActivityClassifyId) {
-                        $this.$set($this.activityClassifies[i], "selected", true);
-                    } else {
-                        $this.$set($this.activityClassifies[i], "selected", false);
-                    }
+                    $this.$set($this.activityClassifies[i], "selected", this.id == selectedActivityClassifyId);
                 });
 
                 if (activityApp.isEmpty($this.participatedOrgs)) {
