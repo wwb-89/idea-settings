@@ -17,13 +17,24 @@ import java.util.List;
 @Mapper
 public interface GroupRegionFilterMapper extends BaseMapper<GroupRegionFilter> {
 
-	/**根据组code查询地区列表
-	 * @Description 
+	/**
+	 * 根据组code查询地区列表
+	 *
+	 * @param areaCode
+	 * @return java.util.List<com.chaoxing.activity.model.GroupRegionFilter>
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-22 14:27:04
-	 * @param groupCode
-	 * @return java.util.List<com.chaoxing.activity.model.GroupRegionFilter>
+	 */
+	List<GroupRegionFilter> listByGroupCode(@Param("areaCode") String areaCode);
+
+	/**根据code查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-25 18:34:00
+	 * @param code
+	 * @return com.chaoxing.activity.model.GroupRegionFilter
 	*/
-	List<GroupRegionFilter> listByGroupCode(@Param("groupCode") String groupCode);
+	GroupRegionFilter getByCode(@Param("code") String code);
 
 }

@@ -125,7 +125,7 @@
 				classifies: [],
 				activityTypes: [],
 				regions: [[${regions}]],
-				areaCode: [[${areaCode}]],
+				code: [[${code}]],
 				statuses: [],
 				sw: "",
 				//筛选查询参数对象
@@ -257,9 +257,9 @@
 					$($this.regions).each(function (i) {
 						$this.$set($this.regions[i], "selected", i == index);
 					});
-					$this.queryParams.areaCode = $this.regions[index].value;
-					if (activityApp.isEmpty($this.queryParams.areaCode)) {
-						$this.queryParams.areaCode = $this.areaCode;
+					$this.queryParams.code = $this.regions[index].value;
+					if (activityApp.isEmpty($this.queryParams.code)) {
+						$this.queryParams.code = $this.code;
 					}
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
@@ -303,7 +303,7 @@
 						activityClassifyName: "",
 						date: "",
 						status: "",
-						areaCode: $this.areaCode,
+						code: $this.code,
 						activityType: "",
 						topFid: [[${topFid}]],
 						marketId: [[${marketId}]],

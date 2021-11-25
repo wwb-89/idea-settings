@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Objects;
 
 /**活动查询对象
  * @author wwb
@@ -25,8 +24,6 @@ public class ActivityQueryDTO {
 
 	/** 查询关键字 */
 	private String sw;
-	/** 参与的fid列表 */
-	private List<Integer> fids;
 	/** 活动市场id */
 	private Integer marketId;
 	/** 置顶的fid（查询的结果该机构的数据靠前） */
@@ -39,8 +36,6 @@ public class ActivityQueryDTO {
 	private String levelType;
 	/** 用户班级id */
 	private Integer userClassId;
-	/** 多活动标识 */
-	private List<String> flags;
 	/** 时间区间 */
 	private String dateScope;
 	/** 时间 */
@@ -51,32 +46,31 @@ public class ActivityQueryDTO {
 	private String flag;
 	/** 状态列表 */
 	private List<Integer> statusList;
-
 	/** 最小日期 */
 	private String minDateStr;
 	/** 最大日期 */
 	private String maxDateStr;
-
-	// 定制
 	/** 区域码 */
-	private String areaCode;
-
+	private String code;
 	/** 活动类型 */
 	private String activityType;
 	/** flag的查询范围，0：默认，1：所有 */
 	private Integer scope;
 	/** 是否只查询能报名的 */
 	private Boolean signUpAble;
-	/** 当前登录的用户uid */
-	private Integer currentUid;
-
 	/** 时间排序 */
 	private OrderTypeEnum timeOrder;
 	/** 标签 */
 	private List<String> tags;
+
+	// 非页面传递参数
 	/** 标签id列表（根据tags查询数据库来获取） */
 	private List<Integer> tagIds;
+	/** 参与的fid列表 */
+	private List<Integer> fids;
+	/** 当前登录的用户uid */
+	private Integer currentUid;
+	/** 多活动标识 */
+	private List<String> flags;
 
-	/** 活动市场样式 */
-	private String style;
 }

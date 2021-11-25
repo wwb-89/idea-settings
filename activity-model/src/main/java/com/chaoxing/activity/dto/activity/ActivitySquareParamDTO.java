@@ -1,13 +1,10 @@
 package com.chaoxing.activity.dto.activity;
 
-import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.util.enums.OrderTypeEnum;
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**活动广场参数列表
@@ -31,7 +28,7 @@ public class ActivitySquareParamDTO {
     private Integer state;
     /** 其他来源封装的fid */
     private Integer fid;
-//    /** 区域编码? */
+    /** 区域编码 */
     private String code;
 
     private Integer banner;

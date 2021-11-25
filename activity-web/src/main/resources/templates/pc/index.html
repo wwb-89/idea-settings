@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
-    <style type="text/css">
+    <style>
         [v-cloak] {
             display: none;
         }
@@ -76,7 +76,6 @@
                             <div class="img-box">
                                 <img class="jqthumbImg" :src="item | getCloudImgUrl">
                                 <!--报名状态-->
-
                                 <div class="tag" v-if="item.status == 2">即将开始</div>
                                 <div class="tag green" v-if="item.status == 3">进行中</div>
                                 <div class="tag black" v-if="item.status == 4">已结束</div>
@@ -106,7 +105,7 @@
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
     <script th:inline="javascript">
-        activityVue = new Vue({
+        vm = new Vue({
             el: '#activity-vue',
             data: {
                 fids: [[${fids}]],
@@ -115,7 +114,7 @@
                 classifies: [],
                 activityTypes: [],
                 regions: [[${regions}]],
-                areaCode: [[${areaCode}]],
+                code: [[${code}]],
                 hideFilter: [[${hideFilter}]],
                 statuses: [],
                 pages: 0,
@@ -146,7 +145,7 @@
                 });
                 //地区
                 var regions = [];
-                if($this.regions.length >0){
+                if ($this.regions.length > 0) {
                     $($this.regions).each(function () {
                         var region = this;
                         region.value = this.code;
@@ -227,9 +226,9 @@
                     $($this.regions).each(function (i) {
                         $this.$set($this.regions[i], "selected", i == index);
                     });
-                    $this.queryParams.areaCode = $this.regions[index].value;
-                    if (activityApp.isEmpty($this.queryParams.areaCode)) {
-                        $this.queryParams.areaCode = $this.areaCode;
+                    $this.queryParams.code = $this.regions[index].value;
+                    if (activityApp.isEmpty($this.queryParams.code)) {
+                        $this.queryParams.code = $this.code;
                     }
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
@@ -267,7 +266,7 @@
                         activityClassifyName: "",
                         dateScope: "",
                         status: "",
-                        areaCode: $this.areaCode,
+                        code: $this.code,
                         activityType: "",
                         scope: [[${scope}]],
                         topFid: [[${topFid}]],

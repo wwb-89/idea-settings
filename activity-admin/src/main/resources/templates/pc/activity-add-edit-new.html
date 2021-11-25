@@ -328,7 +328,7 @@
                         <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <el-select v-model="activity.tagNames" style="width: 698px;" multiple filterable allow-create default-first-option placeholder="请选择标签">
+                                <el-select v-model="activity.tagNames" style="width: 698px;" multiple filterable allow-create default-first-option placeholder="选择或新建" no-data-text="输入后新建">
                                     <el-option v-for="(tag, index) of tags" :key="tag.name" :label="tag.name" :value="tag.name"></el-option>
                                 </el-select>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>

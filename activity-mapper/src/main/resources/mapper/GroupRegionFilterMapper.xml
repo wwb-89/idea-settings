@@ -21,9 +21,19 @@
         FROM
             t_group_region_filter t
             INNER JOIN t_group t1 ON t.group_id = t1.id
-            AND t1.`code` = #{groupCode}
+            AND t1.area_code = #{areaCode}
         ORDER BY
             t.sequence
+    </select>
+
+    <select id="getByCode" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_group_region_filter t
+        WHERE
+            t.code = #{code}
+        LIMIT 1
     </select>
 
 </mapper>

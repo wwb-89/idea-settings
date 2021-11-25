@@ -27,11 +27,22 @@ public class GroupRegionFilterService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-20 18:12:15
-	 * @param groupCode
+	 * @param areaCode 区域编码
 	 * @return java.util.List<com.chaoxing.activity.model.GroupRegionFilter>
 	*/
-	public List<GroupRegionFilter> listByGroupCode(String groupCode) {
-		return groupRegionFilterMapper.listByGroupCode(groupCode);
+	public List<GroupRegionFilter> listByGroupCode(String areaCode) {
+		return groupRegionFilterMapper.listByGroupCode(areaCode);
+	}
+
+	/**根据code查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-25 18:35:32
+	 * @param code
+	 * @return com.chaoxing.activity.model.GroupRegionFilter
+	*/
+	public GroupRegionFilter getByCode(String code) {
+		return groupRegionFilterMapper.getByCode(code);
 	}
 
 }

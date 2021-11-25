@@ -181,6 +181,23 @@ public class WfwAreaApiService {
 		return regionalArchitectures;
 	}
 
+	/**根据code查询顶级区域
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-25 18:56:50
+	 * @param code
+	 * @return com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO
+	*/
+	public WfwAreaDTO getTopWfwArea(String code) {
+		try {
+			List<WfwAreaDTO> wfwAreas = listByCode(code);
+			return Optional.ofNullable(wfwAreas).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	/**根据fid查询所在层级架构code列表
 	 * @Description
 	 * @author wwb

@@ -9,6 +9,8 @@ import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
+import com.chaoxing.activity.model.GroupRegionFilter;
+import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -55,6 +57,8 @@ public class ActivityApiController {
 	private ActivityCollectionHandleService activityCollectionHandleService;
 	@Resource
 	private SignApiService signApiService;
+	@Resource
+	private GroupRegionFilterService groupRegionFilterService;
 
 	/**加载预告的活动列表
 	 * @Description
@@ -68,7 +72,7 @@ public class ActivityApiController {
 	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
+		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getCode()));
 		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
 		List<Activity> activities = activityQueryService.listAllForecastActivity(activityQuery);
 		activityQueryService.fillTagNames(activities);
@@ -87,16 +91,21 @@ public class ActivityApiController {
 	public RestRespDTO list(HttpServletRequest request, String data) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		String areaCode = activityQuery.getAreaCode();
-		// 区域code不存在，且查询范围为1:所有，直接查询
-		boolean isZjLib = Objects.equals(activityQuery.getFlag(), Activity.ActivityFlagEnum.ZJLIB.getValue());
-		if ((isZjLib ||StringUtils.isBlank(areaCode)) && Objects.equals(activityQuery.getScope(), 1)) {
-			Page<Activity> page = HttpServletRequestUtils.buid(request);
-			page = activityQueryService.pageFlag(page, activityQuery);
-			packageActivitySignedStat(page);
-			return RestRespDTO.success(page);
+		Integer marketId = activityQuery.getMarketId();
+		if (marketId == null) {
+			String flag = activityQuery.getFlag();
+			if (StringUtils.isNotBlank(flag)) {
+				Page<Activity> page = HttpServletRequestUtils.buid(request);
+				String code = activityQuery.getCode();
+				if (StringUtils.isNotBlank(code)) {
+					activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getCode()));
+				}
+				page = activityQueryService.pageFlag(page, activityQuery);
+				packageActivitySignedStat(page);
+				return RestRespDTO.success(page);
+			}
 		}
-		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
+		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getCode()));
 		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
@@ -116,7 +125,8 @@ public class ActivityApiController {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
 		} else {
-			fids.add(topFid);
+			GroupRegionFilter groupRegionFilter = groupRegionFilterService.getByCode(areaCode);
+			fids.add(Optional.ofNullable(groupRegionFilter).map(GroupRegionFilter::getManageFid).orElse(topFid));
 		}
 		return fids;
 	}

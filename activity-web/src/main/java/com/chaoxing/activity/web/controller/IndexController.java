@@ -5,18 +5,16 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivitySquareParamDTO;
 import com.chaoxing.activity.dto.activity.MyActivityParamDTO;
 import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
-import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.Classify;
-import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
-import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.UcApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -69,7 +67,7 @@ public class IndexController {
 	@Resource
 	private MarketQueryService marketQueryService;
 	@Resource
-	private ActivityQueryService activityQueryService;
+	private WfwAreaApiService wfwAreaApiService;
 
 	/**通用
 	 * @Description
@@ -184,13 +182,21 @@ public class IndexController {
 	}
 
 	private String handleData(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
+		// 参数中传递的fid
 		Integer fid = activitySquareParam.getRealFid();
 		Integer marketId = activitySquareParam.getMarketId();
 		String flag = activitySquareParam.getFlag();
 		String code = activitySquareParam.getCode();
 		// 根据fid和flag查询模版
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
-			marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+			if (StringUtils.isNotBlank(code)) {
+				// 查询code对应的机构fid
+				WfwAreaDTO topWfwArea = wfwAreaApiService.getTopWfwArea(code);
+				Integer areaCodeFid = Optional.ofNullable(topWfwArea).map(WfwAreaDTO::getFid).orElse(fid);
+				marketId = marketQueryService.getMarketIdByFlag(areaCodeFid, flag);
+			} else {
+				marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+			}
 		}
 		List<Classify> classifies;
 		Integer classifyFid = fid;
@@ -213,26 +219,22 @@ public class IndexController {
 		model.addAttribute("classifyNames", classifyNames);
 		// 查询地区列表
 		List<GroupRegionFilter> groupRegionFilters;
-		String areaCode = "";
 		if (StringUtils.isNotBlank(code)) {
 			groupRegionFilters = groupRegionFilterService.listByGroupCode(code);
-			Group group = groupService.getByCode(code);
-			if (group != null) {
-				areaCode = group.getAreaCode();
-			}
 		} else {
 			groupRegionFilters = Lists.newArrayList();
 		}
 		model.addAttribute("regions", groupRegionFilters);
 		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
 		model.addAttribute("activityQueryDates", activityQueryDates);
-		model.addAttribute("areaCode", areaCode);
+		model.addAttribute("code", code);
 		model.addAttribute("topFid", fid);
 		model.addAttribute("pageId", pageId);
 		Integer banner = Optional.ofNullable(activitySquareParam.getBanner()).orElse(0);
 		model.addAttribute("banner", banner);
 		model.addAttribute("flag", flag);
-		model.addAttribute("marketId", marketId);
+		// code不为空应该查询区域活动（不能查询市场下的活动）
+		model.addAttribute("marketId", StringUtils.isNotBlank(code) ? "" : marketId);
 		model.addAttribute("scope", activitySquareParam.getScope());
 		model.addAttribute("hideFilter", activitySquareParam.getHideFilter());
 		model.addAttribute("signUpAble", Objects.equals(1, activitySquareParam.getStrict()));
