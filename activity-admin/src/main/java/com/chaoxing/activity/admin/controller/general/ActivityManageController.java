@@ -150,7 +150,7 @@ public class ActivityManageController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("{activityId}/edit")
-	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, @RequestParam(defaultValue = "0") Integer strict) {
+	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, String code, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		ActivityCreateParamDTO createParam = activityQueryService.packageActivityCreateParamByActivity(activity);
@@ -171,6 +171,7 @@ public class ActivityManageController {
 				activity.getActivityFlag(),
 				activity.getTemplateId(),
 				activity.getWebTemplateId(),
+				code,
 				strict);
 	}
 
@@ -207,6 +208,7 @@ public class ActivityManageController {
 				createParam.getActivityFlag(),
 				createParam.getTemplateId(),
 				createParam.getWebTemplateId(),
+				null,
 				strict);
 	}
 
@@ -223,10 +225,11 @@ public class ActivityManageController {
 	 * @param activityFlag
 	 * @param templateId
 	 * @param webTemplateId
+	 * @param code
 	 * @param strict
 	 * @return java.lang.String
 	*/
-	private String activityAddEditView(Model model, Integer activityId, Integer userFid, Integer activityFid, Integer marketId, Integer uid, String activityFlag, Integer templateId, Integer webTemplateId, Integer strict) {
+	private String activityAddEditView(Model model, Integer activityId, Integer userFid, Integer activityFid, Integer marketId, Integer uid, String activityFlag, Integer templateId, Integer webTemplateId, String code, Integer strict) {
 		// 活动对应的模板组件列表
 		model.addAttribute("templateComponents", templateComponentService.listTemplateComponentTree(templateId, activityFid));
 		// 活动类型列表
@@ -234,7 +237,7 @@ public class ActivityManageController {
 		model.addAttribute("activityFlag", activityFlag);
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(userFid, marketId, uid);
-		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(marketId, activityFlag, permission.getClassifies()));
+		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(activityFlag, code, permission.getClassifies()));
 		// 模板列表，使用的模版和可选的模版
 		WebTemplate usedWebTemplate = Optional.ofNullable(webTemplateId).map(v -> webTemplateService.getById(v)).orElse(null);
 		model.addAttribute("usedWebTemplate", usedWebTemplate);

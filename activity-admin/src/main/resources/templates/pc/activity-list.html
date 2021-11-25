@@ -276,7 +276,7 @@
                 activities: [],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${fid != null ? fid : session._login_user_.fid}]],
-                areaCode: [[${areaCode}]],
+                code: [[${code == null ? '' : code}]],
                 classifies: [[${classifies}]],
                 marketId: [[${marketId}]],
                 filterStatus: [],
@@ -467,11 +467,7 @@
                     if (activityApp.isEmpty(flag)) {
                         flag = "";
                     }
-                    var areaCode = $this.areaCode;
-                    if (activityApp.isEmpty(areaCode)) {
-                        areaCode = "";
-                    }
-                    var url = activityApp.getRelativeUrl("/activity/add?marketId=" + marketId + "&flag=" + flag + "&code=" + areaCode + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
+                    var url = activityApp.getRelativeUrl("/activity/add?marketId=" + marketId + "&flag=" + flag + "&code=" + $this.code + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {
@@ -480,7 +476,7 @@
                 },
                 toEdit: function (id) {
                     var $this = this;
-                    var url = ctx + "/activity/" + id + "/edit?strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen");
+                    var url = ctx + "/activity/" + id + "/edit?strict=" + $this.strict + "&code=" + $this.code + "&fullScreen=" + activityApp.getUrlParamter("fullScreen");
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {

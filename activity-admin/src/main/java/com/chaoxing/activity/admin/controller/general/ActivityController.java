@@ -87,7 +87,7 @@ public class ActivityController {
 		model.addAttribute("strict", strict);
 		model.addAttribute("marketId", marketId);
 		model.addAttribute("flag", flag);
-		model.addAttribute("areaCode", code);
+		model.addAttribute("code", code);
 		if (Objects.equals(pageMode, 1)) {
 			return "pc/activity-list-simple";
 		}
@@ -135,7 +135,7 @@ public class ActivityController {
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(fid, marketId, loginUser.getUid());
 
-		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(marketId, flag, permission.getClassifies()));
+		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(flag, code, permission.getClassifies()));
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		flag = Optional.of(template).map(Template::getActivityFlag).orElse(flag);

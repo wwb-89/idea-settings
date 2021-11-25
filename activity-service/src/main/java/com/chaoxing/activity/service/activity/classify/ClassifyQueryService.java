@@ -224,16 +224,15 @@ public class ClassifyQueryService {
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-09-17 14:48:35
-	 * @param marketId
 	 * @param flag
+	 * @param code
 	 * @param permissionClassifies
 	 * @return java.util.Set<com.chaoxing.activity.model.Classify>
 	 */
-	public List<Classify> classifiesUnionAreaClassifies(Integer marketId, String flag, List<Classify> permissionClassifies) {
+	public List<Classify> classifiesUnionAreaClassifies(String flag, String code, List<Classify> permissionClassifies) {
 		Set<Classify> classifies = new HashSet<>(permissionClassifies);
 		List<Integer> ownerClassifyIds = permissionClassifies.stream().map(Classify::getId).collect(Collectors.toList());
-		if (marketId == null && StringUtils.isNotBlank(flag)) {
-			String code = activityFlagCodeService.getCodeByFlag(flag);
+		if (StringUtils.isNotBlank(flag)) {
 			Integer areaFid = wfwAreaApiService.listByCode(code).stream().filter(v -> Objects.equals(code, v.getCode())).map(WfwAreaDTO::getFid).findFirst().orElse(null);
 			if (areaFid != null) {
 				Integer areaMarketId = marketQueryService.getMarketIdByFlag(areaFid, flag);
