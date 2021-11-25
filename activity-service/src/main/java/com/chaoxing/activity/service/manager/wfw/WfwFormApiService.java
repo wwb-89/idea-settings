@@ -402,10 +402,12 @@ public class WfwFormApiService {
 	 */
 	public List<String> listFormFieldValue(Integer fid, Integer formId, String fieldName) {
 		List<FormDataDTO> wfwFormData = listFormRecord(formId, fid);
+		List<FormStructureDTO> wfwFormStructures = getFormStructure(formId, fid);
+		String fieldAlias = FormStructureDTO.getFieldAliasByLabel(wfwFormStructures, fieldName);
 		TreeSet<String> fieldValueSet = Sets.newTreeSet();
 		if (CollectionUtils.isNotEmpty(wfwFormData)) {
 			for (FormDataDTO formDataDTO : wfwFormData) {
-				String fieldValue = formDataDTO.getFieldValue(fieldName);
+				String fieldValue = formDataDTO.getValueByAlias(fieldAlias);
 				if (StringUtils.isNotBlank(fieldValue)) {
 					fieldValueSet.add(fieldValue);
 				}

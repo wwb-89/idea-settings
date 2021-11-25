@@ -345,25 +345,21 @@ public class ActivityCreateParamDTO {
 		// 开始时间、结束时间
 		TimeScopeDTO activityTimeScope = FormUtils.getTimeScope(formData, "activity_time");
 		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(FormUtils.getTimeScope(formData, "activity_time_scope"));
-		if (activityTimeScope == null) {
-			String activityStartTimeStr = FormUtils.getValue(formData, "activity_start_time");
-			String activityEndTimeStr = FormUtils.getValue(formData, "activity_end_time");
-			if (StringUtils.isBlank(activityStartTimeStr) || StringUtils.isBlank(activityEndTimeStr)) {
-				throw new BusinessException("活动开始、结束时间都必须填写");
+		if (activityTimeScope.getStartTime() == null || activityTimeScope.getEndTime() == null) {
+			LocalDateTime now = LocalDateTime.now();
+			if (activityTimeScope.getStartTime() == null) {
+				String activityStartTimeStr = FormUtils.getValue(formData, "activity_start_time");
+				LocalDateTime startTime = StringUtils.isBlank(activityStartTimeStr) ? now : FormUtils.getTime(activityStartTimeStr);
+				activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(startTime));
 			}
-			activityTimeScope = TimeScopeDTO.builder()
-					.startTime(FormUtils.getTime(activityStartTimeStr))
-					.endTime(FormUtils.getTime(activityEndTimeStr))
-					.build();
+			if (activityTimeScope.getEndTime() == null) {
+				String activityEndTimeStr = FormUtils.getValue(formData, "activity_end_time");
+				LocalDateTime endTime = StringUtils.isBlank(activityEndTimeStr) ? now.plusMonths(1) : FormUtils.getTime(activityEndTimeStr);
+				activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(endTime));
+			}
 		} else {
-			if (activityTimeScope.getStartTime() == null || activityTimeScope.getEndTime() == null) {
-				LocalDateTime now = LocalDateTime.now();
-				activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(now));
-				activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(now.plusMonths(1)));
-			} else {
-				activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
-				activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
-			}
+			activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
+			activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
 		}
 		// 活动分类
 		activityCreateParamDto.setActivityClassifyId(classifyId);

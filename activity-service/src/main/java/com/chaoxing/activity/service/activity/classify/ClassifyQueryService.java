@@ -232,7 +232,7 @@ public class ClassifyQueryService {
 	public List<Classify> classifiesUnionAreaClassifies(String flag, String code, List<Classify> permissionClassifies) {
 		Set<Classify> classifies = new HashSet<>(permissionClassifies);
 		List<Integer> ownerClassifyIds = permissionClassifies.stream().map(Classify::getId).collect(Collectors.toList());
-		if (StringUtils.isNotBlank(flag)) {
+		if (StringUtils.isNotBlank(flag) && StringUtils.isNotBlank(code)) {
 			Integer areaFid = wfwAreaApiService.listByCode(code).stream().filter(v -> Objects.equals(code, v.getCode())).map(WfwAreaDTO::getFid).findFirst().orElse(null);
 			if (areaFid != null) {
 				Integer areaMarketId = marketQueryService.getMarketIdByFlag(areaFid, flag);
