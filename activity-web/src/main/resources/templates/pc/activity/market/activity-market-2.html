@@ -90,7 +90,7 @@
 							<h2 class="title overHidden1" @click="detail(index)"><span class="info-top" v-show="item.top">置顶</span>{{item.name}}</h2>
 							<p class="time overHidden1">{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
 							<div class="type-box">
-								<span class="type-item" v-for="(tag, index) of resolveActivityTags(item)" :key="'tag-' + index">{{tag}}</span>
+								<span class="type-item" v-for="(tagName, index) of item.tagNames" :key="'tag-name-' + index">{{tagName}}</span>
 							</div>
 							<p class="address overHidden1">{{item.organisers}}</p>
 							<p class="address overHidden1"  v-show="item.address">{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
@@ -393,10 +393,7 @@
 						htmlNodata: '<p class="upwarp-nodata">' +
 								'没有更多内容' + '</p>'
 					});
-				},
-                resolveActivityTags: function (activity) {
-                    return activityApp.resolveActivityTags(activity);
-                }
+				}
 			}
 		})
 	</script>

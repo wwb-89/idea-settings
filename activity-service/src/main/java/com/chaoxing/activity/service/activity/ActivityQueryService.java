@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
-import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
-import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
-import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.activity.*;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
@@ -1359,6 +1356,32 @@ public class ActivityQueryService {
 		List<Integer> tagIds = tagQueryService.listActivityAssociateTagId(originActivityId);
 		activityCreateParam.setTagIds(tagIds);
 		return activityCreateParam;
+	}
+
+	/**填充活动的标签名称列表
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-11-25 09:42:22
+	 * @param activities
+	 * @return void
+	*/
+	public void fillTagNames(List<Activity> activities) {
+		if (CollectionUtils.isEmpty(activities)) {
+			return;
+		}
+		Map<Integer, Activity> activityIdObjectMap = activities.stream().collect(Collectors.toMap(Activity::getId, v -> v, (v1, v2) -> v2));
+		Set<Integer> activityIds = activityIdObjectMap.keySet();
+		List<ActivityTagNameDTO> activityTagNames = tagQueryService.listActivityTagNameByActivityIds(new ArrayList<>(activityIds));
+		Map<Integer, List<ActivityTagNameDTO>> activityIdTagNamesMap = activityTagNames.stream().collect(Collectors.groupingBy(ActivityTagNameDTO::getActivityId));
+		for (Activity activity : activities) {
+			Integer activityId = activity.getId();
+			List<ActivityTagNameDTO> activityAssociatedTagNames = activityIdTagNamesMap.get(activityId);
+			List<String> tagNames = Lists.newArrayList();
+			if (CollectionUtils.isNotEmpty(activityAssociatedTagNames)) {
+				tagNames = activityAssociatedTagNames.stream().map(ActivityTagNameDTO::getTagName).collect(Collectors.toList());
+			}
+			activity.setTagNames(tagNames);
+		}
 	}
 
 }

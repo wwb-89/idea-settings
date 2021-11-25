@@ -81,7 +81,7 @@ public class TemplateQueryService {
 		return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
-	/**根据活动标识找到机构下对应的模版
+	/**根据活动标识找到机构下对应的模版（存在多个则返回最后一个）
 	 * @Description
 	 * 1、根据活动标识找到系统模版
 	 * 2、根据系统模版找到机构的模版

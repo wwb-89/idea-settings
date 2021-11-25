@@ -334,20 +334,6 @@
         return "https://manage.hd.chaoxing.com/activity/" + activityId;
     };
     /**
-     * 解析活动标签
-     * @param activity
-     * @returns {*[]}
-     */
-    activityApp.prototype.resolveActivityTags = function (activity) {
-        var $this = this;
-        var tags = activity.tags;
-        var tagList = [];
-        if (!$this.isEmpty(tags)) {
-            tagList = tags.split(",");
-        }
-        return tagList;
-    };
-    /**
      * 是否被嵌入
      * @returns {boolean}
      */

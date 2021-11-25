@@ -47,6 +47,7 @@ public class ActivityManageApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.pageManaged(page, loginUser, sw, flag);
+		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}
 

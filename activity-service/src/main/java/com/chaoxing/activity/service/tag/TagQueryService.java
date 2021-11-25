@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.tag;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.chaoxing.activity.dto.activity.ActivityTagNameDTO;
 import com.chaoxing.activity.mapper.ActivityTagMapper;
 import com.chaoxing.activity.mapper.MarketTagMapper;
 import com.chaoxing.activity.mapper.OrgTagMapper;
@@ -138,6 +139,10 @@ public class TagQueryService {
         return tagMapper.selectList(new LambdaQueryWrapper<Tag>()
                 .in(Tag::getId, tagIds)
         );
+    }
+
+    public List<ActivityTagNameDTO> listActivityTagNameByActivityIds(List<Integer> activityIds) {
+        return activityTagMapper.listActivityTagNameByActivityIds(activityIds);
     }
 
 }

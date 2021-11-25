@@ -210,9 +210,12 @@ public class Activity {
     /** 报名状态 */
     @TableField(exist = false)
     private Integer signUpStatus;
-    /** 报名状态藐视 */
+    /** 报名状态描述 */
     @TableField(exist = false)
     private String signUpStatusDescribe;
+    /** 标签名称列表 */
+    @TableField(exist = false)
+    private List<String> tagNames;
 
     @Getter
     public enum OriginTypeEnum {
