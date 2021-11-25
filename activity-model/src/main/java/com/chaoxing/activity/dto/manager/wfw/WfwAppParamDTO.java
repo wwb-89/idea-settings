@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Optional;
 
 /**微服务应用参数对象
  * @author wwb
@@ -39,17 +42,17 @@ public class WfwAppParamDTO {
 	/** 微信端应用地址 */
 	private String wechatUrl;
 
-	public static WfwAppParamDTO buildFromActivityMarket(Market activityMarket, Integer classifyId) {
+	public static WfwAppParamDTO buildFromActivityMarket(Market market, Integer classifyId) {
 		return WfwAppParamDTO.builder()
-				.id(activityMarket.getWfwAppId())
-				.name(activityMarket.getName())
-				.iconUrl(activityMarket.getIconUrl())
+				.id(Optional.ofNullable(market.getOrigin()).filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null))
+				.name(market.getName())
+				.iconUrl(market.getIconUrl())
 				.classifyId(classifyId)
-				.fid(activityMarket.getFid())
-				.appUrl(activityMarket.buildAppUrl())
-				.pcUrl(activityMarket.buildPcUrl())
-				.adminUrl(activityMarket.buildMarketmanageUrl())
-				.wechatUrl(activityMarket.buildAppUrl())
+				.fid(market.getFid())
+				.appUrl(market.buildAppUrl())
+				.pcUrl(market.buildPcUrl())
+				.adminUrl(market.buildMarketManageUrl())
+				.wechatUrl(market.buildAppUrl())
 				.build();
 	}
 

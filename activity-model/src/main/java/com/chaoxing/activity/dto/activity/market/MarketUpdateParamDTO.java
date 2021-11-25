@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Optional;
 
 /**更新活动市场的对象
  * @author wwb
@@ -18,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityMarketUpdateParamDTO {
+public class MarketUpdateParamDTO {
 
 	/** 主键 */
 	private Integer id;
@@ -49,22 +52,22 @@ public class ActivityMarketUpdateParamDTO {
 				.iconUrl(getIconUrl())
 				.fid(getFid())
 				.iconCloudId(getIconCloudId())
-				.wfwAppId(getWfwAppId())
+				.origin(String.valueOf(getWfwAppId()))
 				.enableContacts(getEnableContacts())
 				.enableOrganization(getEnableOrganization())
 				.enableRegional(getEnableRegional())
 				.build();
 	}
 
-	public static ActivityMarketUpdateParamDTO buildFromActivityMarket(Market market) {
-		return ActivityMarketUpdateParamDTO.builder()
+	public static MarketUpdateParamDTO buildFromActivityMarket(Market market) {
+		return MarketUpdateParamDTO.builder()
 				.id(market.getId())
 				.name(market.getName())
 				.iconCloudId(market.getIconCloudId())
 				.iconUrl(market.getIconUrl())
 				.fid(market.getFid())
 				.iconCloudId(market.getIconCloudId())
-				.wfwAppId(market.getWfwAppId())
+				.wfwAppId(Optional.ofNullable(market.getOrigin()).filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null))
 				.enableContacts(market.getEnableContacts())
 				.enableOrganization(market.getEnableOrganization())
 				.enableRegional(market.getEnableRegional())

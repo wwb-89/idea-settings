@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 /**创建活动市场的对象
  * @author wwb
  * @version ver 1.0
- * @className ActivityMarketCreateParamDTO
+ * @className MarketCreateParamDTO
  * @description
  * @blame wwb
  * @date 2021-07-14 16:08:40
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityMarketCreateParamDTO {
+public class MarketCreateParamDTO {
 
 	private static final String DEFAULT_ICON_CLOUD_ID = "4b7269d11dcf4465ca533d2cfaf1d70e";
 
@@ -41,6 +41,8 @@ public class ActivityMarketCreateParamDTO {
 	private Boolean enableOrganization;
 	/** 是否启用区域架构 */
 	private Boolean enableRegional;
+	/** 来源类型 */
+	private String originType;
 
 	public Market buildActivityMarket() {
 		return Market.builder()
@@ -51,12 +53,13 @@ public class ActivityMarketCreateParamDTO {
 				.enableContacts(getEnableContacts())
 				.enableOrganization(getEnableOrganization())
 				.enableRegional(getEnableRegional())
+				.originType(getOriginType())
 				.build();
 	}
 
-	public static ActivityMarketCreateParamDTO build(Integer fid, Integer classifyId, String flag) {
+	public static MarketCreateParamDTO build(Integer fid, Integer classifyId, String flag) {
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
-		return ActivityMarketCreateParamDTO.builder()
+		return MarketCreateParamDTO.builder()
 				.name(activityFlagEnum.getName())
 				.iconCloudId(DEFAULT_ICON_CLOUD_ID)
 				.fid(fid)
@@ -68,8 +71,8 @@ public class ActivityMarketCreateParamDTO {
 				.build();
 	}
 
-	public static ActivityMarketCreateParamDTO build(String name, Integer fid, String activityFlag) {
-		ActivityMarketCreateParamDTO activityMarketCreateParam = ActivityMarketCreateParamDTO.build(fid, null, activityFlag);
+	public static MarketCreateParamDTO build(String name, Integer fid, String activityFlag) {
+		MarketCreateParamDTO activityMarketCreateParam = MarketCreateParamDTO.build(fid, null, activityFlag);
 		activityMarketCreateParam.setName(name);
 		return activityMarketCreateParam;
 	}

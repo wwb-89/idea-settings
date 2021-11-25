@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.activity.market;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
+import com.chaoxing.activity.dto.activity.market.MarketUpdateParamDTO;
 import com.chaoxing.activity.mapper.MarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Component;
@@ -61,15 +61,16 @@ public class MarketQueryService {
 	 * @param wfwAppId
 	 * @return com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO
 	*/
-	public ActivityMarketUpdateParamDTO getByWfwAppId(Integer wfwAppId) {
+	public MarketUpdateParamDTO getByWfwAppId(Integer wfwAppId) {
 		List<Market> markets = marketMapper.selectList(new LambdaQueryWrapper<Market>()
-				.eq(Market::getWfwAppId, wfwAppId)
+				.eq(Market::getOriginType, Market.OriginTypeEnum.WFW.getValue())
+				.eq(Market::getOrigin, String.valueOf(wfwAppId))
 		);
 		if (CollectionUtils.isEmpty(markets)) {
 			throw new BusinessException("活动市场不存在");
 		}
 		Market market = markets.get(0);
-		return ActivityMarketUpdateParamDTO.buildFromActivityMarket(market);
+		return MarketUpdateParamDTO.buildFromActivityMarket(market);
 	}
 
 	/**查询机构下的活动市场列表

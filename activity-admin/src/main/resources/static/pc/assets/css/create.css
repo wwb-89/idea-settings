@@ -1957,7 +1957,7 @@ input.btn-name,
 }
 
 .setForm .score-input {
-  width: 120px;
+  width: 120px!important;
   margin-right: 8px;
 }
 

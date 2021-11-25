@@ -1,84 +1,31 @@
-ALTER TABLE t_sign_up_fill_info_type ADD wfw_form_template_id INT(11) COMMENT '报名万能表单模板id';
-UPDATE t_sign_up_fill_info_type SET wfw_form_template_id = 1 WHERE type = 'wfw_form' AND template_type = 'normal';
-UPDATE t_sign_up_fill_info_type SET wfw_form_template_id = 2 WHERE type = 'wfw_form' AND template_type = 'dual_select_company';
-UPDATE t_sign_up_fill_info_type SET wfw_form_template_id = 3 WHERE type = 'wfw_form' AND template_type = 'wfw_form_1';
-UPDATE t_sign_up_fill_info_type SET wfw_form_template_id = 4 WHERE type = 'wfw_form' AND template_type = 'hubei_qun_art_museum';
+-- 浙江省图书馆使用zjlib刷数据
+INSERT INTO `activity_engine`.`t_template`(`id`, `name`, `market_id`, `origin_template_id`, `is_system`, `activity_flag`, `fid`, `cover_url`, `sequence`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (12, '浙江省图书馆', NULL, NULL, 1, 'zjlib', NULL, '', 12, '2021-11-24 19:56:33', 172649568, '2021-11-24 19:57:13', 172649568);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (206, 0, 12, 40, '基本信息', '', 0, 1, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (207, 0, 12, 1, '名称', NULL, 1, 2, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (208, 0, 12, 2, '活动时间', NULL, 1, 3, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (209, 0, 12, 6, '分类', NULL, 0, 4, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (210, 0, 12, 3, '封面', NULL, 1, 5, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (211, 0, 12, 4, '主办方', NULL, 0, 6, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (212, 0, 12, 5, '类型', NULL, 0, 7, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (213, 0, 12, 11, '发布范围', '按照区域架构选择活动范围', 1, 10, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (214, 0, 12, 13, '报名', NULL, 0, 11, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (215, 0, 12, 39, '签到', NULL, 0, 12, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (216, 0, 12, 16, '作品征集', '开启后，参与者可以在活动中提交作品，管理员在征集模块中进行审核评分推优等操作', 0, 14, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (217, 0, 12, 17, '标签', NULL, 0, 15, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (218, 0, 12, 19, '定时发布', '开启后，可以按照设置的时间自动发布活动', 0, 16, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (219, 0, 12, 20, '简介', NULL, 0, 17, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (220, 214, 12, 30, '报名时间', NULL, 1, 18, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (221, 214, 12, 33, '人数限制', NULL, 0, 19, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (222, 214, 12, 34, '报名填报信息', '开启后，报名者需填写信息', 0, 20, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (223, 214, 12, 35, '报名需要审核', '报名需活动管理员审核', 0, 21, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (224, 214, 12, 36, '报名名单公开', '开启后，所有人都能看到报名人员名单', 0, 22, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (225, 214, 12, 37, '取消报名设置', '开启后，指定时间后参与者不能取消报名', 0, 23, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (226, 0, 12, 46, '参与人数', '', 0, 8, 0, 'int', NULL, NULL, NULL);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (227, 0, 12, 47, '活动费用', '', 0, 9, 0, 'decimal', NULL, NULL, NULL);
 
--- 刷数据
--- 创建一个临时结果集表
-CREATE TABLE temp_res (
-    id INT ( 11 ),
-    pid INT ( 11 ));
+-- 活动市场添加来源类型、来源
+ALTER TABLE t_market ADD origin_type VARCHAR ( 50 ) DEFAULT 'system' COMMENT '来源类型';
+ALTER TABLE t_market ADD origin VARCHAR ( 50 ) COMMENT '来源';
+UPDATE t_market t SET t.origin_type = 'wfw', t.origin = t.wfw_app_id WHERE t.wfw_app_id IS NOT NULL;
 
--- 将错误数据纠正后的结果暂存到临时结果集表里面
-INSERT INTO temp_res ( id, pid ) SELECT
-    id,
-    pid
-FROM
-    (
---         查询t_sign_up_fill_info_type中的报名信息填报的模板组件id及其pid
-        SELECT
-            t_template_component.id,
-            t_template_component.pid
-        FROM
-            t_sign_up_fill_info_type
-                INNER JOIN t_template_component ON t_sign_up_fill_info_type.template_component_id = t_template_component.id
-                INNER JOIN t_component ON t_template_component.component_id = t_component.id
-                AND t_template_component.component_id IN ( 34, 36 )) tmp
-WHERE
---       查询 t_sign_up_fill_info_type 中已存在的报名信息填报模板组件的pid不存在于t_sign_up_fill_info_type表但其本身存在的数据
-        tmp.pid NOT IN (
---             查询报名信息填报中已存在的报名模板组件id
-        SELECT DISTINCT
-            t_template_component.id
-        FROM
-            t_sign_up_fill_info_type
-                INNER JOIN t_template_component ON t_sign_up_fill_info_type.template_component_id = t_template_component.id
-                INNER JOIN t_component ON t_template_component.component_id = t_component.id
-                AND t_template_component.component_id IN ( 12, 13 ));
--- 	更新错误数据
-UPDATE t_sign_up_fill_info_type t
-    INNER JOIN temp_res AS res ON t.template_component_id = res.id
-    SET t.template_component_id = res.pid;
--- 删除临时存储表
-DROP TABLE temp_res;
--- 刷数据
-
--- 标签
-CREATE TABLE `t_tag`  (
-    `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `name` varchar(50) NOT NULL COMMENT '标签名称',
-    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
-    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
-    PRIMARY KEY (`id`),
-    UNIQUE INDEX `idx_unique`(`name`)
-) COMMENT = '标签表';
-CREATE TABLE `t_org_tag`  (
-    `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `fid` int(0) NULL COMMENT '机构id',
-    `tag_id` int(0) NULL COMMENT '标签id',
-    `sequence` int(0) NULL COMMENT '顺序',
-    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
-    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
-    PRIMARY KEY (`id`),
-    INDEX `idx_primary`(`fid`)
-) COMMENT = '机构标签表';
-CREATE TABLE `t_market_tag`  (
-    `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `market_id` int(0) NULL COMMENT '活动市场id',
-    `tag_id` int(0) NULL COMMENT '标签id',
-    `sequence` int(0) NULL COMMENT '顺序',
-    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
-    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
-    PRIMARY KEY (`id`),
-    INDEX `idx_primary`(`market_id`)
-) COMMENT = '活动市场标签表';
-CREATE TABLE `t_activity_tag`  (
-    `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `activity_id` int(0) NULL COMMENT '活动id',
-    `tag_id` int(0) NULL COMMENT '标签id',
-    PRIMARY KEY (`id`),
-    INDEX `idx_activity`(`activity_id`),
-    INDEX `idx_tag`(`tag_id`)
-) COMMENT = '活动关联标签表';
 
