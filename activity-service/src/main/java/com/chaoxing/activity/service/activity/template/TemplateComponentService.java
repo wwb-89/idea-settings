@@ -17,7 +17,6 @@ import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +34,9 @@ import java.util.stream.Collectors;
 @Service
 public class TemplateComponentService {
 
-    @Autowired
+    @Resource
     private TemplateComponentMapper templateComponentMapper;
-    @Autowired
+    @Resource
     private ComponentFieldMapper componentFieldMapper;
     @Resource
     private SignUpConditionService signUpConditionService;

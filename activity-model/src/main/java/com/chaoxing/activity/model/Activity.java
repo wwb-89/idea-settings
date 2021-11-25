@@ -341,7 +341,8 @@ public class Activity {
         /** 区域活动 */
         REGION("区域活动", "region"),
         PREACH_ONLINE("线上宣讲会", "preach_online"),
-        PREACH_OFFLINE("线下宣讲会", "preach_offline");
+        PREACH_OFFLINE("线下宣讲会", "preach_offline"),
+        ZJLIB("浙江省图书馆", "zjlib");
 
         private final String name;
         private final String value;
