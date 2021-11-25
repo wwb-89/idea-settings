@@ -83,6 +83,9 @@ public class ActivityController {
 	 * @return java.lang.String
 	*/
 	public String index(Model model, Integer marketId, Integer fid, Integer strict, String flag, String code, Integer pageMode) {
+		if (marketId != null && StringUtils.isBlank(flag)) {
+			flag = Optional.ofNullable(templateQueryService.getMarketFirstTemplate(marketId)).map(Template::getActivityFlag).orElse(null);
+		}
 		model.addAttribute("fid", fid);
 		model.addAttribute("strict", strict);
 		model.addAttribute("marketId", marketId);
@@ -99,6 +102,9 @@ public class ActivityController {
 			classifies = classifyQueryService.listOrgClassifies(fid);
 		} else {
 			classifies = classifyQueryService.listMarketClassifies(marketId);
+			if (StringUtils.isNotBlank(code)) {
+				classifies = classifyQueryService.classifiesUnionAreaClassifies(flag, code, classifies);
+			}
 		}
 		model.addAttribute("classifies", classifies);
 		model.addAttribute("tableFieldId", tableFieldId);
@@ -119,6 +125,9 @@ public class ActivityController {
 	 * @return java.lang.String
 	*/
 	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, Integer strict) {
+		if (marketId != null && StringUtils.isEmpty(flag)) {
+			flag = Optional.ofNullable(templateQueryService.getMarketFirstTemplate(marketId)).map(Template::getActivityFlag).orElse(null);
+		}
 		flag = Optional.ofNullable(flag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
@@ -138,7 +147,7 @@ public class ActivityController {
 		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(flag, code, permission.getClassifies()));
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
-		flag = Optional.of(template).map(Template::getActivityFlag).orElse(flag);
+		flag = Optional.ofNullable(template).map(Template::getActivityFlag).orElse(flag);
 		// 模板列表
 		model.addAttribute("webTemplates", webTemplateService.listAvailable(fid, flag));
 		// 微服务组织架构

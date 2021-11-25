@@ -54,6 +54,7 @@ public class GeneralActivityController {
 	public String index(HttpServletRequest request, Model model, Integer marketId, Integer wfwfid, Integer unitId, Integer state, Integer fid,
 						@RequestParam(defaultValue = "0") Integer strict, String flag, String code, @RequestParam(defaultValue = "0") Integer pageMode, @RequestParam(defaultValue = "false") Boolean direct) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
+		code = Optional.ofNullable(code).orElse("");
 		direct = Optional.ofNullable(direct).orElse(false);
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			// 若不存在，则判断市场是否存在，市场不存在则创建市场
@@ -63,7 +64,7 @@ public class GeneralActivityController {
 			}
 			marketId = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			if (marketId != null && !direct) {
-				return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
+				return "redirect:/market/" + marketId + "?code=" + code + "&pageMode=" + pageMode;
 			}
 		}
 		return activityController.index(model, marketId, realFid, strict, flag, code, pageMode);
