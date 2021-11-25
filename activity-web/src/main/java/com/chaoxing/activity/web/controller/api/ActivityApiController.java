@@ -89,7 +89,7 @@ public class ActivityApiController {
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		String areaCode = activityQuery.getAreaCode();
 		// 区域code不存在，且查询范围为1:所有，直接查询
-		boolean isZjLib = Objects.equals(activityQuery.getFlag(), Activity.ActivityFlagEnum.ZJ_LIB.getValue());
+		boolean isZjLib = Objects.equals(activityQuery.getFlag(), Activity.ActivityFlagEnum.ZJLIB.getValue());
 		if ((isZjLib ||StringUtils.isBlank(areaCode)) && Objects.equals(activityQuery.getScope(), 1)) {
 			Page<Activity> page = HttpServletRequestUtils.buid(request);
 			page = activityQueryService.pageFlag(page, activityQuery);
