@@ -1,10 +1,13 @@
 package com.chaoxing.activity.dto.activity;
 
+import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.util.enums.OrderTypeEnum;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**活动广场参数列表
@@ -49,5 +52,17 @@ public class ActivitySquareParamDTO {
 
     public Integer getRealFid() {
         return Optional.ofNullable(getWfwfid()).orElse(Optional.ofNullable(getUnitId()).orElse(Optional.ofNullable(getState()).orElse(getFid())));
+    }
+
+    public ActivityQueryDTO convert2ActivityQuery() {
+        return ActivityQueryDTO.builder()
+                .topFid(getRealFid())
+                .fids(Lists.newArrayList(getRealFid()))
+                .marketId(getMarketId())
+                .flag(getFlag())
+                .areaCode(getCode())
+                .style(getStyle())
+                .scope(getScope())
+                .build();
     }
 }

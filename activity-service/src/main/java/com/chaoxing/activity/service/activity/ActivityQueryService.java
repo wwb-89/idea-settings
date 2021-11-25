@@ -136,8 +136,11 @@ public class ActivityQueryService {
 	 * @param
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
 	 */
-	public List<Activity> listAllForecastActivity() {
-
+	public List<Activity> listAllForecastActivity(ActivityQueryDTO activityQuery) {
+		activityQuery.setStatusList(Lists.newArrayList(2));
+		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
+		Page<Activity> page = activityMapper.pageParticipate(new Page<>(1, Integer.MAX_VALUE), activityQuery);
+		return page.getRecords();
 	}
 
 

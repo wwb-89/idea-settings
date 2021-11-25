@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivitySquareParamDTO;
 import com.chaoxing.activity.dto.activity.MyActivityParamDTO;
 import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
@@ -12,6 +13,7 @@ import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.UcApiService;
@@ -68,7 +70,7 @@ public class IndexController {
 	@Resource
 	private MarketQueryService marketQueryService;
 	@Resource
-	private ActivityFlagCodeService activityFlagCodeService;
+	private ActivityQueryService activityQueryService;
 
 	/**通用
 	 * @Description
@@ -147,10 +149,6 @@ public class IndexController {
 	 */
 	@RequestMapping("lib")
 	public String libIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
-		if (StringUtils.isBlank(activitySquareParam.getCode())) {
-			// todo 后续移除code参数，改用flag获取
-			activitySquareParam.setCode(activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag()));
-		}
 		return handleData(request, model, pageId, activitySquareParam);
 	}
 
@@ -167,10 +165,6 @@ public class IndexController {
 	@RequestMapping("bas")
 	public String basIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
 		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
-		if (StringUtils.isBlank(activitySquareParam.getCode())) {
-			//	todo 后续移除code参数，改用flag获取
-			activitySquareParam.setCode(activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag()));
-		}
 		return handleData(request, model, pageId, activitySquareParam);
 	}
 
@@ -187,10 +181,6 @@ public class IndexController {
 	@RequestMapping("edu")
 	public String eduIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
 		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
-		if (StringUtils.isBlank(activitySquareParam.getCode())) {
-			//	todo 后续移除code参数，改用flag获取
-			activitySquareParam.setCode(activityFlagCodeService.getCodeByFlag(activitySquareParam.getFlag()));
-		}
 		return handleData(request, model, pageId, activitySquareParam);
 	}
 
@@ -250,6 +240,11 @@ public class IndexController {
 		model.addAttribute("timeOrder", activitySquareParam.getTimeOrder());
 		// 验证style是否存在
 		String style = activitySquareParam.getStyle();
+		List<Activity> forecastActivities = Lists.newArrayList();
+		if (Objects.equals(style, "1") || Objects.equals(style, "2")) {
+			forecastActivities = activityQueryService.listAllForecastActivity(activitySquareParam.convert2ActivityQuery());
+		}
+		model.addAttribute("forecastActivities", forecastActivities);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/index-" + style;
 		}else {

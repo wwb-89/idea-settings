@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 /**活动查询对象
  * @author wwb
@@ -73,5 +74,9 @@ public class ActivityQueryDTO {
 	private OrderTypeEnum timeOrder;
 
 	/** 活动市场样式 */
-	private Integer style;
+	private String style;
+
+	public boolean isMarketStyle() {
+		return Objects.equals(getStyle(), "1") || Objects.equals(getStyle(), "2");
+	}
 }

@@ -73,9 +73,6 @@ public class ActivityApiController {
 		boolean isZjLib = Objects.equals(activityQuery.getFlag(), Activity.ActivityFlagEnum.ZJ_LIB.getValue());
 		if ((isZjLib ||StringUtils.isBlank(areaCode)) && Objects.equals(activityQuery.getScope(), 1)) {
 			Page<Activity> page = HttpServletRequestUtils.buid(request);
-			if (isZjLib) {
-
-			}
 			page = activityQueryService.pageFlag(page, activityQuery);
 			packageActivitySignedStat(page);
 			return RestRespDTO.success(page);
