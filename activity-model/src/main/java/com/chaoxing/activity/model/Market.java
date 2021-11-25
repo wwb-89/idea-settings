@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
@@ -53,8 +50,10 @@ public class Market {
     /** 是否启用区域架构; column: is_enable_regional*/
     @TableField(value = "is_enable_regional")
     private Boolean enableRegional;
-    /** 微服务应用id; column: wfw_app_id*/
-    private Integer wfwAppId;
+    /** 来源类型; column: origin_type*/
+    private String originType;
+    /** 来源; column: origin*/
+    private String origin;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否被删除; column: is_deleted*/
@@ -68,6 +67,32 @@ public class Market {
     private LocalDateTime updateTime;
     /** 更新人id; column: update_uid*/
     private Integer updateUid;
+
+    /** 来源类型枚举
+     * @className Market
+     * @description 
+     * @author wwb
+     * @blame wwb
+     * @date 2021-11-25 15:55:17
+     * @version ver 1.0
+     */
+    @Getter
+    public enum OriginTypeEnum {
+
+        /** 系统 */
+        SYSTEM("系统", "system"),
+        WFW("微服务", "wfw"),
+        WFW_FORM("万能表单", "wfw_form");
+
+        private final String name;
+        private final String value;
+
+        OriginTypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+    }
 
     public void perfectCreator(OperateUserDTO operateUserDto) {
         Integer uid = operateUserDto.getUid();
@@ -86,7 +111,7 @@ public class Market {
     }
 
     public void bindWfwApp(Integer wfwAppId) {
-        setWfwAppId(wfwAppId);
+        setOrigin(String.valueOf(wfwAppId));
     }
 
     public String buildAppUrl() {
@@ -97,7 +122,7 @@ public class Market {
         return buildAppUrl();
     }
 
-    public String buildMarketmanageUrl() {
+    public String buildMarketManageUrl() {
         return DomainConstant.ADMIN_DOMAIN + "/market/" + getId();
     }
 
@@ -105,7 +130,7 @@ public class Market {
         Market cloneMarket = new Market();
         BeanUtils.copyProperties(originMarket, cloneMarket);
         cloneMarket.setFid(fid);
-        cloneMarket.setWfwAppId(null);
+        cloneMarket.setOriginType(OriginTypeEnum.SYSTEM.getValue());
         cloneMarket.setCreateUid(null);
         cloneMarket.setCreateUid(null);
         cloneMarket.setCreateTime(null);

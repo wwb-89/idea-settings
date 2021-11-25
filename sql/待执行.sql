@@ -23,5 +23,9 @@ INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`,
 INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (226, 0, 12, 46, '参与人数', '', 0, 8, 0, 'int', NULL, NULL, NULL);
 INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (227, 0, 12, 47, '活动费用', '', 0, 9, 0, 'decimal', NULL, NULL, NULL);
 
+-- 活动市场添加来源类型、来源
+ALTER TABLE t_market ADD origin_type VARCHAR ( 50 ) DEFAULT 'system' COMMENT '来源类型';
+ALTER TABLE t_market ADD origin VARCHAR ( 50 ) COMMENT '来源';
+UPDATE t_market t SET t.origin_type = 'wfw', t.origin = t.wfw_app_id WHERE t.wfw_app_id IS NOT NULL;
 
 

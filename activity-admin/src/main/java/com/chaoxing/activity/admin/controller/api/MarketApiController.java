@@ -3,8 +3,8 @@ package com.chaoxing.activity.admin.controller.api;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
-import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
+import com.chaoxing.activity.dto.activity.market.MarketCreateParamDTO;
+import com.chaoxing.activity.dto.activity.market.MarketUpdateParamDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
@@ -41,13 +41,13 @@ public class MarketApiController {
 	 * @author wwb
 	 * @Date 2021-07-16 17:39:57
 	 * @param request
-	 * @param activityMarketCreateParamDto
+	 * @param marketCreateParamDto
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("new/from-wfw")
-	public RestRespDTO newFromWfw(HttpServletRequest request, ActivityMarketCreateParamDTO activityMarketCreateParamDto) {
+	public RestRespDTO newFromWfw(HttpServletRequest request, MarketCreateParamDTO marketCreateParamDto) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		marketHandleService.addFromWfw(activityMarketCreateParamDto, loginUser.buildOperateUserDTO());
+		marketHandleService.addFromWfw(marketCreateParamDto, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 
@@ -56,13 +56,13 @@ public class MarketApiController {
 	 * @author wwb
 	 * @Date 2021-07-21 14:55:44
 	 * @param request
-	 * @param activityMarketUpdateParamDto
+	 * @param marketUpdateParamDto
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@LoginRequired
 	@RequestMapping("update/from-wfw")
-	public RestRespDTO updateFromWfw(HttpServletRequest request, ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
-		marketHandleService.updateFromWfw(activityMarketUpdateParamDto);
+	public RestRespDTO updateFromWfw(HttpServletRequest request, MarketUpdateParamDTO marketUpdateParamDto) {
+		marketHandleService.updateFromWfw(marketUpdateParamDto);
 		return RestRespDTO.success();
 	}
 

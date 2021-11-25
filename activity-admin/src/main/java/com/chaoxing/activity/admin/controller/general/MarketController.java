@@ -2,8 +2,8 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
-import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
+import com.chaoxing.activity.dto.activity.market.MarketCreateParamDTO;
+import com.chaoxing.activity.dto.activity.market.MarketUpdateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
@@ -70,7 +70,7 @@ public class MarketController {
 	public String newFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, String activityFlag, String backUrl) {
 		fid = Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid());
 		activityFlag = Optional.ofNullable(activityFlag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
-		ActivityMarketCreateParamDTO market = ActivityMarketCreateParamDTO.build(fid, classifyId, activityFlag);
+		MarketCreateParamDTO market = MarketCreateParamDTO.build(fid, classifyId, activityFlag);
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
 		model.addAttribute("activityFlag", activityFlag);
@@ -80,7 +80,7 @@ public class MarketController {
 	@LoginRequired
 	@RequestMapping("update/from-wfw")
 	public String updateFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, Integer appId, String backUrl) {
-		ActivityMarketUpdateParamDTO market = marketQueryService.getByWfwAppId(appId);
+		MarketUpdateParamDTO market = marketQueryService.getByWfwAppId(appId);
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
 		return "pc/market/wfw-market";

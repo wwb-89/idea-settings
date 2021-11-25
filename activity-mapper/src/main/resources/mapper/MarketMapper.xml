@@ -10,7 +10,8 @@
         <result column="is_enable_contacts" jdbcType="BIT" property="enableContacts" />
         <result column="is_enable_organization" jdbcType="BIT" property="enableOrganization" />
         <result column="is_enable_regional" jdbcType="BIT" property="enableRegional" />
-        <result column="wfw_app_id" jdbcType="INTEGER" property="wfwAppId" />
+        <result column="origin_type" jdbcType="VARCHAR" property="originType" />
+        <result column="origin" jdbcType="VARCHAR" property="origin" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
         <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -20,7 +21,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.icon_cloud_id, t.icon_url, t.fid, t.is_enable_contacts, t.is_enable_organization, t.is_enable_regional,
-        t.wfw_app_id, t.sequence, t.is_deleted, t.create_time, t.create_uid, t.update_time, t.update_uid
+        t.origin_type, t.origin, t.sequence, t.is_deleted, t.create_time, t.create_uid, t.update_time, t.update_uid
     </sql>
 
     <select id="getMaxSequence" resultType="java.lang.Integer">
