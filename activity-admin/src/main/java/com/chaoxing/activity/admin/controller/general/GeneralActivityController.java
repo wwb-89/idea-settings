@@ -57,15 +57,13 @@ public class GeneralActivityController {
 		direct = Optional.ofNullable(direct).orElse(false);
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			// 若不存在，则判断市场是否存在，市场不存在则创建市场
-			if (StringUtils.isBlank(code)) {
-				Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
-				if (activityFlagEnum == null) {
-					throw new BusinessException("未知的flag");
-				}
-				marketId = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
-				if (marketId != null && !direct) {
-					return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
-				}
+			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+			if (activityFlagEnum == null) {
+				throw new BusinessException("未知的flag");
+			}
+			marketId = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
+			if (marketId != null && !direct) {
+				return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
 			}
 		}
 		return activityController.index(model, marketId, realFid, strict, flag, code, pageMode);

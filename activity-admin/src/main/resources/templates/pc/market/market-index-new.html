@@ -39,10 +39,10 @@
 	        el: "#vm",
 	        data: {
                 market: [[${market}]],
+		        code: [[${code == null ? '' : code}]],
                 pageMode: [[${pageMode}]],
                 isEmbedded: activityApp.isEmbedded(),
-		        url: "",
-
+		        url: ""
 	        },
             created: function () {
                 var $this = this;
@@ -50,13 +50,13 @@
                 document.domain = "chaoxing.com";
                 // 如果被嵌入则跳转到活动管理列表页面
                 if (activityApp.isEmbedded()) {
-                    window.location.replace(ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&pageMode=" + $this.pageMode);
+                    window.location.replace(ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&code=" + $this.code + "&pageMode=" + $this.pageMode);
                 }
             },
             mounted: function () {
                 var $this = this;
                 $this.resetFrameHeight();
-                $this.url = ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&pageMode=" + $this.pageMode;
+                $this.url = ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&code=" + $this.code + "&pageMode=" + $this.pageMode;
             },
             watch: {
                 "url": function () {
