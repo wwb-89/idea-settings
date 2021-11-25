@@ -43,13 +43,20 @@ public class FormDataItemDTO {
 	private List<JSONObject> values;
 
 
-	public String getFieldValue(String fieldName) {
+	/**根据别名获取数据
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-25 18:41:39
+	 * @param aliasName
+	 * @return java.util.List<java.lang.String>
+	 */
+	public String getValueByAlias(String aliasName) {
 		if (CollectionUtils.isEmpty(values)) {
 			return null;
 		}
 		JSONObject jsonObject = values.get(0);
 		String value = jsonObject.getString(VAL_KEY);
-		if (StringUtils.isBlank(fieldName) || Objects.equals(label, fieldName)) {
+		if (StringUtils.isBlank(aliasName) || Objects.equals(alias, aliasName)) {
 			return value;
 		}
 		return null;

@@ -131,12 +131,12 @@ public class FormDataDTO {
 	}
 
 
-	public String getFieldValue(String fieldName) {
+	public String getValueByAlias(String aliasName) {
 		if (CollectionUtils.isEmpty(formData)) {
 			return null;
 		}
 		for (FormDataItemDTO formDatum : formData) {
-			String fieldValue = formDatum.getFieldValue(fieldName);
+			String fieldValue = formDatum.getValueByAlias(aliasName);
 			if (StringUtils.isNotBlank(fieldValue)) {
 				return fieldValue;
 			}
