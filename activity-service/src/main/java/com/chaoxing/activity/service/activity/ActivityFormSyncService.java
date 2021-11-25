@@ -222,8 +222,16 @@ public class ActivityFormSyncService {
             TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
             if (signUpTimeScope.getStartTime() == null || signUpTimeScope.getEndTime() == null) {
                 LocalDateTime now = LocalDateTime.now();
-                signUpCreateParam.setStartTime(DateUtils.date2Timestamp(now));
-                signUpCreateParam.setEndTime(DateUtils.date2Timestamp(now.plusMonths(1)));
+                if (signUpTimeScope.getStartTime() == null) {
+                    String signUpStartTimeStr = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "sign_up_start_time");
+                    LocalDateTime startTime = StringUtils.isBlank(signUpStartTimeStr) ? now : FormUtils.getTime(signUpStartTimeStr);
+                    signUpCreateParam.setStartTime(DateUtils.date2Timestamp(startTime));
+                }
+                if (signUpTimeScope.getEndTime() == null) {
+                    String signUpEndTimeStr = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "sign_up_end_time");
+                    LocalDateTime endTime = StringUtils.isBlank(signUpEndTimeStr) ? now.plusMonths(1) : FormUtils.getTime(signUpEndTimeStr);
+                    signUpCreateParam.setEndTime(DateUtils.date2Timestamp(endTime));
+                }
             } else {
                 signUpCreateParam.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
                 signUpCreateParam.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
