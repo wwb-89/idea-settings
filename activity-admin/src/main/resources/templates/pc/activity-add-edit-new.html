@@ -726,8 +726,6 @@
         <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此' + activityClassifyTitle" :cancel="'保留'" :sure="'删除'" @callback="deleteActivityClassifySubmit"></vue-confirm>
         <!-- 活动地图弹窗 -->
         <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
-        <!--签到-->
-        <vue-sign-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置'+ signInMapTitleKey +'地点'" th:uid="${session._login_user_.uid}" th:fid="${session._login_user_.fid}" @callback="signInAddressSure"></vue-sign-map>
         <!-- 活动发布范围弹窗 -->
         <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
         <!--预览url复制容器-->
@@ -855,14 +853,6 @@
                     {value: 'only_self_unit', label: '仅本单位'},
                     {value: 'custom', label: '自定义'}
                 ],
-                // 签到: { originId: signIn }
-                signInMap: {},
-                // 签到方式
-                signInWays: [],
-                // 签退方式
-                signOutWays: [],
-                // 扫码方式
-                scanCodeWays: [],
                 // 表单
                 formConfigLayerIndex: "",
                 // 报名参与范围
@@ -875,8 +865,6 @@
                 activityFlag: [[${activityFlag}]],
                 // 当前操作的对象
                 operateSignUpOriginId: -1,
-                operateSignInOriginId: -1,
-                signInMapTitleKey: "签到",
                 strict: [[${strict}]],
                 // 活动封面上传中
                 activityCoverUploading: false,
@@ -1092,20 +1080,6 @@
                         $this.$set($this.activityClassifies[i], "selected", false);
                     }
                 });
-                $this.signInWays = [
-                    {name: "普通签到", value: 1},
-                    {name: "位置签到", value: 2},
-                    {name: "二维码签到", value: 3}
-                ];
-                $this.signOutWays = [
-                    {name: "普通签退", value: 1},
-                    {name: "位置签退", value: 2},
-                    {name: "二维码签退", value: 3}
-                ];
-                $this.scanCodeWays = [
-                    {name: "参与者扫码", value: 1},
-                    {name: "管理员扫码", value: 2}
-                ];
                 if (!$this.isClone && activityApp.isEmpty($this.sign.id)) {
                     // 生成新的报名签到
                     $this.sign = signApp.newSign();
@@ -1130,10 +1104,6 @@
                             }
                             signUp.originId = this.id;
                             $this.$set($this.signUpMap, this.id, signUp);
-                        } else if (this.code == 'sign_in' || this.code == 'sign_out') {
-                            var signIn = signApp.newSignIn(this);
-                            signIn.originId = this.id;
-                            $this.$set($this.signInMap, this.id, signIn);
                         } else if ((this.type == 'text' || this.type == 'radio' || this.type == 'checkbox' || this.type == 'int' || this.type == 'decimal') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
@@ -1149,12 +1119,9 @@
                     }
                     // 报名签到
                     var signUpTplComponentIds = [];
-                    var signInTplComponentIds = [];
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             signUpTplComponentIds.push(this.id);
-                        } else if (this.code == 'sign_in' || this.code == 'sign_out') {
-                            signInTplComponentIds.push(this.id);
                         } else if ((this.type == 'radio' || this.type == 'checkbox' || this.type == 'text' || this.type == 'int' || this.type == 'decimal') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
@@ -1221,20 +1188,6 @@
                             }
                         }
                     });
-                    // 签到、签退
-                    $($this.sign.signIns).each(function() {
-                        if (signInTplComponentIds.indexOf(this.originId) != -1) {
-                            $this.$set($this.signInMap, this.originId, $.extend({}, this));
-                        }
-                    });
-                    $(signInTplComponentIds).each(function (i) {
-                        var originId = signInTplComponentIds[i];
-                        if (!$this.signInMap[originId]) {
-                            var signIn = signApp.newSignIn($this.templateComponentMap[originId]);
-                            signIn.originId = originId;
-                            $this.$set($this.signInMap, originId, signIn);
-                        }
-                    });
                 }
                 $.each($this.signUpMap, function (key, item) {
                     item.enable = !item.deleted;
@@ -1250,15 +1203,6 @@
                         item.formType = formType || 'form'
                     }
                 });
-                $.each($this.signInMap, function (key, item) {
-                    item.enable = !item.deleted;
-                    $this.$set(item, "typeName", item.type == 'sign_in' ? '签到' : '签退');
-                    item.btnName = item.type == 'sign_in' ? '签到' : '签退';
-                    if (!activityApp.isEmpty(item.startTime)) {
-                        $this.$set(item, "timeScope", [item.startTime, item.endTime]);
-                    }
-                });
-
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
                 }
@@ -1287,12 +1231,6 @@
                 }
             },
             watch: {
-                "operateSignInOriginId": function () {
-                    var $this = this;
-                    if ($this.operateSignInOriginId > -1) {
-                        $this.signInMapTitleKey = $this.signInMap[$this.operateSignInOriginId].name;
-                    }
-                },
                 // 作品征集开关
                 "activity.openWork": function () {
                     var $this = this;
@@ -1415,10 +1353,6 @@
                 signUpEnableChanged: function (tplComponentId) {
                     var $this = this;
                     $this.$set($this.signUpMap[tplComponentId], "deleted", !$this.signUpMap[tplComponentId].enable);
-                },
-                signInEnableChanged: function (tplComponentId) {
-                    var $this = this;
-                    $this.$set($this.signInMap[tplComponentId], "deleted", !$this.signInMap[tplComponentId].enable);
                 },
                 handleImg: function () {
                     $('.jqthumbImg').jqthumb({
@@ -1574,17 +1508,6 @@
                     $this.activity.longitude = $this.$refs.activityMap.lng;
                     $this.activity.dimension = $this.$refs.activityMap.lat;
                 },
-                // 确定签到地址
-                signInAddressSure: function () {
-                    var $this = this;
-                    if (activityApp.isEmpty($this.$refs.signInMap.longitude) || activityApp.isEmpty($this.$refs.signInMap.dimension)) {
-                        app.showMsg("请选择签到地址");
-                        return;
-                    }
-                    $this.$set($this.signInMap[$this.operateSignInOriginId], "address", $this.$refs.signInMap.address);
-                    $this.$set($this.signInMap[$this.operateSignInOriginId], "longitude", $this.$refs.signInMap.longitude);
-                    $this.$set($this.signInMap[$this.operateSignInOriginId], "dimension", $this.$refs.signInMap.dimension);
-                },
                 selectActivityClassify: function (index) {
                     var $this = this;
                     $($this.activityClassifies).each(function (i) {
@@ -1738,6 +1661,8 @@
                         app.showMsg("请选择展示页");
                         return false;
                     }
+                    // 自定义组件的校验
+
                     // 报名验证
                     var signUpKeys = Object.keys($this.signUpMap);
                     for (var i = 0; i < signUpKeys.length; i++) {
@@ -1813,40 +1738,6 @@
                             }
                         }
                     }
-                    // 签到设置
-                    var signInKeys = Object.keys($this.signInMap);
-                    for (var i = 0; i < signInKeys.length; i++) {
-                        var signIn = $this.signInMap[signInKeys[i]];
-                        var deleted = signIn.deleted;
-                        if (!deleted) {
-                            // 签到方式
-                            if (signIn.way == 2 && !signIn.deleted) {
-                                // 位置签到
-                                if (activityApp.isEmpty(signIn.address)) {
-                                    app.showMsg(signIn.name + "位置不能为空");
-                                    return false;
-                                }
-                            }
-                            if (activityApp.isEmpty(signIn.startTime)) {
-                                app.showMsg(signIn.name + "开始时间不能为空");
-                                return false;
-                            }
-                            if (!activityApp.isEmpty(signIn.endTime) && signIn.startTime >= signIn.endTime) {
-                                app.showMsg(signIn.name + "开始时间必须小于结束时间");
-                                return false;
-                            }
-                            if (signIn.fillInfo) {
-                                if (activityApp.isEmpty(signIn.fillInfoFormId)) {
-                                    app.showMsg("请选择"+ signIn.name +"需要填写的表单");
-                                    return false;
-                                }
-                            }
-                            if (activityApp.isEmpty(signIn.btnName)) {
-                                app.showMsg("签到按钮名称不能为空");
-                                return false;
-                            }
-                        }
-                    }
                     // 离线地址验证：根据选择的门户模版的形式来验证
                     if (validateOfflineAddress) {
                         var webTemplateId = $this.operateWebTemplateId;
@@ -1893,8 +1784,8 @@
                 },
                 packageSubmitSign: function () {
                     var $this = this;
-                    var waitSubmitSignUps = [], waitSubmitSignIns = [];
-                    var signInMap = $.extend({}, $this.signInMap), signUpMap = $.extend({}, $this.signUpMap);
+                    var waitSubmitSignUps = [];
+                    var signUpMap = $.extend({}, $this.signUpMap);
                     $.each(signUpMap, function (key, item) {
                         // 新增，且未开启报名，则不提交
                         if ((!item.id && !item.deleted) || item.id) {
@@ -1903,24 +1794,7 @@
                             waitSubmitSignUps.push(item);
                         }
                     });
-                    $.each(signInMap, function (key, item) {
-                        var way = item.way;
-                        switch (way) {
-                            case 1:
-                            case 3:
-                                item.address = "";
-                                item.longitude = null;
-                                item.dimension = null;
-                                item.detailAddress = "";
-                                break;
-                            default:
-                        }
-                        // 新增，且未开启签到，则不提交
-                        if ((!item.id && !item.deleted) || item.id) {
-                            waitSubmitSignIns.push(item);
-                        }
-                    });
-                    return $.extend({}, $this.sign, { signUps: waitSubmitSignUps, signIns: waitSubmitSignIns });
+                    return $.extend({}, $this.sign, { signUps: waitSubmitSignUps });
                 },
                 ignoreOfflineEmptyAddress: function () {
                     var $this = this;
@@ -2034,12 +1908,6 @@
                     } else {
                         window.close();
                     }
-                },
-                // 选中签到的时间范围
-                selectSignInTime: function (tplComponentId, obj) {
-                    var $this = this;
-                    $this.$set($this.signInMap[tplComponentId], "startTime", obj[0]);
-                    $this.$set($this.signInMap[tplComponentId], "endTime", obj[1]);
                 },
                 // 预览模板
                 previewTemplate: function (index, e) {

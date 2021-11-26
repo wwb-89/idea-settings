@@ -66,6 +66,21 @@ public class MarketQueryService {
 		return markets.stream().findFirst().orElse(null);
 	}
 
+	/**根据微服务表单查询对应的活动市场
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-26 16:15:58
+	 * @param wfwFormId
+	 * @return com.chaoxing.activity.model.Market
+	*/
+	public Market getByWfwFormId(Integer wfwFormId) {
+		List<Market> markets = marketMapper.selectList(new LambdaQueryWrapper<Market>()
+				.eq(Market::getOriginType, Market.OriginTypeEnum.WFW_FORM)
+				.eq(Market::getOrigin, String.valueOf(wfwFormId))
+		);
+		return markets.stream().findFirst().orElse(null);
+	}
+
 	/**查询机构下的活动市场列表
 	 * @Description 
 	 * @author wwb
