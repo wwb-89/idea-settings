@@ -95,10 +95,9 @@
                 loginUser: [[${session._login_user_}]],
                 signActivityManageIndex: [[${signActivityManageIndex}]],
                 activityMenus: [[${activityMenus}]],
-                signUpKeyword: [[${signUpKeyword == null ? '报名' : signUpKeyword}]],
                 menus: {
                     // 报名签到
-                    sign_up: {name: [[${signUpKeyword == null ? '报名' : signUpKeyword}]] + "名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    sign_up: {name: [[${signActivityManageIndex.signUpKeyword == null || signActivityManageIndex.signUpKeyword == '' ? '报名' : signActivityManageIndex.signUpKeyword}]] + "名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     sign_in: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     results_manage: {name: "考核管理", defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage", selected: false},
                     // 通知
@@ -118,7 +117,7 @@
                 $this.$nextTick(function () {
                     var signUpIds = $this.signActivityManageIndex.signUpIds;
                     if (!activityApp.isEmpty(signUpIds) && signUpIds.length > 1) {
-                        $this.menus.sign_up.name = $this.signUpKeyword + "项目";
+                        $this.menus.sign_up.name = ($this.signActivityManageIndex.signUpKeyword || '报名') + "项目";
                     }
 
                     var newMenus = {};

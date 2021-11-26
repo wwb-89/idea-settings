@@ -31,5 +31,7 @@ public class SignActivityManageIndexDTO {
 	private Boolean signInExist;
 	/** 报名人数 */
 	private Integer signUpNum;
+	/** 报名关键字 */
+	private String signUpKeyword;
 
 }
