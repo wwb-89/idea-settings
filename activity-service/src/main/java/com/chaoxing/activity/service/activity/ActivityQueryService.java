@@ -137,12 +137,21 @@ public class ActivityQueryService {
 	public List<Activity> listAllForecastActivity(ActivityQueryDTO activityQuery) {
 		activityQuery.setStatusList(Lists.newArrayList(2));
 		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
+		List<String> tagNames = activityQuery.getTags();
+		if (CollectionUtils.isNotEmpty(tagNames)) {
+			List<Tag> tags = tagQueryService.listByNames(tagNames);
+			activityQuery.setTagIds(tags.stream().map(Tag::getId).collect(Collectors.toList()));
+		}
 		Page<Activity> page = activityMapper.pageParticipate(new Page<>(1, Integer.MAX_VALUE), activityQuery);
 		return page.getRecords();
 	}
 
-
 	public Page<Activity> pageParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
+		List<String> tagNames = activityQuery.getTags();
+		if (CollectionUtils.isNotEmpty(tagNames)) {
+			List<Tag> tags = tagQueryService.listByNames(tagNames);
+			activityQuery.setTagIds(tags.stream().map(Tag::getId).collect(Collectors.toList()));
+		}
 		return activityMapper.pageParticipate(page, activityQuery);
 	}
 
@@ -156,6 +165,11 @@ public class ActivityQueryService {
 	public Page<Activity> pageSpecialParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		activityQuery.setStatusList(Lists.newArrayList(3, 4));
 		activityQuery.setTimeOrder(OrderTypeEnum.DESC);
+		List<String> tagNames = activityQuery.getTags();
+		if (CollectionUtils.isNotEmpty(tagNames)) {
+			List<Tag> tags = tagQueryService.listByNames(tagNames);
+			activityQuery.setTagIds(tags.stream().map(Tag::getId).collect(Collectors.toList()));
+		}
 		return activityMapper.pageParticipate(page, activityQuery);
 	}
 
@@ -392,6 +406,10 @@ public class ActivityQueryService {
 				if (currWfwArea != null) {
 					List<Integer> subFids = wfwAreas.stream().filter(v -> StringUtils.startsWith(v.getCode(), currWfwArea.getCode())).map(WfwAreaDTO::getFid).collect(Collectors.toList());
 					activityManageQuery.setFids(subFids);
+				}
+				// 如果区域flag、areaCode不为空 则清空marketId
+				if (StringUtils.isNotBlank(activityManageQuery.getActivityFlag())) {
+					activityManageQuery.setMarketId(null);
 				}
 			}
 			page = activityMapper.pageManaging(page, activityManageQuery);

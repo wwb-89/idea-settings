@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/commonTable.css" th:href="@{/pc/assets/sign/assets/css/commonTable.css}">
     <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/confirm_dialog.css" th:href="@{/pc/assets/sign/assets/css/confirm_dialog.css}">
 
-    <style type="text/css">
+    <style>
         [v-cloak] {
             display: none;
         }
@@ -288,6 +288,7 @@
                 queryParams: {
                     fid: [[${fid != null ? fid : session._login_user_.fid}]],
                     marketId: [[${marketId}]],
+                    code: [[${areaCode == null ? '' : areaCode}]],
                     pageNum: 1,
                     pageSize: 8,
                     status: "",
@@ -425,7 +426,7 @@
                             if (manager) {
                                 activity.operations.push($this.operations.configPage);
                             }
-                            if ($this.marketId) {
+                            if ($this.marketId && $this.marketId == activity.marketId) {
                                 if (activity.released) {
                                     var existCancelRelease = $.grep(activity.operations, function (it) {
                                         return it.value == "cancelRelease";
@@ -453,7 +454,9 @@
                                     activity.operations.push($this.operations.delete);
                                 }
                             }
-                            activity.operations.push($this.operations.clone);
+                            if (!this.marketId || $this.marketId == activity.marketId) {
+                                activity.operations.push($this.operations.clone);
+                            }
                         });
                     }
                 },
@@ -658,7 +661,7 @@
                     $this.$refs.releaseWindow.show = false;
                     var marketId = $this.marketId || "";
                     var url = ctx + "/api/activity/" + $this.operateActivityId + "/release";
-                    if (!activityApp.isEmpty(marketId)) {
+                    if (!activityApp.isEmpty(marketId) && marketId == activity.marketId) {
                         url = ctx + "/api/market/" + marketId + "/release/activity/" + $this.operateActivityId;
                     }
                     app.ajaxPostWithLoading(url, {}, function (data) {
@@ -746,8 +749,15 @@
                     var $this = this;
                     $this.$refs.canReleaseWindow.show = false;
                     var marketId = $this.marketId || "";
+                    var operateActivity = null;
+                    $($this.activities).each(function () {
+                        if (this.id == $this.operateActivityId) {
+                            operateActivity = this;
+                            return false;
+                        }
+                    });
                     var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel";
-                    if (!activityApp.isEmpty(marketId)) {
+                    if (!activityApp.isEmpty(marketId) && marketId == operateActivity.marketId) {
                         url = ctx + "/api/market/" + marketId + "/cancel-release/activity/" + $this.operateActivityId;
                     }
                     app.ajaxPostWithLoading(url, {}, function (data) {
