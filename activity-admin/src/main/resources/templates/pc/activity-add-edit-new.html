@@ -1662,7 +1662,10 @@
                         return false;
                     }
                     // 自定义组件的校验
-
+                    var customComponentValueValid = $this.validateCustomComponentValues();
+                    if (!customComponentValueValid) {
+                        return false;
+                    }
                     // 报名验证
                     var signUpKeys = Object.keys($this.signUpMap);
                     for (var i = 0; i < signUpKeys.length; i++) {
@@ -1751,6 +1754,29 @@
                         if (webTemplate != null) {
                             if ("offline" == webTemplate.activityType && activityApp.isEmpty($this.activity.address)) {
                                 $this.$refs.offlineEmptyAddressWindow.show = true;
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                },
+                // 自定义组件的校验
+                validateCustomComponentValues: function () {
+                    var $this = this;
+                    if ($this.activityComponentValueMap) {
+                        var customComponentRequiredMap = {};
+                        $($this.templateComponents).each(function () {
+                            if (this.type == 'text' || this.type == "checkbox" || this.type == 'int' || this.type == 'decimal') {
+                                customComponentRequiredMap[this.id] = this;
+                            }
+                        });
+                        var tplComponentIds = Object.keys($this.activityComponentValueMap);
+                        for (var i = 0; i < tplComponentIds.length; i++) {
+                            var tplComponentId = tplComponentIds[i], customTplComponent = customComponentRequiredMap[tplComponentId];
+                            var required = customTplComponent && customTplComponent.required;
+                            var componentValue = $this.activityComponentValueMap[tplComponentId];
+                            if (required && activityApp.isEmpty(componentValue && componentValue.value)) {
+                                app.showMsg(customTplComponent && customTplComponent.name + "不能为空");
                                 return false;
                             }
                         }
