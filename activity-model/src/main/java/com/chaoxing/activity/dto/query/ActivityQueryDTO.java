@@ -51,7 +51,7 @@ public class ActivityQueryDTO {
 	/** 最大日期 */
 	private String maxDateStr;
 	/** 区域码 */
-	private String code;
+	private String areaCode;
 	/** 活动类型 */
 	private String activityType;
 	/** flag的查询范围，0：默认，1：所有 */

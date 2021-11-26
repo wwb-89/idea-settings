@@ -186,12 +186,12 @@ public class IndexController {
 		Integer fid = activitySquareParam.getRealFid();
 		Integer marketId = activitySquareParam.getMarketId();
 		String flag = activitySquareParam.getFlag();
-		String code = activitySquareParam.getCode();
+		String areaCode = activitySquareParam.getAreaCode();
 		// 根据fid和flag查询模版
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
-			if (StringUtils.isNotBlank(code)) {
+			if (StringUtils.isNotBlank(areaCode)) {
 				// 查询code对应的机构fid
-				WfwAreaDTO topWfwArea = wfwAreaApiService.getTopWfwArea(code);
+				WfwAreaDTO topWfwArea = wfwAreaApiService.getTopWfwArea(areaCode);
 				Integer areaCodeFid = Optional.ofNullable(topWfwArea).map(WfwAreaDTO::getFid).orElse(fid);
 				marketId = marketQueryService.getMarketIdByFlag(areaCodeFid, flag);
 			} else {
@@ -201,9 +201,9 @@ public class IndexController {
 		List<Classify> classifies;
 		Integer classifyFid = fid;
 		if (marketId == null) {
-			if (StringUtils.isNotBlank(code)) {
+			if (StringUtils.isNotBlank(areaCode)) {
 				// 查询区域所属的机构
-				classifyFid = groupService.getGroupFid(code);
+				classifyFid = groupService.getGroupFid(areaCode);
 			}
 			if (fid == null) {
 				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -219,22 +219,22 @@ public class IndexController {
 		model.addAttribute("classifyNames", classifyNames);
 		// 查询地区列表
 		List<GroupRegionFilter> groupRegionFilters;
-		if (StringUtils.isNotBlank(code)) {
-			groupRegionFilters = groupRegionFilterService.listByGroupCode(code);
+		if (StringUtils.isNotBlank(areaCode)) {
+			groupRegionFilters = groupRegionFilterService.listByGroupCode(areaCode);
 		} else {
 			groupRegionFilters = Lists.newArrayList();
 		}
 		model.addAttribute("regions", groupRegionFilters);
 		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
 		model.addAttribute("activityQueryDates", activityQueryDates);
-		model.addAttribute("code", code);
+		model.addAttribute("areaCode", areaCode);
 		model.addAttribute("topFid", fid);
 		model.addAttribute("pageId", pageId);
 		Integer banner = Optional.ofNullable(activitySquareParam.getBanner()).orElse(0);
 		model.addAttribute("banner", banner);
 		model.addAttribute("flag", flag);
 		// code不为空应该查询区域活动（不能查询市场下的活动）
-		model.addAttribute("marketId", StringUtils.isNotBlank(code) ? "" : marketId);
+		model.addAttribute("marketId", StringUtils.isNotBlank(areaCode) ? "" : marketId);
 		model.addAttribute("scope", activitySquareParam.getScope());
 		model.addAttribute("hideFilter", activitySquareParam.getHideFilter());
 		model.addAttribute("signUpAble", Objects.equals(1, activitySquareParam.getStrict()));

@@ -146,7 +146,7 @@
                 activities: [],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${fid != null ? fid : session._login_user_.fid}]],
-                code: [[${code == null ? '' : code}]],
+                areaCode: [[${areaCode == null ? '' : areaCode}]],
                 marketId: [[${marketId}]],
                 filterStatus: [],
                 selectedFilterStatusName: "全部",
@@ -257,7 +257,7 @@
                     if (activityApp.isEmpty(flag)) {
                         flag = "";
                     }
-                    var url = activityApp.getRelativeUrl("/activity/add?marketId=" + marketId + "&flag=" + flag + "&code=" + $this.code + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
+                    var url = activityApp.getRelativeUrl("/activity/add?marketId=" + marketId + "&flag=" + flag + "&areaCode" + $this.areaCode + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {
@@ -266,7 +266,7 @@
                 },
                 toEdit: function (id) {
                     var $this = this;
-                    var url = ctx + "/activity/" + id + "/edit?strict=" + $this.strict + "&code=" + $this.code + "&fullScreen=" + activityApp.getUrlParamter("fullScreen");
+                    var url = ctx + "/activity/" + id + "/edit?strict=" + $this.strict + "&areaCode=" + $this.areaCode + "&fullScreen=" + activityApp.getUrlParamter("fullScreen");
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {
@@ -287,7 +287,7 @@
                 sortChange: function (column) {
                     var $this = this;
                     var sortFieldItem = $($this.showTableFieldDetails).filter(function() {
-                        return this.code === column.prop
+                        return this.code === column.prop;
                     })[0];
                     $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
                     if (column.order === 'descending') {

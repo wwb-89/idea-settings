@@ -72,7 +72,7 @@ public class ActivityApiController {
 	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getCode()));
+		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
 		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
 		List<Activity> activities = activityQueryService.listAllForecastActivity(activityQuery);
 		activityQueryService.fillTagNames(activities);
@@ -96,16 +96,16 @@ public class ActivityApiController {
 			String flag = activityQuery.getFlag();
 			if (StringUtils.isNotBlank(flag)) {
 				Page<Activity> page = HttpServletRequestUtils.buid(request);
-				String code = activityQuery.getCode();
-				if (StringUtils.isNotBlank(code)) {
-					activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getCode()));
+				String areaCode = activityQuery.getAreaCode();
+				if (StringUtils.isNotBlank(areaCode)) {
+					activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
 				}
 				page = activityQueryService.pageFlag(page, activityQuery);
 				packageActivitySignedStat(page);
 				return RestRespDTO.success(page);
 			}
 		}
-		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getCode()));
+		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
 		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);

@@ -31,7 +31,7 @@ public class LibActivityController {
 	 * @Date 2020-11-18 11:34:30
 	 * @param model
 	 * @param marketId
-	 * @param code 图书馆编码
+	 * @param areaCode 图书馆编码
 	 * @param wfwfid
 	 * @param unitId
 	 * @param state
@@ -41,9 +41,9 @@ public class LibActivityController {
 	 * @return java.lang.String
 	*/
 	@RequestMapping("")
-	public String index(Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag, @RequestParam(defaultValue = "0") Integer pageMode) {
+	public String index(Model model, Integer marketId, String areaCode, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag, @RequestParam(defaultValue = "0") Integer pageMode) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		return activityManagementController.index(model, marketId, realFid, strict, flag, code, pageMode);
+		return activityManagementController.index(model, marketId, realFid, strict, flag, areaCode, pageMode);
 	}
 
 	/**活动新增页面
@@ -53,12 +53,12 @@ public class LibActivityController {
 	 * @param model
 	 * @param request
 	 * @param templateId
-	 * @param code
+	 * @param areaCode
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, Integer templateId, String flag, String code, Integer strict) {
-		return activityManagementController.add(request, model, templateId, flag, code, strict);
+	public String add(Model model, HttpServletRequest request, Integer templateId, String flag, String areaCode, Integer strict) {
+		return activityManagementController.add(request, model, templateId, flag, areaCode, strict);
 	}
 
 }

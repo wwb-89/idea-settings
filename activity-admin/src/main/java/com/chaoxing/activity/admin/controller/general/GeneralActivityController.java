@@ -46,15 +46,16 @@ public class GeneralActivityController {
 	 * @param fid
 	 * @param strict 是否是严格模式，严格模式下只查询当前用户创建的活动
 	 * @param flag
+	 * @param areaCode
 	 * @param pageMode 0：通用的管理列表页面，1：简单的管理列表页面
 	 * @param direct true：直接到管理列表页面，false：可以重定向到市场管理页面
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, Integer marketId, Integer wfwfid, Integer unitId, Integer state, Integer fid,
-						@RequestParam(defaultValue = "0") Integer strict, String flag, String code, @RequestParam(defaultValue = "0") Integer pageMode, @RequestParam(defaultValue = "false") Boolean direct) {
+						@RequestParam(defaultValue = "0") Integer strict, String flag, String areaCode, @RequestParam(defaultValue = "0") Integer pageMode, @RequestParam(defaultValue = "false") Boolean direct) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
-		code = Optional.ofNullable(code).orElse("");
+		areaCode = Optional.ofNullable(areaCode).orElse("");
 		direct = Optional.ofNullable(direct).orElse(false);
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			// 若不存在，则判断市场是否存在，市场不存在则创建市场
@@ -64,10 +65,10 @@ public class GeneralActivityController {
 			}
 			marketId = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			if (marketId != null && !direct) {
-				return "redirect:/market/" + marketId + "?code=" + code + "&pageMode=" + pageMode;
+				return "redirect:/market/" + marketId + "?areaCode=" + areaCode + "&pageMode=" + pageMode;
 			}
 		}
-		return activityController.index(model, marketId, realFid, strict, flag, code, pageMode);
+		return activityController.index(model, marketId, realFid, strict, flag, areaCode, pageMode);
 	}
 
 	/**活动新增页面
@@ -77,12 +78,12 @@ public class GeneralActivityController {
 	 * @param request
 	 * @param model
 	 * @param marketId
-	 * @param code
+	 * @param areaCode
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, @RequestParam(defaultValue = "0") Integer strict) {
-		return activityController.add(request, model, marketId, flag, code, strict);
+	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String areaCode, @RequestParam(defaultValue = "0") Integer strict) {
+		return activityController.add(request, model, marketId, flag, areaCode, strict);
 	}
 
 }

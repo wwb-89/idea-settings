@@ -139,7 +139,7 @@
                         classifies: [],
                         activityTypes: [],
                         regions: [[${regions}]],
-                        code: [[${code}]],
+                        areaCode: [[${areaCode}]],
                         // 状态
                         statuses: [],
                         sw: "",
@@ -155,7 +155,7 @@
                         filterWindowShow: false,
                         searchShow: false,
                         topFid: [[${topFid}]],
-                        defaultSelectedAreaCode: [[${code}]],
+                        defaultSelectedAreaCode: [[${areaCode}]],
                         // 是否查询能报名的活动
                         signUpAble: [[${signUpAble}]],
                         isApp: app.isChaoxingApp(),
@@ -306,7 +306,7 @@
                             dateScope: "",
                             status: "",
                             activityType: "",
-                            code: $this.defaultSelectedAreaCode,
+                            areaCode: $this.defaultSelectedAreaCode,
                             topFid: [[${topFid}]],
                             marketId: [[${marketId}]],
                             scope: [[${scope}]],
@@ -465,9 +465,9 @@
                         });
                         $($this.regions).each(function () {
                             if (this.selected) {
-                                $this.queryParams.code = this.value;
-                                if (activityApp.isEmpty($this.queryParams.code)) {
-                                    $this.queryParams.code = $this.code;
+                                $this.queryParams.areaCode = this.value;
+                                if (activityApp.isEmpty($this.queryParams.areaCode)) {
+                                    $this.queryParams.areaCode = $this.areaCode;
                                 }
                                 return false;
                             }
@@ -485,7 +485,6 @@
                     },
                     queryParams2Condition: function () {
                         var $this = this;
-                        console.log($this.queryParams.code);
                         $($this.classifies).each(function (i) {
                             $this.$set($this.classifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
                         });
@@ -497,9 +496,9 @@
                         });
                         var existRegion = false;
                         $($this.regions).each(function (i) {
-                            if (this.value == $this.queryParams.code) {
+                            if (this.value == $this.queryParams.areaCode) {
                                 existRegion = true;
-                                $this.$set($this.regions[i], "selected", this.value == $this.queryParams.code);
+                                $this.$set($this.regions[i], "selected", this.value == $this.queryParams.areaCode);
                             }
                         });
                         if (!existRegion && $this.regions.length > 0) {

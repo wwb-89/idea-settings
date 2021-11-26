@@ -121,7 +121,7 @@
 				classifies: [],
 				activityTypes: [],
 				regions: [[${regions}]],
-				code: [[${code}]],
+				areaCode: [[${areaCode}]],
 				statuses: [],
 				pages: 0,
 				sw: "",
@@ -227,9 +227,9 @@
 					$($this.regions).each(function (i) {
 						$this.$set($this.regions[i], "selected", i == index);
 					});
-					$this.queryParams.code = $this.regions[index].value;
-					if (activityApp.isEmpty($this.queryParams.code)) {
-						$this.queryParams.code = $this.code;
+					$this.queryParams.areaCode = $this.regions[index].value;
+					if (activityApp.isEmpty($this.queryParams.areaCode)) {
+						$this.queryParams.areaCode = $this.areaCode;
 					}
 					$this.queryParams.pageNum = 1;
 					$this.loadData();
@@ -268,7 +268,7 @@
 						activityClassifyName: "",
 						date: "",
 						status: "",
-						code: $this.code,
+						areaCode: $this.areaCode,
 						topFid: [[${topFid}]],
 						marketId: [[${marketId}]],
 						activityType: "",

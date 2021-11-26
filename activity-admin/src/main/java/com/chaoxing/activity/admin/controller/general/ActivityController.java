@@ -82,7 +82,7 @@ public class ActivityController {
 	 * @param flag
 	 * @return java.lang.String
 	*/
-	public String index(Model model, Integer marketId, Integer fid, Integer strict, String flag, String code, Integer pageMode) {
+	public String index(Model model, Integer marketId, Integer fid, Integer strict, String flag, String areaCode, Integer pageMode) {
 		if (marketId != null && StringUtils.isBlank(flag)) {
 			flag = Optional.ofNullable(templateQueryService.getMarketFirstTemplate(marketId)).map(Template::getActivityFlag).orElse(null);
 		}
@@ -90,7 +90,7 @@ public class ActivityController {
 		model.addAttribute("strict", strict);
 		model.addAttribute("marketId", marketId);
 		model.addAttribute("flag", flag);
-		model.addAttribute("code", code);
+		model.addAttribute("areaCode", areaCode);
 		if (Objects.equals(pageMode, 1)) {
 			return "pc/activity-list-simple";
 		}
@@ -102,8 +102,8 @@ public class ActivityController {
 			classifies = classifyQueryService.listOrgClassifies(fid);
 		} else {
 			classifies = classifyQueryService.listMarketClassifies(marketId);
-			if (StringUtils.isNotBlank(code)) {
-				classifies = classifyQueryService.classifiesUnionAreaClassifies(flag, code, classifies);
+			if (StringUtils.isNotBlank(areaCode)) {
+				classifies = classifyQueryService.classifiesUnionAreaClassifies(flag, areaCode, classifies);
 			}
 		}
 		model.addAttribute("classifies", classifies);
@@ -124,7 +124,7 @@ public class ActivityController {
 	 * @param strict
 	 * @return java.lang.String
 	*/
-	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, Integer strict) {
+	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String areaCode, Integer strict) {
 		if (marketId != null && StringUtils.isEmpty(flag)) {
 			flag = Optional.ofNullable(templateQueryService.getMarketFirstTemplate(marketId)).map(Template::getActivityFlag).orElse(null);
 		}
@@ -144,7 +144,7 @@ public class ActivityController {
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(fid, marketId, loginUser.getUid());
 
-		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(flag, code, permission.getClassifies()));
+		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(flag, areaCode, permission.getClassifies()));
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		flag = Optional.ofNullable(template).map(Template::getActivityFlag).orElse(flag);
@@ -157,8 +157,8 @@ public class ActivityController {
 		model.addAttribute("activityFlag", flag);
 		// 发布范围默认选中当前机构
 		List<WfwAreaDTO> wfwAreaDtos;
-		if (StringUtils.isNotBlank(code)) {
-			wfwAreaDtos = wfwAreaApiService.listByCode(code);
+		if (StringUtils.isNotBlank(areaCode)) {
+			wfwAreaDtos = wfwAreaApiService.listByCode(areaCode);
 		} else {
 			wfwAreaDtos = wfwAreaApiService.listByFid(fid);
 		}
