@@ -22,8 +22,8 @@
     <div class="index-list">
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList" v-show="menuShow('sign_up')">
             <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
-            <p class="flTxt">{{signActivityManageIndex.signUpIds.length > 1 ? '报名项目' : '报名名单'}}</p>
-            <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已报名 {{signActivityManageIndex.signUpNum}}</p>
+            <p class="flTxt">{{signUpKeyword + (signActivityManageIndex.signUpIds.length > 1 ? '项目' : '名单')}}</p>
+            <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已{{signUpKeyword}} {{signActivityManageIndex.signUpNum}}</p>
             <i :class="{'icon-arrow-r': true, 'marginAuto': (signActivityManageIndex.signUpIds.length > 1)}"></i>
         </div>
         <div class="item" @click="signInManage" v-show="menuShow('sign_in')">
@@ -73,6 +73,7 @@
                     activity: [[${activity}]],
                     activityMenus: [[${activityMenus}]],
                     signActivityManageIndex: [[${signActivityManageIndex}]],
+                    signUpKeyword: [[${signUpKeyword == null || signUpKeyword == '' ? '报名' : signUpKeyword}]],
                     loaded: true
                 },
                 methods: {
