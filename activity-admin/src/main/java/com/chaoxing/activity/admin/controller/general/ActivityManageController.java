@@ -114,6 +114,14 @@ public class ActivityManageController {
 		Integer signId = activity.getSignId();
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
+		// 活动市场报名配置
+		String signUpKeyword = "";
+		if (activity.getMarketId() != null) {
+			MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(activity.getMarketId());
+			signUpKeyword = Optional.ofNullable(marketSignUpConfig).map(MarketSignUpConfig::getSignUpKeyword).orElse(null);
+		}
+		signUpKeyword = StringUtils.isNotBlank(signUpKeyword) ? signUpKeyword : "报名";
+		model.addAttribute("signUpKeyword", signUpKeyword);
 		// 是不是创建者
 		boolean creator = activityValidationService.isCreator(activity, operateUid);
 		List<String> activityMenus = Lists.newArrayList();
