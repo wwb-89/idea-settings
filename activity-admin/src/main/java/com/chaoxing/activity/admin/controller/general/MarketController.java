@@ -9,6 +9,7 @@ import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.market.MarketValidationService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -83,8 +84,9 @@ public class MarketController {
 	@LoginRequired
 	@RequestMapping("update/from-wfw")
 	public String updateFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, Integer appId, String backUrl) {
-		MarketUpdateParamDTO market = marketQueryService.getByWfwAppId(appId);
-		model.addAttribute("market", market);
+		Market market = marketQueryService.getByWfwAppId(appId);
+		Optional.ofNullable(market).orElseThrow(() -> new BusinessException("活动市场不存在"));
+		model.addAttribute("market", MarketUpdateParamDTO.buildFromActivityMarket(market));
 		model.addAttribute("backUrl", backUrl);
 		return "pc/market/wfw-market";
 	}
