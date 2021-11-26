@@ -7,7 +7,6 @@ import com.chaoxing.activity.model.Template;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -38,20 +37,6 @@ public class TemplateQueryService {
 	*/
 	public Template getById(Integer id) {
 		return templateMapper.selectById(id);
-	}
-
-	/**根据模版id查询源模版的活动标识
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-13 23:14:38
-	 * @param templateId
-	 * @return java.lang.String
-	*/
-	public String getActivityFlagByTemplateId(Integer templateId) {
-		Template template = getById(templateId);
-		Integer originTemplateId = template.getOriginTemplateId();
-		Template originTemplate = getById(originTemplateId);
-		return Optional.ofNullable(originTemplate).map(Template::getActivityFlag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
 	}
 
 	/**根据活动标识查询系统模版id
@@ -100,24 +85,6 @@ public class TemplateQueryService {
 			return null;
 		}
 		return orgTemplates.get(orgTemplates.size() - 1);
-	}
-
-	/**当templateId存在时，根据templateId查找；否则根据flag查找系统模板
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-07-16 18:11:21
-	* @param templateId
-	* @param activityFlagEnum
-	* @return com.chaoxing.activity.model.Template
-	*/
-	public Template getTemplateByIdOrActivityFlag(Integer templateId, Activity.ActivityFlagEnum activityFlagEnum) {
-		if (templateId == null) {
-			List<Template> systemTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
-					.eq(Template::getSystem, Boolean.TRUE)
-					.eq(Template::getActivityFlag, activityFlagEnum.getValue()));
-			return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
-		}
-		return templateMapper.selectById(templateId);
 	}
 
 	/**根据活动市场id获取模版，市场id为空则根据activityFlag查询系统模版

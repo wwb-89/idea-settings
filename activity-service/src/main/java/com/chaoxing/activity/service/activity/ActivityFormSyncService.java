@@ -127,6 +127,17 @@ public class ActivityFormSyncService {
         return activity;
     }
 
+    /**根据万能表单的数据创建活动
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-11-26 14:55:41
+     * @param fid
+     * @param formId
+     * @param formUserId
+     * @param webTemplateId
+     * @param flag
+     * @return void
+    */
     public void syncCreateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
         flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
         Activity activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);

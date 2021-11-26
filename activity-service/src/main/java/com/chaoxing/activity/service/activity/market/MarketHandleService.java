@@ -219,9 +219,7 @@ public class MarketHandleService {
 	 * @return com.chaoxing.activity.model.Template
 	 */
 	public Integer getOrCreateOrgMarket(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUser) {
-		if (activityFlagEnum == null) {
-			throw new BusinessException("未知的flag");
-		}
+		Optional.ofNullable(activityFlagEnum).orElseThrow(() -> new BusinessException("未知的flag"));
 		Integer marketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
 		if (marketId == null) {
 			// 创建一个活动市场
