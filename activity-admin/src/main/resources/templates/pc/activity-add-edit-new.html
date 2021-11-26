@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${isClone != null && isClone ? '克隆活动' : (activity == null ? '创建活动' : '编辑活动')}">创建活动</title>
+    <title th:text="${isClone != null && isClone ? '复制活动' : (activity == null ? '创建活动' : '编辑活动')}">创建活动</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
@@ -86,7 +86,7 @@
                     <i class="icon-back"></i><span>返回</span>
                 </template>
             </div>
-            <div class="name-txt">{{isClone ? '克隆' : activity.id ? '设置' : '新建'}}</div>
+            <div class="name-txt">{{isClone ? '复制' : activity.id ? '设置' : '新建'}}</div>
             <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit(true)">保存</button>
             <button v-else type="button" class="create-btn" @click="addSubmit(true)">保存</button>
         </div>
@@ -1860,7 +1860,7 @@
                         signJsonStr: activityApp.getJsonStr(sign),
                         isClone: $this.isClone
                     }
-                    var action = $this.isClone ? "克隆" : "创建";
+                    var action = "创建";
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             app.noticeActivityChange($this.activity.id);
