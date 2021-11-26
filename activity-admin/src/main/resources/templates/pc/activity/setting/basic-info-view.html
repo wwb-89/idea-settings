@@ -121,7 +121,8 @@
                     </div>
                 </el-form-item>
             </template>
-            <div class="footer">
+            <!--创建者才有的功能-->
+            <div class="footer" th:if="${session._login_user_.uid eq activity.createUid}">
                 <div class="btn-box">
                     <button class="btn-main btn-width-80 edit-btn" style="margin-right: 24px;" @click="toEditPage">编辑</button>
                     <button class="btn-second-normal btn-width-80" @click="toWebTemplateConfig">页面配置</button>
@@ -209,7 +210,7 @@
                         window.location.href = ctx + "/activity/[[${activityId}]]/setting/basic-info/edit"
                     },
                     toWebTemplateConfig: function () {
-                        window.open(this.activity.previewUrl)
+                        window.open(this.activity.editUrl)
                     }
                 }
             });

@@ -11,7 +11,6 @@ import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.FormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
-import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -139,6 +138,8 @@ public class ActivityCreateParamDTO {
 	private List<SignUpCondition> signUpConditions;
 	/** 操作用户 */
 	private LoginUserDTO loginUser;
+	/** 创建人uid */
+	private Integer createUid;
 	/** 创建机构fid */
 	private Integer createFid;
 	/** 关联的标签id列表 */
@@ -264,6 +265,7 @@ public class ActivityCreateParamDTO {
 				.signedUpNotice(activity.getSignedUpNotice())
 				.activityFlag(activity.getActivityFlag())
 				.openGroup(activity.getOpenGroup())
+				.createUid(activity.getCreateUid())
 				.createFid(activity.getCreateFid())
 				.sucTemplateComponentIds(Lists.newArrayList())
 				.signUpConditions(Lists.newArrayList())
