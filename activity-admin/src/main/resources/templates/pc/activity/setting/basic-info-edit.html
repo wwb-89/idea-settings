@@ -1026,6 +1026,11 @@
                         app.showMsg("请上传封面");
                         return false;
                     }
+                    // 自定义组件的校验
+                    var customComponentValueValid = $this.validateCustomComponentValues();
+                    if (!customComponentValueValid) {
+                        return false;
+                    }
                     // 发布范围  todo 暂时屏蔽
                     // if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
                     //     app.showMsg("请选择发布范围");
@@ -1039,6 +1044,29 @@
                     if (activityApp.isEmpty($this.activity.webTemplateId)) {
                         app.showMsg("请选择展示页");
                         return false;
+                    }
+                    return true;
+                },
+                // 自定义组件的校验
+                validateCustomComponentValues: function () {
+                    var $this = this;
+                    if ($this.activityComponentValueMap) {
+                        var customComponentRequiredMap = {};
+                        $($this.templateComponents).each(function () {
+                            if (this.type == 'text' || this.type == "checkbox" || this.type == 'int' || this.type == 'decimal') {
+                                customComponentRequiredMap[this.id] = this;
+                            }
+                        });
+                        var tplComponentIds = Object.keys($this.activityComponentValueMap);
+                        for (var i = 0; i < tplComponentIds.length; i++) {
+                            var tplComponentId = tplComponentIds[i], customTplComponent = customComponentRequiredMap[tplComponentId];
+                            var required = customTplComponent && customTplComponent.required;
+                            var componentValue = $this.activityComponentValueMap[tplComponentId];
+                            if (required && activityApp.isEmpty(componentValue && componentValue.value)) {
+                                app.showMsg(customTplComponent && customTplComponent.name + "不能为空");
+                                return false;
+                            }
+                        }
                     }
                     return true;
                 },
