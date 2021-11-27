@@ -163,8 +163,11 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 */
 	public Page<Activity> pageSpecialParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
-		activityQuery.setStatusList(Lists.newArrayList(3, 4));
-		activityQuery.setTimeOrder(OrderTypeEnum.DESC);
+		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
+		if (!keepOldRule) {
+			activityQuery.setStatusList(Lists.newArrayList(3, 4));
+			activityQuery.setTimeOrder(OrderTypeEnum.DESC);
+		}
 		List<String> tagNames = activityQuery.getTags();
 		if (CollectionUtils.isNotEmpty(tagNames)) {
 			List<Tag> tags = tagQueryService.listByNames(tagNames);
