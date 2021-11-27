@@ -92,7 +92,7 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		Integer marketId = activityQuery.getMarketId();
-		if (marketId == null) {
+		if (Objects.equals(activityQuery.getScope(), 1) || marketId == null) {
 			String flag = activityQuery.getFlag();
 			if (StringUtils.isNotBlank(flag)) {
 				Page<Activity> page = HttpServletRequestUtils.buid(request);
