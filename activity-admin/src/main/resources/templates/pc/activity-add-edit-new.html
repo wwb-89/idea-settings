@@ -264,7 +264,7 @@
                         <div class="form-item align-start" v-else-if="item.code == 'sign_in_out'">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <div class="already_add" v-show="signInNum > 0" @click="toSignInList">
+                                <div class="already_add" @click="toSignInList">
                                     <div>
                                         {{signInNum == 0 ? '添加签到' : ('已发布' + signInNum + '个签到')}}
                                     </div>
