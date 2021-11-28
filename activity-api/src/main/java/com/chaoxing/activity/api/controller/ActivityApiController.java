@@ -283,8 +283,10 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("{activityId}")
 	public RestRespDTO getById(@PathVariable Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
+		Activity activity = activityValidationService.activityExist(activityId);
 		ActivityExternalDTO activityExternal = model2DtoService.activity2Dto(activity);
+		Integer companySignUpWfwFormId = signApiService.getActivityCompanySignUpWfwFormId(activity.getSignId());
+		activityExternal.setCompanySignUpFormId(companySignUpWfwFormId);
 		return RestRespDTO.success(activityExternal);
 	}
 
@@ -381,7 +383,12 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("from/website/{websiteId}")
 	public RestRespDTO getByWebsiteId(@PathVariable Integer websiteId) {
-		return RestRespDTO.success(activityQueryService.getByWebsiteId(websiteId));
+		Activity activity = activityQueryService.getByWebsiteId(websiteId);
+		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
+		ActivityExternalDTO activityExternal = model2DtoService.activity2Dto(activity);
+		Integer companySignUpWfwFormId = signApiService.getActivityCompanySignUpWfwFormId(activity.getSignId());
+		activityExternal.setCompanySignUpFormId(companySignUpWfwFormId);
+		return RestRespDTO.success(activityExternal);
 	}
 
 	/**根据fid或marketId查询活动统计接口

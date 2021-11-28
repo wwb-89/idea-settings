@@ -131,6 +131,8 @@ public class SignApiService {
 
 	/** 根据万能表单id查询报名签到id */
 	private static final String GET_SIGN_ID_BY_WFW_FORM_ID_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/id/from-wfw-form-id";
+	/** 根据报名签到id查询企业报名使用的万能表单id */
+	private static final String GET_COMPANY_SIGN_UP_WFW_FORM_ID_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-up/company-sign-up/wfw-form-id?signId=%d";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -875,4 +877,25 @@ public class SignApiService {
 			throw new BusinessException(message);
 		});
     }
+
+	/**获取活动企业报名的万能表单id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-28 16:40:07
+	 * @param signId
+	 * @return java.lang.Integer
+	*/
+	public Integer getActivityCompanySignUpWfwFormId(Integer signId) {
+		if (signId == null) {
+			return null;
+		}
+		String url = String.format(GET_COMPANY_SIGN_UP_WFW_FORM_ID_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			log.error("根据签到报名id:{}获取活动企业报名的万能表单id失败:{}", signId, message);
+			throw new BusinessException(message);
+		});
+	}
+
 }

@@ -115,5 +115,7 @@ public class ActivityExternalDTO {
 
 	/** 访问地址 */
 	private String url;
+	/** 企业报名万能表单id */
+	private Integer companySignUpFormId;
 
 }
