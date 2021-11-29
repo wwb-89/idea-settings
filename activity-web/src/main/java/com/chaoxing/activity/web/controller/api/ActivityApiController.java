@@ -91,15 +91,12 @@ public class ActivityApiController {
 	public RestRespDTO list(HttpServletRequest request, String data) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		if (Objects.equals(activityQuery.getScope(), 1)) {
+		String areaCode = activityQuery.getAreaCode();
+		if (Objects.equals(activityQuery.getScope(), 1) || StringUtils.isNotBlank(areaCode)) {
 			activityQuery.setMarketId(null);
-		}
-		Integer marketId = activityQuery.getMarketId();
-		if (marketId == null) {
 			String flag = activityQuery.getFlag();
 			if (StringUtils.isNotBlank(flag)) {
 				Page<Activity> page = HttpServletRequestUtils.buid(request);
-				String areaCode = activityQuery.getAreaCode();
 				if (StringUtils.isNotBlank(areaCode)) {
 					activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
 				}
