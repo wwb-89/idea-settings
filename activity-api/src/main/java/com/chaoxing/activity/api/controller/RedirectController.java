@@ -3,7 +3,7 @@ package com.chaoxing.activity.api.controller;
 import com.chaoxing.activity.dto.manager.sign.SignDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
-import com.chaoxing.activity.service.activity.ActivityFormSyncService;
+import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.data.DataPushRecordQueryService;
 import com.chaoxing.activity.service.manager.GroupApiService;
@@ -43,7 +43,7 @@ public class RedirectController {
     @Resource
     private DataPushRecordQueryService dataPushRecordQueryService;
     @Resource
-    private ActivityFormSyncService activityFormSyncService;
+    private WfwFormSyncActivityQueueService activityFormSyncService;
     @Resource
     private GroupApiService groupApiService;
 

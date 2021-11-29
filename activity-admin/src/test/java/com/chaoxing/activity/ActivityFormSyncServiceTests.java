@@ -1,7 +1,7 @@
 package com.chaoxing.activity;
 
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityFormSyncService;
+import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 public class ActivityFormSyncServiceTests {
 
     @Resource
-    private ActivityFormSyncService activityFormSyncService;
+    private WfwFormSyncActivityQueueService activityFormSyncService;
 
     @Test
     public void getActivityFromFormInfo() {
