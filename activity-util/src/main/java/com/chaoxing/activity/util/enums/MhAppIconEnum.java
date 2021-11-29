@@ -86,13 +86,13 @@ public enum MhAppIconEnum {
         /** 我的作品icon */
         MY_WORK("my_work", "54eb45f8017e868f59447dee034994a6"),
         /** 全部作品icon */
-        ALL_WORK("all_work", "5dccca6da428a8193af5b879a2ba820c"),
+        ALL_WORK("all_work", "57687912bf5be5c78fc744ece4347ae3"),
         /** 报名信息icon */
-        SIGN_UP_INFO("sign_up_info", "fb296c77da3e7dfd56bcf9dfbb0eda6c"),
+        SIGN_UP_INFO("sign_up_info", "f3c03ffc5605069be2a2b4eb88c0dc1c"),
         /** 报名详情icon */
         SIGN_UP_DETAIL("sign_up_detail", "8b615070b69388b05392972ecdb10e38"),
         /** 提交作品icon */
-        SUBMIT_WORK("submit_work", "67f3dd4d1a5afb5769ea68fd0ebc8b34"),
+        SUBMIT_WORK("submit_work", "846cdf79fc0cf54da259db4ca7fe2ab6"),
         /** 更多icon */
         MORE("MORE", "6af1a60c5935677f11679afd3d444d19"),
         /** 评价icon */

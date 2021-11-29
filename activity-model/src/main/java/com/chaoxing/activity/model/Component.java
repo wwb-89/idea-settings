@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.common.collect.Lists;
 import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -65,6 +68,8 @@ public class Component {
     private LocalDateTime updateTime;
     /** 更新人uid; column: update_uid*/
     private Integer updateUid;
+    /** 克隆来源id */
+    private Integer originId;
 
     @TableField(exist = false)
     private List<ComponentField> componentFields;
@@ -81,6 +86,33 @@ public class Component {
     public static List<String> listCustomComponentType() {
         return Arrays.stream(TypeEnum.values()).map(TypeEnum::getValue).collect(Collectors.toList());
     }
+
+    /**复制自定义组件
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-09-27 16:21:52
+     * @param
+     * @return java.util.List<com.chaoxing.activity.model.Component>
+     */
+    public static List<Component> cloneCustomComponent(List<Component> originComponents, Integer templateId) {
+        List<Component> newCustomComponents = Lists.newArrayList();
+        originComponents.forEach(v -> {
+            Component component = new Component();
+            BeanUtils.copyProperties(v, component);
+            component.setId(null);
+            component.setTemplateId(templateId);
+            component.setOriginId(v.getId());
+            if (CollectionUtils.isNotEmpty(component.getComponentFields())) {
+                component.getComponentFields().forEach(u -> {
+                    u.setId(null);
+                    u.setComponentId(null);
+                });
+            }
+            newCustomComponents.add(component);
+        });
+        return newCustomComponents;
+    }
+
 
     @Getter
     public enum TypeEnum {

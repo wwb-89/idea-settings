@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
@@ -70,6 +71,8 @@ public class ActivityController {
 	private MarketSignupConfigService marketSignupConfigService;
 	@Resource
 	private TagQueryService tagQueryService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**新活动管理主页
 	 * @Description
@@ -110,6 +113,7 @@ public class ActivityController {
 		model.addAttribute("tableFieldId", tableFieldId);
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("marketTableFields", marketTableFields);
+		model.addAttribute("customComponents", marketQueryService.listMarketCustomComponents(marketId));
 		return "pc/activity-list";
 	}
 

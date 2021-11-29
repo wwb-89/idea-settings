@@ -77,7 +77,7 @@ public class SignApiService {
 	/** 报名签到下用户报名信息 */
 	private static final String SIGN_USER_SIGN_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/user/sign-up";
 	/** 分组统计查询用户填报的表单记录 */
-	private static final String GROUP_USER_FORM_COLLECTION_URL = DomainConstant.SIGN_API_DOMAIN + "/form-collect/group-by/uids";
+	private static final String GROUP_USER_FORM_COLLECTION_URL = DomainConstant.SIGN_API_DOMAIN + "/form-collect/group-by/uids?signId=%d";
 
 	/** 门户报名 */
 	private static final String MH_SIGN_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-up/%d/mh?uid=%d&wfwfid=%d";
@@ -833,14 +833,16 @@ public class SignApiService {
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-10-18 16:22:12
+	 * @param signId
 	 * @param uids
 	 * @return java.util.List<com.chaoxing.activity.dto.UserFormCollectionGroupDTO>
 	 */
-    public List<UserFormCollectionGroupDTO> groupUserFormCollections(List<Integer> uids) {
+    public List<UserFormCollectionGroupDTO> groupUserFormCollections(Integer signId, List<Integer> uids) {
+		String url = String.format(GROUP_USER_FORM_COLLECTION_URL, signId);
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(uids), httpHeaders);
-		String result = restTemplate.postForObject(GROUP_USER_FORM_COLLECTION_URL, httpEntity, String.class);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
 
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserFormCollectionGroupDTO.class), (message) -> {

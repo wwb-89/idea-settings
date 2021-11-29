@@ -447,6 +447,21 @@ public class ActivityQueryService {
 			List<SignStatDTO> signStats = signApiService.statSignSignUps(signIds);
 			signIdSignStatMap = signStats.stream().collect(Collectors.toMap(SignStatDTO::getId, v -> v, (v1, v2) -> v2));
 		}
+		// 自定义组件查询
+		List<ActivityComponentValue> activityComponentValues = activityComponentValueService.listByActivityIds(activityIds);
+		Map<Integer, List<ActivityComponentValue>> activityComponentValueMap = Maps.newHashMap();
+		if (CollectionUtils.isNotEmpty(activityComponentValues)) {
+			List<Integer> componentIds = activityComponentValues.stream().map(ActivityComponentValue::getComponentId).collect(Collectors.toList());
+			Map<Integer, Integer> componentOriginIdMap = componentQueryService.listByIds(componentIds)
+					.stream().collect(
+							Collectors.toMap(Component::getId, v -> Optional.ofNullable(v.getOriginId()).orElse(v.getId()), (v1, v2) -> v2));
+			activityComponentValues.forEach(v -> {
+				Integer activityId = v.getActivityId();
+				v.setComponentId(componentOriginIdMap.get(v.getComponentId()));
+				activityComponentValueMap.computeIfAbsent(activityId, k -> Lists.newArrayList());
+				activityComponentValueMap.get(activityId).add(v);
+			});
+		}
 		for (Activity activity : activities) {
 			// 活动报名签到状态数据
 			SignStatDTO signStatItem = Optional.ofNullable(activity.getSignId()).map(signIdSignStatMap::get).orElse(null);
@@ -459,6 +474,7 @@ public class ActivityQueryService {
 			activity.setRateNum(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getRateNum).orElse(0));
 			activity.setRateScore(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getRateScore).orElse(new BigDecimal(0)));
 			activity.setQualifiedNum(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getQualifiedNum).orElse(0));
+			activity.setActivityComponentValues(Optional.ofNullable(activityComponentValueMap.get(activity.getId())).orElse(Lists.newArrayList()));
 		}
 	}
 
