@@ -606,7 +606,7 @@
                                 <div class="condition-item" v-for="(item, index) in innerAddEditItem.templateConditionDetails">
                                     <el-select v-model="item.fieldName" placeholder="请选择" @change="conditionFieldChange">
                                         <el-option  v-for="(it, idx) in wfwFormFields"
-                                                    v-if="it.compt != 'belonger' && it.compt != 'contact' && (it.name == item.fieldName || !it.selected)"
+                                                    v-if="it.compt != 'belonger' && it.compt != 'contact'"
                                                     :key="idx"
                                                     :label="it.name"
                                                     :value="it.name"
