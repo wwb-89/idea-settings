@@ -339,7 +339,7 @@
                 // 页面展示字段配置源数据
                 marketTableFields: [[${marketTableFields}]],
                 // 自定义组件列表
-                customComponents: [[${customComponents}]],
+                customTplComponents: [[${customTplComponents}]],
                 // 配置项数据
                 configTableFieldDetails: [],
                 // 表格显示的字段列表
@@ -853,10 +853,9 @@
                         });
                     } else {
                         var customComponentMap = {};
-                        $($this.customComponents).each(function () {
-                            var originId = this.originId || this.id;
-                            if (originId) {
-                                customComponentMap[originId] = this;
+                        $($this.customTplComponents).each(function () {
+                            if (this.componentId) {
+                                customComponentMap[this.componentId] = this;
                             }
                         });
                         $($this.marketTableFields).each(function () {
@@ -900,8 +899,8 @@
                     });
                     // 将自定义组件放置进配置列表
                     var length = configTableFieldDetails.length - 1;
-                    if ($this.customComponents.length > 0) {
-                        $($this.customComponents).each(function () {
+                    if ($this.customTplComponents.length > 0) {
+                        $($this.customTplComponents).each(function () {
                             var item = {
                                 align: "center",
                                 allowTop: true,
@@ -913,7 +912,7 @@
                                 sequence: length++,
                                 sortable: false,
                                 tableFieldId: $this.tableFieldId,
-                                originComponentId: this.originId || this.id
+                                originComponentId: this.componentId
                             }
                             configTableFieldDetails.push($.extend({}, item));
                         });

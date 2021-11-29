@@ -2,11 +2,9 @@ package com.chaoxing.activity.service.activity.market;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.chaoxing.activity.mapper.MarketMapper;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.Component;
-import com.chaoxing.activity.model.Market;
-import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +34,8 @@ public class MarketQueryService {
 	private TemplateQueryService templateQueryService;
 	@Resource
 	private ComponentQueryService componentQueryService;
+	@Resource
+	private TemplateComponentService templateComponentService;
 	
 	/**根据id查询
 	 * @Description 
@@ -190,11 +190,11 @@ public class MarketQueryService {
 	 * @param marketId
 	 * @return java.util.List<com.chaoxing.activity.model.Component>
 	 */
-	public List<Component> listMarketCustomComponents(Integer marketId) {
+	public List<TemplateComponent> listMarketCustomTemplateComponents(Integer marketId) {
 		Template marketTemplate = templateQueryService.getMarketFirstTemplate(marketId);
 		if (marketTemplate == null) {
 			return Lists.newArrayList();
 		}
-		return componentQueryService.listCustomComponentByTemplateId(marketTemplate.getId());
+		return templateComponentService.listCustomTemplateComponent(marketTemplate.getId());
 	}
 }

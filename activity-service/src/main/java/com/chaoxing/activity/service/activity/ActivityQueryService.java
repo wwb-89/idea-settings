@@ -451,13 +451,8 @@ public class ActivityQueryService {
 		List<ActivityComponentValue> activityComponentValues = activityComponentValueService.listByActivityIds(activityIds);
 		Map<Integer, List<ActivityComponentValue>> activityComponentValueMap = Maps.newHashMap();
 		if (CollectionUtils.isNotEmpty(activityComponentValues)) {
-			List<Integer> componentIds = activityComponentValues.stream().map(ActivityComponentValue::getComponentId).collect(Collectors.toList());
-			Map<Integer, Integer> componentOriginIdMap = componentQueryService.listByIds(componentIds)
-					.stream().collect(
-							Collectors.toMap(Component::getId, v -> Optional.ofNullable(v.getOriginId()).orElse(v.getId()), (v1, v2) -> v2));
 			activityComponentValues.forEach(v -> {
 				Integer activityId = v.getActivityId();
-				v.setComponentId(componentOriginIdMap.get(v.getComponentId()));
 				activityComponentValueMap.computeIfAbsent(activityId, k -> Lists.newArrayList());
 				activityComponentValueMap.get(activityId).add(v);
 			});

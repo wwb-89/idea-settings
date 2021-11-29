@@ -113,7 +113,7 @@ public class ActivityController {
 		model.addAttribute("tableFieldId", tableFieldId);
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("marketTableFields", marketTableFields);
-		model.addAttribute("customComponents", marketQueryService.listMarketCustomComponents(marketId));
+		model.addAttribute("customTplComponents", marketQueryService.listMarketCustomTemplateComponents(marketId));
 		return "pc/activity-list";
 	}
 

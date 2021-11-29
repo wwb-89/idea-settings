@@ -132,18 +132,4 @@ public class ComponentHandleService {
                 .in(Component::getId, customComponentIds));
     }
 
-    /**批量新增自定义组件
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-11-29 13:43:05
-     * @param components
-     * @param uid
-     * @return void
-     */
-    public void batchAdd(List<Component> components, Integer uid) {
-       if (CollectionUtils.isNotEmpty(components)) {
-           components.forEach(v -> saveCustomComponent(uid, v));
-       }
-    }
-
 }

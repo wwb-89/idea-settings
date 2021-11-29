@@ -19,17 +19,16 @@
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
-        <result column="origin_id" jdbcType="INTEGER" property="originId" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.pid, t.name, t.code, t.is_required, t.introduction, t.is_system, t.is_multi,
         t.type, t.data_origin, t.origin_identify, t.field_flag, t.template_id, t.create_time, t.create_uid,
-        t.update_time, t.update_uid, t.origin_id
+        t.update_time, t.update_uid
     </sql>
     <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO
             t_component( pid, `name`, code, is_required, introduction, is_system, is_multi,
-            `type`, data_origin, origin_identify, field_flag, template_id, create_uid, update_uid, origin_id )
+            `type`, data_origin, origin_identify, field_flag, template_id, create_uid, update_uid )
         VALUES
         <foreach collection="components" item="item" open="" close="" separator=",">
             (
@@ -46,8 +45,7 @@
                 #{item.fieldFlag},
                 #{item.templateId},
                 #{item.createUid},
-                #{item.updateUid},
-                #{item.originId}
+                #{item.updateUid}
             )
         </foreach>
     </insert>

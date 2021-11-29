@@ -157,20 +157,4 @@ public class ComponentQueryService {
 		});
 		return components;
 	}
-
-	/**查询模板下的自定义组件，若存在自定义选择，则关联查询其选项
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-11-29 11:04:52
-	 * @param templateId
-	 * @return java.util.List<com.chaoxing.activity.model.Component>
-	 */
-	public List<Component> listCustomComponentByTemplateId(Integer templateId) {
-		List<Component> customComponents = componentMapper.selectList(new LambdaQueryWrapper<Component>()
-				.eq(Component::getTemplateId, templateId).eq(Component::getSystem, Boolean.FALSE));
-		if (CollectionUtils.isNotEmpty(customComponents)) {
-			return packageCustomChooseOptions(customComponents);
-		}
-		return customComponents;
-	}
 }
