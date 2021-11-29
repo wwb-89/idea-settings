@@ -1127,7 +1127,7 @@ public class ActivityQueryService {
 		return fieldCodeNameRelation;
 	}
 
-	/**判断是否存在表单创建的活动
+	/**查询万能表单创建的活动
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-08-26 16:42:46
@@ -1135,7 +1135,7 @@ public class ActivityQueryService {
 	* @param formUserId
 	* @return boolean
 	*/
-    public Activity getActivityByOriginAndFormUserId(Integer formId, Integer formUserId) {
+    public Activity getByWfwFormUserId(Integer formId, Integer formUserId) {
     	if (formId == null || formUserId == null) {
     		return null;
 		}

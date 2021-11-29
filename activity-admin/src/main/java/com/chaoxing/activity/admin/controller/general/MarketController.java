@@ -74,7 +74,7 @@ public class MarketController {
 	public String newFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, String activityFlag, String backUrl) {
 		fid = Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid());
 		activityFlag = Optional.ofNullable(activityFlag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
-		MarketCreateParamDTO market = MarketCreateParamDTO.build(fid, classifyId, activityFlag);
+		MarketCreateParamDTO market = MarketCreateParamDTO.build(fid, classifyId, activityFlag, Market.OriginTypeEnum.WFW, null);
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
 		model.addAttribute("activityFlag", activityFlag);

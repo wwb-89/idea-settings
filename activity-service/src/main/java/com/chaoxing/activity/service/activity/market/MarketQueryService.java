@@ -123,6 +123,23 @@ public class MarketQueryService {
 		return Optional.ofNullable(template).map(Template::getMarketId).orElse(null);
 	}
 
+	/**获取万能表单创建的活动市场id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-29 11:09:30
+	 * @param fid
+	 * @param formId
+	 * @param flag
+	 * @return com.chaoxing.activity.model.Market
+	*/
+	public Market getWfwFormMarketIdByFlag(Integer fid, Integer formId, String flag) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+		if (activityFlagEnum == null) {
+			return null;
+		}
+		return marketMapper.getMarketByOriginAndFlag(fid, Market.OriginTypeEnum.WFW_FORM.getValue(), String.valueOf(formId), flag);
+	}
+
 	/**查询市场不需要的组件id列表
 	 * @Description 
 	 * @author wwb

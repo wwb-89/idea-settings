@@ -43,6 +43,8 @@ public class MarketCreateParamDTO {
 	private Boolean enableRegional;
 	/** 来源类型 */
 	private String originType;
+	/** 来源 */
+	private String origin;
 
 	public Market buildActivityMarket() {
 		return Market.builder()
@@ -54,10 +56,11 @@ public class MarketCreateParamDTO {
 				.enableOrganization(getEnableOrganization())
 				.enableRegional(getEnableRegional())
 				.originType(getOriginType())
+				.origin(getOrigin())
 				.build();
 	}
 
-	public static MarketCreateParamDTO build(Integer fid, Integer classifyId, String flag) {
+	public static MarketCreateParamDTO build(Integer fid, Integer classifyId, String flag, Market.OriginTypeEnum originType, String origin) {
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
 		return MarketCreateParamDTO.builder()
 				.name(activityFlagEnum.getName())
@@ -68,13 +71,9 @@ public class MarketCreateParamDTO {
 				.enableContacts(true)
 				.enableOrganization(true)
 				.enableRegional(true)
+				.originType(originType.getValue())
+				.origin(origin)
 				.build();
-	}
-
-	public static MarketCreateParamDTO build(String name, Integer fid, String activityFlag) {
-		MarketCreateParamDTO activityMarketCreateParam = MarketCreateParamDTO.build(fid, null, activityFlag);
-		activityMarketCreateParam.setName(name);
-		return activityMarketCreateParam;
 	}
 
 }

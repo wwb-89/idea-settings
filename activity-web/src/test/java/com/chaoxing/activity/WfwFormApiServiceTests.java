@@ -1,5 +1,7 @@
 package com.chaoxing.activity;
 
+import com.alibaba.fastjson.JSON;
+import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.volunteer.VolunteerService;
 import org.junit.jupiter.api.Test;
@@ -40,4 +42,13 @@ public class WfwFormApiServiceTests {
 	public void xxx() {
 		volunteerService.listVolunteerServiceType(147004);
 	}
+
+	@Test
+	public void listData() {
+		Integer fid = 180739;
+		Integer formId = 121635;
+		List<FormDataDTO> formDatas = wfwFormApiService.listFormRecord(formId, fid);
+		System.out.println(JSON.toJSONString(formDatas));
+	}
+
 }

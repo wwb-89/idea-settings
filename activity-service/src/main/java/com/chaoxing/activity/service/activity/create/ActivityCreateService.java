@@ -65,7 +65,7 @@ public class ActivityCreateService {
         Integer fid = activityCreateFromActivityReleaseParam.getOriginCreateFid();
         String orgName = passportApiService.getOrgName(fid);
         LoginUserDTO loginUserDto = LoginUserDTO.buildDefault(uid, userName, fid, orgName);
-        Integer marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUserDto);
+        Integer marketId = marketHandleService.getOrCreateMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUserDto);
         Template template = templateQueryService.getMarketFirstTemplate(marketId);
         List<ActivityCreateParamDTO> activityCreateParamDtos = activityCreateFromActivityReleaseParam.buildActivityCreateParamDtos(marketId, template.getId());
         List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);

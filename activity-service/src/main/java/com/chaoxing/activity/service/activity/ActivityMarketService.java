@@ -144,7 +144,7 @@ public class ActivityMarketService {
         PassportUserDTO passportUserDto = passportApiService.getByUid(uid);
         String userName = Optional.ofNullable(passportUserDto).map(PassportUserDTO::getRealName).orElse("");
         String orgName = passportApiService.getOrgName(fid);
-        Integer marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(activityFlag), LoginUserDTO.buildDefault(uid, userName, fid, orgName));
+        Integer marketId = marketHandleService.getOrCreateMarket(fid, Activity.ActivityFlagEnum.fromValue(activityFlag), LoginUserDTO.buildDefault(uid, userName, fid, orgName));
         // 关联
         associate(activity, marketId);
     }

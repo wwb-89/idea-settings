@@ -1,32 +1,32 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.service.queue.activity.WfwFormSyncActivityQueue;
+import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
- * @author huxiaolong
- * <p>
- * @version 1.0
- * @date 2021/8/27 16:39
- * <p>
+/**万能表单活动同步任务
+ * @author wwb
+ * @version ver 1.0
+ * @className WfwFormActivitySyncTask
+ * @description
+ * @blame wwb
+ * @date 2021-11-29 10:58:24
  */
-
 @Slf4j
 @Component
-public class WfwFormSyncOperateTask {
+public class WfwFormActivitySyncTask {
 
     @Resource
     private WfwFormSyncActivityQueue wfwFormSyncActivityQueue;
     @Resource
-    private WfwFormSyncActivityQueueService activityFormSyncService;
+    private WfwFormSyncActivityQueueService wfwFormSyncActivityQueueService;
     @Resource
     private ActivityHandleService activityHandleService;
 
@@ -45,10 +45,10 @@ public class WfwFormSyncOperateTask {
             String flag = queueParam.getFlag();
             switch (operateTypeEnum) {
                 case CREATE:
-                    activityFormSyncService.syncCreateActivity(fid, formId, formUserId, webTemplateId, flag);
+                    wfwFormSyncActivityQueueService.add(fid, formId, formUserId, webTemplateId, flag);
                     break;
                 case UPDATE:
-                    activityFormSyncService.syncUpdateActivity(fid, formId, formUserId, webTemplateId, flag);
+                    wfwFormSyncActivityQueueService.update(fid, formId, formUserId, webTemplateId, flag);
                     break;
                 case DELETE:
                     activityHandleService.deleteWfwFormActivity(formId, formUserId);
@@ -60,4 +60,5 @@ public class WfwFormSyncOperateTask {
             e.printStackTrace();
         }
     }
+
 }
