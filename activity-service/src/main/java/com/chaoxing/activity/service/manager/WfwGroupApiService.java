@@ -80,14 +80,13 @@ public class WfwGroupApiService {
         List<WfwGroupDTO> wfwGroupResult = Lists.newArrayList();
         String enc = DigestUtils.md5Hex(fid + ENC_KEY + LocalDateTime.now().format(DATE_FORMATTER));
         String url = String.format(GET_ALL_GROUP_URL, fid, enc);
-        String result;
-        try {
-            result = restTemplate.getForObject(url, String.class);
-        } catch (Exception e) {
-            e.printStackTrace();
+        String result = restTemplate.getForObject(url, String.class);
+        JSONObject jsonObject = JSON.parseObject(result);
+        Boolean status = jsonObject.getBoolean("status");
+        status = Optional.ofNullable(status).orElse(false);
+        if (!status) {
             return wfwGroupResult;
         }
-        JSONObject jsonObject = JSON.parseObject(result);
         String rootId = jsonObject.getString("gid");
         JSONObject dataMap = jsonObject.getJSONObject("map");
         List<WfwGroupDTO> allWfwGroups = new ArrayList<>();
