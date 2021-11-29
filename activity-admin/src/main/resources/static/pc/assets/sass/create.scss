@@ -1799,3 +1799,97 @@ input.btn-name,
 .cursor {
     cursor: pointer;
 }
+/* 编辑提醒内容弹窗 */
+.dialog-wrap .footer .btn:first-child{
+    margin-right: 24px;
+}
+.dialog-wrap.edit-remind{
+    width: 600px;
+    .dialog-content{
+        min-height: 241px;
+        height: auto;
+        padding: 16px 32px 0;
+        .form-items{
+            font-size: 0;
+            margin-bottom: 16px;
+            .label{
+                display: inline-block;
+                vertical-align: top;
+                width: 72px;
+                font-size: 14px;
+                line-height: 20px;
+                color: #333333;
+                padding: 6px 0;
+            }
+            .items{
+                display: inline-block;
+                vertical-align: top;
+                .tips-txt{
+                    font-size: 14px;
+                    line-height: 32px;
+                    color: #333333;
+                    margin-right: 8px;
+                }
+                .select-time{
+                    width: 160px;
+                }
+            }
+            .receive-box{
+                position: relative;
+                width: 448px;
+                background: #FFFFFF;
+                border: 1px solid #E9E9E9;
+                box-sizing: border-box;
+                border-radius: 2px;
+                padding: 1px;
+                padding-right: 35px;
+                .add-receive{
+                    position: absolute;
+                    top: 6px;
+                    right: 8px;
+                    width: 20px;
+                    height: 20px;
+                    cursor: pointer;
+                    img{
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+                .add-box{
+                    overflow: hidden;
+                    li{
+                        position: relative;
+                        margin: 2px;
+                        padding: 2px 8px;
+                        padding-right: 20px;
+                        background: rgba(0, 132, 255, 0.08);
+                        border-radius: 99px;
+                        line-height: 20px;
+                        font-size: 14px;
+                        color: #333333;
+                        overflow: hidden;
+                        float: left;
+                        .del-btn{
+                            position: absolute;
+                            right: 4px;
+                            top: 4px;
+                            width: 16px;
+                            height: 16px;
+                            background: url(../images/del-little.png);
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+            .el-textarea{
+                width: 448px;
+                font-size: 14px;
+                line-height: 22px;
+            }
+        }
+    }
+}
+.resize-none .el-textarea__inner {
+    resize: none;
+    padding: 5px 11px;
+}

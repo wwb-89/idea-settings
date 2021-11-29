@@ -397,6 +397,19 @@
                     </div>
                 </div>
             </div>
+            <div class="form-item align-start">
+                <label class="label" style="line-height: 20px;">推送提醒</label>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch v-model="delivery7"></el-switch>
+                        <span class="tips">开启后，可为固定人群发送活动推送</span>
+                    </div>
+                    <div v-show="delivery7" class="set-box configurationForm" @click="openRemind">
+                        <img src="../assets/images/setting.png">
+                        <span class="tips set-information">编辑提醒内容</span>
+                    </div>
+                </div>
+            </div>
             <!--<div class="form-item">-->
             <!--<label class="label">按钮名称</label>-->
             <!--<div class="input-box btn-name">-->
@@ -908,7 +921,7 @@
         </div>
     </div>
     <!-- 活添加发放对象弹窗 -->
-    <div class="dailog-box1" v-show="releaseShow">
+    <div class="dailog-box1" v-show="releaseShow" style="z-index: 4;">
         <div class="dailog">
             <div class="header">
                 <span>参与范围</span>
@@ -1015,6 +1028,79 @@
             </div>
         </div>
     </div>
+
+    <!-- 编辑提醒内容弹窗 -->
+    <div class="dialog-box5" v-if="remindContentPop">
+        <div class="dailog dialog-wrap edit-remind">
+            <div class="header">
+                <span class="color333">编辑提醒内容</span>
+                <img src="../assets/images/close.png" class="close" @click="remindContentPop = false">
+            </div>
+            <div class="dialog-content">
+                <form action="">
+                    <div class="form-items">
+                        <label for="" class="label">接收人</label>
+                        <div class="items receive-box">
+                            <!-- 点击添加弹窗和参与范围弹窗一样 -->
+                            <div class="add-receive" @click="releaseShow = true"><img src="../assets/images/add-circle.png" alt=""></div>
+                            <ul class="add-box">
+                                <li>
+                                    <span>学生</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-items">
+                        <label for="" class="label">发送时间</label>
+                        <div class="items">
+                            <span class="tips-txt">报名开始前</span>
+                            <el-select v-model="value8" placeholder="请选择时间" class="select-time">
+                                <el-option
+                                  v-for="item in options8"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="form-items">
+                        <label for="" class="label">内容</label>
+                        <el-input class="resize-none" type="textarea" :autosize="{ minRows: 5, maxRows: 5}"
+                            placeholder="请输入内容" v-model="textarea" maxlength="500" show-word-limit>
+                        </el-input>
+                    </div>
+                </form>
+            </div>
+            <div class="footer">
+                <div class="btn btn-border" @click="remindContentPop = false">取消</div>
+                <!-- 当前弹窗值不为空时加上 btn-normal 类-->
+                <div class="btn" :class="notice ? 'btn-normal' : 'btn-forbid'" @click="finishClick">完成</div>
+            </div>
+        </div>
+    </div>
+
     <!-- 图片库弹窗 start -->
     <div class="dailog-box1" v-show="pictureShow">
         <div class="dailog picture-dialog">
@@ -1169,6 +1255,7 @@
             value4: '',
             value5: '',
             value7: '1',
+            value8: '',
             fenlei: '',
             delivery: true,
             delivery1: false,
@@ -1239,6 +1326,13 @@
                 value: "2",
                 label: "展览2"
             }],
+            options8: [{
+                value: "1",
+                label: "时间一"
+            }, {
+                value: "2",
+                label: "时间二"
+            }],
             address: '', //详细地址
             addrPoint: {
                 lng: 0,
@@ -1274,6 +1368,8 @@
             notice:'',
             checkValue:[],
             pictureShow:false,
+            remindContentPop: true, //编辑提醒内容
+            textarea: '您好！活动即将开始，请尽快报名。',
         },
         mounted: function () {
             // this.initMap()
@@ -1576,6 +1672,13 @@
             sendClick:function(){
                 this.messageContentPop = false;
 
+            },
+            // 编辑提醒内容
+            openRemind: function () {
+                this.remindContentPop = true;
+            },
+            finishClick: function () {
+                this.remindContentPop = false;
             },
             initUploader:function() {
                 var $this = this;

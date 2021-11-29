@@ -275,7 +275,6 @@ select {
   line-height: 20px;
   font-size: 14px;
   color: #333333;
-  /*margin-left: 9px;*/
   text-align: left;
   position: relative;
 }
@@ -323,8 +322,8 @@ input[type="text"]:not(.el-select__input) {
   border: 1px solid #e9e9e9;
   border-radius: 2px;
   -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   font-size: 14px;
   color: #333333;
   padding: 5px 0 5px 12px;
@@ -342,10 +341,6 @@ input[type="number"]:not(.el-select__input) {
   color: #333333;
   padding: 5px 0 5px 12px;
   height: 32px;
-}
-
-.el-input--prefix .el-input__inner {
-  padding-left: 30px!important;
 }
 
 .el-input__inner {
@@ -1969,7 +1964,7 @@ input.btn-name,
 }
 
 .setForm .score-input {
-  width: 120px!important;
+  width: 120px !important;
   margin-right: 8px;
 }
 
@@ -2235,4 +2230,116 @@ input.btn-name,
 
 .cursor {
   cursor: pointer;
+}
+
+/* 编辑提醒内容弹窗 */
+.dialog-wrap .footer .btn:first-child {
+  margin-right: 24px;
+}
+
+.dialog-wrap.edit-remind {
+  width: 600px;
+}
+
+.dialog-wrap.edit-remind .dialog-content {
+  min-height: 241px;
+  height: auto;
+  padding: 16px 32px 0;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items {
+  font-size: 0;
+  margin-bottom: 16px;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .label {
+  display: inline-block;
+  vertical-align: top;
+  width: 72px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  padding: 6px 0;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .items {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .items .tips-txt {
+  font-size: 14px;
+  line-height: 32px;
+  color: #333333;
+  margin-right: 8px;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .items .select-time {
+  width: 160px;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .receive-box {
+  position: relative;
+  width: 448px;
+  background: #FFFFFF;
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 2px;
+  padding: 1px;
+  padding-right: 35px;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .receive-box .add-receive {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .receive-box .add-receive img {
+  width: 100%;
+  height: 100%;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .receive-box .add-box {
+  overflow: hidden;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .receive-box .add-box li {
+  position: relative;
+  margin: 2px;
+  padding: 2px 8px;
+  padding-right: 20px;
+  background: rgba(0, 132, 255, 0.08);
+  border-radius: 99px;
+  line-height: 20px;
+  font-size: 14px;
+  color: #333333;
+  overflow: hidden;
+  float: left;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .receive-box .add-box li .del-btn {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  background: url(../images/del-little.png);
+  cursor: pointer;
+}
+
+.dialog-wrap.edit-remind .dialog-content .form-items .el-textarea {
+  width: 448px;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.resize-none .el-textarea__inner {
+  resize: none;
+  padding: 5px 11px;
 }

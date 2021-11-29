@@ -361,6 +361,16 @@
     line-height: 32px;
 }
 
+.choose-dialog .catalog-list .catalog-item .catalog-title .name{
+    line-height: 20px;
+}
+
+.choose-dialog .catalog-list .catalog-item .catalog-title .job{
+    line-height: 20px;
+    color: #999999;
+    font-size: 12px;
+}
+
 .choose-dialog .item-choosed .catalog-item .catalog-title{
     left: 56px;
 }

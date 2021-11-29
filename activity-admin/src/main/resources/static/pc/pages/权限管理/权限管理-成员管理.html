@@ -143,12 +143,13 @@
                                 </div>
                                 <el-checkbox class="right-check" v-model="checked" @change="handleChecked(checked)"></el-checkbox>
                             </div>
-                            <div :class='["catalog-item",checked1==true ? "bgc-blue" : ""]'>
+                            <div :class='["catalog-item",checked1==true ? "bgc-blue" : "","item-manage"]'>
                                 <div class="catalog-photo">
                                     <img src="../../assets/images/catalog-tx.png" alt="">
                                 </div>
                                 <div class="catalog-title">
-                                    小组名称
+                                    <p class="name">小组名称</p>
+                                    <p class="job overHidden1">研发中心\产品服务\产品设计组</p>
                                 </div>
                                 <el-checkbox class="right-check" v-model="checked1"></el-checkbox>
                             </div>
