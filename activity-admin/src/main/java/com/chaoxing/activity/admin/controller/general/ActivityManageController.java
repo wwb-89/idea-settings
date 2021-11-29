@@ -255,6 +255,7 @@ public class ActivityManageController {
 		model.addAttribute("contactGroups", permission.getContactsGroups());
 		model.addAttribute("strict", strict);
 		List<SignUpCondition> signUpConditions = signUpConditionService.listEditActivityConditions(activityId, templateId);
+		model.addAttribute("signUpConditions", signUpConditions);
 		// 获取表单结构map
 		List<String> formIds = signUpConditions.stream().map(SignUpCondition::getOriginIdentify).filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
 		Map<String, List<WfwFormFieldVO>> formFieldStructures = Maps.newHashMap();
@@ -268,7 +269,6 @@ public class ActivityManageController {
 		}
 		model.addAttribute("formFieldStructures", formFieldStructures);
 		model.addAttribute("sucTplComponentIds", signUpConditionService.listActivityEnabledTemplateComponentId(activityId));
-		model.addAttribute("signUpConditions", signUpConditions);
 		model.addAttribute("conditionEnums", ConditionDTO.list());
 		// 活动市场报名配置
 		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);

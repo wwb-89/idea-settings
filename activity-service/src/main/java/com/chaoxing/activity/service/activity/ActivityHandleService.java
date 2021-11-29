@@ -999,7 +999,7 @@ public class ActivityHandleService {
 	public Activity newSharedActivity(ActivityCreateFromPreachParamDTO activityCreateDto, LoginUserDTO loginUser) {
 		Integer createFid = activityCreateDto.getFid();
 		String flag = activityCreateDto.getFlag();
-		Integer marketId = marketHandleService.getOrCreateOrgMarket(createFid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
+		Integer marketId = marketHandleService.getOrCreateMarket(createFid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
 		Template template = templateQueryService.getMarketFirstTemplate(marketId);
 		ActivityCreateParamDTO activityCreateParam = activityCreateDto.getActivityInfo();
 		activityCreateParam.setMarketId(marketId);
@@ -1058,7 +1058,7 @@ public class ActivityHandleService {
 		if (formId == null || formUserId == null) {
 			return;
 		}
-		Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+		Activity activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
 		if (activity != null) {
 			LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), "", activity.getCreateFid(), "");
 			deleteActivity(activity, loginUser.buildOperateUserDTO());

@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.activity;
+package com.chaoxing.activity.service.queue.activity.handler;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -22,6 +22,8 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.MarketClassify;
 import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
@@ -38,6 +40,7 @@ import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQue
 import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.WfwFormAliasConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
 import com.google.common.collect.Lists;
@@ -64,7 +67,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class ActivityFormSyncService {
+public class WfwFormSyncActivityQueueService {
 
     @Resource
     private ActivityQueryService activityQueryService ;
@@ -115,9 +118,9 @@ public class ActivityFormSyncService {
             throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
         }
         Activity activity;
-        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getString("val")).orElse(null)).findFirst().filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null);
+        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), WfwFormAliasConstant.ACTIVITY_ID)).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getString("val")).orElse(null)).findFirst().filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null);
         if (activityId == null) {
-            activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+            activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
         } else {
             activity = activityQueryService.getById(activityId);
         }
@@ -138,17 +141,19 @@ public class ActivityFormSyncService {
      * @param flag
      * @return void
     */
-    public void syncCreateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
+    public void add(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
         flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
-        Activity activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
+        Activity activity = ApplicationContextHolder.getBean(WfwFormSyncActivityQueueService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
         // 回写数据
-        WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
-                .activityId(activity.getId())
-                .fid(fid)
-                .formId(formId)
-                .formUserId(formUserId)
-                .build();
-        wfwFormActivityDataUpdateQueue.push(queueParam);
+        if (activity != null) {
+            WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
+                    .activityId(activity.getId())
+                    .fid(fid)
+                    .formId(formId)
+                    .formUserId(formUserId)
+                    .build();
+            wfwFormActivityDataUpdateQueue.push(queueParam);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -156,10 +161,11 @@ public class ActivityFormSyncService {
         // 获取表单数据
         FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
-            throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
+            log.error("未查询到fid:{}, formId:{}, formUserId:{} 的表单记录", fid, formId, formUserId);
+            return null;
         }
         // 判断活动是否存在，若存在，回写表单数据，并则返回；若不存在，则不进行活动创建
-        Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+        Activity activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
         if (activity != null) {
             return activity;
         }
@@ -167,10 +173,10 @@ public class ActivityFormSyncService {
         String orgName = passportApiService.getOrgName(fid);
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgName);
         // 获取模板和市场信息
-        Integer marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
+        Integer marketId = marketHandleService.getOrCreateWfwFormMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), formId, loginUser);
         Template template = templateQueryService.getMarketFirstTemplate(marketId);
         // 活动分类
-        String activityClassifyName = FormUtils.getValue(formUserRecord, "activity_classify");
+        String activityClassifyName = FormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_CLASSIFY);
         Classify classify = classifyHandleService.getOrAddMarketClassify(marketId, activityClassifyName);
         // 封装活动创建信息数据
         ActivityCreateParamDTO activityCreateParam = ActivityCreateParamDTO.buildFromFormData(formUserRecord, classify.getId(), orgName);
@@ -197,7 +203,7 @@ public class ActivityFormSyncService {
         // 新增活动
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
-        String releaseStatus = FormUtils.getValue(formUserRecord, "release_status");
+        String releaseStatus = FormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS);
         // 发布状态值不存在或不为未发布，发布活动
         if (!Objects.equals(releaseStatus, "未发布")) {
             // 立即发布
@@ -273,8 +279,6 @@ public class ActivityFormSyncService {
                     }
                     signUpCreateParam.setContactsParticipateScopes(contactsParticipateScopes);
                 }
-
-
             }
         }
         return signUpCreateParam;
@@ -286,17 +290,17 @@ public class ActivityFormSyncService {
     * @Date 2021-08-26 16:53:48
     * @return void
     */
-    public void syncUpdateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
+    public void update(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
         // 获取表单数据
         FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
-            log.error("表单数据推送根据参数fid:{}, formId:{}, formUserId:{} 获取表单记录为空");
+            log.error("表单数据推送根据参数fid:{}, formId:{}, formUserId:{} 获取表单记录为空", fid, formId, formUserId);
             return;
         }
-        Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+        Activity activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
         if (activity == null) {
             // 查找表单记录中的活动id
-            Integer activityId = formUserRecord.getIntegerValue("activity_id");
+            Integer activityId = formUserRecord.getIntegerValue(WfwFormAliasConstant.ACTIVITY_ID);
             if (activityId != null) {
                 activity = activityQueryService.getById(activityId);
             }
@@ -304,18 +308,20 @@ public class ActivityFormSyncService {
         // 若活动不存在，则新增
         if (activity == null) {
             flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
-            activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
+            activity = ApplicationContextHolder.getBean(WfwFormSyncActivityQueueService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
         } else {
-            activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).syncUpdateActivity(formUserRecord, fid, activity.getId());
+            activity = ApplicationContextHolder.getBean(WfwFormSyncActivityQueueService.class).update(formUserRecord, fid, activity.getId());
         }
         // 回写数据
-        WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
-                .activityId(activity.getId())
-                .fid(fid)
-                .formId(formId)
-                .formUserId(formUserId)
-                .build();
-        wfwFormActivityDataUpdateQueue.push(queueParam);
+        if (activity != null) {
+            WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
+                    .activityId(activity.getId())
+                    .fid(fid)
+                    .formId(formId)
+                    .formUserId(formUserId)
+                    .build();
+            wfwFormActivityDataUpdateQueue.push(queueParam);
+        }
     }
 
     /**
@@ -328,7 +334,7 @@ public class ActivityFormSyncService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public Activity syncUpdateActivity(FormDataDTO formUserRecord, Integer fid, Integer activityId) {
+    public Activity update(FormDataDTO formUserRecord, Integer fid, Integer activityId) {
         // 待更新数据
         ActivityUpdateParamDTO activityUpdateParam = new ActivityUpdateParamDTO();
         Activity activity = activityQueryService.getById(activityId);
@@ -416,21 +422,21 @@ public class ActivityFormSyncService {
             if (CollectionUtils.isNotEmpty(values)) {
                 JSONObject obj = values.get(0);
                 String attrValue = obj.getString("val");
-                if (Objects.equals("activity_name", v.getAlias())) {
+                if (Objects.equals(WfwFormAliasConstant.ACTIVITY_NAME, v.getAlias())) {
                     activityUpdateParam.setName(attrValue);
-                } else if (Objects.equals("activity_classify", v.getAlias())) {
+                } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_CLASSIFY, v.getAlias())) {
                     Classify classify = classifyQueryService.getOrAddByName(attrValue);
                     MarketClassify marketClassify = classifyQueryService.getByClassifyIdAndMarketId(classify.getId(), activityUpdateParam.getMarketId());
                     if (marketClassify == null) {
                         classifyHandleService.addMarketClassify(MarketClassifyCreateParamDTO.builder().marketId(activityUpdateParam.getMarketId()).name(attrValue).build());
                     }
                     activityUpdateParam.setActivityClassifyId(classify.getId());
-                } else if (Objects.equals("activity_address", v.getAlias())) {
+                } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_ADDRESS, v.getAlias())) {
                     activityUpdateParam.setActivityType(Activity.ActivityTypeEnum.OFFLINE.getValue());
                     activityUpdateParam.setAddress(attrValue);
-                } else if (Objects.equals("activity_time_scope", v.getAlias())) {
+                } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_TIME_SCOPE, v.getAlias())) {
                     timeScopes.add(attrValue);
-                } else if (Objects.equals("introduction", v.getAlias())) {
+                } else if (Objects.equals(WfwFormAliasConstant.INTRODUCTION, v.getAlias())) {
                     activityUpdateParam.setIntroduction(attrValue);
                 }
             }
@@ -465,10 +471,10 @@ public class ActivityFormSyncService {
             return;
         }
         // 判断活动是否存在，若不存在，则不更新发布状态
-        Integer activityId = Optional.ofNullable(FormUtils.getValue(formUserRecord, "activity_id")).filter(StringUtils::isNotBlank).map(Integer::valueOf).orElse(null);
+        Integer activityId = Optional.ofNullable(FormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_ID)).filter(StringUtils::isNotBlank).map(Integer::valueOf).orElse(null);
         Activity activity;
         if (activityId == null) {
-            activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+            activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
             activityId = Optional.ofNullable(activity).map(Activity::getId).orElse(null);
         } else {
             activity = activityQueryService.getById(activityId);
@@ -505,7 +511,7 @@ public class ActivityFormSyncService {
             item.put("comptId", formInfo.getId());
             item.put("alias", alias);
             JSONArray data = new JSONArray();
-            if (Objects.equals(alias, "release_status")) {
+            if (Objects.equals(alias, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS)) {
                 data.add(released ? "已发布" : "未发布");
                 item.put("val", data);
                 result.add(item);

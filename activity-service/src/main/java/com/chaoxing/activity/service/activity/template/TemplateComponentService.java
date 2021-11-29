@@ -11,7 +11,6 @@ import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
-import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
@@ -324,7 +323,7 @@ public class TemplateComponentService {
                     v1.setTemplateId(templateId);
                 });
                 templateComponentMapper.batchAdd(v.getChildren());
-                v.getChildren().forEach(v1 -> ApplicationContextHolder.getBean(TemplateComponentService.class).handleSignUpConditionFillInfoType(v1));
+                v.getChildren().forEach(v1 -> handleSignUpConditionFillInfoType(v1));
             }
         });
     }
@@ -335,14 +334,14 @@ public class TemplateComponentService {
             TemplateComponent tplComponent = new TemplateComponent();
             BeanUtils.copyProperties(v, tplComponent);
             templateComponentMapper.updateById(tplComponent);
-            SignUpCondition suc = v.getSignUpCondition();
+            SignUpCondition signUpCondition = v.getSignUpCondition();
             SignUpFillInfoType signUpFillInfoType = v.getSignUpFillInfoType();
-            if (suc != null) {
-                suc.setTemplateComponentId(tplComponent.getId());
-                if (suc.getId() == null) {
-                    signUpConditionService.add(suc);
+            if (signUpCondition != null) {
+                signUpCondition.setTemplateComponentId(tplComponent.getId());
+                if (signUpCondition.getId() == null) {
+                    signUpConditionService.add(signUpCondition);
                 } else {
-                    signUpConditionService.update(suc);
+                    signUpConditionService.update(signUpCondition);
                 }
             }
             if (signUpFillInfoType != null) {

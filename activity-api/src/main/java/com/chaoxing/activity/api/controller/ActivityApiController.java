@@ -29,6 +29,7 @@ import com.chaoxing.activity.service.activity.*;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.create.ActivityCreateService;
+import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
@@ -37,6 +38,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
+import com.chaoxing.activity.service.queue.activity.WfwFormSyncActivityQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
@@ -108,13 +110,13 @@ public class ActivityApiController {
 	@Resource
 	private PassportApiService passportApiService;
 	@Resource
-	private WfwFormSynOperateQueueService wfwFormSynOperateQueueService;
+	private WfwFormSyncActivityQueue wfwFormSyncActivityQueue;
 	@Resource
 	private ActivityCreateService activityCreateService;
 	@Resource
 	private MarketHandleService marketHandleService;
 	@Resource
-	private ActivityFormSyncService activityFormSyncService;
+	private WfwFormSyncActivityQueueService activityFormSyncService;
 	@Resource
 	private MarketNoticeTemplateService marketNoticeTemplateService;
 	@Resource
@@ -559,7 +561,7 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("sync/from/wfw-form")
 	public RestRespDTO activitySyncOperate(@Valid ActivityCreateFromFormParamDTO activityFormSyncParam) {
-		wfwFormSynOperateQueueService.push(activityFormSyncParam);
+		wfwFormSyncActivityQueue.push(activityFormSyncParam);
 		return RestRespDTO.success();
 	}
 

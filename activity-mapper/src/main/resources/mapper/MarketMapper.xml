@@ -44,4 +44,18 @@
             t.fid = #{fid}
             AND t.is_deleted = 0
     </select>
+
+    <select id="getMarketByOriginAndFlag" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_market t
+            INNER JOIN t_template t1 ON t.id = t1.market_id
+            AND t1.activity_flag = #{flag}
+        WHERE
+            t.fid = #{fid}
+            AND t.origin_type = #{originType}
+            AND t.origin = #{origin}
+    </select>
+
 </mapper>

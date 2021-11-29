@@ -10,7 +10,6 @@ import com.chaoxing.activity.mapper.SignUpConditionMapper;
 import com.chaoxing.activity.mapper.TemplateSignUpConditionMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -63,8 +62,6 @@ public class SignUpConditionService {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private MarketQueryService marketQueryService;
-	@Resource
 	private SignApiService signApiService;
 	@Resource
 	private MarketSignupConfigService marketSignupConfigService;
@@ -94,48 +91,12 @@ public class SignUpConditionService {
 	 */
 	public void update(SignUpCondition signUpCondition) {
 		signUpConditionMapper.updateById(signUpCondition);
-		// 查询已存在的模板报名条件明细列表
-		Integer tplComponentId = signUpCondition.getTemplateComponentId();
-		List<TemplateSignUpCondition> waitHandleConditionDetails = Optional.ofNullable(signUpCondition.getTemplateConditionDetails()).orElse(Lists.newArrayList());
-		List<TemplateSignUpCondition> existConditionDetails = templateSignUpConditionMapper.selectList(new LambdaQueryWrapper<TemplateSignUpCondition>()
-				.eq(TemplateSignUpCondition::getTemplateComponentId, tplComponentId));
-		// 已存在报名条件明细id
-		List<Integer> existConditionDetailIds = existConditionDetails.stream().map(TemplateSignUpCondition::getId).collect(Collectors.toList());
-		// 若编辑后的报名条件无明细，而现存报名条件对应的明细，则删除现存的明细
-		if (CollectionUtils.isEmpty(waitHandleConditionDetails) && CollectionUtils.isNotEmpty(existConditionDetailIds)) {
-			templateSignUpConditionMapper.deleteBatchIds(existConditionDetailIds);
-			return;
-		}
-		Map<String, TemplateSignUpCondition> tplSignUpConditionNameMap = waitHandleConditionDetails.stream()
-				.collect(Collectors.toMap(TemplateSignUpCondition::getFieldName, v -> v, (v1, v2) -> v2));
-		Map<String, TemplateSignUpCondition> existTplSignUpConditionNameMap = existConditionDetails.stream()
-				.collect(Collectors.toMap(TemplateSignUpCondition::getFieldName, v -> v, (v1, v2) -> v2));
-
-		List<TemplateSignUpCondition> waitSaveData = Lists.newArrayList();
-		List<Integer> waitUpdateIds = Lists.newArrayList();
-		for (Map.Entry<String, TemplateSignUpCondition> entry : tplSignUpConditionNameMap.entrySet()) {
-			String name = entry.getKey();
-			TemplateSignUpCondition item = entry.getValue();
-			TemplateSignUpCondition existItem = existTplSignUpConditionNameMap.get(name);
-
-			item.setTemplateComponentId(tplComponentId);
-			if (existItem != null) {
-				Integer existDetailId = existItem.getId();
-				item.setId(existDetailId);
-				waitUpdateIds.add(existDetailId);
-				// 更新
-				templateSignUpConditionMapper.updateById(item);
-
-			} else {
-				waitSaveData.add(item);
-			}
-		}
-		if (CollectionUtils.isNotEmpty(waitSaveData)) {
-			templateSignUpConditionMapper.batchAdd(waitSaveData);
-		}
-		List<Integer> waitDeleteIds = existConditionDetailIds.stream().filter(v -> !waitUpdateIds.contains(v)).collect(Collectors.toList());
-		if (CollectionUtils.isNotEmpty(waitDeleteIds)) {
-			templateSignUpConditionMapper.deleteBatchIds(waitDeleteIds);
+		// 删除所有明细
+		templateSignUpConditionMapper.deleteByTemplateComponentId(signUpCondition.getTemplateComponentId());
+		List<TemplateSignUpCondition> conditionDetails = handleDetailsInSignUpCondition(signUpCondition);
+		if (CollectionUtils.isNotEmpty(conditionDetails)) {
+			// 重新添加明细
+			templateSignUpConditionMapper.batchAdd(signUpCondition.getTemplateConditionDetails());
 		}
 	}
 

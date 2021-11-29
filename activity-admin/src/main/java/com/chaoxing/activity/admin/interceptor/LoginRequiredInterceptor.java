@@ -5,6 +5,7 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -45,7 +47,9 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	private void handleNotLogin(HttpServletRequest request, HttpServletResponse response, HandlerMethod method) throws IOException {
-		String refer = request.getRequestURL().toString() + "?" + request.getQueryString();
+		String queryString = request.getQueryString();
+		queryString = Optional.ofNullable(queryString).filter(StringUtils::isNotBlank).orElse("");
+		String refer = request.getRequestURL().toString() + "?" + queryString;
 		refer = URLEncoder.encode(refer, StandardCharsets.UTF_8.name());
 		if (method == null) {
 			// 页面

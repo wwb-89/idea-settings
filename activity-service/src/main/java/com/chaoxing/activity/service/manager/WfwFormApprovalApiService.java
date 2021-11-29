@@ -258,7 +258,7 @@ public class WfwFormApprovalApiService {
         Integer templateId = null;
         if (marketId != null || StringUtils.isNotBlank(flag)) {
             if (marketId == null) {
-                marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
+                marketId = marketHandleService.getOrCreateMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
             }
             List<Market> markets = marketQueryService.listByFid(fid);
             if (CollectionUtils.isEmpty(markets)) {

@@ -63,7 +63,7 @@ public class GeneralActivityController {
 			if (activityFlagEnum == null) {
 				throw new BusinessException("未知的flag");
 			}
-			marketId = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
+			marketId = marketHandleService.getOrCreateMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			if (marketId != null && !direct) {
 				return "redirect:/market/" + marketId + "?areaCode=" + areaCode + "&pageMode=" + pageMode;
 			}

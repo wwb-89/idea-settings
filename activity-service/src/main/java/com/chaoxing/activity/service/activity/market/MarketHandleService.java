@@ -186,7 +186,7 @@ public class MarketHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void add(Integer fid, String activityFlag, OperateUserDTO operateUserDto) {
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
-		MarketCreateParamDTO activityMarketCreateParamDto = MarketCreateParamDTO.build(fid, null, activityFlag);
+		MarketCreateParamDTO activityMarketCreateParamDto = MarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue(), Market.OriginTypeEnum.SYSTEM, null);
 		activityMarketCreateParamDto.setName(activityFlagEnum.getName());
 		ApplicationContextHolder.getBean(MarketHandleService.class).add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
 	}
@@ -218,15 +218,35 @@ public class MarketHandleService {
 	 * @param activityFlagEnum
 	 * @return com.chaoxing.activity.model.Template
 	 */
-	public Integer getOrCreateOrgMarket(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUser) {
+	public Integer getOrCreateMarket(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUser) {
 		Optional.ofNullable(activityFlagEnum).orElseThrow(() -> new BusinessException("未知的flag"));
 		Integer marketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
 		if (marketId == null) {
 			// 创建一个活动市场
-			Market market = ApplicationContextHolder.getBean(MarketHandleService.class).add(MarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue()), activityFlagEnum, loginUser.buildOperateUserDTO());
+			Market market = ApplicationContextHolder.getBean(MarketHandleService.class).add(MarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue(), Market.OriginTypeEnum.SYSTEM, null), activityFlagEnum, loginUser.buildOperateUserDTO());
 			marketId = market.getId();
 		}
 		return marketId;
+	}
+
+	/**获取或新增万能表单对应的活动市场id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-11-29 11:08:16
+	 * @param fid
+	 * @param activityFlagEnum
+	 * @param formId
+	 * @param loginUser
+	 * @return java.lang.Integer
+	*/
+	public Integer getOrCreateWfwFormMarket(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, Integer formId, LoginUserDTO loginUser) {
+		Optional.ofNullable(activityFlagEnum).orElseThrow(() -> new BusinessException("未知的flag"));
+		Market market = marketQueryService.getWfwFormMarketIdByFlag(fid, formId, activityFlagEnum.getValue());
+		if (market == null) {
+			// 创建一个活动市场
+			market = ApplicationContextHolder.getBean(MarketHandleService.class).add(MarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue(), Market.OriginTypeEnum.WFW_FORM, String.valueOf(formId)), activityFlagEnum, loginUser.buildOperateUserDTO());
+		}
+		return market.getId();
 	}
 
 	/**克隆市场和模板

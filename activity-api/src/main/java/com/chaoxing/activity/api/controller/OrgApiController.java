@@ -74,7 +74,7 @@ public class OrgApiController {
         String userRealName = passportApiService.getUserRealName(uid);
         String orgName = passportApiService.getOrgName(fid);
         LoginUserDTO loginUserDto = LoginUserDTO.buildDefault(uid, userRealName, fid, orgName);
-        marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUserDto);
+        marketHandleService.getOrCreateMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUserDto);
         return RestRespDTO.success();
     }
 
