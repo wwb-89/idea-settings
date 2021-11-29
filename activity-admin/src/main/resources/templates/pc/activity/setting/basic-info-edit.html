@@ -688,7 +688,7 @@
                 confirmPicSelect: function () {
                     var $this = this;
                     var cloudId = $this.pictureCloudIds[$this.activePicIndex];
-                    $this.$set($this.activity, "coverUrl", "http://p.ananas.chaoxing.com/star3/origin/" + cloudId + ".jpg");
+                    $this.$set($this.activity, "coverUrl", "https://p.ananas.chaoxing.com/star3/origin/" + cloudId + ".jpg");
                     $this.$set($this.activity, "coverCloudId", cloudId);
                     $this.$nextTick(function () {
                         $this.handleImg();

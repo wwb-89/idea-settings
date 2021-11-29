@@ -46,7 +46,7 @@ public class DomainConstant {
     public static final String WFW_CONTACTS_DOMAIN = "https://contactsyd.chaoxing.com";
     
     /** 云盘api域名 */
-    public static final String CLOUD_API_DOMAIN = "http://cs.ananas.chaoxing.com";
+    public static final String CLOUD_API_DOMAIN = "https://cs.ananas.chaoxing.com";
     /** 云盘资源域名 */
     public static final String CLOUD_RESOURCE_DOMAIN = "https://p.ananas.chaoxing.com";
     /** 星阅读域名 */
