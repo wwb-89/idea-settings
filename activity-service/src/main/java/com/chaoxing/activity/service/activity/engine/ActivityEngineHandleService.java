@@ -1,8 +1,10 @@
 package com.chaoxing.activity.service.activity.engine;
 
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
-import com.chaoxing.activity.mapper.*;
-import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.mapper.TemplateMapper;
+import com.chaoxing.activity.model.Component;
+import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.model.TemplateComponent;
 import com.chaoxing.activity.service.activity.component.ComponentHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -41,6 +42,7 @@ public class ActivityEngineHandleService {
     * @param activityEngineDTO
     * @return void
     */
+    @Transactional(rollbackFor = Exception.class)
     public void handleEngineTemplate(Integer fid, Integer marketId, Integer uid, ActivityEngineDTO activityEngineDTO) {
         Template template = activityEngineDTO.getTemplate();
         List<TemplateComponent> templateComponents = TemplateComponent.buildFromDTO(activityEngineDTO.getTemplateComponents());
@@ -57,9 +59,9 @@ public class ActivityEngineHandleService {
                     .build();
             activityEngineDTO.setTemplate(newTemplate);
             saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds());
-            return;
+        } else {
+            updateOperation(template, templateComponents, activityEngineDTO.getDelTemplateComponentIds());
         }
-        updateOperation(template, templateComponents, activityEngineDTO.getDelTemplateComponentIds());
     }
 
     /**新增操作(新增模板、新增组件、新增模板组件关联关系)
@@ -70,7 +72,6 @@ public class ActivityEngineHandleService {
     * @param templateComponents
     * @return void
     */
-    @Transactional(rollbackFor = Exception.class)
     public void saveOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> customComponentIds) {
         // 保存模板
         templateMapper.insert(template);
@@ -80,7 +81,6 @@ public class ActivityEngineHandleService {
         componentHandleService.relatedComponentWithTemplateId(template.getId(), customComponentIds);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void updateOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> delTemplateComponentIds) {
         // 更新模板
         templateMapper.updateById(template);

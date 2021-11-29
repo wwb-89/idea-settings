@@ -166,6 +166,7 @@ public class ActivityController {
 		model.addAttribute("participatedOrgs", participatedOrgs);
 
 		List<SignUpCondition> signUpConditions = signUpConditionService.listWithActivityConditionsByTemplate(templateId);
+		model.addAttribute("signUpConditions", signUpConditions);
 		// 获取表单结构map
 		List<String> formIds = signUpConditions.stream().map(SignUpCondition::getOriginIdentify).filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
 		Map<String, List<WfwFormFieldVO>> formFieldStructures = Maps.newHashMap();
@@ -178,7 +179,6 @@ public class ActivityController {
 					(v1, v2) -> v2));
 		}
 		model.addAttribute("formFieldStructures", formFieldStructures);
-		model.addAttribute("signUpConditions", signUpConditions);
 		model.addAttribute("conditionEnums", ConditionDTO.list());
 		// 活动市场报名配置
 		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);

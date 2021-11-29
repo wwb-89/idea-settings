@@ -24,4 +24,13 @@
             )
         </foreach>
     </insert>
+
+    <delete id="deleteByTemplateComponentId">
+        DELETE
+        FROM
+            t_template_sign_up_condition
+        WHERE
+            template_component_id = #{templateComponentId}
+    </delete>
+
 </mapper>
