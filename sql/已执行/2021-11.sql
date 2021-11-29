@@ -319,3 +319,5 @@ INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`,
 ALTER TABLE t_market ADD origin_type VARCHAR ( 50 ) DEFAULT 'system' COMMENT '来源类型';
 ALTER TABLE t_market ADD origin VARCHAR ( 50 ) COMMENT '来源';
 UPDATE t_market t SET t.origin_type = 'wfw', t.origin = t.wfw_app_id WHERE t.wfw_app_id IS NOT NULL;
+-- 市场字段表增加系统字段标识、自定义组件源id
+ALTER TABLE t_market_table_field ADD origin_component_id INT ( 11 ) NULL COMMENT '自定义组件源id';

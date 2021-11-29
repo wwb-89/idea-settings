@@ -210,6 +210,7 @@
                                 <span>{{scope.row[item.code] | timestampFormat}}</span>
                             </template>
                         </el-table-column>
+                        <!--自定义组件-->
                         <el-table-column
                                 v-else-if="item.originComponentId && !item.tableFieldDetailId"
                                 :fixed="item.defaultTop"
@@ -219,7 +220,7 @@
                                 :sortable="item.sortable"
                         >
                             <template slot-scope="scope">
-                                <span>{{scope.row.componentIdValueMap[item.originComponentId]}}</span>
+                                <span>{{scope.row.componentIdValueMap[item.originComponentId] || '-'}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
