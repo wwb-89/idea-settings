@@ -7,6 +7,7 @@
         <result column="table_field_detail_id" jdbcType="INTEGER" property="tableFieldDetailId" />
         <result column="is_top" jdbcType="BIT" property="top" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="origin_component_id" jdbcType="INTEGER" property="originComponentId" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -15,7 +16,7 @@
 
 
     <insert id="batchAdd">
-        INSERT INTO t_market_table_field ( market_id, table_field_id, table_field_detail_id, is_top, sequence, create_uid, update_uid )
+        INSERT INTO t_market_table_field ( market_id, table_field_id, table_field_detail_id, is_top, sequence, origin_component_id, create_uid, update_uid )
         VALUES
         <foreach collection="marketTableFields" index="key" item="value" open="" close="" separator=",">
             (
@@ -24,6 +25,7 @@
             #{value.tableFieldDetailId},
             #{value.top},
             #{value.sequence},
+            #{value.originComponentId},
             #{value.createUid},
             #{value.updateUid}
             )

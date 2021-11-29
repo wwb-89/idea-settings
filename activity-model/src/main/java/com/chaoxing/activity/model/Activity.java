@@ -216,6 +216,8 @@ public class Activity {
     /** 标签名称列表 */
     @TableField(exist = false)
     private List<String> tagNames;
+    @TableField(exist = false)
+    private List<ActivityComponentValue> activityComponentValues;
 
     @Getter
     public enum OriginTypeEnum {

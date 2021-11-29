@@ -211,6 +211,18 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                                v-else-if="item.originComponentId && !item.tableFieldDetailId"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.componentIdValueMap[item.originComponentId]}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                                 v-else
                                 :prop="item.code"
                                 :fixed="item.defaultTop"
@@ -326,6 +338,8 @@
                 tableFieldDetails: [[${tableFieldDetails}]],
                 // 页面展示字段配置源数据
                 marketTableFields: [[${marketTableFields}]],
+                // 自定义组件列表
+                customComponents: [[${customComponents}]],
                 // 配置项数据
                 configTableFieldDetails: [],
                 // 表格显示的字段列表
@@ -460,6 +474,20 @@
                         });
                     }
                 },
+                // 封装自定义组件originId：value
+                handleCustomComponentValues: function (activities) {
+                    if (activities && activities.length > 0) {
+                        $(activities).each(function () {
+                            var _this = this;
+                            _this.componentIdValueMap = {};
+                            if (_this.activityComponentValues && _this.activityComponentValues.length > 0) {
+                                $(_this.activityComponentValues).each(function () {
+                                    _this.componentIdValueMap[this.componentId] = this.value;
+                                });
+                            }
+                        });
+                    }
+                },
                 toAdd: function () {
                     var $this = this;
                     var marketId = $this.marketId;
@@ -561,6 +589,7 @@
                         $this.loaded = true;
                         if (data.success) {
                             $this.handleOperationSequence(data.data.records);
+                            $this.handleCustomComponentValues(data.data.records);
                             $this.activities = data.data.records;
                             $this.total = data.data.total;
                             $this.pages = data.data.pages;
@@ -823,18 +852,43 @@
                             }
                         });
                     } else {
+                        var customComponentMap = {};
+                        $($this.customComponents).each(function () {
+                            var originId = this.originId || this.id;
+                            if (originId) {
+                                customComponentMap[originId] = this;
+                            }
+                        });
                         $($this.marketTableFields).each(function () {
-                            var orgTableField = this;
-                            var tableFieldDetailId = orgTableField.tableFieldDetailId;
-                            $($this.tableFieldDetails).each(function () {
-                                if (tableFieldDetailId === this.id) {
-                                    var tableFieldDetail = $.extend({}, this);
-                                    tableFieldDetail.defaultChecked = true;
-                                    tableFieldDetail.defaultTop = orgTableField.top;
-                                    $this.showTableFieldDetails.push(tableFieldDetail);
-                                    return false;
-                                }
-                            });
+                            var _this = this;
+                            var tableFieldDetailId = _this.tableFieldDetailId;
+                            var originComponentId = _this.originComponentId;
+                            // 自定义组件字段处理
+                            if (activityApp.isEmpty(tableFieldDetailId) && originComponentId) {
+                                var name = customComponentMap[originComponentId].name;
+                                var tableFieldDetail = $.extend({}, _this, {
+                                    align: "center",
+                                    allowTop: true,
+                                    allowUncheck: true,
+                                    minWidth: 120,
+                                    defaultChecked: true,
+                                    defaultTop: _this.top,
+                                    name: name,
+                                    sortable: false
+                                });
+                                $this.showTableFieldDetails.push(tableFieldDetail);
+                            } else {
+                                // 非自定义组件字段
+                                $($this.tableFieldDetails).each(function () {
+                                    if (tableFieldDetailId === this.id) {
+                                        var tableFieldDetail = $.extend({}, this);
+                                        tableFieldDetail.defaultChecked = true;
+                                        tableFieldDetail.defaultTop = _this.top;
+                                        $this.showTableFieldDetails.push(tableFieldDetail);
+                                        return false;
+                                    }
+                                });
+                            }
                         });
                     }
                 },
@@ -844,14 +898,35 @@
                     $($this.tableFieldDetails).each(function () {
                         configTableFieldDetails.push($.extend({}, this));
                     });
+                    // 将自定义组件放置进配置列表
+                    var length = configTableFieldDetails.length - 1;
+                    if ($this.customComponents.length > 0) {
+                        $($this.customComponents).each(function () {
+                            var item = {
+                                align: "center",
+                                allowTop: true,
+                                allowUncheck: true,
+                                defaultChecked: false,
+                                defaultTop: false,
+                                minWidth: 120,
+                                name: this.name,
+                                sequence: length++,
+                                sortable: false,
+                                tableFieldId: $this.tableFieldId,
+                                originComponentId: this.originId || this.id
+                            }
+                            configTableFieldDetails.push($.extend({}, item));
+                        });
+                    }
                     if ($this.marketTableFields.length > 0) {
                         $(configTableFieldDetails).each(function () {
-                            var configTableFieldDetail = this;
-                            configTableFieldDetail.defaultChecked = false;
+                            var _this = this;
+                            _this.defaultChecked = false;
                             $($this.marketTableFields).each(function () {
-                                if (configTableFieldDetail.id === this.tableFieldDetailId) {
-                                    configTableFieldDetail.defaultChecked = true;
-                                    configTableFieldDetail.defaultTop = this.top;
+                                if (_this.id === this.tableFieldDetailId || _this.originComponentId === this.originComponentId) {
+                                    _this.defaultChecked = true;
+                                    _this.defaultTop = this.top;
+                                    _this.sequence = this.sequence;
                                 }
                             });
                         });
@@ -883,6 +958,7 @@
                             return b.defaultTop - a.defaultTop;
                         }
                     });
+                    // todo 这里会导致自定义组件总是排在最后
                     $($this.configTableFieldDetails).each(function(i) {
                         this.sequence = i;
                     });
@@ -900,12 +976,13 @@
                     var sequence = 1;
                     $($this.configTableFieldDetails).each(function () {
                         if (this.defaultChecked) {
-                            var orgTableFieldDetail = {
+                            var tableFieldDetail = {
                                 tableFieldDetailId: this.id,
+                                originComponentId: this.originComponentId,
                                 top: this.defaultTop,
                                 sequence: sequence++
                             }
-                            marketTableFieldDetails.push(orgTableFieldDetail);
+                            marketTableFieldDetails.push(tableFieldDetail);
 
                         }
                     });

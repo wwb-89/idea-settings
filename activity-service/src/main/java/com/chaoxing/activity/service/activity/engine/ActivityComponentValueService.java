@@ -11,12 +11,13 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -189,5 +190,20 @@ public class ActivityComponentValueService {
             }
         });
         return activityComponentValueRes;
+    }
+
+    /** 根据活动ids查询活动自定义组件值
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-11-29 14:20:00
+     * @param activityIds
+     * @return java.util.List<com.chaoxing.activity.model.ActivityComponentValue>
+     */
+    public List<ActivityComponentValue> listByActivityIds(List<Integer> activityIds) {
+        if (CollectionUtils.isEmpty(activityIds)) {
+            return Lists.newArrayList();
+        }
+        return activityComponentValueMapper.selectList(new LambdaQueryWrapper<ActivityComponentValue>()
+                .in(ActivityComponentValue::getActivityId, activityIds));
     }
 }

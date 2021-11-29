@@ -35,6 +35,8 @@ public class MarketTableField {
     private Boolean top;
     /** 顺序; column: sequence*/
     private Integer sequence;
+    /** 源自定义组件id; column: origin_component_id*/
+    private Integer originComponentId;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 创建人uid; column: create_uid*/

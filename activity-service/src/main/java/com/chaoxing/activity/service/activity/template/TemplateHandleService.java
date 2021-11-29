@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.activity.component.ComponentHandleService;
+import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
@@ -43,6 +45,10 @@ public class TemplateHandleService {
 	private SignUpConditionService signUpConditionService;
 	@Resource
 	private SignUpFillInfoTypeService signUpFillInfoTypeService;
+	@Resource
+	private ComponentQueryService componentQueryService;
+	@Resource
+	private ComponentHandleService componentHandleService;
 
 	/**新增模版
 	 * @Description 
@@ -77,6 +83,7 @@ public class TemplateHandleService {
 		Optional.ofNullable(originTemplate).orElseThrow(() -> new BusinessException("模版不存在"));
 
 		List<TemplateComponent> originTemplateComponents = templateComponentService.listTemplateComponentByTemplateId(originTemplateId);
+		List<Component> originCustomComponents = componentQueryService.listCustomComponentByTemplateId(originTemplateId);
 		// 组件id列表
 		List<Integer> templateComponentIds = Optional.ofNullable(originTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
 		// todo 克隆应该将明细条件也克隆了
@@ -91,8 +98,19 @@ public class TemplateHandleService {
 		Integer templateId = template.getId();
 		// 根据市场选择的组织架构需要屏蔽一些组件
 		List<Integer> excludeComponentIds = marketQueryService.listExcludeComponentId(market);
+		// 克隆自定义组件
+		List<Component> newCustomComponents = Component.cloneCustomComponent(originCustomComponents, templateId);
+		componentHandleService.batchAdd(newCustomComponents, activityMarket.getCreateUid());
+		Map<Integer, Integer> originNewComponentIdMap = newCustomComponents.stream().collect(Collectors.toMap(Component::getOriginId, Component::getId, (v1, v2) -> v2));
 		// 克隆模版组件列表
 		List<TemplateComponent> parentTemplateComponents = TemplateComponent.cloneToNewTemplateId(originTemplateComponents, templateId, excludeComponentIds);
+		// 修改模板组件中自定义组件id
+		parentTemplateComponents.forEach(v -> {
+			Integer newComponentId = originNewComponentIdMap.get(v.getComponentId());
+			if (newComponentId != null) {
+				v.setComponentId(newComponentId);
+			}
+		});
 		templateComponentService.batchAddTemplateComponents(parentTemplateComponents);
 		// 找到新旧templateComponentId的对应关系
 		List<TemplateComponent> templateComponents = Lists.newArrayList(parentTemplateComponents);

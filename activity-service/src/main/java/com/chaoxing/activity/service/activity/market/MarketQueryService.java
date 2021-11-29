@@ -165,4 +165,19 @@ public class MarketQueryService {
 		return listExcludeComponentId(market);
 	}
 
+
+	/**通过市场id查询市场对应模板的自定义组件列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-29 14:52:12
+	 * @param marketId
+	 * @return java.util.List<com.chaoxing.activity.model.Component>
+	 */
+	public List<Component> listMarketCustomComponents(Integer marketId) {
+		Template marketTemplate = templateQueryService.getMarketFirstTemplate(marketId);
+		if (marketTemplate == null) {
+			return Lists.newArrayList();
+		}
+		return componentQueryService.listCustomComponentByTemplateId(marketTemplate.getId());
+	}
 }

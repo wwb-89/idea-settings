@@ -8,6 +8,7 @@ import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.ComponentField;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,6 +73,9 @@ public class ComponentQueryService {
 	 * @return java.util.List<com.chaoxing.activity.model.Component>
 	*/
 	public List<Component> listByIds(List<Integer> componentIds) {
+		if (CollectionUtils.isEmpty(componentIds)) {
+			return Lists.newArrayList();
+		}
 		return componentMapper.selectList(new LambdaQueryWrapper<Component>()
 				.in(Component::getId, componentIds)
 		);
@@ -152,7 +156,21 @@ public class ComponentQueryService {
 			}
 		});
 		return components;
-
 	}
 
+	/**查询模板下的自定义组件，若存在自定义选择，则关联查询其选项
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-29 11:04:52
+	 * @param templateId
+	 * @return java.util.List<com.chaoxing.activity.model.Component>
+	 */
+	public List<Component> listCustomComponentByTemplateId(Integer templateId) {
+		List<Component> customComponents = componentMapper.selectList(new LambdaQueryWrapper<Component>()
+				.eq(Component::getTemplateId, templateId).eq(Component::getSystem, Boolean.FALSE));
+		if (CollectionUtils.isNotEmpty(customComponents)) {
+			return packageCustomChooseOptions(customComponents);
+		}
+		return customComponents;
+	}
 }
