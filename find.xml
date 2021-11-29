@@ -13,8 +13,8 @@
     <mask>*mapper.xml</mask>
     <mask>*.yml</mask>
     <mask>*.json</mask>
+    <mask>*.xml</mask>
     <mask>*.html</mask>
     <mask>*.java</mask>
-    <mask>*.xml</mask>
   </component>
 </application>
