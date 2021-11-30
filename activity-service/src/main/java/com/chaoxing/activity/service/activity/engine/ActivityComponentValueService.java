@@ -206,4 +206,21 @@ public class ActivityComponentValueService {
         return activityComponentValueMapper.selectList(new LambdaQueryWrapper<ActivityComponentValue>()
                 .in(ActivityComponentValue::getActivityId, activityIds));
     }
+
+    /**获取活动某个组件的值
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-30 19:36:55
+     * @param activityId
+     * @param componentId
+     * @return java.lang.String
+    */
+    public String getActivityComponentValue(Integer activityId, Integer componentId) {
+        List<ActivityComponentValue> activityComponentValues = activityComponentValueMapper.selectList(new LambdaQueryWrapper<ActivityComponentValue>()
+                .eq(ActivityComponentValue::getActivityId, activityId)
+                .eq(ActivityComponentValue::getComponentId, componentId)
+        );
+        return activityComponentValues.stream().findFirst().map(ActivityComponentValue::getValue).orElse("");
+    }
+
 }

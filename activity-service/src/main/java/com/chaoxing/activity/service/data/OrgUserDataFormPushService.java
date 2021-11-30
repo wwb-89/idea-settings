@@ -9,6 +9,7 @@ import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.model.OrgUserDataPushRecord;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
@@ -41,8 +42,9 @@ import java.util.Optional;
 public class OrgUserDataFormPushService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private final static Integer ZJ_BUSINESS_COLLEGE_FID = 177443;
-    private final static Integer ZJ_BUSINESS_COLLEGE_FORM_ID = 21341;
+    private static final Integer ZJ_BUSINESS_COLLEGE_FID = 177443;
+    private static final Integer ZJ_BUSINESS_COLLEGE_FORM_ID = 21341;
+    private static final Integer ZJ_BUSINESS_CUSTOM_COMPONENT_ID = 10066;
 
     @Resource
     private WfwFormApiService wfwFormApiService;
@@ -59,6 +61,8 @@ public class OrgUserDataFormPushService {
     private UserStatSummaryQueryService userStatSummaryQueryService;
     @Resource
     private UserResultQueryService userResultQueryService;
+    @Resource
+    private ActivityComponentValueService activityComponentValueService;
 
     public void push(Integer uid, Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
@@ -98,7 +102,11 @@ public class OrgUserDataFormPushService {
         }
         UserStatSummary userStatSummary = userStatSummaryQueryService.getByUidAndActivityId(uid, activityId);
         String wfwFormData;
+        boolean needPush = true;
+        // 浙商只推送签到率>=50%的
         if (isSpecialFlag) {
+            BigDecimal signedInRate = Optional.ofNullable(userStatSummary.getSignedInRate()).orElse(BigDecimal.ZERO);
+            needPush = signedInRate.compareTo(BigDecimal.valueOf(0.5)) >= 0;
             wfwFormData = generateZjBusinessCollegeFormData(userStatSummary, activity.getName(), formId, formFid);
         } else {
             wfwFormData = generateWfwFormData(activity, userStatSummary, formId, formFid);
@@ -106,7 +114,7 @@ public class OrgUserDataFormPushService {
         if (StringUtils.isBlank(wfwFormData)) {
             return;
         }
-        if (formUserId == null) {
+        if (formUserId == null && needPush) {
             // 新增
             formUserId = wfwFormApiService.fillForm(formId, formFid, uid, wfwFormData);
             orgUserDataPushRecord = OrgUserDataPushRecord.builder()
@@ -117,8 +125,13 @@ public class OrgUserDataFormPushService {
                     .build();
             orgUserDataPushRecordService.addOrUpdate(orgUserDataPushRecord);
         } else {
-            // 修改
-            wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
+            if (needPush) {
+                // 修改
+                wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
+            } else {
+                // 删除
+                wfwFormApiService.deleteFormRecord(formUserId, formId);
+            }
         }
     }
 
@@ -271,6 +284,9 @@ public class OrgUserDataFormPushService {
         }
         JSONArray result = new JSONArray();
         List<FormStructureDTO> formInfos = wfwFormApiService.getFormStructure(formId, fid);
+        // 自定义组件数据
+        Integer activityId = userStatSummary.getActivityId();
+        String activityComponentValue = activityComponentValueService.getActivityComponentValue(activityId, ZJ_BUSINESS_CUSTOM_COMPONENT_ID);
         if (CollectionUtils.isNotEmpty(formInfos)) {
             for (FormStructureDTO formInfo : formInfos) {
                 String alias = formInfo.getAlias();
@@ -303,7 +319,7 @@ public class OrgUserDataFormPushService {
                         result.add(item);
                     }
                 } else if (Objects.equals(alias, "behavior")) {
-                    data.add("信息素养线下活动");
+                    data.add(activityComponentValue);
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "remark")) {
