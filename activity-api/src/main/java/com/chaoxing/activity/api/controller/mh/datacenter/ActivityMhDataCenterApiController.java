@@ -158,7 +158,7 @@ public class ActivityMhDataCenterApiController {
         List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
         activityQuery.setFids(fids);
         Page<Activity> page = new Page(pageNum, pageSize);
-        page = activityQueryService.pageParticipate(page, activityQuery);
+        page = activityQueryService.listParticipate(page, activityQuery);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("curPage", page.getCurrent());
         jsonObject.put("totalPages", page.getPages());
