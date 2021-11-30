@@ -321,16 +321,16 @@
                 // 正在处理的活动id
                 operateActivityId: null,
                 operations: {
-                    edit: {name: "编辑", value: "edit"},
-                    delete: {name: "删除", value: "delete"},
-                    manage: {name: "管理", value: "manage"},
-                    setTop: {name: "置顶", value: "setTop"},
-                    cancelSetTop: {name: "取消置顶", value: "cancelSetTop"},
-                    configPage: {name: "页面配置", value: "configPage"},
-                    release: {name: "发布", value: "release"},
-                    cancelRelease: {name: "下架", value: "cancelRelease"},
-                    dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport"},
-                    clone: {name: "复制", value: "clone"}
+                    release: {name: "发布", value: "release", weight: 0},
+                    edit: {name: "编辑", value: "edit", weight: 5},
+                    manage: {name: "管理", value: "manage", weight: 10},
+                    configPage: {name: "页面配置", value: "configPage", weight: 15},
+                    dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport", weight: 20},
+                    setTop: {name: "置顶", value: "setTop", weight: 25},
+                    cancelSetTop: {name: "取消置顶", value: "cancelSetTop", weight: 30},
+                    clone: {name: "复制", value: "clone", weight: 35},
+                    cancelRelease: {name: "下架", value: "cancelRelease", weight: 40},
+                    delete: {name: "删除", value: "delete", weight: 45}
                 },
                 // 活动标示
                 flag: [[${flag}]],
@@ -388,59 +388,32 @@
                             var manager = $this.isActivityManager(activity);
                             var isCurrentOrgCreated = activity.createFid == $this.fid;
                             var isDualSelect = activity.flag == "dual_select";
-                            var status = activity.status;
                             activity.operations = [];
-                            switch (status) {
-                                case 1:
+                            var statuses = [1, 2, 3];
+                            if (statuses.includes(activity.status)) {
+                                if (manager || isCurrentOrgCreated) {
+                                    if (manager) {
+                                        activity.operations.push($this.operations.manage);
+                                        if (isDualSelect) {
+                                            activity.operations.push($this.operations.dualSelectStatExport);
+                                        }
+                                    }
+                                    activity.operations.push($this.operations.edit);
+                                    activity.operations.push($this.operations.delete);
+                                }
+                                if (activity.status == 1) {
                                     activity.operations.push($this.operations.release);
-                                    if (manager || isCurrentOrgCreated) {
-                                        if (manager) {
-                                            activity.operations.push($this.operations.edit);
-                                            activity.operations.push($this.operations.manage);
-                                            if (isDualSelect) {
-                                                activity.operations.push($this.operations.dualSelectStatExport);
-                                            }
-                                            activity.operations.push($this.operations.delete);
-                                        }
-                                    }
-                                    break;
-                                case 2:
-                                case 3:
+                                } else {
                                     activity.operations.push($this.operations.cancelRelease);
-                                    if (manager || isCurrentOrgCreated) {
-                                        if (manager) {
-                                            activity.operations.push($this.operations.edit);
-                                            activity.operations.push($this.operations.manage);
-                                            if (isDualSelect) {
-                                                activity.operations.push($this.operations.dualSelectStatExport);
-                                            }
-                                            activity.operations.push($this.operations.delete);
-                                        }
-                                    }
-                                    break;
-                                case 4:
-                                    // 已结束支持有上下架功能
-                                    if (manager || isCurrentOrgCreated) {
-                                        if (activity.released) {
-                                            activity.operations.push($this.operations.cancelRelease);
-                                        }else {
-                                            activity.operations.push($this.operations.release);
-                                        }
-                                        if (manager) {
-                                            activity.operations.push($this.operations.edit);
-                                            activity.operations.push($this.operations.manage);
-                                            if (isDualSelect) {
-                                                activity.operations.push($this.operations.dualSelectStatExport);
-                                            }
-                                            activity.operations.push($this.operations.delete);
-                                        }
-                                    }
-                                    break;
-                                default:
+                                }
                             }
-                            if (manager) {
-                                activity.operations.push($this.operations.configPage);
+                            if (manager || isCurrentOrgCreated) {
+                                if (manager) {
+                                    activity.operations.push($this.operations.configPage);
+                                }
+                                activity.operations.push($this.operations.clone);
                             }
+                            // 市场存在且活动的市场id和vm的marketId一致(此处处理挂在在marketId市场上的活动)
                             if ($this.marketId && $this.marketId == activity.marketId) {
                                 if (activity.released) {
                                     var existCancelRelease = $.grep(activity.operations, function (it) {
@@ -449,7 +422,7 @@
                                     if (existCancelRelease && existCancelRelease.length < 1) {
                                         activity.operations.push($this.operations.cancelRelease);
                                     }
-                                }else {
+                                } else {
                                     var existRelease = $.grep(activity.operations, function (it) {
                                         return it.value == "release";
                                     });
@@ -469,9 +442,10 @@
                                     activity.operations.push($this.operations.delete);
                                 }
                             }
-                            if (!this.marketId || $this.marketId == activity.marketId) {
-                                activity.operations.push($this.operations.clone);
-                            }
+                            // 按钮排序
+                            activity.operations.sort(function(a, b) {
+                                return a.weight - b.weight
+                            });
                         });
                     }
                 },

@@ -152,7 +152,7 @@ public class ActivityManageController {
 	@GetMapping("{activityId}/edit")
 	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, String areaCode, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
+		Activity activity = activityValidationService.editAble(activityId, loginUser);
 		ActivityCreateParamDTO createParam = activityQueryService.packageActivityCreateParamByActivity(activity);
 		model.addAttribute("activity", createParam);
 		// 报名签到
