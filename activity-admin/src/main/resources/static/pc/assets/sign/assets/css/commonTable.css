@@ -242,7 +242,7 @@ body {
   margin-right: 4px;
 }
 
-.export-box .icon-column::before{
+.export-box .icon-column::before {
   margin-right: 4px;
 }
 
@@ -250,7 +250,7 @@ body {
   color: #0084FF;
 }
 
-.export-box .el-dropdown:hover{
+.export-box .el-dropdown:hover {
   color: #0084FF;
 }
 
@@ -556,7 +556,7 @@ body {
 .el-table.table-box .cell .btn-no-public {
   cursor: pointer;
   display: inline-block;
-  background: rgba(237, 240, 249, 1);
+  background: #edf0f9;
   border: 1px solid rgba(127, 142, 152, 0.16);
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -590,7 +590,7 @@ body {
 .el-table.table-box .cell .btn-is-end {
   cursor: pointer;
   display: inline-block;
-  background: rgba(246, 247, 251, 1);
+  background: #f6f7fb;
   border: 1px solid rgba(127, 142, 152, 0.16);
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -1240,6 +1240,7 @@ body {
   line-height: 32px;
   border-radius: 2px;
 }
+
 .el-pagination__sizes .el-input__inner {
   background-color: #F5F5F5;
   border: none;
