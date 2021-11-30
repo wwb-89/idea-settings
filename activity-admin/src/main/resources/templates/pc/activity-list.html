@@ -389,7 +389,7 @@
                             var isCurrentOrgCreated = activity.createFid == $this.fid;
                             var isDualSelect = activity.flag == "dual_select";
                             activity.operations = [];
-                            var statuses = [1, 2, 3];
+                            var statuses = [1, 2, 3, 4];
                             if (statuses.includes(activity.status)) {
                                 if (manager || isCurrentOrgCreated) {
                                     if (manager) {
@@ -401,10 +401,12 @@
                                     activity.operations.push($this.operations.edit);
                                     activity.operations.push($this.operations.delete);
                                 }
-                                if (activity.status == 1) {
-                                    activity.operations.push($this.operations.release);
-                                } else {
-                                    activity.operations.push($this.operations.cancelRelease);
+                                if (activity.status != 4) {
+                                    if (activity.status == 1) {
+                                        activity.operations.push($this.operations.release);
+                                    } else {
+                                        activity.operations.push($this.operations.cancelRelease);
+                                    }
                                 }
                             }
                             if (manager || isCurrentOrgCreated) {
