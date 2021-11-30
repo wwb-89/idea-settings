@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -217,7 +218,14 @@ public class WorkApiService {
 	*/
 	private List<WorkBtnDTO> listBtns(Integer workId, Integer uid, Integer fid, String url) {
 		url = String.format(url, workId, Optional.ofNullable(uid).map(String::valueOf).orElse(""), fid);
-		String result = restTemplate.postForObject(url, null, String.class);
+		String result;
+		try {
+			result = restTemplate.postForObject(url, null, String.class);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			log.error("根据url:{} 查询作品征集的按钮列表error:{}", url, e.getMessage());
+			return Lists.newArrayList();
+		}
 		JSONObject jsonObject = JSON.parseObject(result);
 		if (Objects.equals(true, jsonObject.getBoolean("success"))) {
 			return JSON.parseArray(jsonObject.getString("data"), WorkBtnDTO.class);
