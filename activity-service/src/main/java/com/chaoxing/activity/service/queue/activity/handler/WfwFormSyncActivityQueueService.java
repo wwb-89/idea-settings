@@ -18,19 +18,21 @@ import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.Classify;
-import com.chaoxing.activity.model.MarketClassify;
-import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
+import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
+import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -97,6 +99,12 @@ public class WfwFormSyncActivityQueueService {
     private MarketQueryService marketQueryService;
     @Resource
     private WorkApiService workApiService;
+    @Resource
+    private SignUpFillInfoTypeService signUpFillInfoTypeService;
+    @Resource
+    private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+    @Resource
+    private WfwFormCreateApiService wfwFormCreateApiService;
 
     @Resource
     private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
@@ -192,7 +200,18 @@ public class WfwFormSyncActivityQueueService {
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
         // 获取报名信息
         SignUpCreateParamDTO signUpCreateParam = packageSignUp(formUserRecord, templateId, fid);
+        // 报名配置万能表单填报信息
+        OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
         if (signUpCreateParam != null) {
+            WfwFormCreateResultDTO wfwFormCreateResult = createWfwFormId(templateId, operateUser);
+            if (wfwFormCreateResult != null) {
+                signUpCreateParam.setFillInfo(true);
+                signUpCreateParam.setFormType(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
+                signUpCreateParam.setFillInfoFormId(wfwFormCreateResult.getFormId());
+                signUpCreateParam.setPcUrl(wfwFormCreateResult.getPcUrl());
+                signUpCreateParam.setWechatUrl(wfwFormCreateResult.getWechatUrl());
+                signUpCreateParam.setOpenAddr(wfwFormCreateResult.getOpenAddr());
+            }
             signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
         }
         // 判断是否开启签到，并默认封装签到
@@ -207,7 +226,6 @@ public class WfwFormSyncActivityQueueService {
         // 发布状态值不存在或不为未发布，发布活动
         if (!Objects.equals(releaseStatus, "未发布")) {
             // 立即发布
-            OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
             activityHandleService.release(activityId, operateUser);
         }
         activity = activityQueryService.getById(activityId);
@@ -217,6 +235,40 @@ public class WfwFormSyncActivityQueueService {
         return activity;
     }
 
+    /**获取万能表单id
+     * @Description 
+     * @author wwb
+     * @Date 2021-11-30 17:32:21
+     * @param templateId
+     * @param operateUser
+     * @return com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO
+    */
+    private WfwFormCreateResultDTO createWfwFormId(Integer templateId, OperateUserDTO operateUser) {
+        // 查询模版关联的报名组件templateComponentId
+        Integer sysComponentTplComponentId = templateComponentService.getSysComponentTplComponentId(templateId, Component.SystemComponentCodeEnum.SIGN_UP.getValue());
+        if (sysComponentTplComponentId == null) {
+            return null;
+        }
+        SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(sysComponentTplComponentId);
+        String type = Optional.ofNullable(signUpFillInfoType).map(SignUpFillInfoType::getType).orElse(null);
+        if (!Objects.equals(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue(), type)) {
+            return null;
+        }
+        // 查询报名填报信息模版
+        SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateService.getById(signUpFillInfoType.getWfwFormTemplateId());
+        if (signUpWfwFormTemplate == null) {
+            return null;
+        }
+        WfwFormCreateParamDTO wfwFormCreateParam = WfwFormCreateParamDTO.builder()
+                .formId(signUpWfwFormTemplate.getFormId())
+                .originalFid(signUpWfwFormTemplate.getFid())
+                .sign(signUpWfwFormTemplate.getSign())
+                .key(signUpWfwFormTemplate.getKey())
+                .uid(operateUser.getUid())
+                .fid(operateUser.getFid())
+                .build();
+        return wfwFormCreateApiService.create(wfwFormCreateParam);
+    }
 
     /**封装报名信息
     * @Description
