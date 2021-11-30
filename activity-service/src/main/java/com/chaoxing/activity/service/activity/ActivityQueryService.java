@@ -20,7 +20,10 @@ import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
-import com.chaoxing.activity.mapper.*;
+import com.chaoxing.activity.mapper.ActivityDetailMapper;
+import com.chaoxing.activity.mapper.ActivityMapper;
+import com.chaoxing.activity.mapper.ActivityRatingDetailMapper;
+import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
@@ -47,7 +50,6 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
-import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -126,64 +128,14 @@ public class ActivityQueryService {
 	@Resource
 	private TagQueryService tagQueryService;
 
-
-	/**查询所有预告中的活动
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-11-24 15:17:18
-	 * @param
-	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	 */
-	public List<Activity> listAllForecastActivity(ActivityQueryDTO activityQuery) {
-		activityQuery.setStatusList(Lists.newArrayList(2));
-		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
-		List<String> tagNames = activityQuery.getTags();
-		if (CollectionUtils.isNotEmpty(tagNames)) {
-			List<Tag> tags = tagQueryService.listByNames(tagNames);
-			activityQuery.setTagIds(tags.stream().map(Tag::getId).collect(Collectors.toList()));
-		}
-		Page<Activity> page = activityMapper.pageParticipate(new Page<>(1, Integer.MAX_VALUE), activityQuery);
-		return page.getRecords();
-	}
-
-	public Page<Activity> pageParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
-		List<String> tagNames = activityQuery.getTags();
-		if (CollectionUtils.isNotEmpty(tagNames)) {
-			List<Tag> tags = tagQueryService.listByNames(tagNames);
-			activityQuery.setTagIds(tags.stream().map(Tag::getId).collect(Collectors.toList()));
-		}
-		return activityMapper.pageParticipate(page, activityQuery);
-	}
-
-	/**分页查询已结束活动和进行中的活动
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-11-24 15:16:55
-	 * @param
-	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	 */
-	public Page<Activity> pageSpecialParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
-		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
-		if (!keepOldRule) {
-			activityQuery.setStatusList(Lists.newArrayList(3, 4));
-			activityQuery.setTimeOrder(OrderTypeEnum.DESC);
-		}
-		List<String> tagNames = activityQuery.getTags();
-		if (CollectionUtils.isNotEmpty(tagNames)) {
-			List<Tag> tags = tagQueryService.listByNames(tagNames);
-			activityQuery.setTagIds(tags.stream().map(Tag::getId).collect(Collectors.toList()));
-		}
-		return activityMapper.pageParticipate(page, activityQuery);
-	}
-
 	/**查询参与的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 14:21:27
 	 * @param page
 	 * @param activityQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public Page<Activity> listParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
 		Integer currentUid = activityQuery.getCurrentUid();
@@ -198,10 +150,10 @@ public class ActivityQueryService {
 		activityQuery.setTagIds(tagIds);
 		if (currentUid != null && Optional.ofNullable(signUpAble).orElse(false)) {
 			page.setSize(Integer.MAX_VALUE);
-			page = pageSpecialParticipate(page, activityQuery);
-			List<Activity> records = page.getRecords();
+			page = activityMapper.pageParticipate(page, activityQuery);
+			List<Activity> records = Optional.ofNullable(page.getRecords()).orElse(Lists.newArrayList());
 			// 只查询能报名的
-			List<Integer> signIds = Optional.ofNullable(records).orElse(Lists.newArrayList()).stream().map(Activity::getSignId).filter(v -> v != null).collect(Collectors.toList());
+			List<Integer> signIds = records.stream().map(Activity::getSignId).filter(Objects::nonNull).collect(Collectors.toList());
 			List<SignUpAbleSignDTO> signUpAbleSigns = signApiService.listSignUpAbleSign(currentUid, signIds);
 			List<Activity> activities = Lists.newArrayList();
 			if (CollectionUtils.isNotEmpty(signUpAbleSigns)) {
@@ -219,19 +171,19 @@ public class ActivityQueryService {
 			page.setRecords(activities);
 			page.setTotal(activities.size());
 		} else {
-			page = pageSpecialParticipate(page, activityQuery);
+			page = activityMapper.pageParticipate(page, activityQuery);
 		}
 		return page;
 	}
 
 	/**查询flag下的所有活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-10-11 17:57:37
 	 * @param page
 	 * @param activityQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public Page<Activity> pageFlag(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
 		page = activityMapper.pageFlag(page, activityQuery);
@@ -239,13 +191,13 @@ public class ActivityQueryService {
 	}
 
 	/**枫叶查询机构能参与的活动（机构在参与范围内）
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-10-09 16:36:38
 	 * @param page
 	 * @param activityQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public Page<Activity> listOrgParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
 		page = activityMapper.pageOrgParticipate(page, activityQuery);
@@ -253,26 +205,26 @@ public class ActivityQueryService {
 	}
 
 	/**鄂尔多斯可参与活动查询
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-03 15:44:46
-	* @param page
-	* @param activityQuery
-	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-03 15:44:46
+	 * @param page
+	 * @param activityQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	 */
 	public Page<Activity> pageErdosParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		return activityMapper.pageErdosParticipate(page, activityQuery);
 	}
 
 	/**活动日历查询
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-03 16:07:47
 	 * @param page
 	 * @param mhActivityCalendarQuery
 	 * @param multi 活动的时间范围内是否需要返回多条数据
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public Page<Activity> listActivityCalendar(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery, boolean multi) throws ParseException {
 		Integer strict = mhActivityCalendarQuery.getStrict();
 		if (Objects.equals(1, strict)) {
@@ -314,27 +266,27 @@ public class ActivityQueryService {
 		}
 		return page;
 	}
-	
+
 	/**查询机构创建的或能参与的
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-24 21:48:23
 	 * @param page
 	 * @param fid
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public Page<Activity> listOrgParticipatedOrCreated(Page<Activity> page, Integer fid) {
 		page = activityMapper.listOrgParticipatedOrCreated(page, fid);
 		return page;
 	}
 
 	/**计算查询的时间范围
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 14:21:57
 	 * @param activityQuery
 	 * @return void
-	*/
+	 */
 	private void calDateScope(ActivityQueryDTO activityQuery) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String dateScope = activityQuery.getDateScope();
@@ -374,25 +326,25 @@ public class ActivityQueryService {
 	}
 
 	/**查询活动类型列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 17:50:59
-	 * @param 
+	 * @param
 	 * @return java.util.List<com.chaoxing.activity.dto.activity.ActivityTypeDTO>
-	*/
+	 */
 	public List<ActivityTypeDTO> listActivityType() {
 		return Arrays.stream(Activity.ActivityTypeEnum.values()).map(ActivityTypeDTO::buildFromActivityTypeEnum).collect(Collectors.toList());
 	}
 
 	/**查询管理的活动列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-18 14:31:38
 	 * @param page
 	 * @param activityManageQuery
 	 * @param loginUser
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
 		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
 		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
@@ -474,12 +426,12 @@ public class ActivityQueryService {
 	}
 
 	/**封装管理者（管理员）
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-06 14:20:51
 	 * @param activities
 	 * @return void
-	*/
+	 */
 	private void packageManager(List<Activity> activities) {
 		if (CollectionUtils.isNotEmpty(activities)) {
 			List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
@@ -499,13 +451,13 @@ public class ActivityQueryService {
 	}
 
 	/**分页查询管理的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-08 18:00:51
 	 * @param page
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public Page<Activity> pageManaged(Page<Activity> page, LoginUserDTO loginUser, String sw, String flag) {
 		Integer marketId = marketQueryService.getMarketIdByFlag(loginUser.getFid(), flag);
 		// 若flag不为空且市场id不存在，则查询结果为空
@@ -517,12 +469,12 @@ public class ActivityQueryService {
 	}
 
 	/**根据活动id查询活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-19 18:59:35
 	 * @param activityId
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity getById(Integer activityId) {
 		Activity activity = activityMapper.getById(activityId);
 		Optional.ofNullable(activity).map(Activity::getStartTime).ifPresent(v -> activity.setStartTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
@@ -532,26 +484,26 @@ public class ActivityQueryService {
 	}
 
 	/**根据门户pageId查询活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-10 18:14:27
 	 * @param pageId
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity getByPageId(Integer pageId) {
 		return activityMapper.selectOne(new QueryWrapper<Activity>()
-			.lambda()
+				.lambda()
 				.eq(Activity::getPageId, pageId)
 		);
 	}
 
 	/**根据门户websiteId查询活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-21 16:05:17
 	 * @param websiteId
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity getByWebsiteId(Integer websiteId) {
 		return activityMapper.selectOne(new QueryWrapper<Activity>()
 				.lambda()
@@ -560,12 +512,12 @@ public class ActivityQueryService {
 	}
 
 	/**根据报名签到id查询活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-30 20:38:23
 	 * @param signId
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity getBySignId(Integer signId) {
 		if (signId == null) {
 			return null;
@@ -574,12 +526,12 @@ public class ActivityQueryService {
 	}
 
 	/**查询封面url为空的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-20 14:12:59
-	 * @param 
+	 * @param
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public List<Activity> listEmptyCoverUrl() {
 		return activityMapper.selectList(new QueryWrapper<Activity>()
 				.lambda()
@@ -588,14 +540,14 @@ public class ActivityQueryService {
 	}
 
 	/**分页查询已报名活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-27 20:30:46
 	 * @param page
 	 * @param loginUser
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
-	*/
+	 */
 	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag) {
 		Integer uid = loginUser.getUid();
 		Integer fid = loginUser.getFid();
@@ -617,17 +569,17 @@ public class ActivityQueryService {
 	}
 
 	/**门户我报名的活动查询
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-10-20 17:46:05
-	* @param page
-	* @param loginUser
-	* @param sw
-	* @param flag
-	* @param marketIds
-	* @param specificCurrOrg
-	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-20 17:46:05
+	 * @param page
+	 * @param loginUser
+	 * @param sw
+	 * @param flag
+	 * @param marketIds
+	 * @param specificCurrOrg
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
+	 */
 	public Page mhPageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag, Integer activityClassifyId, List<Integer> marketIds, Integer specificCurrOrg) {
 		Integer uid = loginUser.getUid();
 		Integer fid = loginUser.getFid();
@@ -690,14 +642,14 @@ public class ActivityQueryService {
 	}
 
 	/**查询收藏的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-27 20:58:26
 	 * @param page
 	 * @param loginUser
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public Page<Activity> pageCollected(Page page, LoginUserDTO loginUser, String sw, String flag) {
 		Integer marketId = marketQueryService.getMarketIdByFlag(loginUser.getFid(), flag);
 		// 若flag不为空且市场id不存在，则查询结果为空
@@ -709,49 +661,49 @@ public class ActivityQueryService {
 	}
 
 	/**获取活动管理url
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-09 19:11:37
 	 * @param activityId
 	 * @return java.lang.String
-	*/
+	 */
 	public String getActivityManageUrl(Integer activityId) {
 		return String.format(UrlConstant.ATIVITY_MANAGE_URL, activityId);
 	}
 
 	/**活动评价地址
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-16 11:12:37
 	 * @param activityId
 	 * @return java.lang.String
-	*/
+	 */
 	public String getActivityRatingUrl(Integer activityId) {
 		return String.format(UrlConstant.ACTIVITY_RATING_URL, activityId);
 	}
 
 	/**查询所有的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-26 18:32:13
-	 * @param 
+	 * @param
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public List<Activity> list() {
 		return activityMapper.selectList(new QueryWrapper<Activity>()
-			.lambda()
+				.lambda()
 				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
 		);
 	}
 
 	/**查询机构创建的指定flag的活动列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-19 10:46:24
 	 * @param fid
 	 * @param flag
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public List<Activity> listOrgCreated(Integer fid, String flag) {
 		// 先根据flag查询市场
 		Integer marketId = marketQueryService.getMarketIdByFlag(fid, flag);
@@ -783,15 +735,15 @@ public class ActivityQueryService {
 	}
 
 	/**根据机构id, 给定的活动时间范围，查询在此范围内进行中的活动id列表
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-05-12 15:26:37
-	* @param fid
-	* @return java.util.List<java.lang.Integer>
-	*/
-    public List<Integer> listActivityIdsByFid(Integer fid, String startDate, String endDate) {
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-12 15:26:37
+	 * @param fid
+	 * @return java.util.List<java.lang.Integer>
+	 */
+	public List<Integer> listActivityIdsByFid(Integer fid, String startDate, String endDate) {
 		return activityMapper.listOrgReleasedActivityIds(fid, startDate, endDate);
-    }
+	}
 
 	/**查询活动已报名用户id列表
 	 * @Description
@@ -822,8 +774,8 @@ public class ActivityQueryService {
 			}
 		}
 		return uids;
-	}	
-	
+	}
+
 	/**根据活动id查询已报名的用户
 	 * @Description
 	 * @author huxiaolong
@@ -839,7 +791,7 @@ public class ActivityQueryService {
 			PassportUserDTO user = passportApiService.getByUid(uid);
 			users.add(user);
 		});
-		
+
 		return users;
 	}
 
@@ -869,10 +821,10 @@ public class ActivityQueryService {
 			return new ArrayList<>();
 		}
 		List<Integer> ratedUids = activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>().lambda()
-				.eq(ActivityRatingDetail::getActivityId, activityId)
-				// 未删除的评论
-				.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE)
-				.in(ActivityRatingDetail::getScorerUid, uids))
+						.eq(ActivityRatingDetail::getActivityId, activityId)
+						// 未删除的评论
+						.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE)
+						.in(ActivityRatingDetail::getScorerUid, uids))
 				.stream()
 				.map(ActivityRatingDetail::getScorerUid)
 				.collect(Collectors.toList());
@@ -882,15 +834,15 @@ public class ActivityQueryService {
 	}
 
 	/**针对创建机构、时间范围，对活动进行分页查询
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-05-25 16:31:54
-	* @param page
-	* @param fid
-	* @param startTimeStr
-	* @param endTimeStr
-	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-25 16:31:54
+	 * @param page
+	 * @param fid
+	 * @param startTimeStr
+	 * @param endTimeStr
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	 */
 	public Page<Activity> activityPage(Page<Activity> page, Integer fid, String startTimeStr, String endTimeStr) {
 		LambdaQueryWrapper<Activity> wrapper = new QueryWrapper<Activity>().lambda().eq(Activity::getCreateFid, fid);
 		if (StringUtils.isNotBlank(startTimeStr)) {
@@ -905,12 +857,12 @@ public class ActivityQueryService {
 	}
 
 	/**查询pageId不为空websiteId为空的活动id列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-27 10:39:40
-	 * @param 
+	 * @param
 	 * @return java.util.List<java.lang.Integer>
-	*/
+	 */
 	public List<Integer> listEmptyWebsiteIdActivityId() {
 		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
 				.lambda()
@@ -925,12 +877,12 @@ public class ActivityQueryService {
 	}
 
 	/**
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-05-31 11:25:37
-	* @param signId
-	* @return com.chaoxing.activity.dto.sign.create.SignUpCreateParamDTO
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-31 11:25:37
+	 * @param signId
+	 * @return com.chaoxing.activity.dto.sign.create.SignUpCreateParamDTO
+	 */
 	public SignUpCreateParamDTO getActivitySignUp(Integer signId) {
 		if (signId == null) {
 			return null;
@@ -944,12 +896,12 @@ public class ActivityQueryService {
 	}
 
 	/**根据活动id列表查询活动列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-06-06 20:56:29
 	 * @param activityIds
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public List<Activity> listByIds(List<Integer> activityIds) {
 		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
 				.lambda()
@@ -979,20 +931,20 @@ public class ActivityQueryService {
 	 * @param fids
 	 * @return java.util.List<java.lang.Integer>
 	 */
-    public List<Integer> listActivityIdsByFids(List<Integer> fids, String startDate, String endDate) {
-    	if (CollectionUtils.isEmpty(fids)) {
-    		return Lists.newArrayList();
+	public List<Integer> listActivityIdsByFids(List<Integer> fids, String startDate, String endDate) {
+		if (CollectionUtils.isEmpty(fids)) {
+			return Lists.newArrayList();
 		}
 		return activityMapper.listOrgsReleasedActivityId(fids, startDate, endDate);
 	}
 
 	/**根据活动id查询活动详情
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-06-18 14:20:45
 	 * @param activityId
 	 * @return com.chaoxing.activity.model.ActivityDetail
-	*/
+	 */
 	public ActivityDetail getDetailByActivityId(Integer activityId) {
 		List<ActivityDetail> activityDetails = activityDetailMapper.selectList(new QueryWrapper<ActivityDetail>()
 				.lambda()
@@ -1002,12 +954,12 @@ public class ActivityQueryService {
 	}
 
 	/**根据活动ids查询活动详情
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-26 17:15:27
-	* @param activityIds
-	* @return com.chaoxing.activity.model.ActivityDetail
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-26 17:15:27
+	 * @param activityIds
+	 * @return com.chaoxing.activity.model.ActivityDetail
+	 */
 	public List<ActivityDetail> listDetailByActivityIds(List<Integer> activityIds) {
 		if (CollectionUtils.isEmpty(activityIds)) {
 			return Lists.newArrayList();
@@ -1019,12 +971,12 @@ public class ActivityQueryService {
 	}
 
 	/**根据作品征集id查询活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-06-21 16:36:04
 	 * @param workId
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity getByWorkId(Integer workId) {
 		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
 				.lambda()
@@ -1034,12 +986,12 @@ public class ActivityQueryService {
 	}
 
 	/**对活动其他关联数据进一步查询封装
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-07-21 19:22:35
-	* @param activity
-	* @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-07-21 19:22:35
+	 * @param activity
+	 * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
+	 */
 	public ActivityCreateParamDTO packageActivityCreateParamByActivity(Activity activity) {
 		if (activity == null) {
 			return ActivityCreateParamDTO.buildDefault();
@@ -1072,13 +1024,13 @@ public class ActivityQueryService {
 	}
 
 	/**根据报名签到id列表和活动市场id统计正在进行中的活动数量
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-08-18 18:20:04
 	 * @param marketId
 	 * @param signIds
 	 * @return java.lang.Integer
-	*/
+	 */
 	public Integer countIngActivityNumBySignIds(Integer marketId, List<Integer> signIds) {
 		return activityMapper.selectCount(new LambdaQueryWrapper<Activity>()
 				.eq(Activity::getMarketId, marketId)
@@ -1088,24 +1040,24 @@ public class ActivityQueryService {
 	}
 
 	/**获取活动的字段code与名称的关系
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-08-18 20:11:10
 	 * @param activityId
 	 * @return java.util.Map<java.lang.String,java.lang.String>
-	*/
+	 */
 	public Map<String, String> getFieldCodeNameRelation(Integer activityId) {
 		Activity activity = getById(activityId);
 		return getFieldCodeNameRelation(activity);
 	}
 
 	/**获取活动的字段code与名称的关系
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-08-18 20:16:42
 	 * @param activity
 	 * @return java.util.Map<java.lang.String,java.lang.String>
-	*/
+	 */
 	public Map<String, String> getFieldCodeNameRelation(Activity activity) {
 		// 系统组件code与名称的关联
 		Map<String, String> fieldCodeNameRelation = componentQueryService.getSystemComponentCodeNameRelation();
@@ -1139,19 +1091,19 @@ public class ActivityQueryService {
 	}
 
 	/**查询万能表单创建的活动
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-26 16:42:46
-	* @param formId
-	* @param formUserId
-	* @return boolean
-	*/
-    public Activity getByWfwFormUserId(Integer formId, Integer formUserId) {
-    	if (formId == null || formUserId == null) {
-    		return null;
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-26 16:42:46
+	 * @param formId
+	 * @param formUserId
+	 * @return boolean
+	 */
+	public Activity getByWfwFormUserId(Integer formId, Integer formUserId) {
+		if (formId == null || formUserId == null) {
+			return null;
 		}
-    	return activityMapper.selectList(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId)).stream().findFirst().orElse(null);
-    }
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId)).stream().findFirst().orElse(null);
+	}
 
 	/**查询marketId下非删除状态的活动
 	 * @Description
@@ -1167,13 +1119,13 @@ public class ActivityQueryService {
 				.select(Activity::getId, Activity::getCreateUid, Activity::getCreateFid));
 	}
 
-    /**查询机构创建的作品征集列表（未删除的活动）
-     * @Description 
-     * @author wwb
-     * @Date 2021-09-02 10:51:30
-     * @param fid
-     * @return java.util.List<java.lang.Integer>
-    */
+	/**查询机构创建的作品征集列表（未删除的活动）
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-09-02 10:51:30
+	 * @param fid
+	 * @return java.util.List<java.lang.Integer>
+	 */
 	public List<Integer> listOrgCreatedWorkId(Integer fid) {
 		List<Activity> onlyWorkIds = activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.eq(Activity::getCreateFid, fid)
@@ -1184,13 +1136,13 @@ public class ActivityQueryService {
 	}
 
 	/**查询机构下一级（活动的下一级class、school、region）创建的作品征集id列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-09-07 20:04:04
 	 * @param fid
 	 * @param workId
 	 * @return java.util.List<java.lang.Integer>
-	*/
+	 */
 	public List<Integer> listOrgJuniorCreatedWorkId(Integer fid, Integer workId) {
 		Activity activity = getByWorkId(workId);
 		if (activity == null) {
@@ -1328,12 +1280,12 @@ public class ActivityQueryService {
 	}
 
 	/**查询未开始的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-11-03 16:48:47
-	 * @param 
+	 * @param
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public List<Activity> listNotStart() {
 		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.in(Activity::getStatus, Lists.newArrayList(Activity.StatusEnum.WAIT_RELEASE.getValue(), Activity.StatusEnum.RELEASED.getValue()))
@@ -1341,12 +1293,12 @@ public class ActivityQueryService {
 	}
 
 	/**查询未结束的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-11-03 16:48:57
-	 * @param 
+	 * @param
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public List<Activity> listNotEnd() {
 		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.in(Activity::getStatus, Lists.newArrayList(Activity.StatusEnum.WAIT_RELEASE.getValue(), Activity.StatusEnum.RELEASED.getValue(), Activity.StatusEnum.ONGOING.getValue()))
@@ -1354,12 +1306,12 @@ public class ActivityQueryService {
 	}
 
 	/**查询机构创建的活动列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-11-17 17:07:12
 	 * @param fid
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	public List<Activity> listByFid(Integer fid) {
 		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.eq(Activity::getCreateFid, fid)
@@ -1424,7 +1376,7 @@ public class ActivityQueryService {
 	 * @Date 2021-11-25 09:42:22
 	 * @param activities
 	 * @return void
-	*/
+	 */
 	public void fillTagNames(List<Activity> activities) {
 		if (CollectionUtils.isEmpty(activities)) {
 			return;

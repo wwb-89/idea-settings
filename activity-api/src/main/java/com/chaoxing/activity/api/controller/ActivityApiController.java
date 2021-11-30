@@ -182,7 +182,7 @@ public class ActivityApiController {
 				.build();
 		activityQuery.setFids(fids);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageParticipate(page, activityQuery);
+		page = activityQueryService.listParticipate(page, activityQuery);
 		List<Activity> records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			List<ActivityExternalDTO> activityExternals = model2DtoService.activity2Dto(records);

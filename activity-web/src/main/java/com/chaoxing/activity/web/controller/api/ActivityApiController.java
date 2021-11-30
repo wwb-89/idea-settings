@@ -18,6 +18,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
@@ -70,16 +71,23 @@ public class ActivityApiController {
 	 */
 	@RequestMapping("list/forecast/activities")
 	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
-		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
-		List<Activity> activities = activityQueryService.listAllForecastActivity(activityQuery);
-		activityQueryService.fillTagNames(activities);
-		return RestRespDTO.success(activities);
+		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
+		// 旧有规则，不走此查询
+		if (keepOldRule) {
+			return RestRespDTO.success(Lists.newArrayList());
+		}
+		activityQuery.setStatusList(Lists.newArrayList(2));
+		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
+		Page<Activity> page = new Page<>(1, Integer.MAX_VALUE);
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		page = pageActivities(page, activityQuery, loginUser);
+		return RestRespDTO.success(page.getRecords());
 	}
 
-	/**可参与的活动列表
+	/**分页查询可参与的活动列表
+	 * keepOldRule时，沿用旧的规则查询已发布、进行中、已结束的活动
+	 * 反之仅查询进行中、已结束的活动
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 09:58:40
@@ -89,29 +97,45 @@ public class ActivityApiController {
 	 */
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, String data) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
+		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
+		if (!keepOldRule) {
+			activityQuery.setStatusList(Lists.newArrayList(3, 4));
+			activityQuery.setTimeOrder(OrderTypeEnum.DESC);
+		}
+		Page<Activity> page = HttpServletRequestUtils.buid(request);
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		return RestRespDTO.success(pageActivities(page, activityQuery, loginUser));
+	}
+
+	/**分页查询可参与的活动列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-29 18:24:33
+	 * @param page
+	 * @param activityQuery
+	 * @param loginUser
+	 */
+	private Page<Activity> pageActivities(Page<Activity> page, ActivityQueryDTO activityQuery, LoginUserDTO loginUser) {
 		String areaCode = activityQuery.getAreaCode();
 		if (Objects.equals(activityQuery.getScope(), 1) || StringUtils.isNotBlank(areaCode)) {
 			activityQuery.setMarketId(null);
 			String flag = activityQuery.getFlag();
 			if (StringUtils.isNotBlank(flag)) {
-				Page<Activity> page = HttpServletRequestUtils.buid(request);
 				if (StringUtils.isNotBlank(areaCode)) {
 					activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
 				}
 				page = activityQueryService.pageFlag(page, activityQuery);
 				packageActivitySignedStat(page);
-				return RestRespDTO.success(page);
+				return page;
 			}
 		}
 		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
 		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
-		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
 		packageActivitySignedStat(page);
 		activityQueryService.fillTagNames(page.getRecords());
-		return RestRespDTO.success(page);
+		return page;
 	}
 
 	private List<Integer> getFidsByAreaCode(Integer topFid, String areaCode) {
@@ -161,13 +185,13 @@ public class ActivityApiController {
 	}
 
 	/**可参与的活动（鄂尔多斯）
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-09-03 15:47:34
-	* @param request
-	* @param data
-	* @return com.chaoxing.activity.dto.RestRespDTO
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-03 15:47:34
+	 * @param request
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
 	@RequestMapping("list/erdos/participate")
 	public RestRespDTO erdosParticipateActivities(HttpServletRequest request, String data) {
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
@@ -208,12 +232,12 @@ public class ActivityApiController {
 	}
 
 	/**创建鄂尔多斯默认活动
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-10-28 18:31:23
-	* @param
-	* @return com.chaoxing.activity.model.Activity
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-28 18:31:23
+	 * @param
+	 * @return com.chaoxing.activity.model.Activity
+	 */
 	private Activity erdosDefaultActivity() {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		return Activity.builder()
@@ -228,12 +252,12 @@ public class ActivityApiController {
 	}
 
 	/**根据pageId获取活动的经纬度
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-21 23:47:50
 	 * @param pageId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
+	 */
 	@RequestMapping("address")
 	public RestRespDTO address(Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
@@ -242,13 +266,13 @@ public class ActivityApiController {
 	}
 
 	/**分页查询报名的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-27 19:34:56
 	 * @param request
 	 * @param sw
 	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
+	 */
 	@LoginRequired
 	@RequestMapping("signed-up")
 	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag) {
@@ -260,13 +284,13 @@ public class ActivityApiController {
 	}
 
 	/**分页查询收藏的活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-27 20:45:13
 	 * @param request
 	 * @param sw
 	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
+	 */
 	@LoginRequired
 	@RequestMapping("collected")
 	public RestRespDTO pageCollected(HttpServletRequest request, String sw, String flag) {
@@ -278,13 +302,13 @@ public class ActivityApiController {
 	}
 
 	/**取消收藏
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-28 15:31:21
 	 * @param request
 	 * @param activityId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
+	 */
 	@LoginRequired
 	@RequestMapping("{activityId}/cancel-collect")
 	public RestRespDTO cancelCollect(HttpServletRequest request, @PathVariable Integer activityId) {
@@ -294,13 +318,13 @@ public class ActivityApiController {
 	}
 
 	/**获取活动简介
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-06-25 20:58:43
 	 * @param websiteId
 	 * @param pageId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
+	 */
 	@RequestMapping("introduction")
 	public RestRespDTO getActivityIntroduction(Integer websiteId, Integer pageId) {
 		Activity activity = null;
