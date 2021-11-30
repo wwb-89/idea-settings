@@ -380,6 +380,12 @@ body {
   margin-right: 24px;
   margin-bottom: 24px;
   width: calc(33.333% - 16px);
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .activity-market2 .card-list ul li:nth-child(3n) {
@@ -389,9 +395,8 @@ body {
 .activity-market2 .card-list ul li .img-box {
   position: relative;
   width: 100%;
-  height: 151px;
-  border: 1px solid #E9E9E9;
-  border-radius: 4px;
+  height: 148px;
+  border-radius: 4px 4px 0 0;
   overflow: hidden;
 }
 
@@ -420,7 +425,6 @@ body {
   height: 16px;
   line-height: 16px;
   padding: 23px 0 11px;
-  border-radius: 0 0 3px 3px;
   color: #FFFFFF;
 }
 
@@ -428,7 +432,7 @@ body {
   display: inline-block;
   width: 16px;
   height: 16px;
-  background: url("../images/signed-up-user.png") center center no-repeat;
+  background: url("../images/pv.png") center center no-repeat;
   background-size: 100%;
   margin-left: 10px;
   margin-right: 4px;
@@ -504,12 +508,12 @@ body {
 
 .activity-market2 .card-list ul li .card-info {
   text-align: left;
+  padding: 8px 16px 16px;
 }
 
 .activity-market2 .card-list ul li .card-info .title {
   color: #333333;
   font-size: 18px;
-  margin-top: 8px;
   line-height: 24px;
   cursor: pointer;
 }
@@ -562,9 +566,15 @@ body {
 
 .activity-market2 .card-list ul li .card-info .address {
   font-size: 14px;
-  line-height: 24px;
+  line-height: 18px;
   color: #999999;
   margin-top: 8px;
+}
+
+.activity-market2 .card-list ul li:hover {
+  border-color: transparent;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
 }
 
 .loading {
@@ -599,7 +609,7 @@ body {
 @media screen and (min-width: 1080px) and (max-width: 1365px) {
   .activity-market2 .card-list ul li {
     width: calc(33.333% - 16px);
-    height: 313px;
+    height: 311px;
     margin-right: 24px !important;
   }
   .activity-market2 .card-list ul li:nth-child(3n) {
@@ -624,6 +634,9 @@ body {
     margin-right: 24px !important;
     height: 335px;
   }
+  .activity-market2 .card-list ul li .img-box {
+    height: 173px;
+  }
   .activity-market2 .card-list ul li:nth-child(5n) {
     margin-right: 0 !important;
   }
@@ -634,6 +647,9 @@ body {
     width: calc(16.666% - 20px);
     margin-right: 24px !important;
     height: 336px;
+  }
+  .activity-market2 .card-list ul li .img-box {
+    height: 174px;
   }
   .activity-market2 .card-list ul li:nth-child(6n) {
     margin-right: 0 !important;
