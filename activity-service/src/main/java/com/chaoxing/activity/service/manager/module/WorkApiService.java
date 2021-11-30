@@ -221,7 +221,7 @@ public class WorkApiService {
 		String result;
 		try {
 			result = restTemplate.postForObject(url, null, String.class);
-		} catch (RestClientException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("根据url:{} 查询作品征集的按钮列表error:{}", url, e.getMessage());
 			return Lists.newArrayList();
