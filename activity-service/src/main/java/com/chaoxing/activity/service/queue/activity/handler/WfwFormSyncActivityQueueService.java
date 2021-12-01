@@ -2,10 +2,12 @@ package com.chaoxing.activity.service.queue.activity.handler;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.*;
-import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
-import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
+import com.chaoxing.activity.dto.DepartmentDTO;
+import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OperateUserDTO;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
@@ -50,9 +52,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -389,7 +389,11 @@ public class WfwFormSyncActivityQueueService {
         ActivityUpdateParamDTO activityUpdateParam = new ActivityUpdateParamDTO();
         Activity activity = activityQueryService.getById(activityId);
         activityUpdateParam = activityUpdateParam.buildFromActivity(activity);
-        buildActivityUpdateParamFromFormRecord(formUserRecord, activityUpdateParam);
+        // 活动分类
+        String activityClassifyName = FormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_CLASSIFY);
+        Classify classify = classifyHandleService.getOrAddMarketClassify(activity.getMarketId(), activityClassifyName);
+        Integer classifyId = Optional.ofNullable(classify).map(Classify::getId).orElse(null);
+        activityUpdateParam.fillFromFormData(formUserRecord, classifyId);
         // 报名签到
         Integer signId = activity.getSignId();
         SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
@@ -455,74 +459,6 @@ public class WfwFormSyncActivityQueueService {
             }
         }
         return signIn;
-    }
-
-    /**
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-08-26 17:55:11
-    * @param formUserRecord
-    * @param activityUpdateParam
-    * @return void
-    */
-    private void buildActivityUpdateParamFromFormRecord(FormDataDTO formUserRecord, ActivityUpdateParamDTO activityUpdateParam) {
-        List<String> timeScopes = Lists.newArrayList();
-        formUserRecord.getFormData().forEach(v -> {
-            List<JSONObject> values = v.getValues();
-            if (CollectionUtils.isNotEmpty(values)) {
-                JSONObject obj = values.get(0);
-                String attrValue = obj.getString("val");
-                if (Objects.equals(WfwFormAliasConstant.ACTIVITY_NAME, v.getAlias())) {
-                    activityUpdateParam.setName(attrValue);
-                } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_CLASSIFY, v.getAlias())) {
-                    Classify classify = classifyQueryService.getOrAddByName(attrValue);
-                    MarketClassify marketClassify = classifyQueryService.getByClassifyIdAndMarketId(classify.getId(), activityUpdateParam.getMarketId());
-                    if (marketClassify == null) {
-                        classifyHandleService.addMarketClassify(MarketClassifyCreateParamDTO.builder().marketId(activityUpdateParam.getMarketId()).name(attrValue).build());
-                    }
-                    activityUpdateParam.setActivityClassifyId(classify.getId());
-                } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_ADDRESS, v.getAlias())) {
-                    String activityType = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "activity_type");
-                    Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
-
-                    AddressDTO addressDto = com.chaoxing.activity.util.FormUtils.getAddress(formUserRecord, "activity_address");
-                    addressDto = Optional.ofNullable(addressDto).orElse(com.chaoxing.activity.util.FormUtils.getAddress(formUserRecord, "location"));
-                    String detailAddress = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "activity_detail_address");
-                    detailAddress = Optional.ofNullable(detailAddress).orElse("");
-                    String address = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "activity_address");
-                    BigDecimal lng = null;
-                    BigDecimal lat = null;
-                    if (addressDto != null) {
-                        address = addressDto.getAddress();
-                        lng = addressDto.getLng();
-                        lat = addressDto.getLat();
-                    }
-                    if (activityTypeEnum == null) {
-                        if (StringUtils.isNotBlank(address)) {
-                            activityTypeEnum = Activity.ActivityTypeEnum.OFFLINE;
-                        } else {
-                            activityTypeEnum = Activity.ActivityTypeEnum.ONLINE;
-                        }
-                    }
-                    activityUpdateParam.setActivityType(activityTypeEnum.getValue());
-                    activityUpdateParam.setAddress(address);
-                    activityUpdateParam.setDetailAddress(detailAddress);
-                    activityUpdateParam.setLongitude(lng);
-                    activityUpdateParam.setDimension(lat);
-                } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_TIME_SCOPE, v.getAlias())) {
-                    timeScopes.add(attrValue);
-                } else if (Objects.equals(WfwFormAliasConstant.INTRODUCTION, v.getAlias())) {
-                    activityUpdateParam.setIntroduction(attrValue);
-                }
-            }
-        });
-        if (timeScopes.size() > 2) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime startTime = StringUtils.isNotBlank(timeScopes.get(0)) ? LocalDateTime.parse(timeScopes.get(0), formatter) : null;
-            LocalDateTime endTime = StringUtils.isNotBlank(timeScopes.get(1)) ? LocalDateTime.parse(timeScopes.get(1), formatter) : null;
-            activityUpdateParam.setStartTimeStamp(DateUtils.date2Timestamp(startTime));
-            activityUpdateParam.setEndTimeStamp(DateUtils.date2Timestamp(endTime));
-        }
     }
 
     /**根据表单记录更新发布状态
