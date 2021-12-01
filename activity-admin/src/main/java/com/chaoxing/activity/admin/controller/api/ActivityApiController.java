@@ -7,7 +7,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
-import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
