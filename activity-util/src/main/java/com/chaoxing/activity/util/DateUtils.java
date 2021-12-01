@@ -88,7 +88,7 @@ public class DateUtils {
 	 * @param format
 	 * @return java.lang.String
 	 */
-	private static String timestamp2Format(Long timestamp, String format) {
+	public static String timestamp2Format(Long timestamp, String format) {
 		if (timestamp == null) {
 			return null;
 		}

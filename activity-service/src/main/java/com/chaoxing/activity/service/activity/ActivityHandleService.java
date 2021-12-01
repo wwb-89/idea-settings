@@ -1139,4 +1139,19 @@ public class ActivityHandleService {
 			deleteMarketActivity(v, marketId, loginUser.buildOperateUserDTO());
 		});
 	}
+
+	/**
+	 * 更新活动归档状态
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-01 12:05:17
+	 * @param activityId
+	 * @param archive
+	 * @return
+	 */
+    public void updateActivityArchive(Integer activityId, boolean archive) {
+		activityMapper.update(null, new LambdaUpdateWrapper<Activity>()
+				.eq(Activity::getId, activityId)
+				.set(Activity::getArchived, archive));
+    }
 }
