@@ -168,8 +168,19 @@ public class RedirectController {
      * @return java.lang.String
      */
     @RequestMapping("sign-up-manage/from/wfw-form")
-    public String redirectToActivityIndex1(Integer fid, Integer formId, Integer formUserId) {
+    public String redirectToSignUpManage(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        return "redirect:" + SignDTO.getSignUpManageUrl(activity.getSignId());
+    }
+    /**重定向到报名管理
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-01 14:26:10
+     * @return java.lang.String
+     */
+    @RequestMapping("sign-up-manage/by/activity/{activityId}")
+    public String redirectToSignUpManage(@PathVariable Integer activityId) {
+        Activity activity = activityQueryService.getById(activityId);
         return "redirect:" + SignDTO.getSignUpManageUrl(activity.getSignId());
     }
 

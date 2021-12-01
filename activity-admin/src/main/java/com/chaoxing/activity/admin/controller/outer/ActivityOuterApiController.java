@@ -52,36 +52,59 @@ public class ActivityOuterApiController {
     }
 
     /**
-     * 更新活动归档状态(归档、恢复)
+     * 活动归档状态
      * @Description
      * @author huxiaolong
      * @Date 2021-12-01 12:03:11
-     * @param archived
      * @return
      */
-    @RequestMapping("{activityId}/archive-stutus/update")
-    public RestRespDTO updateActivityArchive(@PathVariable Integer activityId, boolean archived) {
-        activityHandleService.updateActivityArchive(activityId, archived);
+    @RequestMapping("{activityId}/archive")
+    public RestRespDTO archiveActivity(@PathVariable Integer activityId) {
+        activityHandleService.updateActivityArchive(activityId, true);
+        return RestRespDTO.success();
+    }
+    /**
+     * 活动恢复
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-01 12:03:11
+     * @return
+     */
+    @RequestMapping("{activityId}/recovery")
+    public RestRespDTO recoveryActivity(@PathVariable Integer activityId) {
+        activityHandleService.updateActivityArchive(activityId, false);
         return RestRespDTO.success();
     }
 
     /**
-     * 更新活动发布下架状态
+     * 活动发布
      * @Description
      * @author huxiaolong
      * @Date 2021-12-01 12:07:32
      * @param activityId
-     * @param released
+     * @param fid
+     * @param uid
      * @return
      */
     @RequestMapping("{activityId}/release-status/update")
-    public RestRespDTO updateActivityReleaseStatus(@PathVariable Integer activityId, Integer fid, Integer uid, boolean released) {
-        OperateUserDTO operateUser = OperateUserDTO.build(uid, fid);
-        if (released) {
-            activityHandleService.release(activityId, operateUser);
-        } else {
-            activityHandleService.cancelRelease(activityId, operateUser);
-        }
+    public RestRespDTO releaseActivity(@PathVariable Integer activityId, Integer fid, Integer uid) {
+        activityHandleService.release(activityId, OperateUserDTO.build(uid, fid));
+        return RestRespDTO.success();
+    }
+
+    /**
+     * 活动下架
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-01 12:07:32
+     * @param activityId
+     * @param fid
+     * @param uid
+     * @return
+     */
+    @RequestMapping("{activityId}/cancel-release")
+    public RestRespDTO cancelReleaseActivity(@PathVariable Integer activityId, Integer fid, Integer uid) {
+        activityHandleService.cancelRelease(activityId, OperateUserDTO.build(uid, fid));
         return RestRespDTO.success();
     }
 
