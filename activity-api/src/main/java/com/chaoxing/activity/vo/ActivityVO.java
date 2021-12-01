@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.vo;
+package com.chaoxing.activity.vo;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.DateUtils;

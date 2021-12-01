@@ -3,11 +3,14 @@ package com.chaoxing.activity.dto.query;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 /**
  * @description: 活动管理第三方查询参数DTO
@@ -26,11 +29,11 @@ public class ActivityCreateParticipateQueryDTO {
     /** 活动开始时间yyyy-MM-dd HH:mm:ss */
     private String startTime;
     /** 活动开始时间戳 */
-    private Long startTimeStamp;
+    private Long startTimestamp;
     /** 活动结束时间yyyy-MM-dd HH:mm:ss */
     private String endTime;
     /** 活动结束时间戳 */
-    private Long endTimeStamp;
+    private Long endTimestamp;
     /** 是否归档 */
     private Boolean archived;
     /** 活动状态 */
@@ -40,17 +43,25 @@ public class ActivityCreateParticipateQueryDTO {
     /** start_time, end_time */
     private String orderField;
     /** 排序方式 */
-    private OrderTypeEnum orderType;
+    private String orderType;
 
     public void init() {
+        List<String> defaultOrderFields = Lists.newArrayList("start_time", "end_time");
         if (getFid() == null) {
-            throw new BusinessException("参数fid缺失");
+            throw new BusinessException("fid不能为空");
         }
-        if (StringUtils.isBlank(getStartTime()) && getStartTimeStamp() != null) {
-            setStartTime(DateUtils.timestamp2Format(getStartTimeStamp(), DateUtils.FULL_DATE_MINUTE_STRING));
+        // 防止sql注入，先对传入的字段和排序规则做检查
+        if (StringUtils.isNotBlank(getOrderType()) && OrderTypeEnum.fromValue(getOrderType()) == null) {
+            setOrderType(null);
         }
-        if (StringUtils.isBlank(getEndTime()) && getEndTimeStamp() != null) {
-            setEndTime(DateUtils.timestamp2Format(getEndTimeStamp(), DateUtils.FULL_DATE_MINUTE_STRING));
+        if (StringUtils.isNotBlank(getOrderField()) && !defaultOrderFields.contains(getOrderField())) {
+            setOrderField(null);
+        }
+        if (StringUtils.isBlank(getStartTime()) && getStartTimestamp() != null) {
+            setStartTime(DateUtils.timestamp2Format(getStartTimestamp(), DateUtils.FULL_DATE_MINUTE_STRING));
+        }
+        if (StringUtils.isBlank(getEndTime()) && getEndTimestamp() != null) {
+            setEndTime(DateUtils.timestamp2Format(getEndTimestamp(), DateUtils.FULL_DATE_MINUTE_STRING));
         }
     }
 }
