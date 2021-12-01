@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
+import com.chaoxing.activity.dto.query.ActivityCreateParticipateQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityClassifyDTO;
 import com.chaoxing.activity.model.Activity;
@@ -22,6 +23,16 @@ import java.util.List;
 @Mapper
 public interface ActivityMapper extends BaseMapper<Activity> {
 
+	/**
+	 * 第三方活动分页查询
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-30 19:05:02
+	 * @param page
+	 * @param activityQuery
+	 * @return
+	 **/
+	Page<Activity> createParticipateActivityPage(@Param("page") Page<?> page, @Param("params") ActivityCreateParticipateQueryDTO activityQuery);
 
 	/**
 	 * 查询参与的活动

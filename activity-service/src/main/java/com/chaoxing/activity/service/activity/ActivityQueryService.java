@@ -18,6 +18,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
+import com.chaoxing.activity.dto.query.ActivityCreateParticipateQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
@@ -25,7 +26,6 @@ import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivityRatingDetailMapper;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
@@ -109,8 +109,6 @@ public class ActivityQueryService {
 	private ComponentQueryService componentQueryService;
 	@Resource
 	private MarketQueryService marketQueryService;
-	@Resource
-	private ActivityFlagCodeService activityFlagCodeService;
 	@Resource
 	private ActivityStatSummaryQueryService activityStatSummaryQueryService;
 	@Resource
@@ -1396,4 +1394,15 @@ public class ActivityQueryService {
 		}
 	}
 
+	/**分页查询机构创建或发布到机构下的活动
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-01 11:18:22
+	 * @param activityQuery
+	 * @return 
+	 */
+	public Page createParticipateActivityPage(Page page, ActivityCreateParticipateQueryDTO activityQuery) {
+		activityQuery.init();
+		return activityMapper.createParticipateActivityPage(page, activityQuery);
+	}
 }

@@ -160,6 +160,9 @@ public class Activity {
     private Boolean openGroup;
     /** 小组bbsid; column: group_bbsid*/
     private String groupBbsid;
+    /** 是否归档; column: is_archive*/
+    @TableField(value = "is_archived")
+    private Boolean archived;
 
     // 附加
     /** 开始时间字符串 */
