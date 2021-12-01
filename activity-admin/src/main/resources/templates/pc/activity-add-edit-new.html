@@ -77,7 +77,7 @@
 </head>
 
 <body>
-<div :class="{'page': true, 'special-style': (!fullScreen)}" id="activity-vue" v-cloak>
+<div class="page" id="activity-vue" v-cloak>
     <div v-show="!showSignInListIframe">
         <!-- 创建/编辑活动头部 -->
         <div class="top flex" id="create">
@@ -876,7 +876,6 @@
                 activePicIndex: -1,
                 pictureCloudIds: activityApp.default_cover_cloud_id_repo,
                 pictureShow: false,
-                fullScreen: activityApp.getUrlParamter("fullScreen"),
                 showSignInListIframe: false,
                 scrollHeight: 0,
                 signInNum: 0,
