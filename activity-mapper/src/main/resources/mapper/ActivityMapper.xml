@@ -1079,7 +1079,7 @@
                         t.`status` = #{params.status}
                     </when>
                     <otherwise>
-                        t.`status` IN ( 2, 3, 4 )
+                        t.`status` IN ( 1, 2, 3, 4 )
                     </otherwise>
                 </choose>
             </otherwise>
@@ -1117,7 +1117,7 @@
         ORDER BY
             <choose>
                 <when test="params.orderField == null or params.orderField == ''">
-                    FIELD( t.`status`, 2, 3, 4 ),
+                    FIELD( t.`status`, 3, 2, 1, 4 )
                     t.start_time DESC
                 </when>
                 <otherwise>
