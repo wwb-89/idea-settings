@@ -189,11 +189,6 @@
 			mounted:function() {
 				var $this = this;
 				document.domain = "chaoxing.com";
-				//图片高度根据尺寸等比例变化
-				$this.picHeight();
-				$(window).resize(function () {
-					$this.picHeight();
-				});
 				$this.resetQueryParams();
 				// 如果topFid符合regions的manageFid那么选中
 				if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {
@@ -410,17 +405,8 @@
 				},
 				// 我的活动
 				my: function () {
-					var $this = this;
 					var url = ctx + "/my";
 					window.open(url);
-				},
-				picHeight:function (){
-					var widthPic = $(".card-list ul li:first-child").find(".js-crop-img").width();
-					var heightPic = 14/27*widthPic;
-					$(".card-list ul li").each(function () {
-						$(this).find(".js-crop-img").css('height', heightPic + 'px');
-						$(this).find(".img-box").css('height', heightPic + 'px');
-					});
 				},
 				initMescroll: function () {
 					var $this = this;
