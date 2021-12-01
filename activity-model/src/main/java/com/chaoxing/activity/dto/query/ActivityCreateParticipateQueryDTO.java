@@ -32,7 +32,7 @@ public class ActivityCreateParticipateQueryDTO {
     /** 活动结束时间戳 */
     private Long endTimeStamp;
     /** 是否归档 */
-    private Boolean archive;
+    private Boolean archived;
     /** 活动状态 */
     private Integer status;
     /** 机构fid */
