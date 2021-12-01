@@ -147,6 +147,10 @@ public class ActivityCreateParamDTO {
 	/** 选择的标签名称列表 */
 	private List<String> tagNames;
 
+	// 附加
+	/** 网页模版名称 */
+	private String webTemplateName;
+
 	/**构建活动对象
 	 * @Description 
 	 * @author wwb
@@ -431,6 +435,10 @@ public class ActivityCreateParamDTO {
 			BigDecimal timeLengthUpperLimit = BigDecimal.valueOf(Double.parseDouble(timeLengthUpperLimitStr));
 			activityCreateParamDto.setTimeLengthUpperLimit(timeLengthUpperLimit);
 		}
+		// 网页模版
+		String webTemplateName = FormUtils.getValue(formData, "web_template");
+		activityCreateParamDto.setWebTemplateName(webTemplateName);
+
 		activityCreateParamDto.buildLoginUser(formData.getUid(), formData.getUname(), fid, orgName);
 		activityCreateParamDto.setOriginType(Activity.OriginTypeEnum.WFW_FORM.getValue());
 		activityCreateParamDto.setOrigin(String.valueOf(formData.getFormId()));

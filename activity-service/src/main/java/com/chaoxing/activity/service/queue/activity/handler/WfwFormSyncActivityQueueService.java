@@ -20,10 +20,10 @@ import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
-import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
@@ -41,6 +41,7 @@ import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQue
 import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.WfwFormAliasConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
@@ -80,7 +81,7 @@ public class WfwFormSyncActivityQueueService {
     @Resource
     private MarketHandleService marketHandleService;
     @Resource
-    private ClassifyQueryService classifyQueryService;
+    private WebTemplateService webTemplateService;
     @Resource
     private ClassifyHandleService classifyHandleService;
     @Resource
@@ -191,6 +192,14 @@ public class WfwFormSyncActivityQueueService {
         if (activityCreateParam.getOpenWork()) {
             activityCreateParam.setWorkId(workApiService.createDefault(loginUser.getUid(), fid));
         }
+        // 处理网页模版
+        String webTemplateName = activityCreateParam.getWebTemplateName();
+        if (webTemplateId == null && StringUtils.isNotBlank(webTemplateName)) {
+            WebTemplate lastWebTemplate = webTemplateService.getLastByName(webTemplateName);
+            webTemplateId = Optional.ofNullable(lastWebTemplate).map(WebTemplate::getId).orElse(null);
+        }
+        // 如果没有指定网页模版则使用默认的
+        webTemplateId = Optional.ofNullable(webTemplateId).orElse(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
         // 补充额外必要信息
         Integer templateId = template.getId();
         activityCreateParam.setAdditionalAttrs(webTemplateId, marketId, templateId, flag);

@@ -39,9 +39,7 @@ public class CommonConstant {
 	public static final BigDecimal DEFAULT_LNG = BigDecimal.valueOf(104.07073444090588000);
 	/** 默认维度 */
 	public static final BigDecimal DEFAULT_LAT = BigDecimal.valueOf(30.57504123492308400);
-	
-	/** 活动开始通知的时间阈值（提前多久发通知）阈值单位：毫秒 */
-	public static final Long ACTIVITY_BEFORE_START_NOTICE_TIME_THRESHOLD = 24 * 60 * 60 * 1000L;
+
 	/** 通知发送人的uid */
 	public static final Integer NOTICE_SEND_UID = 168054129;
 	/** 超星网fid */

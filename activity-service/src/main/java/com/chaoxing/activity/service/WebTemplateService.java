@@ -199,4 +199,20 @@ public class WebTemplateService {
 		);
 	}
 
+	/**根据网页模版名称查询最新的网页模版
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-01 17:49:15
+	 * @param name
+	 * @return com.chaoxing.activity.model.WebTemplate
+	*/
+	public WebTemplate getLastByName(String name) {
+		List<WebTemplate> webTemplates = webTemplateMapper.selectList(new LambdaQueryWrapper<WebTemplate>()
+				.eq(WebTemplate::getName, name)
+				.eq(WebTemplate::getDeleted, false)
+				.orderByAsc(WebTemplate::getSequence)
+		);
+		return webTemplates.stream().findFirst().orElse(null);
+	}
+
 }
