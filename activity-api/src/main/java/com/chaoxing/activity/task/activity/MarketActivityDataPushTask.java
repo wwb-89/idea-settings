@@ -25,7 +25,7 @@ public class MarketActivityDataPushTask {
     @Resource
     private MarketActivityDataPushQueueService activityDataPushQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         MarketActivityDataPushQueue.QueueParamDTO queueParam = marketActivityDataPushQueue.pop();
         if (queueParam == null) {
@@ -36,7 +36,7 @@ public class MarketActivityDataPushTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理活动数据推送任务error:{}", queueParam, e.getMessage());
             e.printStackTrace();
-            marketActivityDataPushQueue.push(queueParam);
+            marketActivityDataPushQueue.delayPush(queueParam);
         }
     }
 

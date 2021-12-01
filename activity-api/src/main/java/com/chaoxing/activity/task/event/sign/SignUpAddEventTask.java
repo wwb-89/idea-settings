@@ -27,7 +27,7 @@ public class SignUpAddEventTask {
     @Resource
     private SignUpAddEventQueueService signUpAddEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         SignUpAddEventOrigin eventOrigin = signUpAddEventQueue.pop();
         if (eventOrigin == null) {

@@ -27,7 +27,7 @@ public class ExportTask {
     private ExportQueue exportQueueService;
 
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handleExportTask() throws InterruptedException {
         Integer taskId = exportQueueService.pop();
         if (taskId == null) {

@@ -26,7 +26,7 @@ public class OrgUserDataPushTask {
     @Resource
     private OrgUserDataPushQueueService orgUserDataPushQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         OrgUserDataPushQueue.QueueParamDTO queueParam = orgUserDataPushQueue.pop();
         if (queueParam == null) {
@@ -37,7 +37,7 @@ public class OrgUserDataPushTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理机构用户数据推送任务error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
-            orgUserDataPushQueue.push(queueParam);
+            orgUserDataPushQueue.delayPush(queueParam);
         }
     }
 

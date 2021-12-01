@@ -33,7 +33,7 @@ public class IntegralPushTask {
 	 * @param 
 	 * @return void
 	*/
-	@Scheduled(fixedDelay = 1L)
+	@Scheduled(fixedDelay = 10L)
 	public void pushData() throws InterruptedException {
 		IntegralPushQueue.IntegralPushDTO integralPush = integralPushQueueService.pop();
 		if (integralPush == null) {

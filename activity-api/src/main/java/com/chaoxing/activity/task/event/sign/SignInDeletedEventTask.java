@@ -27,7 +27,7 @@ public class SignInDeletedEventTask {
     @Resource
     private SignInDeletedEventQueueService signInDeletedEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         SignInDeletedEventOrigin eventOrigin = signInDeletedEventQueue.pop();
         if (eventOrigin == null) {

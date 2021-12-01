@@ -26,7 +26,7 @@ public class UserActionRecordTask {
     @Resource
     private UserActionRecordQueueService userActionRecordQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserActionRecordQueue.QueueParamDTO queueParam = userActionRecordQueue.pop();
         if (queueParam == null) {

@@ -32,6 +32,21 @@ public interface IQueue<T> {
         delayedQueue.offer(value, CommonConstant.DELAYED_QUEUE_DURATION.toMillis(), TimeUnit.MILLISECONDS);
     }
 
+    /**延时推送
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-01 10:08:45
+     * @param redissonClient
+     * @param key
+     * @param value
+     * @return void
+    */
+    default void delayPush(RedissonClient redissonClient, String key, T value) {
+        RBlockingDeque<T> blockingDeque = redissonClient.getBlockingDeque(key);
+        RDelayedQueue<T> delayedQueue = redissonClient.getDelayedQueue(blockingDeque);
+        delayedQueue.offer(value, CommonConstant.FAIL_DELAYED_QUEUE_DURATION.toMillis(), TimeUnit.MILLISECONDS);
+    }
+
     /**从队列中获取
      * @Description 
      * @author wwb

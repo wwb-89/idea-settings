@@ -27,7 +27,7 @@ public class SignChangeEventTask {
     @Resource
     private SignChangeEventQueueService signChangeEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         SignChangeEventOrigin eventOrigin = signChangeEventQueue.pop();
         if (eventOrigin == null) {

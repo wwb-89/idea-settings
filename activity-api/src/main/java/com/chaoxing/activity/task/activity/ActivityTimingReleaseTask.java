@@ -28,7 +28,7 @@ public class ActivityTimingReleaseTask {
 	@Resource
 	private ActivityTimingReleaseQueueService activityTimingReleaseQueueService;
 
-	@Scheduled(fixedDelay = 1L)
+	@Scheduled(fixedDelay = 10L)
 	public void handle() throws InterruptedException {
 		ActivityTimingReleaseQueue.QueueParamDTO queueParam = activityTimingReleaseQueue.pop();
 		if (queueParam == null) {

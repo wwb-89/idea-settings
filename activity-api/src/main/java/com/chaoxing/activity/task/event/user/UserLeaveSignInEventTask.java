@@ -27,7 +27,7 @@ public class UserLeaveSignInEventTask {
     @Resource
     private UserLeaveSignInEventQueueService userLeaveSignInEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserLeaveSignInEventOrigin eventOrigin = userLeaveSignInEventQueue.pop();
         if (eventOrigin == null) {

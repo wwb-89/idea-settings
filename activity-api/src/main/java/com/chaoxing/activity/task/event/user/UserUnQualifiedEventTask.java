@@ -1,7 +1,6 @@
 package com.chaoxing.activity.task.event.user;
 
 import com.alibaba.fastjson.JSON;
-import com.chaoxing.activity.dto.event.user.UserSignedInEventOrigin;
 import com.chaoxing.activity.dto.event.user.UserUnQualifiedEventOrigin;
 import com.chaoxing.activity.service.queue.event.user.UserUnQualifiedEventQueue;
 import com.chaoxing.activity.service.queue.event.user.handler.UserUnQualifiedEventQueueService;
@@ -28,7 +27,7 @@ public class UserUnQualifiedEventTask {
     @Resource
     private UserUnQualifiedEventQueueService userUnQualifiedEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserUnQualifiedEventOrigin eventOrigin = userUnQualifiedEventQueue.pop();
         if (eventOrigin == null) {

@@ -23,7 +23,7 @@ public class BlacklistAutoRemoveTask {
     @Resource
     private BlacklistAutoRemoveQueueService blacklistAutoRemoveQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         BlacklistAutoRemoveQueue.QueueParamDTO queueParamDto = blacklistAutoRemoveQueue.pop();
         if (queueParamDto == null) {

@@ -27,7 +27,7 @@ public class UserSignedOutEventTask {
     @Resource
     private UserSignedOutEventQueueService userSignedOutEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserSignedOutEventOrigin eventOrigin = userSignedOutEventQueue.pop();
         if (eventOrigin == null) {

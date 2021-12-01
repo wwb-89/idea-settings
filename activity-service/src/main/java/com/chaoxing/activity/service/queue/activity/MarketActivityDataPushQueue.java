@@ -33,6 +33,10 @@ public class MarketActivityDataPushQueue implements IQueue<MarketActivityDataPus
         push(redissonClient, KEY, queueParam);
     }
 
+    public void delayPush(QueueParamDTO queueParam) {
+        delayPush(redissonClient, KEY, queueParam);
+    }
+
     public QueueParamDTO pop() throws InterruptedException {
         return pop(redissonClient, KEY);
     }

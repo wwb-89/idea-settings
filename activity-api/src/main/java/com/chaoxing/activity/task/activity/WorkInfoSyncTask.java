@@ -25,7 +25,7 @@ public class WorkInfoSyncTask {
     @Resource
     private WorkInfoSyncQueueService workInfoSyncQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         Integer activityId = workInfoSyncQueue.pop();
         try {
@@ -33,7 +33,7 @@ public class WorkInfoSyncTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理作品征集信息同步error:{}", activityId, e.getMessage());
             e.printStackTrace();
-            workInfoSyncQueue.push(activityId);
+            workInfoSyncQueue.delayPush(activityId);
         }
     }
 

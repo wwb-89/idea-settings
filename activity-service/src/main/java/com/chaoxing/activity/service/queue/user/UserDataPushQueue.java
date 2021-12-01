@@ -32,6 +32,10 @@ public class UserDataPushQueue implements IQueue<UserDataPushQueue.QueueParamDTO
         push(redissonClient, KEY, queueParam);
     }
 
+    public void delayPush(QueueParamDTO queueParam) {
+        delayPush(redissonClient, KEY, queueParam);
+    }
+
     public QueueParamDTO pop() throws InterruptedException {
         return pop(redissonClient, KEY);
     }

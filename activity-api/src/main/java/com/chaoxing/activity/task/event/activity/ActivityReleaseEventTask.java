@@ -27,7 +27,7 @@ public class ActivityReleaseEventTask {
     @Resource
     private ActivityReleaseEventQueueService activityReleaseEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityReleaseEventOrigin eventOrigin = activityReleaseEventQueue.pop();
         if (eventOrigin == null) {

@@ -26,7 +26,7 @@ public class UserDataPushTask {
     @Resource
     private UserDataPushQueueService userDataPushQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserDataPushQueue.QueueParamDTO queueParam = userDataPushQueue.pop();
         if (queueParam == null) {
@@ -37,7 +37,7 @@ public class UserDataPushTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理用户数据推送任务error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
-            userDataPushQueue.push(queueParam);
+            userDataPushQueue.delayPush(queueParam);
         }
     }
 

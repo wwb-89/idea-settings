@@ -26,7 +26,7 @@ public class ActivityCollectedUserNoticeTask {
     @Resource
     private ActivityCollectedUserNoticeQueueService activityCollectedUserNoticeQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityCollectedUserNoticeQueue.QueueParamDTO queueParam = activityCollectedUserNoticeQueue.pop();
         if (queueParam == null) {

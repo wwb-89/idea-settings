@@ -37,7 +37,7 @@ public class BigDataPointTask {
      * @param 
      * @return void
     */
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handleTask() throws InterruptedException {
         BigDataPointTaskQueue.QueueParamDTO queueParam = bigDataPointTaskQueueService.pop();
         if (queueParam == null) {
@@ -59,7 +59,7 @@ public class BigDataPointTask {
      * @param 
      * @return void
     */
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handleDataPush() throws InterruptedException {
         BigDataPointQueue.QueueParamDTO queueParam = bigDataPointQueueService.pop();
         if (queueParam == null) {

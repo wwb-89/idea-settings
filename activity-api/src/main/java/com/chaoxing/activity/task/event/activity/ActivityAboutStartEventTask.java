@@ -27,7 +27,7 @@ public class ActivityAboutStartEventTask {
     @Resource
     private ActivityAboutStartEventQueueService activityAboutStartEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityAboutStartEventOrigin eventOrigin = activityAboutStartEventQueue.pop();
         if (eventOrigin == null) {

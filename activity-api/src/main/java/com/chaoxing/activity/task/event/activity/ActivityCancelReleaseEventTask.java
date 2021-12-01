@@ -27,7 +27,7 @@ public class ActivityCancelReleaseEventTask {
     @Resource
     private ActivityCancelReleaseEventQueueService activityCancelReleaseEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityCancelReleaseEventOrigin eventOrigin = activityCancelReleaseEventQueue.pop();
         if (eventOrigin == null) {

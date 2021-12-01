@@ -27,7 +27,7 @@ public class UserQualifiedEventTask {
     @Resource
     private UserQualifiedEventQueueService userQualifiedEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserQualifiedEventOrigin eventOrigin = userQualifiedEventQueue.pop();
         if (eventOrigin == null) {

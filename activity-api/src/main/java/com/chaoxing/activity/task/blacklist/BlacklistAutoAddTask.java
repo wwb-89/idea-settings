@@ -23,7 +23,7 @@ public class BlacklistAutoAddTask {
     @Resource
     private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         BlacklistAutoAddQueue.QueueParamDTO queueParamDto = blacklistAutoAddQueue.pop();
         if (queueParamDto == null) {

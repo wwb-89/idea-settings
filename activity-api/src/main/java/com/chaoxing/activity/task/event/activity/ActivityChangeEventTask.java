@@ -27,7 +27,7 @@ public class ActivityChangeEventTask {
     @Resource
     private ActivityChangeEventQueueService activityChangeEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityChangeEventOrigin eventOrigin = activityChangeEventQueue.pop();
         if (eventOrigin == null) {

@@ -30,6 +30,10 @@ public class FormActivityCreateQueue implements IQueue<WfwFormCreateActivity> {
         push(redissonClient, CACHE_KEY, formCreateActivity);
     }
 
+    public void delayPush(WfwFormCreateActivity formCreateActivity) {
+        delayPush(redissonClient, CACHE_KEY, formCreateActivity);
+    }
+
     public WfwFormCreateActivity pop() throws InterruptedException {
         return pop(redissonClient, CACHE_KEY);
     }

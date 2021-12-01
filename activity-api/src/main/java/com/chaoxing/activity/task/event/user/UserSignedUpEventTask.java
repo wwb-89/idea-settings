@@ -27,7 +27,7 @@ public class UserSignedUpEventTask {
     @Resource
     private UserSignedUpEventQueueService userSignedUpEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserSignedUpEventOrigin eventOrigin = userSignedUpEventQueue.pop();
         if (eventOrigin == null) {

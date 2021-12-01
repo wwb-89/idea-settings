@@ -26,7 +26,7 @@ public class OrgAssociateActivityTask {
     @Resource
     private ActivityMarketService activityMarketService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         OrgAssociateActivityQueue.QueueParamDTO queueParam = orgAssociateActivityQueueService.pop();
         if (queueParam == null) {

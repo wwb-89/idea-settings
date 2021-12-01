@@ -26,8 +26,7 @@ public class UserResultStatSummaryTask {
 	@Resource
 	private UserStatSummaryHandleService userStatSummaryService;
 
-
-	@Scheduled(fixedDelay = 1L)
+	@Scheduled(fixedDelay = 10L)
 	public void handle() throws InterruptedException {
 		log.info("根据参数执行用户活动数据成绩汇总 start");
 		UserResultStatSummaryQueue.QueueParamDTO queueParam = userResultStatSummaryQueue.pop();

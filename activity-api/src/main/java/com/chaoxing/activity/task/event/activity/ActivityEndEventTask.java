@@ -27,7 +27,7 @@ public class ActivityEndEventTask {
     @Resource
     private ActivityEndEventQueueService activityEndEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityEndEventOrigin eventOrigin = activityEndEventQueue.pop();
         if (eventOrigin == null) {

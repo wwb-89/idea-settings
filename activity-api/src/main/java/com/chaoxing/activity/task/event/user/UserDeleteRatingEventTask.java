@@ -27,7 +27,7 @@ public class UserDeleteRatingEventTask {
     @Resource
     private UserDeleteRatingEventQueueService userDeleteRatingEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserDeleteRatingEventOrigin eventOrigin = userDeleteRatingEventQueue.pop();
         if (eventOrigin == null) {

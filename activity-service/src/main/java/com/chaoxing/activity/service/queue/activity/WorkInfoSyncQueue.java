@@ -29,6 +29,10 @@ public class WorkInfoSyncQueue implements IQueue<Integer> {
         push(redissonClient, KEY, activityId);
     }
 
+    public void delayPush(Integer activityId) {
+        delayPush(redissonClient, KEY, activityId);
+    }
+
     public Integer pop() throws InterruptedException {
         return pop(redissonClient, KEY);
     }

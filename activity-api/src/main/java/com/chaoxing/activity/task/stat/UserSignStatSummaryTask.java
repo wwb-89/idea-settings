@@ -26,7 +26,7 @@ public class UserSignStatSummaryTask {
 	@Resource
 	private UserStatSummaryHandleService userStatSummaryService;
 
-	@Scheduled(fixedDelay = 1L)
+	@Scheduled(fixedDelay = 10L)
 	public void handle() throws InterruptedException {
 		log.info("根据参数执行用户活动数据报名签到汇总 start");
 		UserSignStatSummaryQueue.QueueParamDTO queueParam = userSignStatSummaryQueue.pop();

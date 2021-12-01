@@ -32,6 +32,10 @@ public class OrgUserDataPushQueue implements IQueue<OrgUserDataPushQueue.QueuePa
         push(redissonClient, CACHE_KEY, queueParam);
     }
 
+    public void delayPush(QueueParamDTO queueParam) {
+        delayPush(redissonClient, CACHE_KEY, queueParam);
+    }
+
     public QueueParamDTO pop() throws InterruptedException {
         return pop(redissonClient, CACHE_KEY);
     }

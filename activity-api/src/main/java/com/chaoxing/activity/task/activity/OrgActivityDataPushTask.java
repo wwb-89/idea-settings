@@ -25,7 +25,7 @@ public class OrgActivityDataPushTask {
     @Resource
     private OrgActivityDataPushQueueService orgActivityDataPushQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         Integer activityId = orgActivityDataPushQueue.pop();
         if (activityId == null) {
@@ -36,7 +36,7 @@ public class OrgActivityDataPushTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理机构活动数据推送任务error:{}", activityId, e.getMessage());
             e.printStackTrace();
-            orgActivityDataPushQueue.push(activityId);
+            orgActivityDataPushQueue.delayPush(activityId);
         }
     }
 

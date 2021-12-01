@@ -26,7 +26,7 @@ public class ActivitySignedUpUserNoticeTask {
     @Resource
     private ActivitySignedUpUserNoticeQueueService activitySignedUpUserNoticeQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivitySignedUpUserNoticeQueue.QueueParamDTO queueParam = activitySignedUpUserNoticeQueue.pop();
         if (queueParam == null) {

@@ -39,7 +39,7 @@ public class ActivityReleaseScopeChangeTask {
 	 * @param 
 	 * @return void
 	*/
-	@Scheduled(fixedDelay = 1L)
+	@Scheduled(fixedDelay = 10L)
 	public void clearScopeCache() throws InterruptedException {
 		Integer activityId = activityReleaseScopeChangeQueueService.pop();
 		if (activityId == null) {

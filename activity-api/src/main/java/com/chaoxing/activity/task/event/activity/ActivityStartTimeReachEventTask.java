@@ -27,7 +27,7 @@ public class ActivityStartTimeReachEventTask {
     @Resource
     private ActivityStartTimeReachEventQueueService activityStartTimeReachEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityStartTimeReachEventOrigin eventOrigin = activityStartTimeReachEventQueue.pop();
         if (eventOrigin == null) {

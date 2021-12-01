@@ -26,7 +26,7 @@ public class UserDataPrePushTask {
     @Resource
     private UserDataPrePushQueueService userDataPrePushQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserDataPrePushQueue.QueueParamDTO queueParam = userDataPrePushQueue.pop();
         if (queueParam == null) {

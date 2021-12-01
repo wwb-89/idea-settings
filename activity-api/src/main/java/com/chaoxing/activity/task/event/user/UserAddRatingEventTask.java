@@ -27,7 +27,7 @@ public class UserAddRatingEventTask {
     @Resource
     private UserAddRatingEventQueueService userAddRatingEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserAddRatingEventOrigin eventOrigin = userAddRatingEventQueue.pop();
         if (eventOrigin == null) {

@@ -30,7 +30,7 @@ public class WfwFormActivitySyncTask {
     @Resource
     private ActivityHandleService activityHandleService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handleWfwUserSignUpInfoDelete() {
         ActivityCreateFromFormParamDTO queueParam = wfwFormSyncActivityQueue.pop();
         if (queueParam == null) {

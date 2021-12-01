@@ -52,6 +52,8 @@ public class CommonConstant {
 	public static final Integer MAX_ERROR_TIMES = 5;
 	/** 延时队列时间（默认2秒） */
 	public static final Duration DELAYED_QUEUE_DURATION = Duration.ofSeconds(2);
+	/** 队列处理失败后重新加入队列的延时 */
+	public static final Duration FAIL_DELAYED_QUEUE_DURATION = Duration.ofMinutes(1);
 
 	/** 默认封面云盘id */
 	public static final String ACTIVITY_DEFAULT_COVER_CLOUD_ID = "3b16823d7d5fc677d13c042479e3c6d0";

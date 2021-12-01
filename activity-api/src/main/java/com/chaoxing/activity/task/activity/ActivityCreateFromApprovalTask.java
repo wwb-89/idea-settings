@@ -27,7 +27,7 @@ public class ActivityCreateFromApprovalTask {
     @Resource
     private WfwFormApprovalApiService formApprovalApiService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         WfwFormCreateActivity formCreateActivity = formActivityCreateQueueService.pop();
         if (formCreateActivity == null) {
@@ -44,6 +44,7 @@ public class ActivityCreateFromApprovalTask {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("根据参数:{} 创建活动error:{}", JSON.toJSONString(formCreateActivity), e);
+            formActivityCreateQueueService.delayPush(formCreateActivity);
         }
     }
 

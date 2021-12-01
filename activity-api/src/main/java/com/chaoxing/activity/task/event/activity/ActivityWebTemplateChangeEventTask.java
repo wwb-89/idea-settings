@@ -27,7 +27,7 @@ public class ActivityWebTemplateChangeEventTask {
     @Resource
     private ActivityWebTemplateChangeEventQueueService activityWebTemplateChangeEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityWebTemplateChangeEventOrigin eventOrigin = activityWebTemplateChangeEventQueue.pop();
         if (eventOrigin == null) {

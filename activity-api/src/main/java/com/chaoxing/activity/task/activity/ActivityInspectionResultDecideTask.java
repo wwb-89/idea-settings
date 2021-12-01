@@ -25,7 +25,7 @@ public class ActivityInspectionResultDecideTask {
     @Resource
     private UserResultHandleService userResultHandleService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void consumerActivityInspectionResultDecideQueue() throws InterruptedException {
         Integer activityId = activityInspectionResultDecideQueue.pop();
         if (activityId == null) {

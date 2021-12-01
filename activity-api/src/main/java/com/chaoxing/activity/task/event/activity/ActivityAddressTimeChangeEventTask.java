@@ -27,7 +27,7 @@ public class ActivityAddressTimeChangeEventTask {
     @Resource
     private ActivityAddressTimeChangeEventQueueService activityAddressTimeChangeEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityAddressTimeChangeEventOrigin eventOrigin = activityAddressTimeChangeEventQueue.pop();
         if (eventOrigin == null) {

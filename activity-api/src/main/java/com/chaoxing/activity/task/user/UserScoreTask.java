@@ -26,7 +26,7 @@ public class UserScoreTask {
     @Resource
     private UserResultQueueService userResultQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserResultQueue.QueueParamDTO queueParam = userResultQueue.pop();
         if (queueParam == null) {

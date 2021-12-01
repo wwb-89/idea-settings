@@ -27,7 +27,7 @@ public class UserStatSummaryChangeEventTask {
     @Resource
     private UserStatSummaryChangeEventQueueService userStatSummaryChangeEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserStatSummaryChangeEventOrigin eventOrigin = userStatSummaryChangeEventQueue.pop();
         if (eventOrigin == null) {

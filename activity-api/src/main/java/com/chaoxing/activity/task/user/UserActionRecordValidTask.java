@@ -26,7 +26,7 @@ public class UserActionRecordValidTask {
     @Resource
     private UserActionRecordValidQueueService userActionRecordValidQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         UserActionRecordValidQueue.QueueParamDTO queueParam = userActionRecordValidQueue.pop();
         if (queueParam == null) {

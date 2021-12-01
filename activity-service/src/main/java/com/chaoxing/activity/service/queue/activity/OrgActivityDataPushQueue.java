@@ -29,6 +29,10 @@ public class OrgActivityDataPushQueue implements IQueue<Integer> {
         push(redissonClient, CACHE_KEY, activityId);
     }
 
+    public void delayPush(Integer activityId) {
+        delayPush(redissonClient, CACHE_KEY, activityId);
+    }
+
     public Integer pop() throws InterruptedException {
         return pop(redissonClient, CACHE_KEY);
     }

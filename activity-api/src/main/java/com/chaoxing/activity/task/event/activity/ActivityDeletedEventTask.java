@@ -27,7 +27,7 @@ public class ActivityDeletedEventTask {
     @Resource
     private ActivityDeletedEventQueueService activityDeletedEventQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         ActivityDeletedEventOrigin eventOrigin = activityDeletedEventQueue.pop();
         if (eventOrigin == null) {

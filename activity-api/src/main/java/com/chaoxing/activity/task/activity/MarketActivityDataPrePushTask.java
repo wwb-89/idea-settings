@@ -25,7 +25,7 @@ public class MarketActivityDataPrePushTask {
     @Resource
     private MarketActivityDataPrePushQueueService activityDataPrePushQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         Integer activityId = activityDataPrePushQueue.pop();
         if (activityId == null) {

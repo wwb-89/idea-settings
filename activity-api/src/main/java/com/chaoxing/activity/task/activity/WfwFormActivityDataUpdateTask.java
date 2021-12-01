@@ -26,7 +26,7 @@ public class WfwFormActivityDataUpdateTask {
     @Resource
     private WfwFormActivityDataUpdateQueueService wfwFormActivityDataUpdateQueueService;
 
-    @Scheduled(fixedDelay = 1L)
+    @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
         WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = wfwFormActivityDataUpdateQueue.pop();
         if (queueParam == null) {
@@ -37,7 +37,7 @@ public class WfwFormActivityDataUpdateTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理万能表单关联活动数据更新任务error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
-            wfwFormActivityDataUpdateQueue.push(queueParam);
+            wfwFormActivityDataUpdateQueue.delayPush(queueParam);
         }
     }
 
