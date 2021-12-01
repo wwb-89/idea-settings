@@ -2,10 +2,7 @@ package com.chaoxing.activity.service.queue.activity.handler;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.DepartmentDTO;
-import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.OperateUserDTO;
-import com.chaoxing.activity.dto.TimeScopeDTO;
+import com.chaoxing.activity.dto.*;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
@@ -53,6 +50,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -484,8 +482,33 @@ public class WfwFormSyncActivityQueueService {
                     }
                     activityUpdateParam.setActivityClassifyId(classify.getId());
                 } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_ADDRESS, v.getAlias())) {
-                    activityUpdateParam.setActivityType(Activity.ActivityTypeEnum.OFFLINE.getValue());
-                    activityUpdateParam.setAddress(attrValue);
+                    String activityType = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "activity_type");
+                    Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
+
+                    AddressDTO addressDto = com.chaoxing.activity.util.FormUtils.getAddress(formUserRecord, "activity_address");
+                    addressDto = Optional.ofNullable(addressDto).orElse(com.chaoxing.activity.util.FormUtils.getAddress(formUserRecord, "location"));
+                    String detailAddress = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "activity_detail_address");
+                    detailAddress = Optional.ofNullable(detailAddress).orElse("");
+                    String address = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "activity_address");
+                    BigDecimal lng = null;
+                    BigDecimal lat = null;
+                    if (addressDto != null) {
+                        address = addressDto.getAddress();
+                        lng = addressDto.getLng();
+                        lat = addressDto.getLat();
+                    }
+                    if (activityTypeEnum == null) {
+                        if (StringUtils.isNotBlank(address)) {
+                            activityTypeEnum = Activity.ActivityTypeEnum.OFFLINE;
+                        } else {
+                            activityTypeEnum = Activity.ActivityTypeEnum.ONLINE;
+                        }
+                    }
+                    activityUpdateParam.setActivityType(activityTypeEnum.getValue());
+                    activityUpdateParam.setAddress(address);
+                    activityUpdateParam.setDetailAddress(detailAddress);
+                    activityUpdateParam.setLongitude(lng);
+                    activityUpdateParam.setDimension(lat);
                 } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_TIME_SCOPE, v.getAlias())) {
                     timeScopes.add(attrValue);
                 } else if (Objects.equals(WfwFormAliasConstant.INTRODUCTION, v.getAlias())) {

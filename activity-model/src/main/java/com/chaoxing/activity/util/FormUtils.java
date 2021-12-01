@@ -274,16 +274,19 @@ public class FormUtils {
 	 * @return com.chaoxing.activity.dto.AddressDTO
 	 */
 	public static AddressDTO getAddress(FormDataDTO formData, String fieldAlias) {
-		AddressDTO address = null;
+		AddressDTO addressDto = null;
 		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
 		if (jsonValue != null) {
-			address = AddressDTO.builder()
-					.address(jsonValue.getString("address"))
-					.lat(jsonValue.getBigDecimal("lat"))
-					.lng(jsonValue.getBigDecimal("lng"))
-					.build();
+			String address = jsonValue.getString("address");
+			if (StringUtils.isNotBlank(address)) {
+				addressDto = AddressDTO.builder()
+						.address(address)
+						.lat(jsonValue.getBigDecimal("lat"))
+						.lng(jsonValue.getBigDecimal("lng"))
+						.build();
+			}
 		}
-		return address;
+		return addressDto;
 	}
 
 	/**获取下拉字段的选项列表

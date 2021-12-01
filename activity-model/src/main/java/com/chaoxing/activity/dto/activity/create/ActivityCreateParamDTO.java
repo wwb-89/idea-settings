@@ -378,30 +378,33 @@ public class ActivityCreateParamDTO {
 		}
 		// 活动类型
 		String activityType = FormUtils.getValue(formData, "activity_type");
-		if (StringUtils.isNotBlank(activityType)) {
-			Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
-			if (activityTypeEnum != null) {
-				activityCreateParamDto.setActivityType(activityTypeEnum.getValue());
-				AddressDTO activityAddress = FormUtils.getAddress(formData, "activity_address");
-				String activityDetailAddress = FormUtils.getValue(formData, "activity_detail_address");
-				activityDetailAddress = Optional.ofNullable(activityDetailAddress).orElse("");
-				if (activityAddress != null) {
-					activityCreateParamDto.setAddress(activityAddress.getAddress());
-					activityCreateParamDto.setLongitude(activityAddress.getLng());
-					activityCreateParamDto.setDimension(activityAddress.getLat());
-				}
-				activityCreateParamDto.setDetailAddress(activityDetailAddress);
-			}
-		} else {
-			// 表单创建活动地址获取
-			String activityAddress = FormUtils.getValue(formData, "activity_address");
-			if (StringUtils.isNotBlank(activityAddress)) {
-				activityCreateParamDto.setAddress(activityAddress);
-				activityCreateParamDto.setActivityType(Activity.ActivityTypeEnum.OFFLINE.getValue());
+		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
+
+		AddressDTO addressDto = FormUtils.getAddress(formData, "activity_address");
+		addressDto = Optional.ofNullable(addressDto).orElse(FormUtils.getAddress(formData, "location"));
+		String detailAddress = FormUtils.getValue(formData, "activity_detail_address");
+		detailAddress = Optional.ofNullable(detailAddress).orElse("");
+		String address = FormUtils.getValue(formData, "activity_address");
+		BigDecimal lng = null;
+		BigDecimal lat = null;
+		if (addressDto != null) {
+			address = addressDto.getAddress();
+			lng = addressDto.getLng();
+			lat = addressDto.getLat();
+		}
+		if (activityTypeEnum == null) {
+			if (StringUtils.isNotBlank(address)) {
+				activityTypeEnum = Activity.ActivityTypeEnum.OFFLINE;
 			} else {
-				activityCreateParamDto.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
+				activityTypeEnum = Activity.ActivityTypeEnum.ONLINE;
 			}
 		}
+		activityCreateParamDto.setActivityType(activityTypeEnum.getValue());
+		activityCreateParamDto.setAddress(address);
+		activityCreateParamDto.setDetailAddress(detailAddress);
+		activityCreateParamDto.setLongitude(lng);
+		activityCreateParamDto.setDimension(lat);
+
 		// 简介
 		String introduction = FormUtils.getValue(formData, "introduction");
 		introduction = Optional.ofNullable(introduction).orElse("");
