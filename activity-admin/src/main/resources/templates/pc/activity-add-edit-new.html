@@ -1217,6 +1217,16 @@
                 $this.initUploader();
                 $this.handleImg();
                 $this.initWfwGroups();
+                setTimeout(function(){
+                    window.onscroll = function () {
+                        var scrollTop = document.getElementById('edui1_toolbarbox').getBoundingClientRect().top;
+                        if (scrollTop <= 50) {
+                            $('#edui1_toolbarbox').attr('style', 'position:fixed;top:50px;z-index:2;width:698px;')
+                        } else {
+                            $('#edui1_toolbarbox').attr('style', '')
+                        }
+                    }
+                },1000);
             },
             computed: {
                 // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
