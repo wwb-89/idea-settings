@@ -1066,7 +1066,7 @@
             t_activity t
         INNER JOIN
         <!--fid 必须有，在业务层判断，无则报错-->
-            t_activity_scope t1 ON t.id = t1.activity_id AND (t.create_fid = #{params.fid} or t1.fid = #{fid})
+            t_activity_scope t1 ON t.id = t1.activity_id AND (t.create_fid = #{params.fid} or t1.fid = #{params.fid})
         WHERE
         <!--状态-->
         <choose>
@@ -1079,14 +1079,11 @@
                         t.`status` = #{params.status}
                     </when>
                     <otherwise>
-                        t.`status` IN ( 2, 3, 4 )
+                        t.`status` IN ( 1, 2, 3, 4 )
                     </otherwise>
                 </choose>
             </otherwise>
         </choose>
-        <if test="params.flag != null and params.flag != ''">
-            AND t.activity_flag = #{params.flag}
-        </if>
         <!--搜索关键字-->
         <if test="params.sw != null and params.sw != ''">
             AND (
@@ -1117,11 +1114,11 @@
         ORDER BY
             <choose>
                 <when test="params.orderField == null or params.orderField == ''">
-                    FIELD( t.`status`, 2, 3, 4 ),
+                    FIELD( t.`status`, 3, 2, 1, 4 )
                     t.start_time DESC
                 </when>
                 <otherwise>
-                    t.#{orderField} <if test="params.orderType == null">DESC</if><if test="params.orderType != null">#{orderType.value}</if>
+                    t.${params.orderField} <choose><when test="params.orderType != null and params.orderType != ''">${params.orderType}</when><otherwise>DESC</otherwise></choose>
                 </otherwise>
             </choose>
     </select>

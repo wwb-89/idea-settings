@@ -15,6 +15,7 @@ import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.query.ActivityCreateParticipateQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
@@ -25,11 +26,12 @@ import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.*;
+import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.create.ActivityCreateService;
-import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
@@ -39,6 +41,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
 import com.chaoxing.activity.service.queue.activity.WfwFormSyncActivityQueue;
+import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
@@ -46,6 +49,7 @@ import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.CookieConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.vo.ActivityVO;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -684,5 +688,82 @@ public class ActivityApiController {
 			return RestRespDTO.success();
 		}
 		return RestRespDTO.success(systemNoticeTemplateService.buildNoticeField(activity));
+	}
+
+	/**
+	 * 分页查询机构创建或发布到该机构的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-01 10:39:35
+	 * @param request
+	 * @param activityQuery
+	 * @return
+	 */
+	@RequestMapping("create-participate/page")
+	public RestRespDTO createParticipateActivityPage(HttpServletRequest request, ActivityCreateParticipateQueryDTO activityQuery) {
+		Page page = HttpServletRequestUtils.buid(request);
+		page = activityQueryService.createParticipateActivityPage(page, activityQuery);
+		List<Activity> activities = page.getRecords();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			page.setRecords(ActivityVO.activitiesConvert2Vo(activities));
+		}
+		return RestRespDTO.success(page);
+	}
+
+	/**
+	 * 活动归档
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-01 12:03:11
+	 * @return
+	 */
+	@RequestMapping("{activityId}/archive")
+	public RestRespDTO archiveActivity(@PathVariable Integer activityId) {
+		activityHandleService.updateActivityArchive(activityId, true);
+		return RestRespDTO.success();
+	}
+	/**
+	 * 活动恢复
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-01 12:03:11
+	 * @return
+	 */
+	@RequestMapping("{activityId}/recovery")
+	public RestRespDTO recoveryActivity(@PathVariable Integer activityId) {
+		activityHandleService.updateActivityArchive(activityId, false);
+		return RestRespDTO.success();
+	}
+
+	/**
+	 * 活动发布
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-01 12:07:32
+	 * @param activityId
+	 * @param fid
+	 * @param uid
+	 * @return
+	 */
+	@RequestMapping("{activityId}/release")
+	public RestRespDTO releaseActivity(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid) {
+		activityHandleService.release(activityId, OperateUserDTO.build(uid, fid));
+		return RestRespDTO.success();
+	}
+
+	/**
+	 * 活动下架
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-01 12:07:32
+	 * @param activityId
+	 * @param fid
+	 * @param uid
+	 * @return
+	 */
+	@RequestMapping("{activityId}/cancel-release")
+	public RestRespDTO cancelReleaseActivity(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid) {
+		activityHandleService.cancelRelease(activityId, OperateUserDTO.build(uid, fid));
+		return RestRespDTO.success();
 	}
 }
