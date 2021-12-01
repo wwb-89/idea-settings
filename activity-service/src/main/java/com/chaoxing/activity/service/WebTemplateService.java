@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.WebTemplateActivityFlagMapper;
 import com.chaoxing.activity.mapper.WebTemplateAppDataMapper;
@@ -181,6 +182,21 @@ public class WebTemplateService {
 			}
 		}
 		return webTemplates;
+	}
+
+	/**查询机构所属的网页模版列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-01 14:35:49
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.model.WebTemplate>
+	*/
+	public List<WebTemplate> listOrgAffiliation(Integer fid) {
+		return webTemplateMapper.selectList(new LambdaQueryWrapper<WebTemplate>()
+				.eq(WebTemplate::getAffiliationFid, fid)
+				.eq(WebTemplate::getDeleted, false)
+				.orderByAsc(WebTemplate::getSequence)
+		);
 	}
 
 }

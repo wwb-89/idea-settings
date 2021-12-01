@@ -3,6 +3,8 @@ package com.chaoxing.activity.api.controller;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.WebTemplate;
+import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.manager.PassportApiService;
@@ -32,6 +34,8 @@ public class OrgApiController {
     private MarketHandleService marketHandleService;
     @Resource
     private PassportApiService passportApiService;
+    @Resource
+    private WebTemplateService webTemplateService;
 
     /**查询机构下创建的作品征集id列表
      * @Description 
@@ -76,6 +80,19 @@ public class OrgApiController {
         LoginUserDTO loginUserDto = LoginUserDTO.buildDefault(uid, userRealName, fid, orgName);
         marketHandleService.getOrCreateMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUserDto);
         return RestRespDTO.success();
+    }
+
+    /**查询机构所属的网页模版
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-01 14:31:21
+     * @param fid
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("{fid}/web-template/list")
+    public RestRespDTO listOrgAffiliationWebTemplate(@PathVariable Integer fid) {
+        List<WebTemplate> webTemplates = webTemplateService.listOrgAffiliation(fid);
+        return RestRespDTO.success(webTemplates);
     }
 
 }
