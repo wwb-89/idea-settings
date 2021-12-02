@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,8 @@ public class ActivityReleasePlatformActivityQueryResultDTO {
     private Integer createUid;
     /** 创建机构 */
     private Integer createFid;
+    /** 是否被删除 */
+    private Boolean deleted;
 
     public static List<ActivityReleasePlatformActivityQueryResultDTO> build(List<Activity> activities, Map<Integer, List<WfwAreaDTO>> activityIdWfwAreasMap) {
         return activities.stream().map(v -> ActivityReleasePlatformActivityQueryResultDTO.build(v, activityIdWfwAreasMap.get(v.getId()))).collect(Collectors.toList());
@@ -62,6 +65,7 @@ public class ActivityReleasePlatformActivityQueryResultDTO {
                 .scopeOrgs(Optional.ofNullable(wfwAreas).orElse(Lists.newArrayList()))
                 .createUid(activity.getCreateUid())
                 .createFid(activity.getCreateFid())
+                .deleted(Objects.equals(Activity.StatusEnum.DELETED.getValue(), activity.getStatus()))
                 .build();
         return result;
     }

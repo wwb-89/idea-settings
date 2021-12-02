@@ -1452,7 +1452,6 @@ public class ActivityQueryService {
 			lambdaQueryWrapper.le(Activity::getEndTime, endTime);
 		}
 
-		lambdaQueryWrapper.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue());
 		List<Activity> activities = activityMapper.selectList(lambdaQueryWrapper);
 		List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
 		// 根据活动id列表查询参与范围
