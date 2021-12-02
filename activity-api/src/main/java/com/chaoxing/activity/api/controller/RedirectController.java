@@ -10,10 +10,12 @@ import com.chaoxing.activity.service.data.DataPushRecordQueryService;
 import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.util.BaiduMapUtils;
+import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.exception.LoginRequiredException;
 import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -247,17 +248,16 @@ public class RedirectController {
      * @author huxiaolong
      * @Date 2021-12-02 11:28:36
      * @param request
-     * @param fid
      * @param marketId
      * @param flag
      * @return
      */
     @RequestMapping("activity/add-index")
-    public String redirectActivityCreateView(HttpServletRequest request, @RequestParam Integer fid, Integer marketId, String flag) {
+    public String redirectActivityCreateView(HttpServletRequest request, Integer marketId, String flag) {
         flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
-        marketId = getOrCreateMarketByFlag(request, fid, marketId, flag);
+        marketId = getOrCreateMarketByFlag(request, marketId, flag);
         if (marketId != null) {
-            return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/activity/add/" + "?marketId=" + marketId + "&flag=" + flag;
+            return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/activity/add" + "?marketId=" + marketId + "&flag=" + flag;
         }
         return "";
     }
@@ -267,15 +267,14 @@ public class RedirectController {
      * @author huxiaolong
      * @Date 2021-12-02 11:28:16
      * @param request
-     * @param fid
      * @param marketId
      * @param flag
      * @return
      */
     @RequestMapping("market-index")
-    public String redirectMarketSettingIndex(HttpServletRequest request, @RequestParam Integer fid, Integer marketId, String flag) {
+    public String redirectMarketSettingIndex(HttpServletRequest request, Integer marketId, String flag) {
         flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
-        marketId = getOrCreateMarketByFlag(request, fid, marketId, flag);
+        marketId = getOrCreateMarketByFlag(request, marketId, flag);
         return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/market" + marketId + "/setting";
     }
 
@@ -284,22 +283,21 @@ public class RedirectController {
      * @author huxiaolong
      * @Date 2021-12-02 11:27:35
      * @param request
-     * @param fid
      * @param marketId
      * @param flag
      * @return
      */
-    private Integer getOrCreateMarketByFlag(HttpServletRequest request, Integer fid, Integer marketId, String flag) {
+    private Integer getOrCreateMarketByFlag(HttpServletRequest request, Integer marketId, String flag) {
         if (marketId == null && StringUtils.isNotBlank(flag)) {
             // 若不存在，则判断市场是否存在，市场不存在则创建市场
             Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
-            HttpSession session = request.getSession();
-            if (session != null) {
-                Object attribute = session.getAttribute("_login_user_");
-                if (attribute != null) {
-                    return marketHandleService.getOrCreateMarket(fid, activityFlagEnum, (LoginUserDTO) attribute);
-                }
+            Integer uid = CookieUtils.getUid(request);
+            Integer fid = CookieUtils.getFid(request);
+            if (uid == null || fid ==null ) {
+                throw new LoginRequiredException("请登录");
             }
+            return marketHandleService.getOrCreateMarket(fid, activityFlagEnum, LoginUserDTO.buildDefault(uid, fid));
+
         }
         return marketId;
     }
