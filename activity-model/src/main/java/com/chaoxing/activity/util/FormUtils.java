@@ -60,6 +60,18 @@ public class FormUtils {
 
 	}
 
+	/**表单是否存在某个字段
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-02 13:16:55
+	 * @param formDataDto
+	 * @param alias
+	 * @return boolean
+	*/
+	public static boolean isExistField(FormDataDTO formDataDto, String alias) {
+		return getJsonValue(formDataDto, alias) != null;
+	}
+
 	/**从表单数据中获取值
 	 * @Description 
 	 * @author wwb
@@ -213,8 +225,6 @@ public class FormUtils {
 		return value;
 	}
 
-
-
 	/**获取时间区间
 	 * @Description
 	 * @author wwb
@@ -263,7 +273,6 @@ public class FormUtils {
 				.endTime(endTime)
 				.build();
 	}
-
 
 	/**获取地址信息
 	 * @Description

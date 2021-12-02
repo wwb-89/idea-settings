@@ -11,6 +11,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
+import com.chaoxing.activity.util.FormUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -147,25 +148,40 @@ public class WfwFormActivityDataUpdateQueueService {
         if (formRecord == null) {
             return false;
         }
-        String activityId = formRecord.getStringValue("activity_id");
-        if (!Objects.equals(String.valueOf(wfwFormActivityWriteBackData.getActivityId()), activityId)) {
-            return true;
+        /** 活动id是否改变 */
+        if (FormUtils.isExistField(formRecord, "activity_id")) {
+            String activityId = formRecord.getStringValue("activity_id");
+            if (!Objects.equals(String.valueOf(wfwFormActivityWriteBackData.getActivityId()), activityId)) {
+                return true;
+            }
         }
-        String status = formRecord.getStringValue("status");
-        if (!Objects.equals(wfwFormActivityWriteBackData.getActivityStatus(), status)) {
-            return true;
+        /** 活动状态是否改变 */
+        if (FormUtils.isExistField(formRecord, "status")) {
+            String status = formRecord.getStringValue("status");
+            if (!Objects.equals(wfwFormActivityWriteBackData.getActivityStatus(), status)) {
+                return true;
+            }
         }
-        String signUpStatus = formRecord.getStringValue("sign_up_status");
-        if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus)) {
-            return true;
+        /** 报名状态是否改变 */
+        if (FormUtils.isExistField(formRecord, "sign_up_status")) {
+            String signUpStatus = formRecord.getStringValue("sign_up_status");
+            if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus)) {
+                return true;
+            }
         }
-        String previewUrl = formRecord.getStringValue("preview_url");
-        if (!Objects.equals(wfwFormActivityWriteBackData.getPreviewUrl(), previewUrl)) {
-            return true;
+        /** 预览地址是否改变 */
+        if (FormUtils.isExistField(formRecord, "preview_url")) {
+            String previewUrl = formRecord.getStringValue("preview_url");
+            if (!Objects.equals(wfwFormActivityWriteBackData.getPreviewUrl(), previewUrl)) {
+                return true;
+            }
         }
-        String releaseStatus = formRecord.getStringValue("release_status");
-        if (!Objects.equals(wfwFormActivityWriteBackData.getActivityReleaseStatus(), releaseStatus)) {
-            return true;
+        /** 发布状态是否改变 */
+        if (FormUtils.isExistField(formRecord, "release_status")) {
+            String releaseStatus = formRecord.getStringValue("release_status");
+            if (!Objects.equals(wfwFormActivityWriteBackData.getActivityReleaseStatus(), releaseStatus)) {
+                return true;
+            }
         }
         return false;
     }
