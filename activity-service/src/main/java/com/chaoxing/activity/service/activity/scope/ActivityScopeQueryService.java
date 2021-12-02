@@ -48,6 +48,28 @@ public class ActivityScopeQueryService {
 		return result;
 	}
 
+	/**根据活动id列表查询活动的参与范围列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-02 17:28:40
+	 * @param activityIds
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO>
+	*/
+	public List<WfwAreaDTO> listByActivityIds(List<Integer> activityIds) {
+		List<WfwAreaDTO> result = Lists.newArrayList();
+		if (CollectionUtils.isEmpty(activityIds)) {
+			return result;
+		}
+		List<ActivityScope> activityScopes = activityScopeMapper.selectList(new QueryWrapper<ActivityScope>()
+				.lambda()
+				.in(ActivityScope::getActivityId, activityIds)
+		);
+		if (CollectionUtils.isNotEmpty(activityScopes)) {
+			result = ActivityScope.convert2WfwRegionalArchitectures(activityScopes);
+		}
+		return result;
+	}
+
 	/**查询机构参与的报名签到id列表
 	 * @Description
 	 * @author wwb

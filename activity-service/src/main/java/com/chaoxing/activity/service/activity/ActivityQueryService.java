@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.*;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.query.ActivityReleasePlatformActivityQueryDTO;
+import com.chaoxing.activity.dto.activity.query.result.ActivityReleasePlatformActivityQueryResultDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
@@ -16,9 +18,9 @@ import com.chaoxing.activity.dto.manager.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.query.ActivityCreateParticipateQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
-import com.chaoxing.activity.dto.query.ActivityCreateParticipateQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
@@ -33,6 +35,7 @@ import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
@@ -50,6 +53,7 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
+import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -125,6 +129,8 @@ public class ActivityQueryService {
 	private WorkApiService workApiService;
 	@Resource
 	private TagQueryService tagQueryService;
+	@Resource
+	private ActivityScopeQueryService activityScopeQueryService;
 
 	/**查询参与的活动
 	 * @Description
@@ -1405,4 +1411,54 @@ public class ActivityQueryService {
 		activityQuery.init();
 		return activityMapper.createParticipateActivityPage(page, activityQuery);
 	}
+
+	/**查询区域创建的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-02 16:06:20
+	 * @param activityReleasePlatformActivityQuery
+	 * @return java.util.List<com.chaoxing.activity.dto.activity.query.result.ActivityReleasePlatformActivityQueryResultDTO>
+	*/
+	public List<ActivityReleasePlatformActivityQueryResultDTO> listAreaCreated(ActivityReleasePlatformActivityQueryDTO activityReleasePlatformActivityQuery) {
+		String code = activityReleasePlatformActivityQuery.getCode();
+		Integer fid = activityReleasePlatformActivityQuery.getFid();
+		if (StringUtils.isBlank(code) && fid == null) {
+			throw new BusinessException("区域编码和fid不能同时为空");
+		}
+		List<Integer> fids = Lists.newArrayList();
+		if (StringUtils.isNotBlank(code)) {
+			List<WfwAreaDTO> wfwAreas = wfwAreaApiService.listByCode(code);
+			if (CollectionUtils.isNotEmpty(wfwAreas)) {
+				fids.addAll(wfwAreas.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList()));
+			}
+		}
+		if (fid != null) {
+			fids.add(fid);
+		}
+		if (CollectionUtils.isEmpty(fids)) {
+			return Lists.newArrayList();
+		}
+		LambdaQueryWrapper<Activity> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+		lambdaQueryWrapper.in(Activity::getCreateFid, fids);
+		if (StringUtils.isNotBlank(activityReleasePlatformActivityQuery.getFlag())) {
+			lambdaQueryWrapper.eq(Activity::getActivityFlag, activityReleasePlatformActivityQuery.getFlag());
+		}
+		if (activityReleasePlatformActivityQuery.getStartTimestamp() != null) {
+			LocalDateTime startTime = DateUtils.timestamp2Date(activityReleasePlatformActivityQuery.getStartTimestamp());
+			lambdaQueryWrapper.ge(Activity::getStartTime, startTime);
+		}
+		if (activityReleasePlatformActivityQuery.getEndTimestamp() != null) {
+			LocalDateTime endTime = DateUtils.timestamp2Date(activityReleasePlatformActivityQuery.getEndTimestamp());
+			lambdaQueryWrapper.le(Activity::getEndTime, endTime);
+		}
+
+		lambdaQueryWrapper.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue());
+		List<Activity> activities = activityMapper.selectList(lambdaQueryWrapper);
+		List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
+		// 根据活动id列表查询参与范围
+		List<WfwAreaDTO> scopeWfwAreas = activityScopeQueryService.listByActivityIds(activityIds);
+		Map<Integer, List<WfwAreaDTO>> activityIdWfwAreasMap = scopeWfwAreas.stream().collect(Collectors.groupingBy(WfwAreaDTO::getActivityId));
+		return ActivityReleasePlatformActivityQueryResultDTO.build(activities, activityIdWfwAreasMap);
+	}
+
 }
