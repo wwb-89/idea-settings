@@ -480,7 +480,7 @@
                         });
                         $this.activities = [];
                         $this.queryParams.pageNum = 1;
-                        $this.reloadForecast = true;
+                        $this.reloadForecast = activityApp.isEmpty($this.queryParams.status);
                         $this.mescroll.setPageNum(2);
                     },
                     queryParams2Condition: function () {

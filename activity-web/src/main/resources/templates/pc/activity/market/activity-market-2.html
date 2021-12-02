@@ -233,7 +233,7 @@
 					$this.queryParams.activityClassifyName = $this.classifies[index].value;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+                    $this.reloadForecast = activityApp.isEmpty($this.queryParams.status);
 					$this.reloadMescoll();
 				},
 				changeActivityTimeSelected: function(index){
@@ -244,7 +244,7 @@
 					$this.queryParams.date = $this.activityQueryDates[index].value;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+                    $this.reloadForecast = activityApp.isEmpty($this.queryParams.status);
 					$this.reloadMescoll();
 				},
 				changeActivityRegionsSelected: function(index){
@@ -258,7 +258,7 @@
 					}
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+                    $this.reloadForecast = activityApp.isEmpty($this.queryParams.status);
 					$this.reloadMescoll();
 				},
 				changeActivityTypesSelected: function(index){
@@ -269,7 +269,7 @@
 					$this.queryParams.activityType = $this.activityTypes[index].value;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+                    $this.reloadForecast = activityApp.isEmpty($this.queryParams.status);
 					$this.reloadMescoll();
 				},
 				changeActivityStatusSelected: function(index){
@@ -280,7 +280,7 @@
 					$this.queryParams.status = $this.statuses[index].value;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+                    $this.reloadForecast = activityApp.isEmpty($this.queryParams.status);
 					$this.reloadMescoll();
 				},
 				showFilter: function (type) {
