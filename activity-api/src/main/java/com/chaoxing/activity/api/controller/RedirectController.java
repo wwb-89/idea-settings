@@ -275,7 +275,7 @@ public class RedirectController {
     public String redirectMarketSettingIndex(HttpServletRequest request, Integer marketId, String flag) {
         flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
         marketId = getOrCreateMarketByFlag(request, marketId, flag);
-        return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/market" + marketId + "/setting";
+        return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/market/" + marketId + "/setting";
     }
 
     /**根据fid、flag获取活动市场id

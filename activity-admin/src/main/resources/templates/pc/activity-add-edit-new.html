@@ -324,6 +324,16 @@
                                 </div>
                             </div>
                         </div>
+                        <!--班级互动-->
+                        <div class="form-item align-start" v-else-if="item.code == 'clazz_interaction'">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box column">
+                                <div class="set-box">
+                                    <el-switch v-model="activity.openClazzInteraction" class="examine-switch"></el-switch>
+                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                </div>
+                            </div>
+                        </div>
                         <!--标签-->
                         <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
                             <label class="label">{{item.name}}</label>
@@ -1016,6 +1026,7 @@
                         integral: 0.0,
                         openWork: false,
                         openReading: false,
+                        openClazzInteraction: false,
                         originType: "",
                         origin: "",
                         templateId: $this.templateId,

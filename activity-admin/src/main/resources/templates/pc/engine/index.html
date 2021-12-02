@@ -154,6 +154,10 @@
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
+                                <template v-else-if="item.code == 'clazz_interaction'">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">{{item.introduction}}</p>
+                                </template>
                                 <!-- 简介：introduction -->
                                 <template v-else-if="item.code == 'introduction'">
                                     <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>

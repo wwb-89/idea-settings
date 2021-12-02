@@ -163,6 +163,13 @@ public class Activity {
     /** 是否归档; column: is_archive*/
     @TableField(value = "is_archived")
     private Boolean archived;
+    /** 是否开启班级互动; column: is_open_clazz_interaction */
+    @TableField(value = "is_open_clazz_interaction")
+    private Boolean openClazzInteraction;
+    /** 班级id; column: clazz_id */
+    private Integer clazzId;
+    /** 课程id; column: course_id */
+    private Integer courseId;
 
     // 附加
     /** 开始时间字符串 */

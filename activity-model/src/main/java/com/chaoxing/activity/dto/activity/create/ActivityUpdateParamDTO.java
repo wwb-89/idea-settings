@@ -137,6 +137,12 @@ public class ActivityUpdateParamDTO {
 	private List<Integer> tagIds;
 	/** 选择的标签名称列表 */
 	private List<String> tagNames;
+	/** 是否开启班级互动 */
+	private Boolean openClazzInteraction;
+	/** 班级id */
+	private Integer clazzId;
+	/** 课程id */
+	private Integer courseId;
 
 	/**构建活动
 	 * @Description 
@@ -182,6 +188,9 @@ public class ActivityUpdateParamDTO {
 				.readingModuleId(getReadingModuleId())
 				.webTemplateId(getWebTemplateId())
 				.openGroup(getOpenGroup())
+				.openClazzInteraction(getOpenClazzInteraction())
+				.clazzId(getClazzId())
+				.courseId(getCourseId())
 				.build();
 	}
 
@@ -258,6 +267,9 @@ public class ActivityUpdateParamDTO {
 				.readingModuleId(activity.getReadingModuleId())
 				.webTemplateId(activity.getWebTemplateId())
 				.openGroup(activity.getOpenGroup())
+				.openClazzInteraction(activity.getOpenClazzInteraction())
+				.clazzId(activity.getClazzId())
+				.courseId(activity.getCourseId())
 				.build();
 	}
 
@@ -283,6 +295,7 @@ public class ActivityUpdateParamDTO {
 		this.openWork = Optional.ofNullable(openWork).orElse(false);
 		this.openReading = Optional.ofNullable(openReading).orElse(false);
 		this.openGroup = Optional.ofNullable(openGroup).orElse(false);
+		this.openClazzInteraction = Optional.ofNullable(openClazzInteraction).orElse(false);
 	}
 
 	public void fillFromFormData(FormDataDTO formData, Integer classifyId) {
