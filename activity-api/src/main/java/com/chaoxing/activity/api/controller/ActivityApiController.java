@@ -33,6 +33,7 @@ import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandl
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.create.ActivityCreateService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -125,6 +126,8 @@ public class ActivityApiController {
 	private MarketNoticeTemplateService marketNoticeTemplateService;
 	@Resource
 	private SystemNoticeTemplateService systemNoticeTemplateService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**组活动推荐
 	 * @Description 
@@ -719,7 +722,7 @@ public class ActivityApiController {
 	 * @return
 	 */
 	@CrossOrigin
-	@RequestMapping("{activityId}/archive")
+	@RequestMapping("{activityId}/outer/archive")
 	public RestRespDTO archiveActivity(@PathVariable Integer activityId) {
 		activityHandleService.updateActivityArchive(activityId, true);
 		return RestRespDTO.success();
@@ -732,7 +735,7 @@ public class ActivityApiController {
 	 * @return
 	 */
 	@CrossOrigin
-	@RequestMapping("{activityId}/recovery")
+	@RequestMapping("{activityId}/outer/recovery")
 	public RestRespDTO recoveryActivity(@PathVariable Integer activityId) {
 		activityHandleService.updateActivityArchive(activityId, false);
 		return RestRespDTO.success();
@@ -749,7 +752,7 @@ public class ActivityApiController {
 	 * @return
 	 */
 	@CrossOrigin
-	@RequestMapping("{activityId}/release")
+	@RequestMapping("{activityId}/outer/release")
 	public RestRespDTO releaseActivity(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid) {
 		activityHandleService.release(activityId, OperateUserDTO.build(uid, fid));
 		return RestRespDTO.success();
@@ -766,9 +769,36 @@ public class ActivityApiController {
 	 * @return
 	 */
 	@CrossOrigin
-	@RequestMapping("{activityId}/cancel-release")
+	@RequestMapping("{activityId}/outer/cancel-release")
 	public RestRespDTO cancelReleaseActivity(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid) {
 		activityHandleService.cancelRelease(activityId, OperateUserDTO.build(uid, fid));
 		return RestRespDTO.success();
 	}
+
+	/**活动删除接口(外部接口)
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-02 15:23:49
+	 * @param activityId
+	 * @param fid
+	 * @param uid
+	 * @param marketId
+	 * @param flag
+	 * @return
+	 */
+	@CrossOrigin
+	@RequestMapping("{activityId}/outer/delete")
+	public RestRespDTO deleteActivity(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid, Integer marketId, String flag) {
+		OperateUserDTO operateUser = OperateUserDTO.build(uid, fid);
+		if (marketId == null && StringUtils.isNotBlank(flag)) {
+			 marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+		}
+		if (marketId == null) {
+			activityHandleService.deleteActivity(activityId, operateUser);
+		} else {
+			activityHandleService.deleteMarketActivity(activityId, marketId, operateUser);
+		}
+		return RestRespDTO.success();
+	}
+
 }

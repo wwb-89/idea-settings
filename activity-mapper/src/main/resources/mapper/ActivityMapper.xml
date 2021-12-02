@@ -1069,19 +1069,13 @@
             t_activity_scope t1 ON t.id = t1.activity_id AND (t.create_fid = #{params.fid} or t1.fid = #{params.fid})
         WHERE
         <!--状态-->
+        t.is_archived = #{params.archived}
         <choose>
-            <when test="params.archived == true">
-                t.is_archived = #{params.archived}
+            <when test="params.status != null">
+                AND t.`status` = #{params.status}
             </when>
             <otherwise>
-                <choose>
-                    <when test="params.status != null">
-                        t.`status` = #{params.status}
-                    </when>
-                    <otherwise>
-                        t.`status` IN ( 1, 2, 3, 4 )
-                    </otherwise>
-                </choose>
+                AND t.`status` IN ( 1, 2, 3, 4 )
             </otherwise>
         </choose>
         <!--搜索关键字-->
@@ -1094,16 +1088,16 @@
         <!--时间-->
         <choose>
             <when test="params.startTime != null and params.startTime != '' and params.endTime != null and params.endTime != ''">
-                AND ((t1.start_time between #{params.startTime} and #{params.endTime}) or (t1.end_time between #{params.startTime} and #{params.endTime}))
+                AND ((t.start_time between #{params.startTime} and #{params.endTime}) or (t.end_time between #{params.startTime} and #{params.endTime}))
             </when>
             <otherwise>
                 <choose>
                     <when test="params.startTime != null and params.startTime != ''">
-                        AND t1.end_time &gt;= #{params.startTime}
+                        AND t.end_time &gt;= #{params.startTime}
                     </when>
                     <otherwise>
                         <if test="params.endTime != null and params.endTime != ''">
-                            AND t1.start_time &lt;= #{params.endTime}
+                            AND t.start_time &lt;= #{params.endTime}
                         </if>
                     </otherwise>
                 </choose>
@@ -1114,7 +1108,7 @@
         ORDER BY
             <choose>
                 <when test="params.orderField == null or params.orderField == ''">
-                    FIELD( t.`status`, 3, 2, 1, 4 )
+                    FIELD( t.`status`, 3, 2, 1, 4 ),
                     t.start_time DESC
                 </when>
                 <otherwise>
