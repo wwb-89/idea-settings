@@ -391,13 +391,11 @@
                             activity.operations = [];
                             var statuses = [1, 2, 3, 4];
                             if (statuses.includes(activity.status)) {
+                                if (manager && isDualSelect) {
+                                    activity.operations.push($this.operations.dualSelectStatExport);
+                                }
                                 if (manager || isCurrentOrgCreated) {
-                                    if (manager) {
-                                        activity.operations.push($this.operations.manage);
-                                        if (isDualSelect) {
-                                            activity.operations.push($this.operations.dualSelectStatExport);
-                                        }
-                                    }
+                                    activity.operations.push($this.operations.manage);
                                     activity.operations.push($this.operations.edit);
                                     activity.operations.push($this.operations.delete);
                                 }
