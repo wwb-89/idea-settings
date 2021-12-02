@@ -28,16 +28,21 @@ public class WfwFormActivityDataUpdateTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理万能表单关联活动数据更新任务 start");
         WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = wfwFormActivityDataUpdateQueue.pop();
-        if (queueParam == null) {
-            return;
-        }
         try {
+            if (queueParam == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理万能表单关联活动数据更新任务", JSON.toJSONString(queueParam));
             wfwFormActivityDataUpdateQueueService.handle(queueParam);
+            log.info("根据参数:{} 处理万能表单关联活动数据更新任务 success", JSON.toJSONString(queueParam));
         } catch (Exception e) {
-            log.error("根据参数:{} 处理万能表单关联活动数据更新任务error:{}", JSON.toJSONString(queueParam), e.getMessage());
+            log.error("根据参数:{} 处理万能表单关联活动数据更新任务 error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
             wfwFormActivityDataUpdateQueue.delayPush(queueParam);
+        }finally {
+            log.info("处理万能表单关联活动数据更新任务 end");
         }
     }
 

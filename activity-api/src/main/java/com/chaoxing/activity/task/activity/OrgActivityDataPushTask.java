@@ -27,16 +27,21 @@ public class OrgActivityDataPushTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理机构活动数据推送任务 start");
         Integer activityId = orgActivityDataPushQueue.pop();
-        if (activityId == null) {
-            return;
-        }
         try {
+            if (activityId == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理机构活动数据推送任务", activityId);
             orgActivityDataPushQueueService.handle(activityId);
+            log.info("处理机构活动数据推送任务 success");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理机构活动数据推送任务error:{}", activityId, e.getMessage());
+            log.error("根据参数:{} 处理机构活动数据推送任务 error:{}", activityId, e.getMessage());
             e.printStackTrace();
             orgActivityDataPushQueue.delayPush(activityId);
+        } finally {
+            log.info("处理机构活动数据推送任务 end");
         }
     }
 

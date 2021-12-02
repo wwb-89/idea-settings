@@ -29,16 +29,21 @@ public class ActivityIntegralChangeEventTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动积分改变事件任务 start");
         ActivityIntegralChangeEventOrigin eventOrigin = activityIntegralChangeEventQueue.pop();
-        if (eventOrigin == null) {
-            return;
-        }
         try {
+            if (eventOrigin == null) {
+                return;
+            }
+            log.info("根据餐具:{} 处理活动积分改变事件任务", JSON.toJSONString(eventOrigin));
             activityIntegralChangeEventQueueService.handle(eventOrigin);
+            log.info("处理活动积分改变事件任务 success");
         } catch (Exception e) {
-            log.error("根据餐具:{} 处理活动积分变更error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
+            log.error("根据餐具:{} 处理活动积分改变事件任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityIntegralChangeEventQueue.push(eventOrigin);
+        } finally {
+            log.info("处理活动积分改变事件任务 end");
         }
     }
 

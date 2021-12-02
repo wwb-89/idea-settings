@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/**活动名称事件改变事件任务
  * @author wwb
  * @version ver 1.0
  * @className ActivityNameTimeChangeEventTask
@@ -29,16 +29,21 @@ public class ActivityNameTimeChangeEventTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动名称事件改变事件任务 start");
         ActivityNameTimeChangeEventOrigin eventOrigin = activityNameTimeChangeEventQueue.pop();
         if (eventOrigin == null) {
             return;
         }
         try {
+            log.info("根据参数:{} 处理活动名称事件改变事件任务", JSON.toJSONString(eventOrigin));
             activityNameTimeChangeEventQueueService.handle(eventOrigin);
+            log.info("处理活动名称事件改变事件任务 success");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理活动名称时间改变事件任务error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
+            log.error("根据参数:{} 处理活动名称事件改变事件任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityNameTimeChangeEventQueue.push(eventOrigin);
+        } finally {
+            log.info("处理活动名称事件改变事件任务 end");
         }
     }
 

@@ -27,13 +27,21 @@ public class WorkInfoSyncTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理作品征集信息同步任务 start");
         Integer activityId = workInfoSyncQueue.pop();
         try {
+            if (activityId == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理作品征集信息同步任务", activityId);
             workInfoSyncQueueService.handle(activityId);
+            log.info("根据参数:{} 处理作品征集信息同步任务 success", activityId);
         } catch (Exception e) {
-            log.error("根据参数:{} 处理作品征集信息同步error:{}", activityId, e.getMessage());
+            log.error("根据参数:{} 处理作品征集信息同步任务 error:{}", activityId, e.getMessage());
             e.printStackTrace();
             workInfoSyncQueue.delayPush(activityId);
+        } finally {
+            log.info("处理作品征集信息同步任务 end");
         }
     }
 

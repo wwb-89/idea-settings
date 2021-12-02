@@ -29,6 +29,7 @@ public class ActivityStartTimeReachEventTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动开始时间到达事件任务 start");
         ActivityStartTimeReachEventOrigin eventOrigin = activityStartTimeReachEventQueue.pop();
         if (eventOrigin == null) {
             return;
@@ -39,6 +40,8 @@ public class ActivityStartTimeReachEventTask {
             log.error("根据参数:{} 处理活动开始时间到达事件任务error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityStartTimeReachEventQueue.push(eventOrigin);
+        } finally {
+            log.info("处理活动开始时间到达事件任务 end");
         }
     }
 

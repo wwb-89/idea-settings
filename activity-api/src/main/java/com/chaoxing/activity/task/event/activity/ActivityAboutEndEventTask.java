@@ -29,16 +29,21 @@ public class ActivityAboutEndEventTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动即将结束任务 start");
         ActivityAboutEndEventOrigin eventOrigin = activityAboutEndEventQueue.pop();
-        if (eventOrigin == null) {
-            return;
-        }
         try {
+            if (eventOrigin == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动即将结束任务", JSON.toJSONString(eventOrigin));
             activityAboutEndEventQueueService.handle(eventOrigin);
+            log.info("处理活动即将结束任务 success");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理活动即将结束任务error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
+            log.error("根据参数:{} 处理活动即将结束任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityAboutEndEventQueue.push(eventOrigin);
+        } finally {
+            log.info("处理活动即将结束任务 end");
         }
     }
 

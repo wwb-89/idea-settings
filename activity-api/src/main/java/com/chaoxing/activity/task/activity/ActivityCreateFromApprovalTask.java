@@ -29,22 +29,26 @@ public class ActivityCreateFromApprovalTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理通过审批创建活动任务 start");
         WfwFormCreateActivity formCreateActivity = formActivityCreateQueueService.pop();
-        if (formCreateActivity == null) {
-            return;
-        }
-        log.info("根据表单信息: {}创建活动", JSON.toJSONString(formCreateActivity));
         try {
+            if (formCreateActivity == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理通过审批创建活动任", JSON.toJSONString(formCreateActivity));
             formApprovalApiService.createActivity(formCreateActivity.getFid(),
                     formCreateActivity.getFormId(),
                     formCreateActivity.getFormUserId(),
                     formCreateActivity.getMarketId(),
                     formCreateActivity.getFlag(),
                     formCreateActivity.getWebTemplateId());
+            log.info("处理通过审批创建活动任务 success");
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("根据参数:{} 创建活动error:{}", JSON.toJSONString(formCreateActivity), e);
+            log.error("根据参数:{} 处理通过审批创建活动任务 error:{}", JSON.toJSONString(formCreateActivity), e);
             formActivityCreateQueueService.delayPush(formCreateActivity);
+        }finally {
+            log.info("处理通过审批创建活动任务 end");
         }
     }
 

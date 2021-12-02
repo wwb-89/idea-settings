@@ -41,21 +41,24 @@ public class ActivityReleaseScopeChangeTask {
 	*/
 	@Scheduled(fixedDelay = 10L)
 	public void clearScopeCache() throws InterruptedException {
+		log.info("处理活动发布范围改变任务 start");
 		Integer activityId = activityReleaseScopeChangeQueueService.pop();
-		if (activityId == null) {
-			return;
-		}
-		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
-		if (CollectionUtils.isNotEmpty(externalIds)) {
-			try {
-				workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.error("活动:{} 发布范围改变更新作品征集缓存的范围error:{}", activityId, e.getMessage());
-				activityReleaseScopeChangeQueueService.push(activityId);
+		try {
+			if (activityId == null) {
+				return;
 			}
-
+			log.info("根据参数:{} 处理活动发布范围改变任务", activityId);
+			List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
+			if (CollectionUtils.isNotEmpty(externalIds)) {
+				workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
+			}
+			log.info("处理活动发布范围改变任务 success");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("根据参数:{} 处理活动发布范围改变任务 error:{}", activityId, e.getMessage());
+			activityReleaseScopeChangeQueueService.push(activityId);
 		}
+
 	}
 
 }

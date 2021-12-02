@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/** 活动考核结果计算任务
  * @author wwb
  * @version ver 1.0
  * @className ActivityInspectionResultDecideQueueTask
@@ -27,15 +27,21 @@ public class ActivityInspectionResultDecideTask {
 
     @Scheduled(fixedDelay = 10L)
     public void consumerActivityInspectionResultDecideQueue() throws InterruptedException {
+        log.info("处理活动考核结果计算任务 start");
         Integer activityId = activityInspectionResultDecideQueue.pop();
-        if (activityId == null) {
-            return;
-        }
         try {
+            if (activityId == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动考核结果计算任务", activityId);
             userResultHandleService.qualifiedAutoDecide(activityId);
+            log.info("处理活动考核结果计算任务 success");
         } catch (Exception e) {
+            log.error("根据参数:{} 处理活动考核结果计算任务 error:{}", activityId, e.getMessage());
             e.printStackTrace();
             activityInspectionResultDecideQueue.push(activityId);
+        } finally {
+            log.info("处理活动考核结果计算任务 end");
         }
     }
 
