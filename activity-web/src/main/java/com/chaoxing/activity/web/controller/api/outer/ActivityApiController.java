@@ -137,7 +137,7 @@ public class ActivityApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@RequestMapping("activity/address")
-	public RestRespDTO activityAddress(Integer pageId) {
+	public RestRespDTO activityAddress(@RequestParam Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		return RestRespDTO.success(activity);
 	}
@@ -151,7 +151,7 @@ public class ActivityApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("collected")
-	public RestRespDTO isCollected(Integer pageId, Integer uid) {
+	public RestRespDTO isCollected(@RequestParam Integer pageId, @RequestParam Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
 		boolean collected = false;
@@ -170,7 +170,7 @@ public class ActivityApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("collect")
-	public RestRespDTO collect(Integer pageId, Integer uid) {
+	public RestRespDTO collect(@RequestParam Integer pageId, @RequestParam Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
 		if (uid != null) {
@@ -189,7 +189,7 @@ public class ActivityApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("cancel-collect")
-	public RestRespDTO cancelCollect(Integer pageId, Integer uid) {
+	public RestRespDTO cancelCollect(@RequestParam Integer pageId, @RequestParam Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
 		if (uid != null) {

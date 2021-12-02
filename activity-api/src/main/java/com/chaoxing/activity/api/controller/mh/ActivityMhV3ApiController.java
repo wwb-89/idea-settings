@@ -10,17 +10,17 @@ import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
-import com.chaoxing.activity.dto.stat.ActivityStatDTO;
+import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
-import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
@@ -217,12 +217,17 @@ public class ActivityMhV3ApiController {
             jsonObject.put("results", mainFields);
             return RestRespDTO.success(jsonObject);
         }
-        ActivityStatDTO statSummary = activityStatQueryService.activityStat(activity.getId());
-        String pvNum = "0", signedUpNum = "0";
+        // 获取浏览量
+        String startTimeStr = activity.getStartTime().format(DateUtils.FULL_TIME_FORMATTER);
+        String endTimeStr = activity.getEndTime().format(DateUtils.FULL_TIME_FORMATTER);
+        String pvNum = Optional.ofNullable(activityStatQueryService.getPvByActivity(activity)).map(String::valueOf).orElse("0");
+        // 获取收藏量
         Integer collectedNum = Optional.ofNullable(activityCollectionQueryService.listCollectedUid(activity.getId())).orElse(Lists.newArrayList()).size();
-        if (statSummary != null) {
-            pvNum = Optional.ofNullable(statSummary.getPv()).map(String::valueOf).orElse("0");
-            signedUpNum = Optional.ofNullable(statSummary.getSignedUpNum()).map(String::valueOf).orElse("0");
+        // 获取报名量
+        SignActivityStatDTO signActivityStat = signApiService.singleActivityStat(activity.getSignId(), startTimeStr, endTimeStr);
+        String signedUpNum = "0";
+        if (signActivityStat != null) {
+            signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
         }
         buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
 //        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_IN_NUM.getValue()), "签到", signedInNum, mainFields);
@@ -282,7 +287,7 @@ public class ActivityMhV3ApiController {
     }
 
     /**门户简介详情
-    * @Description 
+    * @Description
     * @author huxiaolong
     * @Date 2021-09-15 18:38:43
     * @param data
@@ -310,7 +315,7 @@ public class ActivityMhV3ApiController {
 
 
     /**门户报名
-    * @Description 
+    * @Description
     * @author huxiaolong
     * @Date 2021-09-15 18:35:17
     * @param uid
