@@ -64,6 +64,8 @@ public class ActivityQueryDTO {
 	private List<String> tags;
 	/** 是否保持旧的查询规则, 仅针对样式1 */
 	private Boolean keepOldRule;
+	/** 是否需要加载预告内容，仅在keepOldRule false下生效 */
+	private Boolean needLoadForecast;
 
 	// 非页面传递参数
 	/** 标签id列表（根据tags查询数据库来获取） */

@@ -295,7 +295,7 @@
             <if test="params.marketId == null and params.topFid != null">
                 t1.fid <![CDATA[<>]]> #{params.topFid},
             </if>
-            t.start_time DESC
+            t.start_time <if test="params.timeOrder != null">${params.timeOrder.value}</if><if test="params.timeOrder == null">DESC</if>
     </select>
 
     <!-- 活动分类join过滤条件 -->

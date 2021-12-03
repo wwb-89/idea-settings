@@ -61,30 +61,6 @@ public class ActivityApiController {
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
 
-	/**加载预告的活动列表
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2020-11-25 15:58:40
-	 * @param request
-	 * @param data
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	 */
-	@RequestMapping("list/forecast/activities")
-	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
-		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
-		// 旧有规则，不走此查询
-		if (keepOldRule) {
-			return RestRespDTO.success(Lists.newArrayList());
-		}
-		activityQuery.setStatusList(Lists.newArrayList(2));
-		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
-		Page<Activity> page = new Page<>(1, Integer.MAX_VALUE);
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		page = pageActivities(page, activityQuery, loginUser);
-		return RestRespDTO.success(page.getRecords());
-	}
-
 	/**分页查询可参与的活动列表
 	 * keepOldRule时，沿用旧的规则查询已发布、进行中、已结束的活动
 	 * 反之仅查询进行中、已结束的活动
@@ -97,15 +73,45 @@ public class ActivityApiController {
 	 */
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, String data) {
+		List<Activity> result = Lists.newArrayList();
+
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
 		if (!keepOldRule) {
+			boolean needLoadForecast = Optional.ofNullable(activityQuery.getNeedLoadForecast()).orElse(false);
+			// 仅当重新加载数据，且状态查询条件不为空时，才加载预告活动列表
+			if (needLoadForecast && activityQuery.getStatus() == null) {
+				result = listForecastActivity(activityQuery, loginUser);
+			}
+			// 除了预告活动顺序，其余查询均逆序
+			OrderTypeEnum timeOrder = Objects.equals(activityQuery.getStatus(), 2) ? OrderTypeEnum.ASC : OrderTypeEnum.DESC;
+			activityQuery.setTimeOrder(timeOrder);
 			activityQuery.setStatusList(Lists.newArrayList(3, 4));
-			activityQuery.setTimeOrder(OrderTypeEnum.DESC);
 		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		return RestRespDTO.success(pageActivities(page, activityQuery, loginUser));
+		page = pageActivities(page, activityQuery, loginUser);
+		List<Activity> records = Optional.ofNullable(page.getRecords()).orElse(Lists.newArrayList());
+
+		result.addAll(records);
+		page.setRecords(result);
+		return RestRespDTO.success(page);
+	}
+
+	/**加载预告的活动列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2020-11-25 15:58:40
+	 * @param activityQuery
+	 * @param loginUser
+	 */
+	private List<Activity> listForecastActivity(ActivityQueryDTO activityQuery, LoginUserDTO loginUser) {
+		activityQuery.setStatusList(Lists.newArrayList(2));
+		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
+		Page<Activity> page = new Page<>(1, Integer.MAX_VALUE);
+		page = pageActivities(page, activityQuery, loginUser);
+
+		return Optional.ofNullable(page.getRecords()).map(Lists::newArrayList).orElse(Lists.newArrayList());
 	}
 
 	/**分页查询可参与的活动列表
