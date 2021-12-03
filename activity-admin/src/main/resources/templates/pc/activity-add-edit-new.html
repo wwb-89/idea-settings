@@ -1810,7 +1810,10 @@
                     $this.activity.sucTemplateComponentIds = [];
                     $this.activity.signUpConditions = [];
                     if (keys.length == 0) {
-                        return;
+                        return {
+                            signUpConditionStr: '',
+                            sucTemplateComponentIdStr: ''
+                        };
                     }
                     for (var i = 0; i < keys.length; i++) {
                         var tplComponentId = keys[i];
