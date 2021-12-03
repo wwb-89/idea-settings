@@ -30,18 +30,23 @@ public class ActivityTimingReleaseTask {
 
 	@Scheduled(fixedDelay = 10L)
 	public void handle() throws InterruptedException {
+		log.info("处理活动定时发布任务 start");
 		ActivityTimingReleaseQueue.QueueParamDTO queueParam = activityTimingReleaseQueue.pop();
-		if (queueParam == null) {
-			return;
-		}
 		try {
+			if (queueParam == null) {
+				return;
+			}
+			log.info("根据参数:{} 处理活动定时发布任务", JSON.toJSONString(queueParam));
 			activityTimingReleaseQueueService.handle(queueParam);
+			log.info("处理活动定时发布任务 success");
 		} catch (Exception e) {
-			log.error("根据参数:{} 处理活动定时发布error:{}", JSON.toJSONString(queueParam), e.getMessage());
+			log.error("根据参数:{} 处理活动定时发布任务 error:{}", JSON.toJSONString(queueParam), e.getMessage());
 			e.printStackTrace();
 			if (!isIgnoreException(e)) {
 				activityTimingReleaseQueue.push(queueParam);
 			}
+		} finally {
+			log.info("处理活动定时发布任务 end");
 		}
 	}
 

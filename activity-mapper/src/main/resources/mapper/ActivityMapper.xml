@@ -59,6 +59,9 @@
         <result column="is_open_group" jdbcType="BIT" property="openGroup" />
         <result column="group_bbsid" jdbcType="VARCHAR" property="groupBbsid" />
         <result column="is_archived" jdbcType="BIT" property="archived" />
+        <result column="is_open_clazz_interaction" jdbcType="BIT" property="openClazzInteraction" />
+        <result column="course_id" jdbcType="INTEGER" property="courseId" />
+        <result column="clazz_id" jdbcType="INTEGER" property="clazzId" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
@@ -66,14 +69,15 @@
         t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
         t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
         t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.status, t.create_time, t.update_time, t.is_signed_up_notice, t.origin_activity_id,
-        t.is_open_group, t.group_bbsid, t.is_archived
+        t.is_open_group, t.group_bbsid, t.is_archived, t.is_open_clazz_interaction, t.course_id, t.clazz_id
     </sql>
     <sql id="Base_Market_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_timing_release, t.timing_release_time, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
         t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
-        t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.create_time, t.update_time, t.is_open_group, t.group_bbsid, t.is_archived
+        t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.create_time, t.update_time, t.is_open_group, t.group_bbsid, t.is_archived,
+        t.is_open_clazz_interaction, t.course_id, t.clazz_id
     </sql>
 
     <select id="pageParticipate" resultMap="BaseResultMap">
@@ -291,7 +295,7 @@
             <if test="params.marketId == null and params.topFid != null">
                 t1.fid <![CDATA[<>]]> #{params.topFid},
             </if>
-            t.start_time DESC
+            t.start_time <if test="params.timeOrder != null">${params.timeOrder.value}</if><if test="params.timeOrder == null">DESC</if>
     </select>
 
     <!-- 活动分类join过滤条件 -->
@@ -1059,7 +1063,7 @@
                 t.start_time DESC
             </trim>
     </select>
-    <select id="createParticipateActivityPage" resultType="com.chaoxing.activity.model.Activity">
+    <select id="createParticipateActivityPage" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
@@ -1069,19 +1073,13 @@
             t_activity_scope t1 ON t.id = t1.activity_id AND (t.create_fid = #{params.fid} or t1.fid = #{params.fid})
         WHERE
         <!--状态-->
+        t.is_archived = #{params.archived}
         <choose>
-            <when test="params.archived == true">
-                t.is_archived = #{params.archived}
+            <when test="params.status != null">
+                AND t.`status` = #{params.status}
             </when>
             <otherwise>
-                <choose>
-                    <when test="params.status != null">
-                        t.`status` = #{params.status}
-                    </when>
-                    <otherwise>
-                        t.`status` IN ( 1, 2, 3, 4 )
-                    </otherwise>
-                </choose>
+                AND t.`status` IN ( 1, 2, 3, 4 )
             </otherwise>
         </choose>
         <!--搜索关键字-->
@@ -1094,16 +1092,16 @@
         <!--时间-->
         <choose>
             <when test="params.startTime != null and params.startTime != '' and params.endTime != null and params.endTime != ''">
-                AND ((t1.start_time between #{params.startTime} and #{params.endTime}) or (t1.end_time between #{params.startTime} and #{params.endTime}))
+                AND ((t.start_time between #{params.startTime} and #{params.endTime}) or (t.end_time between #{params.startTime} and #{params.endTime}))
             </when>
             <otherwise>
                 <choose>
                     <when test="params.startTime != null and params.startTime != ''">
-                        AND t1.end_time &gt;= #{params.startTime}
+                        AND t.end_time &gt;= #{params.startTime}
                     </when>
                     <otherwise>
                         <if test="params.endTime != null and params.endTime != ''">
-                            AND t1.start_time &lt;= #{params.endTime}
+                            AND t.start_time &lt;= #{params.endTime}
                         </if>
                     </otherwise>
                 </choose>
@@ -1114,7 +1112,7 @@
         ORDER BY
             <choose>
                 <when test="params.orderField == null or params.orderField == ''">
-                    FIELD( t.`status`, 3, 2, 1, 4 )
+                    FIELD( t.`status`, 3, 2, 1, 4 ),
                     t.start_time DESC
                 </when>
                 <otherwise>

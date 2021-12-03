@@ -165,9 +165,8 @@ public class ActivityStatQueryService {
 			Integer pageId = activity.getPageId();
 			if (pageId != null) {
 				// pv
-				Integer websiteId = mhApiService.getWebsiteIdByPageId(pageId);
-				Integer pv = mhApiService.countWebsitePv(websiteId);
-				activityStat.setPv(pv);
+				activityStat.setPv(getPvByActivity(activity));
+				Integer websiteId = activity.getWebsiteId();
 				// pv趋势
 				List<MhViewNumDailyStatDTO> pvTrend = mhApiService.statWebsiteDailyViewNum(websiteId, startTimeStr, endTimeStr);
 				List<DailyStatDTO> pvDailyStats = Lists.newArrayList();
@@ -188,6 +187,27 @@ public class ActivityStatQueryService {
 			activityStat.setSignInTrend(fullConvert2(daily, signActivityStat.getSignInTrend()));
 		}
 		return activityStat;
+	}
+
+	/**通过活动获取访问量
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-02 17:12:12
+	 * @param activity
+	 * @return 
+	 */
+	public Integer getPvByActivity(Activity activity) {
+		Integer websiteId = activity.getWebsiteId();
+		Integer pageId = activity.getPageId();
+		if (websiteId == null && pageId != null) {
+			websiteId = mhApiService.getWebsiteIdByPageId(pageId);
+			activity.setWebsiteId(websiteId);
+		}
+		if (websiteId == null) {
+			log.error("websiteId为空");
+			return 0;
+		}
+		return mhApiService.countWebsitePv(websiteId);
 	}
 
 	private List<DailyStatDTO> fullConvert2(List<String> daily, List<DailyStatDTO> origins) {

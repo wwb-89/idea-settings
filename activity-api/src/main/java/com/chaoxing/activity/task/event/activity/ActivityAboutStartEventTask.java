@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/**活动即将开始任务
  * @author wwb
  * @version ver 1.0
  * @className ActivityAboutStartEventTask
@@ -29,16 +29,21 @@ public class ActivityAboutStartEventTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动即将开始任务 start");
         ActivityAboutStartEventOrigin eventOrigin = activityAboutStartEventQueue.pop();
-        if (eventOrigin == null) {
-            return;
-        }
         try {
+            if (eventOrigin == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动即将开始任务", JSON.toJSONString(eventOrigin));
             activityAboutStartEventQueueService.handle(eventOrigin);
+            log.info("处理活动即将开始任务 end");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理活动即将开始事件error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
+            log.error("根据参数:{} 处理活动即将开始任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityAboutStartEventQueue.push(eventOrigin);
+        } finally {
+            log.info("处理活动即将开始任务 end");
         }
     }
 

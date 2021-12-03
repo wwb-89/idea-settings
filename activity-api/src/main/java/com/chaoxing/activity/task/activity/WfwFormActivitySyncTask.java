@@ -32,11 +32,13 @@ public class WfwFormActivitySyncTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handleWfwUserSignUpInfoDelete() {
+        log.info("处理万能表单活动数据推送任务 start");
         ActivityCreateFromFormParamDTO queueParam = wfwFormSyncActivityQueue.pop();
-        if (queueParam == null) {
-            return;
-        }
         try {
+            if (queueParam == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理万能表单活动数据推送任务", JSON.toJSONString(queueParam));
             ActivityCreateFromFormParamDTO.OperateTypeEnum operateTypeEnum = ActivityCreateFromFormParamDTO.OperateTypeEnum.fromValue(queueParam.getOp());
             Integer fid = queueParam.getDeptId();
             Integer formId = queueParam.getFormId();
@@ -55,9 +57,12 @@ public class WfwFormActivitySyncTask {
                     break;
                 default:
             }
+            log.info("根据参数:{} 处理万能表单活动数据推送任务 success", JSON.toJSONString(queueParam));
         } catch (Exception e) {
-            log.error("根据参数:{} 处理万能表单新增/修改/删除数据error:{}", JSON.toJSONString(queueParam), e.getMessage());
+            log.error("根据参数:{} 处理万能表单活动数据推送任务 error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
+        } finally {
+            log.info("处理万能表单活动数据推送任务 end");
         }
     }
 

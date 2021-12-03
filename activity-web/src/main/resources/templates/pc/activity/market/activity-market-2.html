@@ -131,11 +131,7 @@
 				//筛选查询参数对象
 				queryParams: {},
 				activities: [],
-				forecastActivities: [],
-				extraActivities: [],
-				loadedNum: 0,
 				loaded: false,
-				reloadForecast: true,
 				topFid: [[${topFid}]],
 				hideFilter: [[${hideFilter}]],
 				mescroll: null,
@@ -208,22 +204,13 @@
 				}
 				$this.initMescroll();
 			},
-			watch: {
-				loadedNum: function (value) {
-					var $this = this;
-					if (value == 2) {
-						$this.activities.pushArray($this.forecastActivities);
-						$this.activities.pushArray($this.extraActivities);
-						$this.$nextTick(function () {
-							cropImgFun("body");
-						});
-						$this.loadedNum = 0;
-						$this.loaded = true;
-						$this.reloadForecast = false;
-					}
-				}
-			},
 			methods: {
+				resetDataAndParams: function () {
+					var $this = this;
+					$this.activities = [];
+					$this.queryParams.pageNum = 1;
+					$this.queryParams.needLoadForecast = true;
+				},
 				//改变选中状态
 				changeActivityClassifySelected: function(index){
 					var $this = this;
@@ -231,9 +218,7 @@
 						$this.$set($this.classifies[i], "selected", i == index);
 					});
 					$this.queryParams.activityClassifyName = $this.classifies[index].value;
-					$this.activities = [];
-					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+					$this.resetDataAndParams();
 					$this.reloadMescoll();
 				},
 				changeActivityTimeSelected: function(index){
@@ -242,9 +227,7 @@
 						$this.$set($this.activityQueryDates[i], "selected", i == index);
 					});
 					$this.queryParams.date = $this.activityQueryDates[index].value;
-					$this.activities = [];
-					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+					$this.resetDataAndParams();
 					$this.reloadMescoll();
 				},
 				changeActivityRegionsSelected: function(index){
@@ -256,9 +239,7 @@
 					if (activityApp.isEmpty($this.queryParams.areaCode)) {
 						$this.queryParams.areaCode = $this.areaCode;
 					}
-					$this.activities = [];
-					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+					$this.resetDataAndParams();
 					$this.reloadMescoll();
 				},
 				changeActivityTypesSelected: function(index){
@@ -267,9 +248,7 @@
 						$this.$set($this.activityTypes[i], "selected", i == index);
 					});
 					$this.queryParams.activityType = $this.activityTypes[index].value;
-					$this.activities = [];
-					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+					$this.resetDataAndParams();
 					$this.reloadMescoll();
 				},
 				changeActivityStatusSelected: function(index){
@@ -278,9 +257,7 @@
 						$this.$set($this.statuses[i], "selected", i == index);
 					});
 					$this.queryParams.status = $this.statuses[index].value;
-					$this.activities = [];
-					$this.queryParams.pageNum = 1;
-					$this.reloadForecast = true;
+					$this.resetDataAndParams();
 					$this.reloadMescoll();
 				},
 				showFilter: function (type) {
@@ -306,51 +283,35 @@
 						flag: [[${flag}]],
                         // 是否只查询能报名的，如果是则不分页
                         signUpAble: [[${signUpAble}]],
-						timeOrder: [[${timeOrder}]]
+						timeOrder: [[${timeOrder}]],
+						needLoadForecast: true
 					};
 					$this.activities = [];
 				},
-				loadData: function () {
-					var $this = this;
-					$this.loaded = false;
-					$this.loadedNum = $this.reloadForecast ? 0 : 1;
-					$this.forecastActivities = [];
-					$this.extraActivities = [];
-					if ($this.reloadForecast) {
-						$this.loadForecastData();
-					}
-					$this.loadExtraData();
-				},
 				//数据加载渲染
-				loadExtraData: function () {
+				loadData: function () {
 					var $this = this;
 					var url = ctx + "/api/activity/list/participate";
 					var params = $this.queryParams;
+					$this.loaded = false;
 					app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
 						if (data.success) {
+                            $this.loaded = true;
+							$this.queryParams.needLoadForecast = false;
                             $this.queryParams.pageNum++;
-							$this.extraActivities = data.data.records
-							$this.mescroll.endBySize(data.data.records.length, $this.signUpAble ? data.data.records.length : data.data.total);
-							$this.loadedNum += 1;
-						} else {
-							var errorMessage = data.message;
-							if (activityApp.isEmpty(errorMessage)) {
-								errorMessage = "加载活动列表失败";
+							var activities = $this.activities;
+							$this.mescroll.endByPage(data.data.size, $this.signUpAble ? data.data.records.length : data.data.pages);
+							if (data.data.records.length < 1) {
+								return;
 							}
-							app.showMsg(errorMessage);
-						}
-					}, function () {
-						app.showMsg("加载活动列表失败");
-					});
-				},
-				loadForecastData: function () {
-					var $this = this;
-					var url = ctx + "/api/activity/list/forecast/activities";
-					var params = $this.queryParams;
-					app.ajaxPost(url, { data: activityApp.getJsonStr(params) }, function (data) {
-						if (data.success) {
-							$this.forecastActivities = data.data;
-							$this.loadedNum += 1;
+							$(data.data.records).each(function () {
+								activities.push(this);
+							});
+							$this.activities = [];
+							$this.activities = activities;
+							$this.$nextTick(function () {
+								cropImgFun("body");
+							});
 						} else {
 							var errorMessage = data.message;
 							if (activityApp.isEmpty(errorMessage)) {
@@ -373,10 +334,8 @@
 					var $this = this;
 					$this.queryParams.sw = $this.sw;
 					$("#search-input").blur();
-					$this.queryParams.pageNum = 1;
-					$this.activities = [];
+					$this.resetDataAndParams();
 					// 重载mescroll依旧会请求数据
-					$this.reloadForecast = true;
 					$this.reloadMescoll();
 				},
 				// 重载mescroll依旧会请求数据

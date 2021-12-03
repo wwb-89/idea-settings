@@ -18,6 +18,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.module.ClazzInteractionDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
@@ -41,6 +42,7 @@ import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
+import com.chaoxing.activity.service.manager.module.ClazzInteractionApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -140,6 +142,8 @@ public class ActivityHandleService {
 	private ActivityStatusChangeEventService activityStatusChangeEventService;
 	@Resource
 	private TagHandleService tagHandleService;
+	@Resource
+	private ClazzInteractionApiService clazzInteractionApiService;
 
 	/**
 	 * @Description
@@ -215,6 +219,8 @@ public class ActivityHandleService {
 			inspectionConfigHandleService.updateConfigActivityId(activityCreateParamDto.getInspectionConfigId(), activityId);
 		}
 		activityStatSummaryHandlerService.init(activityId);
+		// 班级互动
+		ApplicationContextHolder.getBean(ActivityHandleService.class).handleClazzInteraction(activity, signCreateParamDto, loginUser);
 		// 活动详情
 		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
 		activityDetailMapper.insert(activityDetail);
@@ -238,6 +244,35 @@ public class ActivityHandleService {
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
 		return activityId;
+	}
+
+	/**处理班级互动
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-02 18:09:03
+	 * @param activity
+	 * @param signCreateParamDto
+	 * @param loginUser
+	 * @return
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void handleClazzInteraction(Activity activity, SignCreateParamDTO signCreateParamDto, LoginUserDTO loginUser) {
+		Integer activityId = activity.getId();
+		if (activity.getOpenClazzInteraction() && (activity.getClazzId() == null || activity.getCourseId() == null)) {
+			SignUpCreateParamDTO signUp = Optional.ofNullable(signCreateParamDto.getSignUps()).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+			Integer fillFormId = null;
+			if (signUp != null && signUp.getFillInfo()) {
+				fillFormId = signUp.getFillInfoFormId();
+			}
+			ClazzInteractionDTO clazzInteraction = clazzInteractionApiService.clazzCourseCreate(activityId, activity.getName(), loginUser.getUid(), activity.getCoverUrl(), fillFormId);
+			if (clazzInteraction == null) {
+				return;
+			}
+			activityMapper.update(null, new LambdaUpdateWrapper<Activity>()
+					.eq(Activity::getId, activityId)
+					.set(Activity::getClazzId, clazzInteraction.getClazzId())
+					.set(Activity::getCourseId, clazzInteraction.getCourseId()));
+		}
 	}
 
 	/**处理报名签到
@@ -340,6 +375,8 @@ public class ActivityHandleService {
 			// 考核配置
 			boolean openInspectionConfig = Optional.ofNullable(activityUpdateParamDto.getOpenInspectionConfig()).orElse(false);
 			activityMenuService.updateActivityMenusByInspectionConfig(activityId, openInspectionConfig);
+			// 班级互动
+			ApplicationContextHolder.getBean(ActivityHandleService.class).handleClazzInteraction(activity, signCreateParam, loginUser);
 			// 更新活动状态
 			activityStatusService.statusUpdate(activityId);
 			// 处理门户模版的绑定

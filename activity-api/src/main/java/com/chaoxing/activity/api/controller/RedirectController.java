@@ -1,18 +1,23 @@
 package com.chaoxing.activity.api.controller;
 
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.sign.SignDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
-import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.data.DataPushRecordQueryService;
 import com.chaoxing.activity.service.manager.GroupApiService;
+import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.util.BaiduMapUtils;
+import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.exception.LoginRequiredException;
 import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +51,8 @@ public class RedirectController {
     private WfwFormSyncActivityQueueService activityFormSyncService;
     @Resource
     private GroupApiService groupApiService;
+    @Resource
+    private MarketHandleService marketHandleService;
 
     /**根据表单行id重定向到活动的详情页面
      * @Description 
@@ -233,6 +240,66 @@ public class RedirectController {
             url = groupApiService.getPcGroupUrl(bbsid);
         }
         return "redirect:" + url;
+    }
+
+    /**
+     * 重定向到活动新增页面
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-02 11:28:36
+     * @param request
+     * @param marketId
+     * @param flag
+     * @return
+     */
+    @RequestMapping("activity/add-index")
+    public String redirectActivityCreateView(HttpServletRequest request, Integer marketId, String flag) {
+        flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
+        marketId = getOrCreateMarketByFlag(request, marketId, flag);
+        if (marketId != null) {
+            return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/activity/add" + "?marketId=" + marketId + "&flag=" + flag;
+        }
+        return "";
+    }
+
+    /**重定向到活动市场主页
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-12-02 11:28:16
+     * @param request
+     * @param marketId
+     * @param flag
+     * @return
+     */
+    @RequestMapping("market-index")
+    public String redirectMarketSettingIndex(HttpServletRequest request, Integer marketId, String flag) {
+        flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
+        marketId = getOrCreateMarketByFlag(request, marketId, flag);
+        return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/market/" + marketId + "/setting";
+    }
+
+    /**根据fid、flag获取活动市场id
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-12-02 11:27:35
+     * @param request
+     * @param marketId
+     * @param flag
+     * @return
+     */
+    private Integer getOrCreateMarketByFlag(HttpServletRequest request, Integer marketId, String flag) {
+        if (marketId == null && StringUtils.isNotBlank(flag)) {
+            // 若不存在，则判断市场是否存在，市场不存在则创建市场
+            Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+            Integer uid = CookieUtils.getUid(request);
+            Integer fid = CookieUtils.getFid(request);
+            if (uid == null || fid ==null ) {
+                throw new LoginRequiredException("请登录");
+            }
+            return marketHandleService.getOrCreateMarket(fid, activityFlagEnum, LoginUserDTO.buildDefault(uid, fid));
+
+        }
+        return marketId;
     }
 
 }

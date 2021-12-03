@@ -4,13 +4,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.FormUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -80,10 +82,9 @@ public class WfwFormApiController {
 	* @param wfwFormTemplateId
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("build/create-edit-url")
+	@RequestMapping("build/edit-url")
 	public RestRespDTO getWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId, Integer formId) {
-		String createEditUrl = formCreateApiService.buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplateId);
-		return RestRespDTO.success(WfwFormCreateResultDTO.builder().editUrl(createEditUrl).build());
+		return RestRespDTO.success(formCreateApiService.buildEditFormUrl(fid, formId, uid, wfwFormTemplateId));
 	}
 
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
@@ -97,7 +98,7 @@ public class WfwFormApiController {
 	 */
 	@RequestMapping("create/from/wfw-form-template")
 	public RestRespDTO createWfwFormWithEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId) {
-		return RestRespDTO.success(formCreateApiService.createWfwFormWithEditUrl(fid, uid, wfwFormTemplateId));
+		return RestRespDTO.success(formCreateApiService.createWfwForm(fid, uid, wfwFormTemplateId));
 	}
 
 	/**获取表单管理地址

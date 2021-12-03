@@ -37,6 +37,14 @@ public class ActivityVO {
     private String endTime;
     /** 活动状态 */
     private Integer status;
+    /** 是否发布 */
+    private Boolean released;
+    /** 是否归档 */
+    private Boolean archived;
+    /** 活动创建者uid */
+    private Integer createUid;
+    /** 活动创建机构fid */
+    private Integer createFid;
 
     /**
      * 活动list转换为活动vo list
@@ -58,6 +66,10 @@ public class ActivityVO {
                         .startTime(v.getStartTime() == null ? null : v.getStartTime().format(DateUtils.FULL_TIME_FORMATTER))
                         .endTime(v.getEndTime() == null ? null : v.getEndTime().format(DateUtils.FULL_TIME_FORMATTER))
                         .status(v.getStatus())
+                        .released(v.getReleased())
+                        .archived(v.getArchived())
+                        .createUid(v.getCreateUid())
+                        .createFid(v.getCreateFid())
                         .build());
             });
         }

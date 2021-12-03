@@ -2,6 +2,7 @@ package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.service.activity.stat.ActivityStatHandleService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ import javax.annotation.Resource;
  * @date 2021/5/10 4:45 下午
  * <p>
  */
-
+@Slf4j
 @Component
 public class ActivityStatTask {
 
@@ -48,21 +49,26 @@ public class ActivityStatTask {
     */
     @Scheduled(fixedDelay = 10L)
     public void handleActivityStatTask() throws InterruptedException {
+        log.info("处理活动统计任务 start");
         Integer taskId = activityStatQueueService.getActivityStatTask();
-
-        if (taskId == null) {
-            return;
-        }
         boolean result = false;
         try {
+            if (taskId == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动统计任务", taskId);
             result = activityStatHandleService.handleTask(taskId);
         } catch (Exception e) {
 
+        } finally {
+            if (result) {
+                log.info("根据参数:{} 处理活动统计任务 success", taskId);
+            }else{
+                log.error("根据参数:{} 处理活动统计任务 error", taskId);
+                activityStatQueueService.addActivityStatTask(taskId);
+            }
+            log.info("处理活动统计任务 end");
         }
-        if (!result) {
-            activityStatQueueService.addActivityStatTask(taskId);
-        }
-
     }
 
 }

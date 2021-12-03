@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/**活动地址时间改变事件任务
  * @author wwb
  * @version ver 1.0
  * @className ActivityAddressTimeChangeEventTask
@@ -29,16 +29,21 @@ public class ActivityAddressTimeChangeEventTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动地址时间改变事件任务 start");
         ActivityAddressTimeChangeEventOrigin eventOrigin = activityAddressTimeChangeEventQueue.pop();
-        if (eventOrigin == null) {
-            return;
-        }
         try {
+            if (eventOrigin == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动地址时间改变事件任务", JSON.toJSONString(eventOrigin));
             activityAddressTimeChangeEventQueueService.handle(eventOrigin);
+            log.info("处理活动地址时间改变事件任务 end");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理活动地点时间改变事件任务error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
+            log.error("根据参数:{} 处理活动地址时间改变事件任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityAddressTimeChangeEventQueue.push(eventOrigin);
+        } finally {
+            log.info("处理活动地址时间改变事件任务 end");
         }
     }
 

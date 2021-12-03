@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/**活动封面改变事件任务
  * @author wwb
  * @version ver 1.0
  * @className ActivityCoverChangeEventTask
@@ -29,17 +29,21 @@ public class ActivityCoverChangeEventTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动封面改变事件任务 start");
         ActivityCoverChangeEventOrigin eventOrigin = activityCoverChangeEventQueue.pop();
-        log.info("根据参数:{} 处理活动封面 start", JSON.toJSONString(eventOrigin));
-        if (eventOrigin == null) {
-            return;
-        }
         try {
+            if (eventOrigin == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动封面改变事件任务", JSON.toJSONString(eventOrigin));
             activityCoverChangeEventQueueService.handle(eventOrigin);
+            log.info("处理活动封面改变事件任务 success");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理活动封面改变error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
+            log.error("根据参数:{} 处理活动封面改变事件任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityCoverChangeEventQueue.push(eventOrigin);
+        } finally {
+            log.info("处理活动封面改变事件任务 end");
         }
     }
 

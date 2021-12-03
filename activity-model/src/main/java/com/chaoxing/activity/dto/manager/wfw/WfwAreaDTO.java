@@ -50,6 +50,10 @@ public class WfwAreaDTO {
 	private Integer sort;
 	private List<WfwAreaDTO> children;
 
+	// 附加
+	/** 活动id */
+	private Integer activityId;
+
 	public ActivityScope buildActivityScope() {
 		return ActivityScope.builder()
 				.hierarchyId(getId())

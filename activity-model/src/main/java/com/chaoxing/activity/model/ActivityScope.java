@@ -65,6 +65,7 @@ public class ActivityScope {
                         .fid(activityScope.getFid())
                         .existChild(activityScope.getExistChild())
                         .sort(activityScope.getSort())
+                        .activityId(activityScope.getActivityId())
                         .build();
                 wfwRegionalArchitectures.add(wfwRegionalArchitecture);
             }

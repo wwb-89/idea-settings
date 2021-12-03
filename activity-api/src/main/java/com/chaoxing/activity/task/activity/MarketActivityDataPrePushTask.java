@@ -27,16 +27,21 @@ public class MarketActivityDataPrePushTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动市场活动数据预推送任务 start");
         Integer activityId = activityDataPrePushQueue.pop();
-        if (activityId == null) {
-            return;
-        }
         try {
+            if (activityId == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动市场活动数据预推送任务", activityId);
             activityDataPrePushQueueService.handle(activityId);
+            log.info("处理活动市场活动数据预推送任务 success");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理活动数据预推送任务error:{}", activityId, e.getMessage());
+            log.error("根据参数:{} 处理活动市场活动数据预推送任务 error:{}", activityId, e.getMessage());
             e.printStackTrace();
             activityDataPrePushQueue.push(activityId);
+        } finally {
+            log.info("处理活动市场活动数据预推送任务 end");
         }
     }
 

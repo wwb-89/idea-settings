@@ -29,16 +29,21 @@ public class ActivityEndTimeReachEventTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动结束时间到达任务处理 start");
         ActivityEndTimeReachEventOrigin eventOrigin = activityEndTimeReachEventQueue.pop();
-        if (eventOrigin == null) {
-            return;
-        }
         try {
+            if (eventOrigin == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动结束时间到达任务处理", JSON.toJSONString(eventOrigin));
             activityEndTimeReachEventQueueService.handle(eventOrigin);
+            log.info("处理活动结束时间到达任务处理 success");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理活动结束时间到达事件任务error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
+            log.error("根据参数:{} 处理活动结束时间到达任务处理 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityEndTimeReachEventQueue.push(eventOrigin);
+        } finally {
+            log.info("处理活动结束时间到达任务处理 end");
         }
     }
 

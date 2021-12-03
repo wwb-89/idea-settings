@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @description: 活动管理第三方查询参数DTO
@@ -50,6 +51,7 @@ public class ActivityCreateParticipateQueryDTO {
         if (getFid() == null) {
             throw new BusinessException("fid不能为空");
         }
+        setArchived(Optional.ofNullable(getArchived()).orElse(false));
         // 防止sql注入，先对传入的字段和排序规则做检查
         if (StringUtils.isNotBlank(getOrderType()) && OrderTypeEnum.fromValue(getOrderType()) == null) {
             setOrderType(null);

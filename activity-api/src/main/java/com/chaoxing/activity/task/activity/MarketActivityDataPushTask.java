@@ -1,5 +1,6 @@
 package com.chaoxing.activity.task.activity;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.queue.activity.MarketActivityDataPushQueue;
 import com.chaoxing.activity.service.queue.activity.handler.MarketActivityDataPushQueueService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,16 +28,21 @@ public class MarketActivityDataPushTask {
 
     @Scheduled(fixedDelay = 10L)
     public void handle() throws InterruptedException {
+        log.info("处理活动市场活动数据推送任务 start");
         MarketActivityDataPushQueue.QueueParamDTO queueParam = marketActivityDataPushQueue.pop();
-        if (queueParam == null) {
-            return;
-        }
         try {
+            if (queueParam == null) {
+                return;
+            }
+            log.info("根据参数:{} 处理活动市场活动数据推送任务", JSON.toJSONString(queueParam));
             activityDataPushQueueService.handle(queueParam);
+            log.info("处理活动市场活动数据推送任务 success");
         } catch (Exception e) {
-            log.error("根据参数:{} 处理活动数据推送任务error:{}", queueParam, e.getMessage());
+            log.error("根据参数:{} 处理活动市场活动数据推送任务 error:{}", JSON.toJSONString(queueParam), e.getMessage());
             e.printStackTrace();
             marketActivityDataPushQueue.delayPush(queueParam);
+        } finally {
+            log.info("处理活动市场活动数据推送任务 end");
         }
     }
 
