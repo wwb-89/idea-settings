@@ -63,6 +63,8 @@ public class DomainConstant {
     public static final String BAIDU_MAP_API_DOMAIN = "http://api.map.baidu.com";
     /** 万能表单域名 */
     public static final String WFW_FORM_API_DOMAIN = "https://m.oa.chaoxing.com";
+    /** 厦门教师研修平台域名 */
+    public static final String XIAMEN_TRAINING_PLATFORM_API_DOMAIN = "http://appcd.chaoxing.com/ixiamen";
 
     // 小组
     /** 小组api域名 */
