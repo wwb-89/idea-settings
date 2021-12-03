@@ -1213,6 +1213,7 @@
                         var formType = $this.fillInfoTypeMap[item.originId] && $this.fillInfoTypeMap[item.originId].type
                         item.formType = formType || 'form'
                     }
+                    $this.createSignUpWfwForm(item.originId);
                 });
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
@@ -1270,6 +1271,39 @@
                 }
             },
             methods: {
+                // 创建报名万能表单
+                createSignUpWfwForm: function (signUpTplComponentId) {
+                    var $this =this;
+                    var signUp = $this.signUpMap[signUpTplComponentId];
+                    // 判断报名的表单是否存在，不存在则创建表单
+                    if (signUp.formType == 'wfw_form' && activityApp.isEmpty(signUp.fillInfoFormId)) {
+                        // 克隆新的表单
+                        var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
+                        var url = ctx + '/api/wfw-form/create/from/wfw-form-template'
+                        var params = {
+                            fid: $this.fid,
+                            uid: [[${session._login_user_.uid}]],
+                            wfwFormTemplateId: wfwFormTemplateId
+                        };
+                        app.ajaxPost(url, params, function (res) {
+                            if (res.success) {
+                                var { formId, openAddr, pcUrl, wechatUrl } = res.data
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'openAddr', openAddr);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'pcUrl', pcUrl);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'wechatUrl', wechatUrl);
+                                $this.$set($this.signUpMap[signUpTplComponentId], 'fillInfoFormId', formId);
+                            } else {
+                                var errorMessage = res.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "报名信息填写，创建填写表单失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("报名信息填写，创建填写表单失败");
+                        });
+                    }
+                },
                 initSignUpScope: function(i, signUp) {
                     var $this = this;
                     if (signUp.enableContactsParticipateScope) {
@@ -2030,17 +2064,9 @@
                         app.showMsg("请先关闭上一个填报信息配置页面");
                         return;
                     }
-
                     var signUp = $this.signUpMap[signUpTplComponentId];
-                    var formId = "";
-                    $this.operateSignUpOriginId = signUpTplComponentId;
-                    var url = ctx + '/api/wfw-form/build/create-edit-url';
-                    // 是否需要创建新的表单，表单id为空，则需要
-                    var needCreateForm = activityApp.isEmpty(signUp.fillInfoFormId);
-                    if (needCreateForm) {
-                        url = ctx + '/api/wfw-form/create/from/wfw-form-template'
-                    }
-                    formId = signUp.fillInfoFormId || '';
+                    var url = ctx + '/api/wfw-form/build/edit-url';
+                    var formId = signUp.fillInfoFormId || '';
                     var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
                     var params = {
                         fid: $this.fid,
@@ -2050,14 +2076,7 @@
                     }
                     app.ajaxPost(url, params, function (res) {
                         if (res.success) {
-                            var { formId, openAddr, pcUrl, wechatUrl, editUrl } = res.data
-                            if (needCreateForm) {
-                                $this.$set($this.signUpMap[signUpTplComponentId], 'openAddr', openAddr);
-                                $this.$set($this.signUpMap[signUpTplComponentId], 'pcUrl', pcUrl);
-                                $this.$set($this.signUpMap[signUpTplComponentId], 'wechatUrl', wechatUrl);
-                                $this.$set($this.signUpMap[signUpTplComponentId], 'fillInfoFormId', formId);
-                            }
-                            $this.wfwFormConfigWindow = window.open(editUrl);
+                            $this.wfwFormConfigWindow = window.open(res.data);
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {

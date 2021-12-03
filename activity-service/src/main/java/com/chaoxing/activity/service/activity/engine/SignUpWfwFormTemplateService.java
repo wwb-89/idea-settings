@@ -5,6 +5,7 @@ import com.chaoxing.activity.mapper.SignUpWfwFormTemplateMapper;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,7 +26,52 @@ public class SignUpWfwFormTemplateService {
     @Resource
     private SignUpWfwFormTemplateMapper signUpWfwFormTemplateMapper;
 
+    private static final String NOMARL_TEMPLATE_CODE = "normal";
 
+    /**根据code获取系统模板
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-03 10:40:24
+     * @param code
+     * @return
+     */
+    public SignUpWfwFormTemplate getSystemTemplateByCode(String code) {
+        if (StringUtils.isBlank(code)) {
+            log.error("code为空，系统模板不存在");
+            return null;
+        }
+        SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+                .eq(SignUpWfwFormTemplate::getCode, code)
+                .eq(SignUpWfwFormTemplate::getSystem, Boolean.TRUE)).stream().findFirst().orElse(null);
+        if (signUpWfwFormTemplate == null) {
+            log.error("code为{}的系统模板不存在", code);
+        }
+        return signUpWfwFormTemplate;
+    }
+
+
+    /**根据模板id获取模板,若模板不存在，则返回系统默认的通用模板
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-03 10:46:55
+     * @param wfwFormTemplateId
+     * @return
+     */
+    public SignUpWfwFormTemplate getByIdOrDefaultNormal(Integer wfwFormTemplateId) {
+        SignUpWfwFormTemplate signUpWfwFormTemplate = getById(wfwFormTemplateId);
+        if (signUpWfwFormTemplate == null) {
+            signUpWfwFormTemplate = getSystemTemplateByCode(NOMARL_TEMPLATE_CODE);
+        }
+        return signUpWfwFormTemplate;
+    }
+
+    /**根据模板id获取模板
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-03 10:43:45
+     * @param wfwFormTemplateId
+     * @return
+     */
     public SignUpWfwFormTemplate getById(Integer wfwFormTemplateId) {
         if (wfwFormTemplateId == null) {
             return null;

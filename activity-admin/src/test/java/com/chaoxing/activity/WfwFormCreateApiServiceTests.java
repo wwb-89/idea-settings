@@ -30,7 +30,7 @@ public class WfwFormCreateApiServiceTests {
 
     @Test
     public void getCreateUrl() {
-        String url = wfwFormCreateApiService.buildCreateEditFormUrl(117211, 25418810, null, 1);
+        String url = wfwFormCreateApiService.buildEditFormUrl(117211, 25418810, null, 1);
         System.out.println(url);
     }
 

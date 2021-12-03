@@ -55,21 +55,24 @@ public class WfwFormCreateApiService {
 	@Resource
 	private SignUpFillInfoTypeService signUpFillInfoTypeService;
 
-	/**构建表单创建编辑地址
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-17 17:49:15
-	* @param fid
-	* @param uid
-	* @param wfwFormTemplateId
-	* @return java.lang.String
-	*/
-	public String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, Integer wfwFormTemplateId) {
+	/**构建表单编辑地址（仅仅是编辑）
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-17 17:49:15
+	 * @param fid
+	 * @param uid
+	 * @param wfwFormTemplateId
+	 * @return java.lang.String
+	 */
+	public String buildEditFormUrl(Integer fid, Integer formId, Integer uid, Integer wfwFormTemplateId) {
 		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
+		if (wfwFormTemplate == null) {
+			wfwFormTemplate = SignUpWfwFormTemplate.builder().sign(SIGN).key(KEY).build();
+		}
 		return buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplate);
 	}
 
-	public String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
+	private String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
 		if (wfwFormTemplate == null) {
 			throw new BusinessException("机构: " + fid + "报名万能表单模板不存在!");
 		}
@@ -103,17 +106,17 @@ public class WfwFormCreateApiService {
 	 * @param wfwFormTemplateId
 	 * @return java.lang.String
 	 */
-	public WfwFormCreateResultDTO createWfwFormWithEditUrl(Integer fid, Integer uid, Integer wfwFormTemplateId) {
-		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
-		return createWfwFormWithEditUrl(fid, uid, wfwFormTemplate);
+	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, Integer wfwFormTemplateId) {
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId);
+		return createWfwForm(fid, uid, wfwFormTemplate);
 	}
 
-	public WfwFormCreateResultDTO createWfwFormWithEditUrl(Integer fid, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
+	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
 		if (wfwFormTemplate == null) {
 			throw new BusinessException("报名万能表单模板不存在!");
 		}
 		// 创建新的表单
-		WfwFormCreateResultDTO wfwFormCreateResult = create(WfwFormCreateParamDTO.builder()
+		return create(WfwFormCreateParamDTO.builder()
 				.formId(wfwFormTemplate.getFormId())
 				.originalFid(wfwFormTemplate.getFid())
 				.uid(uid)
@@ -121,9 +124,6 @@ public class WfwFormCreateApiService {
 				.sign(wfwFormTemplate.getSign())
 				.key(wfwFormTemplate.getKey())
 				.build());
-		String formEditUrl = buildCreateEditFormUrl(fid, wfwFormCreateResult.getFormId(), uid, wfwFormTemplate);
-		wfwFormCreateResult.setEditUrl(formEditUrl);
-		return wfwFormCreateResult;
 	}
 
 
@@ -142,7 +142,7 @@ public class WfwFormCreateApiService {
 		Integer wfwFormTemplateId = Optional.ofNullable(signUpFillInfoTypeService.getByTemplateComponentId(tplComponentId)).map(SignUpFillInfoType::getWfwFormTemplateId).orElse(null);
 		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
 		if (formId == null) {
-			return createWfwFormWithEditUrl(fid, uid, wfwFormTemplate);
+			return createWfwForm(fid, uid, wfwFormTemplate);
 		}
 		return create(WfwFormCreateParamDTO.builder()
 				.originalFid(originFid)

@@ -213,7 +213,7 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                         <div class="input-box column">
                             <div class="set-box">
-                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it)"></el-switch>
+                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it, item.id)"></el-switch>
                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                             </div>
                             <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
@@ -586,6 +586,39 @@
                     }
                 },
                 methods: {
+                    // 创建报名万能表单
+                    createSignUpWfwForm: function (signUpTplComponentId) {
+                        var $this =this;
+                        var signUp = $this.signUpMap[signUpTplComponentId];
+                        // 判断报名的表单是否存在，不存在则创建表单
+                        if (signUp.formType == 'wfw_form' && activityApp.isEmpty(signUp.fillInfoFormId)) {
+                            // 克隆新的表单
+                            var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
+                            var url = ctx + '/api/wfw-form/create/from/wfw-form-template'
+                            var params = {
+                                fid: $this.activity.createFid,
+                                uid: [[${session._login_user_.uid}]],
+                                wfwFormTemplateId: wfwFormTemplateId
+                            };
+                            app.ajaxPost(url, params, function (res) {
+                                if (res.success) {
+                                    var { formId, openAddr, pcUrl, wechatUrl } = res.data
+                                    $this.$set($this.signUpMap[signUpTplComponentId], 'openAddr', openAddr);
+                                    $this.$set($this.signUpMap[signUpTplComponentId], 'pcUrl', pcUrl);
+                                    $this.$set($this.signUpMap[signUpTplComponentId], 'wechatUrl', wechatUrl);
+                                    $this.$set($this.signUpMap[signUpTplComponentId], 'fillInfoFormId', formId);
+                                } else {
+                                    var errorMessage = res.message;
+                                    if (activityApp.isEmpty(errorMessage)) {
+                                        errorMessage = "报名信息填写，创建填写表单失败";
+                                    }
+                                    app.showMsg(errorMessage);
+                                }
+                            }, function () {
+                                app.showMsg("报名信息填写，创建填写表单失败");
+                            });
+                        }
+                    },
                     initSignUpScope: function(i, signUp) {
                         var $this = this;
                         if (signUp.enableContactsParticipateScope) {
@@ -751,15 +784,8 @@
                             return;
                         }
                         var signUp = $this.signUpMap[signUpTplComponentId];
-                        var formId = "";
-                        $this.operateSignUpOriginId = signUpTplComponentId;
-                        var url = ctx + '/api/wfw-form/build/create-edit-url';
-                        // 是否需要创建新的表单，表单id为空，则需要
-                        var needCreateForm = activityApp.isEmpty(signUp.fillInfoFormId);
-                        if (needCreateForm) {
-                            url = ctx + '/api/wfw-form/create/from/wfw-form-template'
-                        }
-                        formId = signUp.fillInfoFormId || '';
+                        var url = ctx + '/api/wfw-form/build/edit-url';
+                        var formId = signUp.fillInfoFormId || '';
                         var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
                         var params = {
                             fid: $this.activity.createFid,
@@ -769,14 +795,7 @@
                         }
                         app.ajaxPost(url, params, function (res) {
                             if (res.success) {
-                                var { formId, openAddr, pcUrl, wechatUrl, editUrl } = res.data
-                                if (needCreateForm) {
-                                    $this.$set($this.signUpMap[signUpTplComponentId], 'openAddr', openAddr);
-                                    $this.$set($this.signUpMap[signUpTplComponentId], 'pcUrl', pcUrl);
-                                    $this.$set($this.signUpMap[signUpTplComponentId], 'wechatUrl', wechatUrl);
-                                    $this.$set($this.signUpMap[signUpTplComponentId], 'fillInfoFormId', formId);
-                                }
-                                $this.wfwFormConfigWindow = window.open(editUrl);
+                                $this.wfwFormConfigWindow = window.open(res.data);
                             } else {
                                 var errorMessage = res.message;
                                 if (activityApp.isEmpty(errorMessage)) {
@@ -1011,13 +1030,16 @@
                         });
                     },
                     // 填报信息的开关改变
-                    formFillSwitchChange: function (checked, component) {
+                    formFillSwitchChange: function (checked, component, signUpTplComponentId) {
                         // 企业报名必须开启
                         var $this = this;
                         var parenrComponent = $this.templateComponentMap[component.pid];
                         if ("company_sign_up" == parenrComponent.code && !checked) {
                             app.showMsg(parenrComponent.name + "必须开启" + component.name);
                             $this.$set($this.signUpMap[component.pid], "fillInfo", true);
+                        }
+                        if (checked) {
+                            $this.createSignUpWfwForm(signUpTplComponentId);
                         }
                     },
                     wfwOrgScopeChange: function(value, tplComponentId) {
