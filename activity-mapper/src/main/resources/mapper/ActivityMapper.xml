@@ -204,7 +204,7 @@
                     t4.is_top DESC,
                 </if>
                 FIELD( t.`status`, 2, 3, 4 ),
-                <if test="params.marketId == null and params.topFid != null">
+                <if test="params.marketId == null and params.topFid != null and (params.areaCode == null or params.areaCode == '')">
                     t1.fid <![CDATA[<>]]> #{params.topFid},
                 </if>
                 t.start_time <if test="params.timeOrder != null">${params.timeOrder.value}</if><if test="params.timeOrder == null">DESC</if>
@@ -292,7 +292,7 @@
             t.id
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 ),
-            <if test="params.marketId == null and params.topFid != null">
+            <if test="params.marketId == null and params.topFid != null and (params.areaCode == null or params.areaCode == '')">
                 t1.fid <![CDATA[<>]]> #{params.topFid},
             </if>
             t.start_time <if test="params.timeOrder != null">${params.timeOrder.value}</if><if test="params.timeOrder == null">DESC</if>

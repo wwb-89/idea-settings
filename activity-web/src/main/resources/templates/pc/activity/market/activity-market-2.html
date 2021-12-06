@@ -82,7 +82,7 @@
 								<p class="tips color5" v-if="item.status == 2">即将开始</p>
 							</div>
 							<p class="num" v-if="item.openSignUp"><i></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
-							<div class="js-crop-img" @click="detail(index)">
+							<div class="js-crop-img" style="height: 100%;" @click="detail(index)">
 								<img :src="item | getCloudImgUrl">
 							</div>
 						</div>
