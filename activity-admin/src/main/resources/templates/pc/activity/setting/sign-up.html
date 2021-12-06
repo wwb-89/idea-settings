@@ -749,14 +749,14 @@
                         if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
                             formId = signUp.fillInfoFormId;
                         }
-                        var url = "http://reading.chaoxing.com/qd/form/config?formId=" + formId;
+                        var url = "//reading.chaoxing.com/qd/form/config?formId=" + formId;
                         $('body').addClass('scroll');
                         $this.formConfigLayerIndex = layer.open({
                             title: "表单配置",
                             skin: "create-class",
                             type: 2,
                             content: [url, "no"],
-                            area: ["600px", "680px"],
+                            area: ["600px", "580px"],
                             btn: ["取消", "完成"],
                             btnAlign: "c",
                             yes: function (index) {
