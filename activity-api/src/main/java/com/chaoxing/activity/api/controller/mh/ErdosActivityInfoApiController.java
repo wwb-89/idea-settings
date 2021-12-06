@@ -2,15 +2,18 @@ package com.chaoxing.activity.api.controller.mh;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.api.controller.enums.MhBtnSequenceEnum;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**鄂尔多斯活动信息
  * @author wwb
@@ -43,6 +43,8 @@ public class ErdosActivityInfoApiController {
     private ActivityQueryService activityQueryService;
     @Resource
     private WorkApiService workApiService;
+    @Resource
+    private CloudApiService cloudApiService;
 
     /**活动信息
      * @Description 
@@ -54,10 +56,7 @@ public class ErdosActivityInfoApiController {
     @RequestMapping("activity/info")
     public RestRespDTO activityInfo(@RequestBody String data) {
         JSONObject params = JSON.parseObject(data);
-        Integer websiteId = params.getInteger("websiteId");
-        // 根据websiteId查询活动id
-        Activity activity = activityQueryService.getByWebsiteId(websiteId);
-        Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
+        Activity activity = getActivityByParams(params);
         Integer activityId = activity.getId();
         Integer uid = params.getInteger("uid");
         Integer wfwfid = params.getInteger("wfwfid");
@@ -136,6 +135,78 @@ public class ErdosActivityInfoApiController {
         return RestRespDTO.success(jsonObject);
     }
 
+    /**鄂尔多斯门户按钮
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-06 14:51:56
+     * @param data
+     * @return
+     */
+    @RequestMapping("activity/btns")
+    public RestRespDTO mhActivityBtns(@RequestBody String data) {
+        JSONObject params = JSON.parseObject(data);
+        Activity activity = getActivityByParams(params);
+        JSONObject jsonObject = new JSONObject();
+        if (activity == null) {
+            jsonObject.put("results", Lists.newArrayList());
+            return RestRespDTO.success(jsonObject);
+        }
+        Integer uid = params.getInteger("uid");
+        Integer wfwfid = params.getInteger("wfwfid");
+        jsonObject.put("results", packageWorkBtns(activity, uid, wfwfid));
+        return RestRespDTO.success(jsonObject);
+    }
+
+    private Activity getActivityByParams(JSONObject params) {
+        Integer websiteId = params.getInteger("websiteId");
+        // 根据websiteId查询活动id
+        Activity activity = activityQueryService.getByWebsiteId(websiteId);
+        Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
+        return activity;
+    }
+
+
+    /**封装鄂尔多斯作品征集按钮
+     * @Description
+     * @author wwb
+     * @Date 2021-03-09 18:39:37
+     * @param activity
+     * @param uid
+     * @param wfwfid
+     * @return java.util.List<com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>
+     */
+    private List<MhGeneralAppResultDataDTO> packageWorkBtns(Activity activity, Integer uid, Integer wfwfid) {
+        List<MhGeneralAppResultDataDTO> result = Lists.newArrayList();
+        Boolean openWork = activity.getOpenWork();
+        openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
+        Integer workId = activity.getWorkId();
+
+        if (openWork && workId != null) {
+            List<WorkBtnDTO> workBtnDtos = workApiService.listErdosBtns(workId, uid, wfwfid);
+            for (WorkBtnDTO workBtnDto : workBtnDtos) {
+                Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
+                String buttonIcon = "";
+                String btnName = workBtnDto.getButtonName();
+                if (Objects.equals(btnName, "我的作品")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue());
+                } else if (Objects.equals(btnName, "全部作品")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.ALL_WORK.getValue());
+                } else if (Objects.equals(btnName, "征集管理") || Objects.equals(btnName, "提交作品")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SUBMIT_WORK.getValue());
+                } else if (Objects.equals(btnName, "作品审核")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.WORK_REVIEW.getValue());
+                } else if (Objects.equals(btnName, "作品优选")) {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.WORK_PREFERRED_SELECTION.getValue());
+                }
+                result.add(buildBtnField(btnName, buttonIcon, workBtnDto.getLinkUrl(), enable ? "1" : "0", MhBtnSequenceEnum.WORK.getSequence()));
+            }
+        }
+        // 排序
+        result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
+        return result;
+    }
+
+
     private String getReadingTestUrl(Activity activity) {
         return DomainConstant.XUEYA_DOMAIN + "/school-base/school-reading/" + activity.getReadingId() + "/" + activity.getReadingModuleId() + "/book-list";
     }
@@ -181,5 +252,37 @@ public class ErdosActivityInfoApiController {
         }
         return btns;
     }
+
+    private MhGeneralAppResultDataDTO buildBtnField(String key, String iconUrl, String url, String type, Integer sequence) {
+        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
+        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
+        item.setOrsUrl(url);
+        int flag = 0;
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("封面")
+                .value(iconUrl)
+                .type("3")
+                .flag(String.valueOf(flag))
+                .build());
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("标题")
+                .orsUrl("")
+                .value(key)
+                .type("3")
+                .flag(String.valueOf(++flag))
+                .build());
+        if (StringUtils.isNotBlank(type)) {
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("按钮类型")
+                    .value(type)
+                    .type("3")
+                    .flag(String.valueOf(++flag))
+                    .build());
+        }
+        item.setSequence(sequence);
+        item.setFields(fields);
+        return item;
+    }
+
 
 }
