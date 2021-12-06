@@ -1,5 +1,7 @@
 package com.chaoxing.activity.util.constant;
 
+import com.chaoxing.activity.util.YamlUtils;
+
 /**域名常量
  * @author wwb
  * @version ver 1.0
@@ -14,86 +16,88 @@ public class DomainConstant {
 
     }
 
+    /** 域名资源文件的类路径 */
+    private static final String DOMAIN_RESOURCE_CLASS_PATH = "resource.yml";
     /** api 域名 */
-    public static final String API_DOMAIN = "https://api.hd.chaoxing.com";
+    public static final String API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.api");
     /** web 域名 */
-    public static final String WEB_DOMAIN = "https://hd.chaoxing.com";
+    public static final String WEB = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.web");
     /** 管理端域名 */
-    public static final String ADMIN_DOMAIN = "https://manage.hd.chaoxing.com";
+    public static final String ADMIN = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.admin");
     /** 报名签到web域名 */
-    public static final String SIGN_WEB_DOMAIN = "https://reading.chaoxing.com/qd";
+    public static final String SIGN_WEB = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.sign_web");
     /** 报名签到api域名 */
-    public static final String SIGN_API_DOMAIN = "http://api.qd.reading.chaoxing.com";
+    public static final String SIGN_API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.sign_api");
     /** 作品征集的域名 */
-    public static final String WORK_DOMAIN = "https://reading.chaoxing.com";
+    public static final String WORK = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.work");
     /** 作品征集api域名 */
-    public static final String WORK_API_DOMAIN = "http://api.reading.chaoxing.com";
+    public static final String WORK_API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.work_api");
     /** 门户域名 */
-    public static final String MH_DOMAIN = "https://mh.chaoxing.com";
+    public static final String MH = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.mh");
     /** 双选会域名 */
-    public static final String DUAL_SELECT_DOMAIN = "https://appcd.chaoxing.com";
+    public static final String DUAL_SELECT = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.dual_select");
     /** passport域名 */
-    public static final String PASSPORT_DOMAIN = "https://passport2.chaoxing.com";
+    public static final String PASSPORT = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.passport");
 
     // 微服务
     /** 微服务域名 */
-    public static final String WFW_DOMAIN = "http://v1.chaoxing.com";
+    public static final String WFW = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.wfw");
     /** 微服务组织架构域名 */
-    public static final String WFW_ORGANIZATION_DOMAIN = "http://uc1-ans.chaoxing.com";
+    public static final String WFW_ORGANIZATION = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.wfw_organization");
     /** 微服务区域管理域名 */
-    public static final String WFW_AREA_MANAGE_DOMAIN = "http://guanli.chaoxing.com";
+    public static final String WFW_AREA_MANAGE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.wfw_area_manage");
     /** 微服务通讯录域名 */
-    public static final String WFW_CONTACTS_DOMAIN = "https://contactsyd.chaoxing.com";
+    public static final String WFW_CONTACTS = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.wfw_contacts");
     
     /** 云盘api域名 */
-    public static final String CLOUD_API_DOMAIN = "https://cs.ananas.chaoxing.com";
+    public static final String CLOUD_API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.cloud_api");
     /** 云盘资源域名 */
-    public static final String CLOUD_RESOURCE_DOMAIN = "https://p.ananas.chaoxing.com";
+    public static final String CLOUD_RESOURCE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.cloud_resource");
     /** 星阅读域名 */
-    public static final String START_READ_DOMAIN = "https://star.chaoxing.com";
+    public static final String START_READ = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.start_read");
     /** 教师发展域名 */
-    public static final String TEACHER_DOMAIN = "https://teacher2.chaoxing.com";
+    public static final String TEACHER = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.teacher");
     /** 打卡域名 */
-    public static final String PUNCH_DOMAIN = "https://appcd.chaoxing.com/punch";
+    public static final String PUNCH = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.punch");
     /** 活动发布平台域名 */
-    public static final String ACTIVITY_DOMAIN = "http://new.ydhd.chaoxing.com";
+    public static final String ACTIVITY = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.activity");
     /** 校园阅读域名 */
-    public static final String XUEYA_DOMAIN = "https://xueya.chaoxing.com";
+    public static final String XUEYA = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.xueya");
     /** 百度地图api域名 */
-    public static final String BAIDU_MAP_API_DOMAIN = "http://api.map.baidu.com";
+    public static final String BAIDU_MAP_API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.baidu_map_api");
     /** 万能表单域名 */
-    public static final String WFW_FORM_API_DOMAIN = "https://m.oa.chaoxing.com";
+    public static final String WFW_FORM_API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.wfw_form_api");
     /** 厦门教师研修平台域名 */
-    public static final String XIAMEN_TRAINING_PLATFORM_API_DOMAIN = "http://appcd.chaoxing.com/ixiamen";
+    public static final String XIAMEN_TRAINING_PLATFORM_API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.xiamen_training_platform_api");
 
     // 小组
     /** 小组api域名 */
-    public static final String GROUP_API_DOMAIN = "https://groupyd.chaoxing.com";
+    public static final String GROUP_API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.group_api");
     /** 小组web域名 */
-    public static final String GROUP_WEB_DOMAIN = "https://groupweb.chaoxing.com";
+    public static final String GROUP_WEB = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.group_web");
 
     // 学习通
     /** 学习通域名 */
-    public static final String LEARN_DOMAIN = "https://learn.chaoxing.com";
+    public static final String LEARN = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.learn");
     /** 学习通通知域名 */
-    public static final String NOTICE_DOMAIN = "https://notice.chaoxing.com";
+    public static final String NOTICE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.notice");
 
     //大数据
     /** 大数据积分（新增）域名 */
-    public static final String BIGDATA_SCORE_ADD_DOMAIN = "http://bigdata-api.chaoxing.com";
+    public static final String BIGDATA_SCORE_ADD = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.bigdata_score_add");
     /** 大数据积分（消耗）域名 */
-    public static final String BIGDATA_SCORE_SPEND_DOMAIN = "http://bigdata-score.chaoxing.com";
+    public static final String BIGDATA_SCORE_SPEND = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.bigdata_score_spend");
 
     // 用户中心
     /** 用户中心域名 */
-    public static final String UC_DOMAIN = "https://uc.chaoxing.com";
+    public static final String UC = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.uc");
 
     /** 幕课api域名 */
-    public static final String MOOC_API_DOMAIN = "http://mooc1-api.chaoxing.com";
+    public static final String MOOC_API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.mooc_api");
     /** 幕课域名 */
-    public static final String MOOC_DOMAIN = "http://mooc1.chaoxing.com";
+    public static final String MOOC = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.mooc");
 
     /** 积分域名 */
-    public static final String SCORE_DOMAIN = "http://score.jxlll.chaoxing.com";
+    public static final String SCORE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.score");
 
 }

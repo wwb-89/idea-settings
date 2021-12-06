@@ -124,7 +124,7 @@ public class ErdosActivityInfoApiController {
             mhGeneralAppResultDataFields.add(buildField("", "", remainFlag));
             remainFlag = getFlag(availableFlags);
         }
-        String activityAddressLink = DomainConstant.API_DOMAIN +  "/redirect/activity/"+ activityId +"/address";
+        String activityAddressLink = DomainConstant.API +  "/redirect/activity/"+ activityId +"/address";
         // 活动地点链接（线下的活动有）
         mhGeneralAppResultDataFields.add(buildField("活动地点链接", activityAddressLink, "117"));
         mhGeneralAppResultDataFields.add(buildField("", "", "118"));
@@ -208,7 +208,7 @@ public class ErdosActivityInfoApiController {
 
 
     private String getReadingTestUrl(Activity activity) {
-        return DomainConstant.XUEYA_DOMAIN + "/school-base/school-reading/" + activity.getReadingId() + "/" + activity.getReadingModuleId() + "/book-list";
+        return DomainConstant.XUEYA + "/school-base/school-reading/" + activity.getReadingId() + "/" + activity.getReadingModuleId() + "/book-list";
     }
 
     private String getFlag(List<Integer> availableFlags) {

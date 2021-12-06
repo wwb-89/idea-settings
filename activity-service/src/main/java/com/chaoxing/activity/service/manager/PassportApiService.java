@@ -46,15 +46,15 @@ import java.util.Optional;
 public class PassportApiService {
 
 	/** 获取用户信息地址 */
-	private static final String GET_USER_URL = DomainConstant.PASSPORT_DOMAIN + "/api/userinfo?uid=%s&enc=%s&last=true";
+	private static final String GET_USER_URL = DomainConstant.PASSPORT + "/api/userinfo?uid=%s&enc=%s&last=true";
 	private static final String KEY = "uWwjeEKsri";
 	/** 免密登录key */
 	private static final String AVOID_CLOSE_LOGIN_KEY = "jsDyctOCn7qHzRvrtcJ6";
 	public static final DateTimeFormatter YYYYMMDD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	/** 获取机构名称url */
-	private static final String ORG_NAME_URL = DomainConstant.PASSPORT_DOMAIN + "/org/getName?schoolid=";
+	private static final String ORG_NAME_URL = DomainConstant.PASSPORT + "/org/getName?schoolid=";
 	/** passport免密登录url */
-	public static final String AVOID_CLOSE_LOGIN_URL = DomainConstant.PASSPORT_DOMAIN + "/api/login";
+	public static final String AVOID_CLOSE_LOGIN_URL = DomainConstant.PASSPORT + "/api/login";
 	
 	/** 登录成功状态 */
 	private static final String LOGIN_SUCCESS_RESULT_STATUS = "0";

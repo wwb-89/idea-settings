@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class SecondClassroomApiService {
 
 	/** 第二课堂api域名 */
-	private static final String SECOND_CLASSROOM_API_DOMAIN = DomainConstant.WEB_DOMAIN + "/second_classroom";
+	private static final String SECOND_CLASSROOM_API_DOMAIN = DomainConstant.WEB + "/second_classroom";
 	/** 获取机构配置的表单 */
 	private static final String GET_ORG_FORM_CONFIG_URL = SECOND_CLASSROOM_API_DOMAIN + "/api/org/%d/form";
 	/** 配置机构的表单 */

@@ -29,14 +29,14 @@ import java.util.Objects;
 public class GroupApiService {
 
     /** 创建小组yrl */
-    private static final String CREATE_URL = DomainConstant.GROUP_API_DOMAIN + "/apis/circle/addCircle";
+    private static final String CREATE_URL = DomainConstant.GROUP_API + "/apis/circle/addCircle";
     /** 获取小组信息url */
-    private static final String GET_URL = DomainConstant.GROUP_API_DOMAIN + "/apis/circle/getCircle";
+    private static final String GET_URL = DomainConstant.GROUP_API + "/apis/circle/getCircle";
     
     /** 小组PC地址url */
-    private static final String GROUP_PC_URL = DomainConstant.GROUP_WEB_DOMAIN + "/pc/topic/topiclist/index?bbsid=%s";
+    private static final String GROUP_PC_URL = DomainConstant.GROUP_WEB + "/pc/topic/topiclist/index?bbsid=%s";
     /** 小组移动端地址url */
-    private static final String GROUP_MOBILE_URL = DomainConstant.GROUP_WEB_DOMAIN + "/app/circle/showCircle?bbsid=%s";
+    private static final String GROUP_MOBILE_URL = DomainConstant.GROUP_WEB + "/app/circle/showCircle?bbsid=%s";
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;

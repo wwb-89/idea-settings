@@ -28,7 +28,7 @@ public class ActivityCloneTests {
 
     @Resource
     private RestTemplate restTemplate;
-    private static final String CLONE_URL = DomainConstant.API_DOMAIN + "/activity/%d/clone?uid=28186469&fid=%d";
+    private static final String CLONE_URL = DomainConstant.API + "/activity/%d/clone?uid=28186469&fid=%d";
 
     @Test
     public void cloneRegionActivity() throws InterruptedException {

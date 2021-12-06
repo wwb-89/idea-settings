@@ -110,7 +110,7 @@ public class RedirectController {
         BigDecimal lng = activity.getLongitude();
         BigDecimal lat = activity.getDimension();
         if (UserAgentUtils.isMobileAccess(request)) {
-            String url = DomainConstant.SIGN_WEB_DOMAIN +  "/map/location?address=%s&lng=%s&lat=%s";
+            String url = DomainConstant.SIGN_WEB +  "/map/location?address=%s&lng=%s&lat=%s";
             url = String.format(url, activityAddress, lng, lat);
             return "redirect:" + url;
         } else {
@@ -257,7 +257,7 @@ public class RedirectController {
         flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
         marketId = getOrCreateMarketByFlag(request, marketId, flag);
         if (marketId != null) {
-            return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/activity/add" + "?marketId=" + marketId + "&flag=" + flag;
+            return "redirect:" + DomainConstant.ADMIN + "/activity/add" + "?marketId=" + marketId + "&flag=" + flag;
         }
         return "";
     }
@@ -275,7 +275,7 @@ public class RedirectController {
     public String redirectMarketSettingIndex(HttpServletRequest request, Integer marketId, String flag) {
         flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
         marketId = getOrCreateMarketByFlag(request, marketId, flag);
-        return "redirect:" + DomainConstant.ADMIN_DOMAIN + "/market/" + marketId + "/setting";
+        return "redirect:" + DomainConstant.ADMIN + "/market/" + marketId + "/setting";
     }
 
     /**根据fid、flag获取活动市场id

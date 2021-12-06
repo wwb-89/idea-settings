@@ -33,9 +33,9 @@ import java.util.TreeMap;
 public class BigDataPointApiService {
 
     /** 新增积分接口 */
-    private static final String ADD_POINT_URL = DomainConstant.BIGDATA_SCORE_ADD_DOMAIN + "/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
+    private static final String ADD_POINT_URL = DomainConstant.BIGDATA_SCORE_ADD + "/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
     /** 消耗积分接口 */
-    private static final String SPEND_POINT_URL = DomainConstant.BIGDATA_SCORE_SPEND_DOMAIN + "/house/gt/point/spend?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
+    private static final String SPEND_POINT_URL = DomainConstant.BIGDATA_SCORE_SPEND + "/house/gt/point/spend?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
     private static final Map<Integer, String> KEY_MAP = Maps.newHashMap();
 
     static {

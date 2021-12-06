@@ -33,15 +33,15 @@ public class SignDTO {
 	private List<SignInDTO> signIns;
 
 	public static String getSignInListUrl(Integer signId) {
-		return DomainConstant.SIGN_WEB_DOMAIN + "/manage/sign-in/list?signId=" + signId;
+		return DomainConstant.SIGN_WEB + "/manage/sign-in/list?signId=" + signId;
 	}
 
 	public static String getSignUpManageUrl(Integer signId) {
-		return DomainConstant.SIGN_WEB_DOMAIN + "/manage/sign-up?signId=" + signId;
+		return DomainConstant.SIGN_WEB + "/manage/sign-up?signId=" + signId;
 	}
 
 	public static String getToSignUpUrl(Integer signId) {
-		return DomainConstant.SIGN_WEB_DOMAIN + "/sign/" + signId + "/to-sign-up";
+		return DomainConstant.SIGN_WEB + "/sign/" + signId + "/to-sign-up";
 	}
 
 }

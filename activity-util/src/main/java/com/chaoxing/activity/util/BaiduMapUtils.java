@@ -14,7 +14,7 @@ import java.math.BigDecimal;
  */
 public class BaiduMapUtils {
 	
-	private static final String ADDRESS_URL = DomainConstant.BAIDU_MAP_API_DOMAIN + "/marker?location=%s&title=%s&content=%s&output=html";
+	private static final String ADDRESS_URL = DomainConstant.BAIDU_MAP_API + "/marker?location=%s&title=%s&content=%s&output=html";
 
 	private BaiduMapUtils() {
 

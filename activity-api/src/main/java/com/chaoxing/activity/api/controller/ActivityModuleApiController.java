@@ -74,16 +74,16 @@ public class ActivityModuleApiController {
 	}
 
 	private String getWorkAccessUrl(Integer activityId, HttpServletRequest request) {
-		return DomainConstant.WORK_DOMAIN +  "/zj/activity/forward/" + activityId;
+		return DomainConstant.WORK +  "/zj/activity/forward/" + activityId;
 	}
 
 	private String getStarAccessUrl(Integer starId, HttpServletRequest request) {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = DomainConstant.START_READ_DOMAIN + "/app/map/" + starId + "/index";
+			accessUrl = DomainConstant.START_READ + "/app/map/" + starId + "/index";
 		} else {
-			accessUrl = DomainConstant.START_READ_DOMAIN + "/pc/map/" + starId + "/index";
+			accessUrl = DomainConstant.START_READ + "/pc/map/" + starId + "/index";
 		}
 		return accessUrl;
 	}
@@ -92,9 +92,9 @@ public class ActivityModuleApiController {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = DomainConstant.PUNCH_DOMAIN + "/" + punchId + "/handleable-detail";
+			accessUrl = DomainConstant.PUNCH + "/" + punchId + "/handleable-detail";
 		} else {
-			accessUrl = DomainConstant.ACTIVITY_DOMAIN + "/punch-qr/" + punchId;
+			accessUrl = DomainConstant.ACTIVITY + "/punch-qr/" + punchId;
 		}
 		return accessUrl;
 	}
@@ -103,9 +103,9 @@ public class ActivityModuleApiController {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = DomainConstant.TEACHER_DOMAIN + "/tpk3-activity/?activityId=" + tpkId;
+			accessUrl = DomainConstant.TEACHER + "/tpk3-activity/?activityId=" + tpkId;
 		} else {
-			accessUrl = DomainConstant.TEACHER_DOMAIN + "/tpk3-activity/admin/statistics/activity/" + tpkId;
+			accessUrl = DomainConstant.TEACHER + "/tpk3-activity/admin/statistics/activity/" + tpkId;
 		}
 		return accessUrl;
 	}

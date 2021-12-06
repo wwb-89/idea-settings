@@ -36,13 +36,13 @@ import java.util.stream.Collectors;
 public class OrganizationalStructureApiService {
 
 	/** 分页获取机构下角色URL */
-	private static final String ORG_ROLES_URL = DomainConstant.WFW_ORGANIZATION_DOMAIN + "/apis/getrolebyfid?fid=%d&page=%d&pagesize=%d&enc=%s";
+	private static final String ORG_ROLES_URL = DomainConstant.WFW_ORGANIZATION + "/apis/getrolebyfid?fid=%d&page=%d&pagesize=%d&enc=%s";
 	/** 机构下用户列表 */
-	private static final String ORG_USERS_URL = DomainConstant.WFW_ORGANIZATION_DOMAIN + "/apis/user/getperson?fid=%d&limit=%d&enc=%s";
+	private static final String ORG_USERS_URL = DomainConstant.WFW_ORGANIZATION + "/apis/user/getperson?fid=%d&limit=%d&enc=%s";
 	/** 机构group下用户列表 */
-	private static final String ORG_GROUP_USERS_URL = DomainConstant.WFW_ORGANIZATION_DOMAIN + "/apis/user/getperson?fid=%d&%s=%d&limit=%d&enc=%s";
+	private static final String ORG_GROUP_USERS_URL = DomainConstant.WFW_ORGANIZATION + "/apis/user/getperson?fid=%d&%s=%d&limit=%d&enc=%s";
 	/** 用户组织架构url（新） */
-	private static final String USER_ORGANIZATIONAL_STRUCTURE_NEW_URL = DomainConstant.WFW_ORGANIZATION_DOMAIN + "/apis/getuserbyuidfid?fid=%d&uid=%d&showdept=true&enc=%s";
+	private static final String USER_ORGANIZATIONAL_STRUCTURE_NEW_URL = DomainConstant.WFW_ORGANIZATION + "/apis/getuserbyuidfid?fid=%d&uid=%d&showdept=true&enc=%s";
 	/** 用户组织架构url（新）key */
 	private static final String ENC_KEY = "mic^ruso&ke@y";
 	/** 无效的组id */

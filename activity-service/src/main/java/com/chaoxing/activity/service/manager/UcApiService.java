@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 public class UcApiService {
 
 	/** 获取用户额外信息url */
-	private static final String USER_EXTRA_INFO_URL = DomainConstant.UC_DOMAIN + "/userInter/getUserExtraInfo?fid=%d&uid=%d";
+	private static final String USER_EXTRA_INFO_URL = DomainConstant.UC + "/userInter/getUserExtraInfo?fid=%d&uid=%d";
 	/** 判断是不是管理员 */
-	private static final String USER_MANAGER_JUDGE_URL = DomainConstant.UC_DOMAIN + "/siteInter/checkUserManage?fid=%d&uid=%d";
+	private static final String USER_MANAGER_JUDGE_URL = DomainConstant.UC + "/siteInter/checkUserManage?fid=%d&uid=%d";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;

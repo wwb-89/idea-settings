@@ -71,9 +71,9 @@ public class WfwFormApprovalApiService {
     private static final String YES = "是";
 
     /** 获取表单指定数据url */
-    private static final String LIST_FORM_SPECIFIED_DATA_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/approve/forms/user/data/list";
+    private static final String LIST_FORM_SPECIFIED_DATA_URL = DomainConstant.WFW_FORM_API + "/api/approve/forms/user/data/list";
     /** 获取表单数据列表 */
-    private static final String ADVANCED_SEARCH_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/approve/forms/advanced/search/list";
+    private static final String ADVANCED_SEARCH_URL = DomainConstant.WFW_FORM_API + "/api/approve/forms/advanced/search/list";
     /** 表单每页数据限制 */
     private static final int MAX_PAGE_SIZE_LIMIT = 100;
 

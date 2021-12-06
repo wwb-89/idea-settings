@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 public class ActivityMhAppController {
 
 	/** 签到按钮地址 */
-	private static final String QD_BTN_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/btn?activityId=%s";
+	private static final String QD_BTN_URL = DomainConstant.SIGN_API + "/sign/%d/btn?activityId=%s";
 	private static final Integer RECOMMEND_ACTIVITY_PAGE_SIZE = 4;
 
 	@Resource

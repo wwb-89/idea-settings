@@ -44,15 +44,15 @@ public class MhMarketDataCenterDTO {
     }
 
     private static String buildDivUrl(Integer marketId) {
-        return DomainConstant.API_DOMAIN + "/mh/data-center/market/" + marketId;
+        return DomainConstant.API + "/mh/data-center/market/" + marketId;
     }
 
     private static String buildClassifyUrl(Integer marketId) {
-        return DomainConstant.API_DOMAIN + "/mh/data-center/market/" + marketId + "/classifies";
+        return DomainConstant.API + "/mh/data-center/market/" + marketId + "/classifies";
     }
 
     private static String buildMoreUrl(Integer marketId) {
-        return DomainConstant.WEB_DOMAIN + "?marketId=" + marketId;
+        return DomainConstant.WEB + "?marketId=" + marketId;
     }
 
 

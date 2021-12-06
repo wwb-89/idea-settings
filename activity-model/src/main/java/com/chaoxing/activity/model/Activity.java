@@ -514,7 +514,7 @@ public class Activity {
     }
 
     public String getAdminUrl() {
-        return DomainConstant.ADMIN_DOMAIN + "/activity/" + id;
+        return DomainConstant.ADMIN + "/activity/" + id;
     }
 
 }

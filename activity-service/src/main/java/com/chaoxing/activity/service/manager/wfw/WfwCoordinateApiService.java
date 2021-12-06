@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 @Service
 public class WfwCoordinateApiService {
 
-	private static final String GET_DISTANCE_URL = DomainConstant.WFW_DOMAIN + "/mobileSet/libraryList?wfwfid=%d&startLng=%s&startLat=%s";
+	private static final String GET_DISTANCE_URL = DomainConstant.WFW + "/mobileSet/libraryList?wfwfid=%d&startLng=%s&startLat=%s";
 
 	@Resource
 	private RestTemplate restTemplate;

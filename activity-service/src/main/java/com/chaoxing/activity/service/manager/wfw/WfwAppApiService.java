@@ -27,7 +27,7 @@ import java.util.Optional;
 public class WfwAppApiService {
 
 	/** 创建应用的url */
-	private static final String APP_URL = DomainConstant.WFW_DOMAIN + "/appInter/addApp";
+	private static final String APP_URL = DomainConstant.WFW + "/appInter/addApp";
 	private static final Integer DEFAULT_OPEN_TYPE = 14;
 
 	@Resource(name = "restTemplateProxy")

@@ -31,10 +31,10 @@ import java.util.stream.Collectors;
 public class MoocApiService {
 
 	/** 用户多机构信息url */
-	private static final String USER_MULTI_ORG_URL = DomainConstant.MOOC_API_DOMAIN + "/gas/person?userid=%d&fields=id,group1,schoolid,roleids,loginname,username&selectuser=true";
+	private static final String USER_MULTI_ORG_URL = DomainConstant.MOOC_API + "/gas/person?userid=%d&fields=id,group1,schoolid,roleids,loginname,username&selectuser=true";
 
 	/** 用户角色信息URL */
-	private static final String USER_ROLE_URL = DomainConstant.MOOC_DOMAIN + "/gas/person?userid=%d&fields=schoolid,roleids,loginname,username,id,status,iscertify,aliasname,group1,group2,group3&fid=%d";
+	private static final String USER_ROLE_URL = DomainConstant.MOOC + "/gas/person?userid=%d&fields=schoolid,roleids,loginname,username,id,status,iscertify,aliasname,group1,group2,group3&fid=%d";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplateProxy;

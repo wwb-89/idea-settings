@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -41,16 +40,16 @@ import java.util.stream.Collectors;
 public class WorkApiService {
 
 	/** 创建作品征集地址 */
-	private static final String CREATE_URL = DomainConstant.WORK_API_DOMAIN + "/activity/engine/create";
+	private static final String CREATE_URL = DomainConstant.WORK_API + "/activity/engine/create";
 	/** 清空活动发布范围 */
-	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = DomainConstant.WORK_API_DOMAIN + "/cache/activity/clear/participate-fid";
+	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = DomainConstant.WORK_API + "/cache/activity/clear/participate-fid";
 	/** 统计活动提交作品数量url */
-	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = DomainConstant.WORK_API_DOMAIN + "/activity/stat/submited-work-num";
+	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = DomainConstant.WORK_API + "/activity/stat/submited-work-num";
 	/** 更新作品征集信息url */
-	private static final String UPDATE_WORK_URL = DomainConstant.WORK_API_DOMAIN + "/activity/update";
+	private static final String UPDATE_WORK_URL = DomainConstant.WORK_API + "/activity/update";
 	/** 作品征集按钮yrl（鄂尔多斯定制） */
-	private static final String ERDOS_WORK_BTN_URL = DomainConstant.WORK_API_DOMAIN + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
-	private static final String WORK_BTN_URL = DomainConstant.WORK_API_DOMAIN + "/activity/user/custom/permission?activityId=%d&uid=%s&fid=%d";
+	private static final String ERDOS_WORK_BTN_URL = DomainConstant.WORK_API + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
+	private static final String WORK_BTN_URL = DomainConstant.WORK_API + "/activity/user/custom/permission?activityId=%d&uid=%s&fid=%d";
 
 	@Resource
 	private RestTemplate restTemplate;

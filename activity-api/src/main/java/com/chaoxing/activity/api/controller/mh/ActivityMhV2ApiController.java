@@ -163,7 +163,7 @@ public class ActivityMhV2ApiController {
 		String activityAddressLink = "";
 		// 经纬度不为空时才显示地址
 		if (activity.getLongitude() != null && activity.getDimension() != null) {
-			activityAddressLink = DomainConstant.API_DOMAIN +  "/redirect/activity/"+ activityId +"/address";
+			activityAddressLink = DomainConstant.API +  "/redirect/activity/"+ activityId +"/address";
 		}
 		hashMap.put("104", buildField("活动地点", activityAddress, "104"));
 		// 活动地点链接（线下的活动有, 有经纬度）

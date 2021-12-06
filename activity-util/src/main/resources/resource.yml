@@ -1,0 +1,40 @@
+domain:
+  api: https://api.hd.chaoxing.com
+  web: https://hd.chaoxing.com
+  admin: https://manage.hd.chaoxing.com
+  sign_web: https://reading.chaoxing.com/qd
+  sign_api: http://api.qd.reading.chaoxing.com
+  work: https://reading.chaoxing.com
+  work_api: http://api.reading.chaoxing.com
+  mh: https://mh.chaoxing.com
+  dual_select: https://appcd.chaoxing.com
+  passport: https://passport2.chaoxing.com
+
+  wfw: http://v1.chaoxing.com
+  wfw_organization: http://uc1-ans.chaoxing.com
+  wfw_area_manage: http://guanli.chaoxing.com
+  wfw_contacts: https://contactsyd.chaoxing.com
+
+  cloud_api: https://cs.ananas.chaoxing.com
+  cloud_resource: https://p.ananas.chaoxing.com
+  start_read: https://star.chaoxing.com
+  teacher: https://teacher2.chaoxing.com
+  punch: https://appcd.chaoxing.com/punch
+  activity: http://new.ydhd.chaoxing.com
+  xueya: https://xueya.chaoxing.com
+  baidu_map_api: http://api.map.baidu.com
+
+  wfw_form_api: https://m.oa.chaoxing.com
+  xiamen_training_platform_api: http://appcd.chaoxing.com/ixiamen
+
+  group_api: https://groupyd.chaoxing.com
+  group_web: https://groupweb.chaoxing.com
+
+  learn: https://learn.chaoxing.com
+  notice: https://notice.chaoxing.com
+  bigdata_score_add: http://bigdata-api.chaoxing.com
+  bigdata_score_spend: http://bigdata-score.chaoxing.com
+  uc: https://uc.chaoxing.com
+  mooc_api: http://mooc1-api.chaoxing.com
+  mooc: http://mooc1.chaoxing.com
+  score: http://score.jxlll.chaoxing.com

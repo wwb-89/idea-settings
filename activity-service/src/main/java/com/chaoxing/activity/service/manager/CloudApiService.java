@@ -35,15 +35,15 @@ import java.io.IOException;
 public class CloudApiService {
 
 	/** 上传url */
-	private static final String UPLOAD_URL = DomainConstant.CLOUD_API_DOMAIN + "/upload?uid=-1&clientip=%s&prdid=40";
+	private static final String UPLOAD_URL = DomainConstant.CLOUD_API + "/upload?uid=-1&clientip=%s&prdid=40";
 	/** 资源状态url */
-	private static final String GET_CLOUD_RESOURCE_STATUS_URL = DomainConstant.CLOUD_API_DOMAIN + "/status/";
+	private static final String GET_CLOUD_RESOURCE_STATUS_URL = DomainConstant.CLOUD_API + "/status/";
 	/** 云盘图片状态url key */
 	private static final String CLOUD_IMAGE_STATUS_URL_KEY = "http";
 	/** 下载url key */
 	private static final String DOWNLOAD_URL_KEY = "download";
 	/** 图片url前缀 */
-	private static final String IMAGE_URL_SUFFIX = DomainConstant.CLOUD_RESOURCE_DOMAIN + "/star3/origin/";
+	private static final String IMAGE_URL_SUFFIX = DomainConstant.CLOUD_RESOURCE + "/star3/origin/";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;

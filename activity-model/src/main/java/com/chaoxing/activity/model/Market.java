@@ -115,7 +115,7 @@ public class Market {
     }
 
     public String buildAppUrl() {
-        return DomainConstant.WEB_DOMAIN +  "?marketId=" + getId();
+        return DomainConstant.WEB +  "?marketId=" + getId();
     }
 
     public String buildPcUrl() {
@@ -123,7 +123,7 @@ public class Market {
     }
 
     public String buildMarketManageUrl() {
-        return DomainConstant.ADMIN_DOMAIN + "/market/" + getId();
+        return DomainConstant.ADMIN + "/market/" + getId();
     }
 
     public static Market cloneMarket(Market originMarket, Integer fid) {

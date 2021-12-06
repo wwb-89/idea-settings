@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 public class WfwAreaApiService {
 
 	/** 根据fid获取架构的code */
-	private static final String GET_AREA_BY_FID_URL = DomainConstant.WFW_AREA_MANAGE_DOMAIN + "/siteInter/siteHierarchy?fid=%s";
+	private static final String GET_AREA_BY_FID_URL = DomainConstant.WFW_AREA_MANAGE + "/siteInter/siteHierarchy?fid=%s";
 	/** 根据code获取架构 */
-	private static final String GET_AREA_BY_CODE_URL = DomainConstant.WFW_AREA_MANAGE_DOMAIN + "/siteInter/siteHierarchy?code=%s&pageSize=%s";
+	private static final String GET_AREA_BY_CODE_URL = DomainConstant.WFW_AREA_MANAGE + "/siteInter/siteHierarchy?code=%s&pageSize=%s";
 
 	@Resource
 	private RestTemplate restTemplate;

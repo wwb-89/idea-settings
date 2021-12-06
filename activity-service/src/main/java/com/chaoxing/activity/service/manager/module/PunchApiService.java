@@ -30,7 +30,7 @@ import java.util.Optional;
 public class PunchApiService {
 
 	/** 创建打卡的url */
-	private static final String PUNCH_CREATE_URL = DomainConstant.PUNCH_DOMAIN + "/api/punch/create";
+	private static final String PUNCH_CREATE_URL = DomainConstant.PUNCH + "/api/punch/create";
 
 	@Resource
 	private RestTemplate restTemplate;

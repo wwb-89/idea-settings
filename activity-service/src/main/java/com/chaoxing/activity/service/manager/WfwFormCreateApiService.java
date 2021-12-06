@@ -42,11 +42,11 @@ public class WfwFormCreateApiService {
 	/** 日期格式化 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
 
-	private static final String CREATE_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/manager/third/user/login/apps/create";
+	private static final String CREATE_URL = DomainConstant.WFW_FORM_API + "/api/manager/third/user/login/apps/create";
 	/** 表单后台地址 */
-	private static final String FORM_ADMIN_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/manager/third/user/login/apps/manager?fid=%d&uid=%d&datetime=%s&sign=%s&formId=%d&formType=%d&enc=%s";
+	private static final String FORM_ADMIN_URL = DomainConstant.WFW_FORM_API + "/api/manager/third/user/login/apps/manager?fid=%d&uid=%d&datetime=%s&sign=%s&formId=%d&formType=%d&enc=%s";
 	/** 接口创建表单url */
-	private static final String CREATE_FORM_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/app/thirdcreate";
+	private static final String CREATE_FORM_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/app/thirdcreate";
 
 	@Resource
 	private RestTemplate restTemplate;

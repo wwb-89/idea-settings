@@ -51,88 +51,88 @@ import java.util.stream.Collectors;
 public class SignApiService {
 
 	/** 查询报名签到 */
-	private static final String SIGN_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d";
+	private static final String SIGN_URL = DomainConstant.SIGN_API + "/sign/%d";
 	/** 创建签到报名的地址 */
-	private static final String CREATE_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/new";
+	private static final String CREATE_URL = DomainConstant.SIGN_API + "/sign/new";
 	/** 修改签到报名的地址 */
-	private static final String UPDATE_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/update";
+	private static final String UPDATE_URL = DomainConstant.SIGN_API + "/sign/update";
 	/** 获取签到报名信息的地址 */
-	private static final String DETAIL_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/detail";
+	private static final String DETAIL_URL = DomainConstant.SIGN_API + "/sign/%d/detail";
 	/** 克隆签到报名信息的地址 */
-	private static final String CLONE_SIGN_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/clone?fid=%d&uid=%d";
+	private static final String CLONE_SIGN_URL = DomainConstant.SIGN_API + "/sign/%d/clone?fid=%d&uid=%d";
 	/** 获取签到报名信息的地址 */
-	private static final String LIST_DETAIL_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/list/detail";
+	private static final String LIST_DETAIL_URL = DomainConstant.SIGN_API + "/sign/list/detail";
 	/** 参与情况 */
-	private static final String PARTICIPATION_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/signed-up";
+	private static final String PARTICIPATION_URL = DomainConstant.SIGN_API + "/sign/%d/signed-up";
 	/** 参与情况 */
-	private static final String BATCH_PARTICIPATION_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/signed-up/stat";
+	private static final String BATCH_PARTICIPATION_URL = DomainConstant.SIGN_API + "/sign/signed-up/stat";
 	/** 统计报名签到在活动管理首页需要的信息 */
-	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = DomainConstant.SIGN_API_DOMAIN + "/stat/sign/%d/activity-index";
+	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = DomainConstant.SIGN_API + "/stat/sign/%d/activity-index";
 	/** 统计报名签到报名成功数量url */
-	private static final String STAT_SIGNED_UP_NUM = DomainConstant.SIGN_API_DOMAIN + "/stat/sign/signed-up-num";
+	private static final String STAT_SIGNED_UP_NUM = DomainConstant.SIGN_API + "/stat/sign/signed-up-num";
 	/** 用户已报名的报名签到列表url */
-	private static final String USER_SIGNED_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
+	private static final String USER_SIGNED_UP_URL = DomainConstant.SIGN_API + "/stat/sign/user-signed-up/%d";
 	/** 报名签到参与范围描述yrl */
-	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/scope/describe";
+	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = DomainConstant.SIGN_API + "/sign/%d/scope/describe";
 	/** 报名签到下用户报名信息 */
-	private static final String SIGN_USER_SIGN_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/user/sign-up";
+	private static final String SIGN_USER_SIGN_UP_URL = DomainConstant.SIGN_API + "/sign/%d/user/sign-up";
 	/** 分组统计查询用户填报的表单记录 */
-	private static final String GROUP_USER_FORM_COLLECTION_URL = DomainConstant.SIGN_API_DOMAIN + "/form-collect/group-by/uids?signId=%d";
+	private static final String GROUP_USER_FORM_COLLECTION_URL = DomainConstant.SIGN_API + "/form-collect/group-by/uids?signId=%d";
 
 	/** 门户报名 */
-	private static final String MH_SIGN_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-up/%d/mh?uid=%d&wfwfid=%d";
+	private static final String MH_SIGN_UP_URL = DomainConstant.SIGN_API + "/sign-up/%d/mh?uid=%d&wfwfid=%d";
 	/** 取消报名 */
-	private static final String CANCEL_SIGN_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-up/%d/cancel";
+	private static final String CANCEL_SIGN_UP_URL = DomainConstant.SIGN_API + "/sign-up/%d/cancel";
 	/** 撤销报名 */
-	private static final String REVOCATION_SIGN_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-up/%d/revocation";
+	private static final String REVOCATION_SIGN_UP_URL = DomainConstant.SIGN_API + "/sign-up/%d/revocation";
 
 	/** 统计活动报名签到对应的活动统计汇总记录url */
-	private static final String STAT_ACTIVITY_SUMMARY_URL = DomainConstant.SIGN_API_DOMAIN + "/stat/sign/%d/activity-stat-summary";
+	private static final String STAT_ACTIVITY_SUMMARY_URL = DomainConstant.SIGN_API + "/stat/sign/%d/activity-stat-summary";
 	/** 统计活动报名签到用户的未签数量 */
-	private static final String STAT_ACTIVITY_USER_NOT_SIGNED_IN_NUM = DomainConstant.SIGN_API_DOMAIN + "/stat/sign/%d/user-not-signed-in-num";
+	private static final String STAT_ACTIVITY_USER_NOT_SIGNED_IN_NUM = DomainConstant.SIGN_API + "/stat/sign/%d/user-not-signed-in-num";
 	/** 获取报名签到下的签到数量 */
-	private static final String COUNT_SIGN_SIGN_IN_NUM_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/sign-in/num";
+	private static final String COUNT_SIGN_SIGN_IN_NUM_URL = DomainConstant.SIGN_API + "/sign/%d/sign-in/num";
 
 	/** 根据外资源部externalIds查询报名签到signIds集合url  */
-	private static final String LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/list/signIds/by-participate-scope";
+	private static final String LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL = DomainConstant.SIGN_API + "/sign/list/signIds/by-participate-scope";
 	/** 根据signIds获取报名参与范围url */
-	private static final String LIST_PARTICIPATE_SCOPE_BY_SIGNS_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/list/sign-participate-scope";
+	private static final String LIST_PARTICIPATE_SCOPE_BY_SIGNS_URL = DomainConstant.SIGN_API + "/sign/list/sign-participate-scope";
 
 	/** 报名签到报名成功的uid列表url */
-	private static final String SIGN_SIGNED_UP_UIDS_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
+	private static final String SIGN_SIGNED_UP_UIDS_URL = DomainConstant.SIGN_API + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
-	private static final String USER_IS_SIGNED_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
+	private static final String USER_IS_SIGNED_UP_URL = DomainConstant.SIGN_API + "/sign/%d/is-signed-up?uid=%d";
 	/** 用户报名签到统计汇总 */
-	private static final String USER_SIGN_STAT_SUMMARY_URL = DomainConstant.SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/sign-stat-summary";
+	private static final String USER_SIGN_STAT_SUMMARY_URL = DomainConstant.SIGN_API + "/stat/user/%d/sign/%d/sign-stat-summary";
 	/** 用户报名成功的报名签到id列表 */
-	private static final String USER_SIGNED_UP_SIGN_ID_URL = DomainConstant.SIGN_API_DOMAIN + "/stat/user/%d/signId/signed-up";
+	private static final String USER_SIGNED_UP_SIGN_ID_URL = DomainConstant.SIGN_API + "/stat/user/%d/signId/signed-up";
 
 	/** 用户直接报名接口地址 */
-	private static final String USERS_TO_SIGN_UP_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/%d/user/to-sign-up";
+	private static final String USERS_TO_SIGN_UP_URL = DomainConstant.SIGN_API + "/sign/%d/user/to-sign-up";
 
 	/** 报名名单url */
-	private static final String SIGN_UP_USER_LIST_URL = DomainConstant.SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
+	private static final String SIGN_UP_USER_LIST_URL = DomainConstant.SIGN_WEB + "/sign-up/%d/user-list";
 	/** 提供信息表单字符串，创建报名表单url */
-	private static final String CONFIG_FORM_WITH_FIELDS = DomainConstant.SIGN_WEB_DOMAIN + "/api/form/config/from-fields";
+	private static final String CONFIG_FORM_WITH_FIELDS = DomainConstant.SIGN_WEB + "/api/form/config/from-fields";
 	/** 用户报名签到参与情况url */
-	private static final String USER_SIGN_PARTICIPATION_URL = DomainConstant.SIGN_API_DOMAIN + "/stat/sign/%d/user-participation?uid=%s";
+	private static final String USER_SIGN_PARTICIPATION_URL = DomainConstant.SIGN_API + "/stat/sign/%d/user-participation?uid=%s";
 	/** 单活动统计 */
-	public static final String STAT_SINGLE_ACTIVITY_URL = DomainConstant.SIGN_API_DOMAIN + "/stat/sign/%d/single-activity?startTime=%s&endTime=%s";
+	public static final String STAT_SINGLE_ACTIVITY_URL = DomainConstant.SIGN_API + "/stat/sign/%d/single-activity?startTime=%s&endTime=%s";
 
 	/** 签到位置搜索缓存 */
-	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-in/position-history";
-	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-in/position-history/add";
-	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-in/position-history/delete";
+	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = DomainConstant.SIGN_API + "/sign-in/position-history";
+	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = DomainConstant.SIGN_API + "/sign-in/position-history/add";
+	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = DomainConstant.SIGN_API + "/sign-in/position-history/delete";
 
 	/** 根据字段名称列表创建表单接口 */
-	private static final String CREATE_FORM_BY_FIELD_NAMES_URL = DomainConstant.SIGN_API_DOMAIN + "/form/create";
+	private static final String CREATE_FORM_BY_FIELD_NAMES_URL = DomainConstant.SIGN_API + "/form/create";
 	/** 根据uid、signIds查询用户能报名的 */
-	private static final String USER_SIGN_UP_ABLE_SIGN_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/sign-up-able";
+	private static final String USER_SIGN_UP_ABLE_SIGN_URL = DomainConstant.SIGN_API + "/sign/sign-up-able";
 
 	/** 根据万能表单id查询报名签到id */
-	private static final String GET_SIGN_ID_BY_WFW_FORM_ID_URL = DomainConstant.SIGN_API_DOMAIN + "/sign/id/from-wfw-form-id";
+	private static final String GET_SIGN_ID_BY_WFW_FORM_ID_URL = DomainConstant.SIGN_API + "/sign/id/from-wfw-form-id";
 	/** 根据报名签到id查询企业报名使用的万能表单id */
-	private static final String GET_COMPANY_SIGN_UP_WFW_FORM_ID_URL = DomainConstant.SIGN_API_DOMAIN + "/sign-up/company-sign-up/wfw-form-id?signId=%d";
+	private static final String GET_COMPANY_SIGN_UP_WFW_FORM_ID_URL = DomainConstant.SIGN_API + "/sign-up/company-sign-up/wfw-form-id?signId=%d";
 
 	@Resource
 	private RestTemplate restTemplate;

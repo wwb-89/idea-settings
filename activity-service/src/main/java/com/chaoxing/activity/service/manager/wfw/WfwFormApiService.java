@@ -51,19 +51,19 @@ public class WfwFormApiService {
 	private static final int MAX_DELETE_SIZE_LIMIT = 100;
 
 	/** 获取机构下表单列表url */
-	private static final String GET_ORG_FORMS_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/app/list";
+	private static final String GET_ORG_FORMS_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/app/list";
 	/** 获取表单字段信息url */
-	private static final String GET_FORM_STRUCTURE_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/app/config/values";
+	private static final String GET_FORM_STRUCTURE_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/app/config/values";
 	/** 获取表单指定数据url */
-	private static final String LIST_FORM_SPECIFIED_DATA_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/data/list";
+	private static final String LIST_FORM_SPECIFIED_DATA_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/user/data/list";
 	/** 填写表单url */
-	private static final String FILL_FORM_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/save";
+	private static final String FILL_FORM_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/user/save";
 	/** 修改表单url */
-	private static final String UPDATE_FORM_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/edit";
+	private static final String UPDATE_FORM_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/user/edit";
 	/** 删除表单记录url */
-	private static final String DELETE_FORM_RECORD_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/del";
+	private static final String DELETE_FORM_RECORD_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/user/del";
 	/** 高级检索 */
-	private static final String ADVANCED_SEARCH_URL = DomainConstant.WFW_FORM_API_DOMAIN + "/api/apps/forms/user/advanced/search/list";
+	private static final String ADVANCED_SEARCH_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/user/advanced/search/list";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;

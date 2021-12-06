@@ -15,20 +15,20 @@ public class ActivityMhUrlConstant {
 	}
 
 	/** 活动封面外部数据源url */
-	public static final String ACTIVITY_COVER_URL = DomainConstant.API_DOMAIN + "/mh/activity/%d/cover/";
+	public static final String ACTIVITY_COVER_URL = DomainConstant.API + "/mh/activity/%d/cover/";
 	/** 活动信息外部数据源url */
-	public static final String ACTIVITY_INFO_URL = DomainConstant.API_DOMAIN + "/mh/activity/%d/info";
+	public static final String ACTIVITY_INFO_URL = DomainConstant.API + "/mh/activity/%d/info";
 	/** 活动精简信息外部数据源url */
-	public static final String ACTIVITY_BRIEF_INFO_URL = DomainConstant.API_DOMAIN + "/mh/v3/activity/brief/info";
+	public static final String ACTIVITY_BRIEF_INFO_URL = DomainConstant.API + "/mh/v3/activity/brief/info";
 	/** 活动报名信息外部数据源url */
-	public static final String ACTIVITY_SIGN_INFO_URL = DomainConstant.API_DOMAIN + "/mh/v2/activity/%d/info";
+	public static final String ACTIVITY_SIGN_INFO_URL = DomainConstant.API + "/mh/v2/activity/%d/info";
 	/** 推荐活动外部数据源url */
-	public static final String ACTIVITY_RECOMMEND_URL = DomainConstant.API_DOMAIN + "/mh/activity/%d/recommend";
+	public static final String ACTIVITY_RECOMMEND_URL = DomainConstant.API + "/mh/activity/%d/recommend";
 	/** 双选会外部数据源url */
-	public static final String DUAL_SELECT_URL = DomainConstant.DUAL_SELECT_DOMAIN + "/form-employment/portal/api/org/double/selection/statistics?activityId=%d";
+	public static final String DUAL_SELECT_URL = DomainConstant.DUAL_SELECT + "/form-employment/portal/api/org/double/selection/statistics?activityId=%d";
 	/** 报名签到外部数据源url */
-	public static final String ACTIVITY_SIGN_URL = DomainConstant.API_DOMAIN + "/mh/activity/%d/sign/btn";
+	public static final String ACTIVITY_SIGN_URL = DomainConstant.API + "/mh/activity/%d/sign/btn";
 	/** 活动海报的地址 */
-	public static final String ACTIVITY_POSTERS_URL = DomainConstant.WEB_DOMAIN + "/activity/%d/poster";
+	public static final String ACTIVITY_POSTERS_URL = DomainConstant.WEB + "/activity/%d/poster";
 
 }

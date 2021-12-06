@@ -39,17 +39,17 @@ import java.util.stream.Collectors;
 public class WfwContactApiService {
 
 	/** 用户有通讯录的机构列表url */
-	private static final String GET_USER_HAVE_CONTACTS_ORG_URL = DomainConstant.LEARN_DOMAIN + "/apis/roster/getUserUnitList?puid=%s";
+	private static final String GET_USER_HAVE_CONTACTS_ORG_URL = DomainConstant.LEARN + "/apis/roster/getUserUnitList?puid=%s";
 	/** 搜索联系人url */
-	private static final String SEARCH_CONTACTS_URL = DomainConstant.WFW_CONTACTS_DOMAIN + "/apis/roster/searchRosterUser?puid={uid}&keyword={keyword}&page={page}&pageSize={pageSize}";
+	private static final String SEARCH_CONTACTS_URL = DomainConstant.WFW_CONTACTS + "/apis/roster/searchRosterUser?puid={uid}&keyword={keyword}&page={page}&pageSize={pageSize}";
 	/** 获取部门列表url */
-	private static final String GET_DEPARTMENT_URL = DomainConstant.WFW_CONTACTS_DOMAIN + "/apis/dept/getDeptsByServer?type=unit&fid={fid}&puid={uid}&cpage={page}&pageSize={pageSize}";
+	private static final String GET_DEPARTMENT_URL = DomainConstant.WFW_CONTACTS + "/apis/dept/getDeptsByServer?type=unit&fid={fid}&puid={uid}&cpage={page}&pageSize={pageSize}";
 	/** 获取机构下部门列表url */
-	private static final String GET_ORG_DEPARTMENT_URL = DomainConstant.WFW_CONTACTS_DOMAIN + "/apis/dept/getDeptsInfoByFidAndName4Server?fid={fid}&offsetValue={offsetValue}";
+	private static final String GET_ORG_DEPARTMENT_URL = DomainConstant.WFW_CONTACTS + "/apis/dept/getDeptsInfoByFidAndName4Server?fid={fid}&offsetValue={offsetValue}";
 	/** 获取部门人员列表url */
-	private static final String GET_DEPARTMENT_USER_URL = DomainConstant.WFW_CONTACTS_DOMAIN + "/apis/user/getSubDeptUserInfinite?deptId={deptId}&includeSub={includeSub}&cpage={page}&pagesize={pageSize}";
+	private static final String GET_DEPARTMENT_USER_URL = DomainConstant.WFW_CONTACTS + "/apis/user/getSubDeptUserInfinite?deptId={deptId}&includeSub={includeSub}&cpage={page}&pagesize={pageSize}";
 	/** 根据管理员puid获取管理员管理的部门 */
-	private static final String GET_DEPARTMENT_BY_MANAGER_URL = DomainConstant.WFW_CONTACTS_DOMAIN + "/apis/dept/getDeptsByManager?fid={fid}&puid={puid}";
+	private static final String GET_DEPARTMENT_BY_MANAGER_URL = DomainConstant.WFW_CONTACTS + "/apis/dept/getDeptsByManager?fid={fid}&puid={puid}";
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
 

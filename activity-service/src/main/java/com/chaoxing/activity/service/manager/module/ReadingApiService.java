@@ -30,7 +30,7 @@ import java.util.Objects;
 public class ReadingApiService {
 
     /** 阅读创建更新地址 */
-    private static final String CREATE_URL = DomainConstant.XUEYA_DOMAIN + "/xy-ucr/school-reading-module/add-or-update-module";
+    private static final String CREATE_URL = DomainConstant.XUEYA + "/xy-ucr/school-reading-module/add-or-update-module";
 
     @Resource
     private RestTemplate restTemplate;

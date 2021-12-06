@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 public class StarApiService {
 
 	/** 创建星阅读的url */
-	private static final String CREATE_URL = DomainConstant.START_READ_DOMAIN + "/manage/createActivity";
+	private static final String CREATE_URL = DomainConstant.START_READ + "/manage/createActivity";
 
 	@Resource
 	private RestTemplate restTemplate;

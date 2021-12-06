@@ -660,7 +660,7 @@
 }
 
 .dailog.choose-field .body .label {
-  width: 45px;
+  min-width: 45px;
 }
 
 .dailog.delete-dailog {

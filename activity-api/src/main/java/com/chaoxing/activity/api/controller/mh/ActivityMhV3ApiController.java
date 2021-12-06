@@ -164,7 +164,7 @@ public class ActivityMhV3ApiController {
         // 经纬度不为空时才显示地址
         String activityAddressLink = "";
         if (activity.getLongitude() != null && activity.getDimension() != null) {
-            activityAddressLink = DomainConstant.API_DOMAIN +  "/redirect/activity/"+ activity.getId() +"/address";
+            activityAddressLink = DomainConstant.API +  "/redirect/activity/"+ activity.getId() +"/address";
         }
         if (!Objects.equals(Activity.ActivityTypeEnum.ONLINE.getValue(), activity.getActivityType())) {
             address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");

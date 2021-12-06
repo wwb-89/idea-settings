@@ -28,7 +28,7 @@ import java.util.Objects;
 public class ClazzInteractionApiService {
 
     /** 活动班级互动创建推送地址 */
-    private static final String COURSE_PUSH_URL = DomainConstant.XIAMEN_TRAINING_PLATFORM_API_DOMAIN + "/course/push";
+    private static final String COURSE_PUSH_URL = DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/course/push";
 
     @Resource
     private RestTemplate restTemplate;

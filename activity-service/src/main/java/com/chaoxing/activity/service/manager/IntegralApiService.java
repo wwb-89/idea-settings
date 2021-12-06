@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class IntegralApiService {
 
 	/** 积分回收地址 */
-	private static final String INTEGRAL_PUSH_URL = DomainConstant.SCORE_DOMAIN + "/services/ScoreService/addScore?fid=%d&uid=%d&sType=%d&resourceId=%s&resourceName=%s";
+	private static final String INTEGRAL_PUSH_URL = DomainConstant.SCORE + "/services/ScoreService/addScore?fid=%d&uid=%d&sType=%d&resourceId=%s&resourceName=%s";
 
 	/** 积分回收范围缓存 */
 	private static final String INTEGRAL_PUSH_SCOPE_CACHE_NAME = CacheConstant.CACHE_KEY_PREFIX + "integral_push_scope";

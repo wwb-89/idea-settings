@@ -24,7 +24,7 @@ import java.util.Objects;
 @Service
 public class ActivityReleaseApiService {
 
-    private static final String GET_ACTIVITY_CREATE_URL = DomainConstant.ACTIVITY_DOMAIN + "/api/activity/%d/to-activity-engine-param";
+    private static final String GET_ACTIVITY_CREATE_URL = DomainConstant.ACTIVITY + "/api/activity/%d/to-activity-engine-param";
 
     @Resource
     private RestTemplate restTemplate;

@@ -27,6 +27,6 @@ public class ActivityModuleConstant {
 
 	/* http://api.hd.chaoxing.com/activity/module/forward/{moduleType}/{moduleId} */
 	/** 模块访问地址 */
-	public static final String MODULE_ACCESS_URL = DomainConstant.API_DOMAIN + "/activity/module/forward/%s/%s";
+	public static final String MODULE_ACCESS_URL = DomainConstant.API + "/activity/module/forward/%s/%s";
 
 }

@@ -36,12 +36,12 @@ import java.util.stream.Collectors;
 public class WfwGroupApiService {
 
     /** 根据fid和父级id获取组织架构 */
-    public static final String GET_GROUP_URL = DomainConstant.WFW_ORGANIZATION_DOMAIN + "/gas/usergroup?fid=%d&gid=%d&fields=id,groupname,gid,soncount&offset=0&limit=1000";
+    public static final String GET_GROUP_URL = DomainConstant.WFW_ORGANIZATION + "/gas/usergroup?fid=%d&gid=%d&fields=id,groupname,gid,soncount&offset=0&limit=1000";
 
-    public static final String GET_ALL_GROUP_URL = DomainConstant.WFW_ORGANIZATION_DOMAIN + "/apis/getallusergroup?fid=%d&enc=%s";
+    public static final String GET_ALL_GROUP_URL = DomainConstant.WFW_ORGANIZATION + "/apis/getallusergroup?fid=%d&enc=%s";
 
     /** 获取用户管理的组织架构URL */
-    public static final String GET_USER_MANAGE_GROUP_URL = DomainConstant.WFW_ORGANIZATION_DOMAIN + "/apis/getchargebyfiduid?fid=%d&uid=%d&enc=%s";
+    public static final String GET_USER_MANAGE_GROUP_URL = DomainConstant.WFW_ORGANIZATION + "/apis/getchargebyfiduid?fid=%d&uid=%d&enc=%s";
 
     /** key */
     private static final String ENC_KEY = "mic^ruso&ke@y";

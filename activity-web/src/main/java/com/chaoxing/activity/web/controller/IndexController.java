@@ -273,7 +273,7 @@ public class IndexController {
 		model.addAttribute("hide", myActivityParam.getHide());
 		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
 		model.addAttribute("managAble", myActivityParam.getManagAble());
-		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl(DomainConstant.WEB_DOMAIN + "/my"), StandardCharsets.UTF_8.name());
+		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl(DomainConstant.WEB + "/my"), StandardCharsets.UTF_8.name());
 		myActivityParam.setWfwFormUrl(myActivityParam.getWfwFormUrl() + "&backurl=" + backUrl);
 		model.addAttribute("wfwFormUrl", myActivityParam.getWfwFormUrl());
 		if (UserAgentUtils.isMobileAccess(request)) {
