@@ -18,7 +18,7 @@ public class MhViewNumDailyStatDTO extends DailyStatDTO {
     @JSONField(name = "time")
     private String dateStr;
     /** 值 */
-    @JSONField(name = "pv")
+    @JSONField(name = "uv")
     private String value;
 
 }
