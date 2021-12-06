@@ -53,6 +53,7 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
+import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -1458,6 +1459,25 @@ public class ActivityQueryService {
 		List<WfwAreaDTO> scopeWfwAreas = activityScopeQueryService.listByActivityIds(activityIds);
 		Map<Integer, List<WfwAreaDTO>> activityIdWfwAreasMap = scopeWfwAreas.stream().collect(Collectors.groupingBy(WfwAreaDTO::getActivityId));
 		return ActivityReleasePlatformActivityQueryResultDTO.build(activities, activityIdWfwAreasMap);
+	}
+
+	/**查询所有预告中的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-24 15:17:18
+	 * @param
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	 */
+	public List<Activity> listAllForecastActivity(ActivityQueryDTO activityQuery) {
+		activityQuery.setStatusList(Lists.newArrayList(2));
+		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
+		List<String> tagNames = activityQuery.getTags();
+		if (CollectionUtils.isNotEmpty(tagNames)) {
+			List<Tag> tags = tagQueryService.listByNames(tagNames);
+			activityQuery.setTagIds(tags.stream().map(Tag::getId).collect(Collectors.toList()));
+		}
+		Page<Activity> page = activityMapper.pageParticipate(new Page<>(1, Integer.MAX_VALUE), activityQuery);
+		return page.getRecords();
 	}
 
 }

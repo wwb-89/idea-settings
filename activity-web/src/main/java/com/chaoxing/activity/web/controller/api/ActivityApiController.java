@@ -61,6 +61,26 @@ public class ActivityApiController {
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
 
+	/**加载预告的活动列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2020-11-25 15:58:40
+	 * @param request
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@Deprecated
+	@RequestMapping("list/forecast/activities")
+	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
+		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
+		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
+		List<Activity> activities = activityQueryService.listAllForecastActivity(activityQuery);
+		activityQueryService.fillTagNames(activities);
+		return RestRespDTO.success(activities);
+	}
+
 	/**分页查询可参与的活动列表
 	 * keepOldRule时，沿用旧的规则查询已发布、进行中、已结束的活动
 	 * 反之仅查询进行中、已结束的活动
