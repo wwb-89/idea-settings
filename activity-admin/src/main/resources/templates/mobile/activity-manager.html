@@ -38,7 +38,7 @@
         <script th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
         <script th:inline="javascript">
             function ready() {
-                activityManagerVue = new Vue({
+                vm = new Vue({
                     el: "#activity-manager-vue",
                     data: {
                         activity: [[${activity}]],
@@ -52,8 +52,8 @@
                         operateIndex: null
                     },
                     created: function () {
-                        var $this = this;
-                        app.customMenu("", app.add_icon_url, {option: 'activityManagerVue.addConcat()'});
+                        console.log(app.add_icon_url);
+                        app.customMenu("", app.add_icon_url, {option: 'vm.addConcat()'});
                     },
                     mounted: function () {
                         var $this = this;

@@ -101,7 +101,7 @@
         <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
         <script th:inline="javascript">
             function ready() {
-                ratingVue = new Vue({
+                vm = new Vue({
                     el: "#rating-vue",
                     data: {
                         ratings: [],
@@ -129,11 +129,12 @@
                                 window.location.reload();
                             }
                         });
+                        alert($this.isManager);
                         if ($this.isManager) {
                             app.customMenu("", app.menu_icon_url, {
                                 children: [
-                                    {menu: "评价设置", option: "ratingVue.ratingSetting()"},
-                                    {menu: "评价审核", option: "ratingVue.ratingAudit()", show: $this.activity.ratingNeedAudit}
+                                    {menu: "评价设置", option: "vm.ratingSetting()"},
+                                    {menu: "评价审核", option: "vm.ratingAudit()", show: $this.activity.ratingNeedAudit}
                                 ]
                             });
                         }

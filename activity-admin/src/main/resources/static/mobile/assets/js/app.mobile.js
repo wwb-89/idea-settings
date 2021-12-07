@@ -6,27 +6,9 @@
     function app() {}
 
     app.prototype.origin = W.location.origin;
-    /** 专题url */
-    app.prototype.specialSubjectUrl = "https://special.rhky.com/mobile/mooc/tocourse/";
-    /** 课程url */
-    app.prototype.courseUrl = "http://mooc1-api.chaoxing.com/phone/courseindex?courseid=";
-    /** 移动端期刊模块的地址 */
-    app.prototype.qkUrl = "http://mguide.chaoxing.com/views/guide/zhizhen/mobiletransferpage.jsp?turntype=link&shouquankan=0";
-    /** 移动端图书馆模块的地址 */
-    app.prototype.libraryUrl = "https://xueya.chaoxing.com/micro-library/";
-    /** 图书url */
-    app.prototype.bookUrl = "/m/book/detail/";
 
     /** 新增图标的地址 */
-    app.prototype.add_icon_url = "http://p.ananas.chaoxing.com/star3/origin/0e6082347825f0867c68879c0ab8653a";
-    /** "我的"图标的地址 */
-    app.prototype.my_icon_url = "http://p.ananas.chaoxing.com/star3/origin/d0bc593e7d861ce9aa7045c2f5051404";
-    /** 更多图标的地址 */
-    app.prototype.menu_icon_url = "http://p.ananas.chaoxing.com/star3/origin/462897190a5a4aef68dc7f345acd97e2";
-    /** 更多图标的地址(带tab) */
-    app.prototype.menu_icon_tab_url = "http://p.ananas.chaoxing.com/star3/origin/51c2dab40663e15ac85180abe886bc94";
-    /** 分享图标的地址 */
-    app.prototype.share_icon_url = "http://p.ananas.chaoxing.com/star3/origin/1f1abfda16859aa69b2fe2b76b220c43";
+    app.prototype.add_icon_url = W.location.origin + ctx + "/mobile/assets/images/add-icon.png";
 
     /** 页面刷新标识 */
     app.prototype.pageRefreshFlag = "page_refresh_flag";
@@ -46,16 +28,6 @@
         "course":{"id":"100000002","name":"课程"},
         "magazine":{"id":"100000006","name":"期刊"},
         "webUrl":{"id":"100000015", "name":"网页"}
-    };
-
-    app.prototype.workAnnexSuffixes = {
-        pictureSuffixes: ["png","jpg","jpeg","bmp","gif"],
-        audioSuffixes: ["aac","ac3","aif","amr","ape","asf","flac","m4a","m4r","mid","mmf","mpa","mpc","ogg","pcm","mpc","mp3"],
-        videoSuffixes: ["rmvb","3gp","mpg","mpeg","mov","wmv","avi","mkv","mp4","flv","vob","f4v"],
-        wordSuffixes: ["doc", "docx"],
-        pptSuffixes: ["ppt", "pptx"],
-        excelSuffixes: ["xls", "xlsx"],
-        pdfSuffixes: ["pdf"]
     };
 
     app.prototype.browser = {
@@ -92,66 +64,6 @@
         arrs = chaoxingAppVersion.split("_");
         chaoxingAppVersion = arrs[0];
         return chaoxingAppVersion;
-    };
-    /**
-     * 录音对象
-     * @type {{size: number, succ: boolean, html: string, duration: number}}
-     */
-    app.prototype.soundRecordingObj = {
-        size: 0,
-        succ: false,
-        html: '',
-        duration: 0
-    };
-    /**
-     * 图片对象
-     * @type {{camera: string, files: *[]}}
-     */
-    app.prototype.pictureObj = {
-        camera: "6",
-        files: [
-            {
-                width: 0,
-                height: 0,
-                objectid: 0,
-                size: 0,
-                resid: 0,
-                type: "jpg",
-                name: ""
-
-            }
-        ]
-    };
-    /**
-     * 照片对象
-     * @type {{camera: string, files: *[]}}
-     */
-    app.prototype.cameraObj = {
-        camera: "7",
-        files: [
-            {
-                width: 0,
-                height: 0,
-                objectid: 0,
-                size: 0,
-                resid: 0,
-                type: "jpg",
-                name: ""
-
-            }
-        ]
-    };
-    /**
-     * 视频对象
-     * @type {{camera: string, files: *[]}}
-     */
-    app.prototype.videoObj = {
-        camera: "2",
-        resid: 0,
-        datasize: 0,
-        objectid: 0,
-        name: "",
-        type: "mp4"
     };
     /**
      * 判断当前环境是不是移动端
@@ -527,16 +439,6 @@
         }
     };
     /**
-     * 打开专题
-     * @param resId
-     * @param resName
-     */
-    app.prototype.openSpecial = function(resId, resName){
-        var $this = this;
-        var url = $this.specialSubjectUrl + resId;
-        $this.openUrl(url, resName);
-    };
-    /**
      *打开小组
      * @param groupId
      */
@@ -860,35 +762,6 @@
         return content;
     };
     /**
-     * banner跳转
-     * @param banner
-     */
-    app.prototype.bannerJump = function (banner) {
-        var $this = this;
-        if ($this.isEmpty(banner)) {
-            return;
-        }
-        var linkContent = banner.linkContent;
-        switch (banner.linkType) {
-            case "void":
-                break;
-            case "special_topic":
-                $this.openSpecial(linkContent);
-                break;
-            case "course":
-                break;
-            case "link":
-                $this.openUrl(linkContent);
-                break;
-            case "group":
-                $this.openGroup(linkContent);
-                break;
-            case "js":
-                eval("(" + linkContent + ")");
-                break;
-        }
-    };
-    /**
      * 创作专题
      */
     app.prototype.creationSpecialTopic = function () {
@@ -1059,21 +932,6 @@
                 }
             }
         });
-    };
-    app.prototype.getCloudFileAnnexType = function (suffix) {
-        var $this = this;
-        if ($this.workAnnexSuffixes.pictureSuffixes.includes(suffix)) {
-            return "picture";
-        } else if ($this.workAnnexSuffixes.audioSuffixes.includes(suffix)) {
-            return "audio";
-        } else if ($this.workAnnexSuffixes.videoSuffixes.includes(suffix)) {
-            return "video";
-        } else if ($this.workAnnexSuffixes.wordSuffixes.includes(suffix)) {
-            return "word";
-        } else if ($this.workAnnexSuffixes.pptSuffixes.includes(suffix)) {
-            return "ppt";
-        }
-        return "";
     };
     /**
      * 后退指定层级
