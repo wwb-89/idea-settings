@@ -8,6 +8,7 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingValidateService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -61,6 +62,8 @@ public class ActivityRatingController {
         model.addAttribute("canRating", canRating);
         model.addAttribute("isManager", isManager);
         if (UserAgentUtils.isMobileAccess(request)) {
+            // 管理端的域名
+            model.addAttribute("adminDomain", DomainConstant.ADMIN);
             return "mobile/activity/rating/index";
         }
         return "pc/activity/rating/index";

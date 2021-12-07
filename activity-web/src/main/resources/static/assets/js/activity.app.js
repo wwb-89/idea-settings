@@ -15,9 +15,6 @@
     /** 活动管理的域名 */
     activityApp.prototype.manage_domain = "https://manage.hd.chaoxing.com";
 
-    /** "我的"图标的地址 */
-    activityApp.prototype.my_icon_url = "http://p.ananas.chaoxing.com/star3/origin/ce27315ad48158b1df8fba285eb9f1d4";
-
     /**
      * 字符串是否为空
      * @param str

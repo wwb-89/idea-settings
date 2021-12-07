@@ -119,7 +119,8 @@
                         },
                         activeIndex: null,
                         // 是不是管理员
-                        isManager: [[${isManager}]]
+                        isManager: [[${isManager}]],
+                        adminDomain: [[${adminDomain}]]
                     },
                     created: function () {
                         var $this = this;
@@ -129,13 +130,13 @@
                                 window.location.reload();
                             }
                         });
-                        alert($this.isManager);
                         if ($this.isManager) {
+                            var childrenMenus = [{menu: "评价设置", option: "vm.ratingSetting()"}];
+                            if ($this.activity.ratingNeedAudit) {
+                                childrenMenus.push({menu: "评价审核", option: "vm.ratingAudit()"});
+                            }
                             app.customMenu("", app.menu_icon_url, {
-                                children: [
-                                    {menu: "评价设置", option: "vm.ratingSetting()"},
-                                    {menu: "评价审核", option: "vm.ratingAudit()", show: $this.activity.ratingNeedAudit}
-                                ]
+                                children: childrenMenus
                             });
                         }
                     },
@@ -325,13 +326,13 @@
                         // 评价设置
                         ratingSetting: function () {
                             var $this = this;
-                            var url = activityApp.manage_domain + "/activity/" + $this.activity.id + "/rating/setting";
+                            var url = $this.adminDomain + "/activity/" + $this.activity.id + "/rating/setting";
                             app.openUrl(url);
                         },
                         // 评价审核
                         ratingAudit: function () {
                             var $this = this;
-                            var url = activityApp.manage_domain + "/activity/" + $this.activity.id + "/rating/audit";
+                            var url = $this.adminDomain + "/activity/" + $this.activity.id + "/rating/audit";
                             app.openUrl(url);
                         }
                     }
