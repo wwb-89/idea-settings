@@ -56,9 +56,10 @@
             Vue.filter("imgUrlFilter", function (cloudId) {
                 return ctx + '/cloud-proxy/image/' + cloudId;
             });
-            posterVue = new Vue({
+            vm = new Vue({
                 el: "#poster-pc",
                 data: {
+                    mainDomain: [[${mainDomain}]],
                     activity: [[${activity}]],
                     signUp: [[${signUp}]],
                     fieldCodeNameRelation: [[${fieldCodeNameRelation}]],
@@ -66,7 +67,8 @@
                     ctx: ctx
                 },
                 created: function () {
-                    document.domain = 'chaoxing.com'
+                    var $this = this;
+                    document.domain = $this.mainDomain;
                 },
                 computed: {
                     activityAddress: function () {

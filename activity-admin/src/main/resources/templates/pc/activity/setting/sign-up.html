@@ -389,6 +389,9 @@
                 el: '#signUpVue',
                 data: function () {
                     return {
+                        mainDomain: [[${mainDomain}]],
+                        wfwFormDomain: [[${wfwFormDomain}]],
+                        signWebDomain: [[${signWebDomain}]],
                         activity: [[${activity}]],
                         sign: [[${sign}]],
                         signUpTemplateComponents: [[${signUpTemplateComponents}]],
@@ -431,9 +434,9 @@
                 created: function () {
                     var $this = this;
                     // 解决跨域
-                    document.domain = "chaoxing.com";
+                    document.domain = $this.mainDomain;
                     window.addEventListener("message", function (e) {
-                        if (e.origin.indexOf("m.oa.chaoxing.com") > -1) {
+                        if (e.origin.indexOf($this.wfwFormDomain.replace(/http(|s):\/\//, "")) > -1) {
                             var { data } = activityApp.getJsonObject(e.data);
                             var originId = $this.operateSignUpOriginId;
                             $this.$set($this.signUpMap[originId], 'openAddr', data.openAddr);
@@ -749,7 +752,7 @@
                         if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
                             formId = signUp.fillInfoFormId;
                         }
-                        var url = "//reading.chaoxing.com/qd/form/config?formId=" + formId;
+                        var url = "//" + $this.signWebDomain.replace(/http(|s):\/\//, "") + "/form/config?formId=" + formId;
                         $('body').addClass('scroll');
                         $this.formConfigLayerIndex = layer.open({
                             title: "表单配置",

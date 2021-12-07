@@ -22,7 +22,7 @@
             <div class="assess-header-right">
                 <div class="login-container">
                     <div class="after-login">
-                        <img class="login-tx"  :src="'http://photo.chaoxing.com/p/'+loginUser.uid+'_80'" alt="">
+                        <img class="login-tx"  :src="photoDomain + '/p/' + loginUser.uid + '_80'" alt="">
                         <span class="user-name">{{loginUser.realName}}</span>
                         <i class="icon-down">
                             <img src="/static/pc/assets/images/icon-down.png" th:src="@{/pc/assets/images/icon-down.png}" alt="">
@@ -58,15 +58,14 @@
     <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script th:inline="javascript">
-        var vm = new Vue({
+        vm = new Vue({
             el: '#vue',
-            data: function () {
-                return {
-                    activity: [[${activity}]],
-                    loginUser: [[${session._login_user_}]],
-                    value1: false,
-                    value2: false
-                }
+            data: {
+                photoDomain: [[${photoDomain}]],
+                activity: [[${activity}]],
+                loginUser: [[${session._login_user_}]],
+                value1: false,
+                value2: false
             },
             created: function () {
 

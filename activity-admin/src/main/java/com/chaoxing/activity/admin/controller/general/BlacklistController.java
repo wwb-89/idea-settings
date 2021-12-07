@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.market.MarketValidationService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ public class BlacklistController {
 		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
 		model.addAttribute("market", market);
 		model.addAttribute("marketId", marketId);
+		model.addAttribute("photoDomain", DomainConstant.PHOTO);
 		return "pc/blacklist/blacklist-list";
 	}
 

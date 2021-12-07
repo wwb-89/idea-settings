@@ -3,6 +3,7 @@ package com.chaoxing.activity.web.controller.proxy;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,6 +48,7 @@ public class MapController {
                 Optional.ofNullable(activity).map(Activity::getDetailAddress).filter(StringUtils::isNotBlank).orElse("");
         model.addAttribute("address", address);
         model.addAttribute("activity", activity);
+        model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
         return "proxy/map-location";
     }
 

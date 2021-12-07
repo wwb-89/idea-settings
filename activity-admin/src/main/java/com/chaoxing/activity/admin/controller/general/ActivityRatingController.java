@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ public class ActivityRatingController {
     public String setting(HttpServletRequest request, Model model, @PathVariable Integer activityId){
         Activity activity = activityQueryService.getById(activityId);
         model.addAttribute("activity", activity);
+        model.addAttribute("photoDomain", DomainConstant.PHOTO);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/rating/rating-setting";
         }
@@ -51,6 +53,7 @@ public class ActivityRatingController {
     public String auditIndex(HttpServletRequest request,  Model model, @PathVariable Integer activityId){
         Activity activity = activityQueryService.getById(activityId);
         model.addAttribute("activity", activity);
+        model.addAttribute("photoDomain", DomainConstant.PHOTO);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/rating/rating-audit";
         }

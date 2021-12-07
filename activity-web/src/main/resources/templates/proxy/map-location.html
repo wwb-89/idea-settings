@@ -151,6 +151,7 @@
         vm = new Vue({
 	        el: "#vm",
 	        data: {
+                signWebDomain: [[${signWebDomain}]],
                 points: [
                     {
                         lat: [[${lat}]],
@@ -215,7 +216,7 @@
                             var infoWindow = new BMap.Label('', opts);
                             var link = '//api.map.baidu.com/marker?location=' + pointObj.lat + ',' + pointObj.lng + '&title=&content='+pointObj.address+'&output=html&src=webapp.baidu.openAPIdemo';
                             if ($this.isMobileDevice()) {
-                                link = "https://reading.chaoxing.com/qd/map/location?lng=" + pointObj.lng + "&lat=" + pointObj.lat + "&address=" + pointObj.address;
+                                link = $this.signWebDomain + "/map/location?lng=" + pointObj.lng + "&lat=" + pointObj.lat + "&address=" + pointObj.address;
                             }
 	                        infoWindow.setContent('<div class="info-window-box"><a href="'+link+'" class="info-link" target="_blank"><div class="center-txt">'+pointObj.address+'</div></a></div>');
                             map.addOverlay(infoWindow);

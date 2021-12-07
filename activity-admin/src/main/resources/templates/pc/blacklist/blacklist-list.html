@@ -79,7 +79,7 @@
 	<vue-confirm-common ref="removeWindow" :message="'确定移除吗？'" :cancel="'保留'" :sure="'移除'" @callback="removeSubmit"></vue-confirm-common>
 	<vue-confirm-common ref="batchRemoveWindow" :message="'确定移除吗？'" :cancel="'保留'" :sure="'移除'" @callback="batchRemoveSubmit"></vue-confirm-common>
 	<!--人员选择-->
-	<vue-user-select ref="userSelectWindow" @callback="userSelectSubmit"></vue-user-select>
+	<vue-user-select ref="userSelectWindow" :photo-domain="photoDomain" @callback="userSelectSubmit"></vue-user-select>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
 	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>

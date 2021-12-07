@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}" />
     <link rel="stylesheet" type="text/css" href="/static/mobile/assets/css/hover-button.css" th:href="@{/mobile/assets/css/hover-button.css}">
-    <style type="text/css">
+    <style>
         [v-cloak] {
             display: none;
         }
@@ -49,7 +49,7 @@
                             </div>
                             <p class="num" style="z-index: 1" v-if="activity.openSignUp"><i></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
                             <div class="js-crop-img">
-                                <img :src="activity | getCloudImgUrl" class="jqthumbImg">                            </div>
+                                <img :src="activity | getCloudImgUrl(cloudDomain)" class="jqthumbImg">                            </div>
                         </div>
                         <div class="card-info">
                             <h2 class="title overHidden2"><span class="info-top" v-show="activity.top">置顶</span>{{activity.name}}</h2>
@@ -136,6 +136,7 @@
                     return {
                         classifyNames: [[${classifyNames}]],
                         activityQueryDates: [[${activityQueryDates}]],
+                        cloudDomain: [[${cloudDomain}]],
                         classifies: [],
                         activityTypes: [],
                         regions: [[${regions}]],

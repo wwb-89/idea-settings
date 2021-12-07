@@ -20,7 +20,7 @@
         <div class="content">
             <div class="white-block header">
                 <div class="head-img">
-                    <img :src="'http://photo.chaoxing.com/p/' + userGrade.uid + '_80'">
+                    <img :src="photoDomain + '/p/' + userGrade.uid + '_80'">
                 </div>
                 <div class="head-right">
                     <p class="name">{{userGrade.realName}}</p>
@@ -149,7 +149,8 @@
                     deductionScores: [1, 2, 3, 4, 5],
                     score: 0,
                     info: '',
-                    addPerformancePop: false
+                    addPerformancePop: false,
+                    photoDomain: [[${photoDomain}]]
                 },
                 mounted: function(){
                     var $this = this;

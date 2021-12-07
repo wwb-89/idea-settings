@@ -24,6 +24,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.tag.TagQueryService;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +90,7 @@ public class ActivitySettingController {
 
         model.addAttribute("activityId", activityId);
         model.addAttribute("openSignUp", templateComponentService.exitSignUpComponent(activity.getTemplateId()));
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
         return "pc/activity/setting/index";
     }
 
@@ -128,6 +130,10 @@ public class ActivitySettingController {
         Integer activityCreateFid = activity.getCreateFid();
         List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(activityCreateFid));
         model.addAttribute("tags", tags);
+        model.addAttribute("workDomain", DomainConstant.WORK);
+        model.addAttribute("noteDomain", DomainConstant.NOTE);
+        model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
         return "pc/activity/setting/basic-info-edit";
     }
 
@@ -149,6 +155,8 @@ public class ActivitySettingController {
         model.addAttribute("templateComponents", templateComponentService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
         List<String> participateScopes = activityScopeQueryService.listByActivityId(activityId).stream().map(WfwAreaDTO::getName).collect(Collectors.toList());
         model.addAttribute("participateScopes", participateScopes);
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
+        model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
         return "pc/activity/setting/basic-info-view";
     }
 
@@ -201,6 +209,9 @@ public class ActivitySettingController {
         // 市场报名配置
         MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(createParamDTO.getMarketId());
         model.addAttribute("marketSignUpConfig", marketSignUpConfig);
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
+        model.addAttribute("wfwFormDomain", DomainConstant.WFW_FORM_API);
+        model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
         return "pc/activity/setting/sign-up";
     }
 
@@ -217,6 +228,7 @@ public class ActivitySettingController {
         model.addAttribute("activityId", activityId);
         model.addAttribute("activityMenus", activityMenuService.listActivityMenuConfig(activityId));
         model.addAttribute("menuList", activityMenuService.listMenu());
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
         return "pc/activity/setting/menu";
     }
 }

@@ -23,7 +23,7 @@
                     <div class="list clear" v-for="(rating, index) of ratings">
                         <div class="head-box">
                             <img v-if="isAnonymousShow(index)" src="/static/mobile/assets/images/head-default.png" th:src="@{/mobile/assets/images/head-default.png}" class="jqthumbImg" />
-                            <img v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'" class="jqthumbImg">
+                            <img v-else :src="photoDomain + '/p/' + rating.scorerUid + '_80'" class="jqthumbImg">
                         </div>
                         <div class="content">
                             <div class="head">
@@ -69,6 +69,7 @@
             ratingAudit = new Vue({
                 el: "#comment-examine",
                 data: {
+                    photoDomain: [[${photoDomain}]],
                     activity: [[${activity}]],
                     loginUser: [[${session._login_user_}]],
                     ratings: [],

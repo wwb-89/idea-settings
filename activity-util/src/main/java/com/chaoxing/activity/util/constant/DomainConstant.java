@@ -18,6 +18,9 @@ public class DomainConstant {
 
     /** 域名资源文件的类路径 */
     private static final String DOMAIN_RESOURCE_CLASS_PATH = "resource.yml";
+
+    /** 主域名 */
+    public static final String MAIN = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.main");
     /** api 域名 */
     public static final String API = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.api");
     /** web 域名 */
@@ -99,5 +102,12 @@ public class DomainConstant {
 
     /** 积分域名 */
     public static final String SCORE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.score");
+
+    /** 头像服务域名 */
+    public static final String PHOTO = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.photo");
+    /** 笔记编辑器域名 */
+    public static final String NOTE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.note");
+    /** 空间域名 */
+    public static final String SPACE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.space");
 
 }

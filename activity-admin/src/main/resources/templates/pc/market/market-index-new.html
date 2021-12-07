@@ -20,7 +20,7 @@
 			<div class="assess-header-right">
 				<div class="login-container">
 					<div class="after-login">
-						<img class="login-tx" th:src="|http://photo.chaoxing.com/p/${session._login_user_.uid}_80|">
+						<img class="login-tx" :src="photoDomain + '/p/' + uid + '_80'">
 						<span class="user-name" th:text="${session._login_user_.realName}">王小明</span>
 					</div>
 				</div>
@@ -38,16 +38,19 @@
         vm = new Vue({
 	        el: "#vm",
 	        data: {
+                mainDomain: [[${mainDomain}]],
+                uid: [[${session._login_user_.uid}]],
                 market: [[${market}]],
                 areaCode: [[${areaCode == null ? '' : areaCode}]],
                 pageMode: [[${pageMode}]],
                 isEmbedded: activityApp.isEmbedded(),
-		        url: ""
+		        url: "",
+                photoDomain: [[${photoDomain}]]
 	        },
             created: function () {
                 var $this = this;
                 // 解决跨域
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
                 // 如果被嵌入则跳转到活动管理列表页面
                 if (activityApp.isEmbedded()) {
                     window.location.replace(ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&areaCode=" + $this.areaCode + "&pageMode=" + $this.pageMode);

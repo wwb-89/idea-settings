@@ -27,6 +27,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -132,6 +133,9 @@ public class ActivityManageController {
 		}
 		model.addAttribute("isCreator", creator);
 		model.addAttribute("activityMenus", activityMenus);
+		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("webDomain", DomainConstant.WEB);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {
@@ -276,6 +280,14 @@ public class ActivityManageController {
 		// 活动标签
 		List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(activityFid));
 		model.addAttribute("tags", tags);
+
+		model.addAttribute("workDomain", DomainConstant.WORK);
+		model.addAttribute("xueyaDomain", DomainConstant.XUEYA);
+		model.addAttribute("noteDomain", DomainConstant.NOTE);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
+		model.addAttribute("wfwFormDomain", DomainConstant.WFW_FORM_API);
 		return "pc/activity-add-edit-new";
 	}
 

@@ -20,6 +20,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.tag.TagQueryService;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -94,6 +95,8 @@ public class ActivityController {
 		model.addAttribute("marketId", marketId);
 		model.addAttribute("flag", flag);
 		model.addAttribute("areaCode", areaCode);
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		if (Objects.equals(pageMode, 1)) {
 			return "pc/activity-list-simple";
 		}
@@ -114,6 +117,11 @@ public class ActivityController {
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("marketTableFields", marketTableFields);
 		model.addAttribute("customTplComponents", marketQueryService.listMarketCustomTemplateComponents(marketId));
+		model.addAttribute("dualSelectDomain", DomainConstant.DUAL_SELECT);
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("webDomain", DomainConstant.WEB);
+		model.addAttribute("adminDomain", DomainConstant.ADMIN);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		return "pc/activity-list";
 	}
 
@@ -190,6 +198,14 @@ public class ActivityController {
 		// 活动标签
 		List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(fid));
 		model.addAttribute("tags", tags);
+
+		model.addAttribute("workDomain", DomainConstant.WORK);
+		model.addAttribute("xueyaDomain", DomainConstant.XUEYA);
+		model.addAttribute("noteDomain", DomainConstant.NOTE);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
+		model.addAttribute("wfwFormDomain", DomainConstant.WFW_FORM_API);
 		return "pc/activity-add-edit-new";
 	}
 }

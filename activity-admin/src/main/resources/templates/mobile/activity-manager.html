@@ -23,7 +23,7 @@
             <li v-for="(manager, index) of managers" class="item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" :key="'manager-' + index">
                 <div class="inner">
                     <div class="head-box">
-                        <img :src="'http://photo.chaoxing.com/p/' + manager.uid + '_80'" class="jqthumbImg">
+                        <img :src="photoDomain + '/p/' + manager.uid + '_80'" class="jqthumbImg">
                     </div>
                     <span class="name">{{manager.userName}}</span>
                 </div>
@@ -49,7 +49,8 @@
                         },
                         managers: [],
                         loaded: false,
-                        operateIndex: null
+                        operateIndex: null,
+                        photoDomain: [[${photoDomain}]]
                     },
                     created: function () {
                         console.log(app.add_icon_url);

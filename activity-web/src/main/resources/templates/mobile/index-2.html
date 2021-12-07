@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}" />
     <link rel="stylesheet" type="text/css" href="/static/mobile/assets/css/hover-button.css" th:href="@{/mobile/assets/css/hover-button.css}">
-    <style type="text/css">
+    <style>
         [v-cloak] {
             display: none;
         }
@@ -39,7 +39,7 @@
             <li v-for="(activity, index) of activities" :key="'activity-' + activity.id" @click="detail(index)">
                 <div class="img-box">
                     <div class="mask"></div>
-                    <img :src="activity | getCloudImgUrl" class="jqthumbImg">
+                    <img :src="activity | getCloudImgUrl(cloudDomain)" class="jqthumbImg">
                     <div class="status-box">
                         <!--报名状态-->
                         <span v-if="activity.hasSignUp && signUpAble && activity.signUpStatus == 2" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>报名中</span>
@@ -130,6 +130,7 @@
                 data: {
                     classifyNames: [[${classifyNames}]],
                     activityQueryDates: [[${activityQueryDates}]],
+                    cloudDomain: [[${cloudDomain}]],
                     classifies: [],
                     activityTypes: [],
                     regions: [[${regions}]],

@@ -11,6 +11,7 @@ import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,6 +64,8 @@ public class ActivityManagerController {
 		List<Integer> managerUids = activityManagerService.listUid(activityId);
 		model.addAttribute("menus", activityMenuService.listMenus(activityId));
 		model.addAttribute("managerUids", managerUids);
+		model.addAttribute("photoDomain", DomainConstant.PHOTO);
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-manager";
 		} else {

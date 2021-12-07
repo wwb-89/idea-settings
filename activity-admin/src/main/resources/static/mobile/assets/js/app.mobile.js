@@ -613,36 +613,6 @@
         });
     };
     /**
-     *打开图片
-     * @param cloudIds
-     * @param curIndex
-     */
-    app.prototype.openImg = function (cloudIds, curIndex) {
-        var urls = [];
-        $(cloudIds).each(function () {
-            urls.push("http://p.ananas.chaoxing.com/star3/origin/" + this);
-        });
-        var $this = this;
-        if ($this.isEmpty(urls)) {
-            return;
-        }
-        var imageUrls = [];
-        $(urls).each(function () {
-            imageUrls.push({
-                imageUrl: this
-            });
-        });
-        if ($this.isEmpty(curIndex)) {
-            curIndex = 0;
-        }
-        var option = {
-            "showIndex": curIndex,
-            "imageUrls": imageUrls
-        };
-        var cmd = "CLIENT_PREVIEW_IMAGES";
-        B.postNotification(cmd, option);
-    };
-    /**
      * 打开音频
      * @param cloudId
      * @param title

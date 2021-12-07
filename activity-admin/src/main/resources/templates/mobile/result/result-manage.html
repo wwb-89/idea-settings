@@ -49,7 +49,7 @@
         <div class="list-style1">
             <ul>
                 <li v-for="record in tableData">
-                    <img :src="'http://photo.chaoxing.com/p/' + record.uid + '_80'">
+                    <img :src="photoDomain + '/p/' + record.uid + '_80'">
                     <div class="info border-bottom">
                         <h2 class="name">{{record.realName}}</h2>
                         <a class="flex-box" @click="toUserResultDetail(record.uid)">
@@ -108,33 +108,32 @@
         <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
         <script src="/static/mobile/assets/lib/swiper/js/swiper.min.js" th:src="@{/mobile/assets/lib/swiper/js/swiper.min.js}"></script>
         <script th:inline="javascript">
-            var vm = new Vue({
+            vm = new Vue({
                 el: '#result-list',
-                data: function () {
-                    return {
+                data: {
+                    photoDomain: [[${photoDomain}]],
+                    activityId: [[${activityId}]],
+                    tableFieldDetails: [[${tableFieldDetails}]],
+                    qualifiedNum: [[${qualifiedNum}]],
+                    unQualifiedNum: [[${unQualifiedNum}]],
+                    waitAuditNum: [[${waitAuditNum}]],
+                    tableData: [],
+                    queryParams: {
                         activityId: [[${activityId}]],
-                        tableFieldDetails: [[${tableFieldDetails}]],
-                        qualifiedNum: [[${qualifiedNum}]],
-                        unQualifiedNum: [[${unQualifiedNum}]],
-                        waitAuditNum: [[${waitAuditNum}]],
-                        tableData: [],
-                        queryParams: {
-                            activityId: [[${activityId}]],
-                            pageNum: 1,
-                            pageSize: 10,
-                            qualifiedStatus: 2,
-                            sw: '',
-                            orderFieldId: null,
-                            orderType: 'DESC'
-                        },
-                        mescroll: null,
-                        activeUser: null,
-                        inputShowStatus: false,
-                        modelShowStatus: false,
-                        orderStatus:false,
-                        handleStatus:false, //合格不合格弹窗状态
-                        searchFlag: false,  // 是否进行过查询
-                    }
+                        pageNum: 1,
+                        pageSize: 10,
+                        qualifiedStatus: 2,
+                        sw: '',
+                        orderFieldId: null,
+                        orderType: 'DESC'
+                    },
+                    mescroll: null,
+                    activeUser: null,
+                    inputShowStatus: false,
+                    modelShowStatus: false,
+                    orderStatus:false,
+                    handleStatus:false, //合格不合格弹窗状态
+                    searchFlag: false,  // 是否进行过查询
                 },
                 created: function () {},
                 mounted: function () {

@@ -74,7 +74,7 @@
                     <div class="c-item">
                         <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
                             <div class="img-box">
-                                <img class="jqthumbImg" :src="item | getCloudImgUrl">
+                                <img class="jqthumbImg" :src="item | getCloudImgUrl(cloudDomain)">
                                 <!--报名状态-->
                                 <div class="tag" v-if="item.status == 2">即将开始</div>
                                 <div class="tag green" v-if="item.status == 3">进行中</div>
@@ -108,6 +108,8 @@
         vm = new Vue({
             el: '#activity-vue',
             data: {
+                mainDomain: [[${mainDomain}]],
+                cloudDomain: [[${cloudDomain}]],
                 fids: [[${fids}]],
                 classifyNames: [[${classifyNames}]],
                 activityQueryDates: [[${activityQueryDates}]],
@@ -177,7 +179,7 @@
             },
             mounted:function() {
                 var $this = this;
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
                 $(".jqthumbImg").jqthumb({
                     width:'100%',
                     height:'100%'

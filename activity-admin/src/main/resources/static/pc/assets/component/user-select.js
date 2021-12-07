@@ -1,5 +1,5 @@
 Vue.component("vue-user-select", {
-	props: [],
+	props: ['photoDomain'],
 	template:
 		"<div class='dialog-mask' v-show='show'>" +
 		"    <div class='dailog choose-dialog'>" +
@@ -43,7 +43,7 @@ Vue.component("vue-user-select", {
 			/*部门用户列表*/
 								"<div :class=\"{'catalog-item': true, 'bgc-blue': (user.checked)}\" v-show=\"dataType == 'user' && !searching\" v-for='(user, index) of departmentUsers' :key=\"'user-' + index\">" +
 								"    <div class='catalog-photo'>" +
-								"        <img :src=\"'http://photo.chaoxing.com/p/' + user.puid + '_80'\">" +
+								"        <img :src=\"photoDomain + '/p/' + user.puid + '_80'\">" +
 								"    </div>" +
 								"    <div class='catalog-title' @click='chooseDepartmentUser(index)'>{{user.name}}</div>" +
 								"    <el-checkbox class='right-check' v-model='user.checked' @change='checkDepartmentUser(index)'></el-checkbox>" +
@@ -51,7 +51,7 @@ Vue.component("vue-user-select", {
 		/*搜索用户列表*/
 								"<div :class=\"{'catalog-item': true, 'bgc-blue': (user.checked)}\" v-show='searching' v-for='(user, index) of searchUsers' :key=\"'search-user-' + index\">" +
 								"    <div class='catalog-photo'>" +
-								"        <img :src=\"'http://photo.chaoxing.com/p/' + user.puid + '_80'\">" +
+								"        <img :src=\"photoDomain + '/p/' + user.puid + '_80'\">" +
 								"    </div>" +
 								"    <div class='catalog-title'>{{user.name}}</div>" +
 								"    <el-checkbox class='right-check' v-model='user.checked' @change='checkSearchUser(index)'></el-checkbox>" +
@@ -67,7 +67,7 @@ Vue.component("vue-user-select", {
 		"                <div class='catalog-list'>" +
 		"                    <div class='catalog-item' v-for='(user, index) of selectedUsers' :key=\"'selected-user-' + index\">" +
 		"                        <div class='catalog-photo'>" +
-		"                            <img :src=\"'http://photo.chaoxing.com/p/' + user.puid + '_80'\">" +
+		"                            <img :src=\"photoDomain + '/p/' + user.puid + '_80'\">" +
 		"                        </div>" +
 		"                        <div class='catalog-title'>{{user.name}}</div>" +
 		"                        <div class='del-img' @click='remove(index)'></div>" +

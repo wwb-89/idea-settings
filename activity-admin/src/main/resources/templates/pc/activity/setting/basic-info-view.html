@@ -35,7 +35,7 @@
                 </template>
                 <el-form-item label="封面" v-else-if="code == 'activity_cover'">
                     <div class="img-box js-crop-img" v-if="isNotEmpty(activity.coverUrl) || isNotEmpty(activity.coverCloudId)">
-                        <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg" height="100%">
+                        <img :src="activity | getCloudImgUrl(cloudDomain)" class="cover-img jqthumbImg" height="100%">
                     </div>
                 </el-form-item>
             </template>
@@ -62,7 +62,7 @@
                 </el-form-item>
                 <el-form-item :label="item.name" v-else-if="item.code == 'activity_cover'">
                     <div class="img-box js-crop-img" v-if="isNotEmpty(activity.coverUrl) || isNotEmpty(activity.coverCloudId)">
-                        <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg" height="100%">
+                        <img :src="activity | getCloudImgUrl(cloudDomain)" class="cover-img jqthumbImg" height="100%">
                     </div>
                 </el-form-item>
                 <el-form-item :label="item.name" v-else-if="item.code == 'activity_time_scope'">
@@ -152,6 +152,8 @@
             var vm = new Vue({
                 el: '#basicInfoVue',
                 data: {
+                    mainDomain: [[${mainDomain}]],
+                    cloudDomain: [[${cloudDomain}]],
                     activity: [[${activity}]],
                     templateComponents: [[${templateComponents}]],
                     additionRequiredFields: [], // 补充必填字段
@@ -161,7 +163,7 @@
                 },
                 created: function () {
                     var $this = this;
-                    document.domain = "chaoxing.com";
+                    document.domain = $this.mainDomain;
 
                     var templateComponentMap = {};
                     if (!activityApp.isEmpty($this.activity.introduction)) {

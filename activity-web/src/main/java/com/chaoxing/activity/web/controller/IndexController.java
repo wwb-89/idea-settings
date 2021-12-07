@@ -121,6 +121,8 @@ public class IndexController {
 		model.addAttribute("flag", activitySquareParam.getFlag());
 		model.addAttribute("levelFilter", levelFilter);
 		model.addAttribute("timeOrder", activitySquareParam.getTimeOrder());
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		// 获取用户班级
 		if (uid != null) {
 			Integer userClassId = Optional.ofNullable(ucApiService.getUserExtraInfoByFidAndUid(fid, uid)).map(UserExtraInfoDTO::getClassId).orElse(null);
@@ -239,6 +241,8 @@ public class IndexController {
 		model.addAttribute("hideFilter", activitySquareParam.getHideFilter());
 		model.addAttribute("signUpAble", Objects.equals(1, activitySquareParam.getStrict()));
 		model.addAttribute("timeOrder", activitySquareParam.getTimeOrder());
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		// 验证style是否存在
 		String style = activitySquareParam.getStyle();
 		if (UserAgentUtils.isMobileAccess(request)) {
@@ -276,6 +280,9 @@ public class IndexController {
 		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl(DomainConstant.WEB + "/my"), StandardCharsets.UTF_8.name());
 		myActivityParam.setWfwFormUrl(myActivityParam.getWfwFormUrl() + "&backurl=" + backUrl);
 		model.addAttribute("wfwFormUrl", myActivityParam.getWfwFormUrl());
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("adminDomain", DomainConstant.ADMIN);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/my";
 		}

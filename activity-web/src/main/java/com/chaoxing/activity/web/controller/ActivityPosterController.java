@@ -4,6 +4,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ public class ActivityPosterController {
         model.addAttribute("fieldCodeNameRelation", fieldCodeNameRelation);
         model.addAttribute("activity", activity);
         model.addAttribute("signUp", signUp);
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/activity/poster/index";
         } else {

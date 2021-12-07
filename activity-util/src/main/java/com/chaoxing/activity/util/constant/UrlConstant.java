@@ -31,7 +31,7 @@ public class UrlConstant {
 
 	/** 双选会 */
 	/** 双选会主页url */
-	public static final String DUAL_SELECT_INDEX_URL = DomainConstant.DUAL_SELECT + "/form-employment/pc/double/election?activityId=%s&wfwfid=%s";
+	public static final String DUAL_SELECT_INDEX_URL = DomainConstant.DUAL_SELECT + "/pc/double/election?activityId=%s&wfwfid=%s";
 
 	/** 作品征集主页 */
 	public static final String WORK_INDEX_URL = DomainConstant.WORK + "/zj/activity/forward/%s";

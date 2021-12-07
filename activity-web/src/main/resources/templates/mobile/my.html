@@ -47,7 +47,7 @@
 								<p :class="calSignedUpClass(activity)">{{activity | calSignedUpStatusDescription}}</p>
 							</div>
 							<div class="js-crop-img">
-								<img :src="activity | getCloudImgUrl">
+								<img :src="activity | getCloudImgUrl(cloudDomain)">
 							</div>
 						</div>
 						<div class="card-info">
@@ -78,7 +78,7 @@
 								<p :class="calCollectedClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
 							</div>
 							<div class="js-crop-img">
-								<img :src="activity | getCloudImgUrl">
+								<img :src="activity | getCloudImgUrl(cloudDomain)">
 							</div>
 						</div>
 						<div class="card-info">
@@ -108,7 +108,7 @@
 								<p :class="calManageClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
 							</div>
 							<div class="js-crop-img">
-								<img :src="activity | getCloudImgUrl">
+								<img :src="activity | getCloudImgUrl(cloudDomain)">
 							</div>
 						</div>
 						<div class="card-info">
@@ -154,8 +154,9 @@
 			vm = new Vue({
 				el: "#activity-vue",
 				data: {
+                    adminDomain: [[${adminDomain}]],
+                    cloudDomain: [[${cloudDomain}]],
 					activeTabIndex: 0,
-
 					signedUps: [],
 					collecteds: [],
 					managings: [],
@@ -572,7 +573,7 @@
 					managingDetail: function (index) {
 						var $this = this;
 						var activity = $this.managings[index];
-						var url = activityApp.getActivityManageIndexUrl(activity.id);
+						var url = activityApp.getActivityManageIndexUrl(activity.id, $this.adminDomain);
 						if (!activityApp.isEmpty(url)) {
 							app.openUrl(url);
 						}

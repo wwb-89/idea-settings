@@ -48,7 +48,7 @@
 							<div class="img-box">
 								<p :class="calSignedUpClass(activity)">{{activity | calSignedUpStatusDescription}}</p>
 								<div class="js-crop-img">
-									<img :src="activity | getCloudImgUrl">
+									<img :src="activity | getCloudImgUrl(cloudDomain)">
 								</div>
 							</div>
 							<div class="card-info">
@@ -73,7 +73,7 @@
 							<div class="img-box">
 								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2 || activity.status == 1), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
 								<div class="js-crop-img">
-									<img :src="activity | getCloudImgUrl">
+									<img :src="activity | getCloudImgUrl(cloudDomain)">
 								</div>
 							</div>
 							<div class="card-info">
@@ -97,7 +97,7 @@
 							<div class="img-box">
 								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2 || activity.status == 1), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
 								<div class="js-crop-img">
-									<img :src="activity | getCloudImgUrl">
+									<img :src="activity | getCloudImgUrl(cloudDomain)">
 								</div>
 							</div>
 							<div class="card-info">
@@ -150,9 +150,12 @@
 			// 返回活动的状态
 			return activityApp.getMyActivityStatusInstructions(activity.status);
 		});
-		activityVue = new Vue({
+		vm = new Vue({
 			el: "#activity-vue",
 			data: {
+                mainDomain: [[${mainDomain}]],
+                adminDomain: [[${adminDomain}]],
+                cloudDomain: [[${cloudDomain}]],
 				title: [[${title}]],
 				managAble: [[${managAble}]],
 				flag: [[${flag}]],
@@ -203,7 +206,7 @@
             created: function () {
 				var $this = this;
                 // 解决跨域
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
                 var hideStr = [[${hide}]];
                 if (!activityApp.isEmpty(hideStr)) {
 					$this.hideList = hideStr.split(',');
@@ -243,7 +246,7 @@
 				// 创建活动
 				toAdd: function () {
 					var $this = this;
-					window.open("https://manage.hd.chaoxing.com/activity/add?code=" + $this.areaCode);
+					window.open($this.adminDomain + "/activity/add?code=" + $this.areaCode);
 				},
 				toWfwFormCreate: function () {
 					var $this = this;
@@ -515,7 +518,7 @@
 					var activity = $this.managings[$this.operateIndex];
 					if (activityApp.isEmpty(activity.pageId)) {
 						app.showMsg("活动未创建完成，请选择活动模板", function () {
-							var url = "https://manage.hd.chaoxing.com/activity/" + activity.id + "/edit?step=2";
+							var url = $this.adminDomain + "/activity/" + activity.id + "/edit?step=2";
 							window.open(url);
 						});
 						return;
@@ -611,7 +614,7 @@
 				activityManageIndex: function (index) {
 					var $this = this;
 					var activity = $this.managings[index];
-					window.open(activityApp.getActivityManageIndexUrl(activity.id));
+					window.open(activityApp.getActivityManageIndexUrl(activity.id, $this.adminDomain));
 				},
 				// 活动详情
 				detail: function (activity) {
@@ -623,7 +626,7 @@
 				toEdit: function (index, e) {
 					var $this = this;
 					var activity = $this.managings[index];
-					var url = "https://manage.hd.chaoxing.com/activity/" + activity.id + "/edit";
+					var url = $this.adminDomain + "/activity/" + activity.id + "/edit";
 					window.open(url);
 				}
 			}

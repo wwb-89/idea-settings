@@ -9,6 +9,7 @@ import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.market.MarketValidationService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -56,6 +57,8 @@ public class MarketController {
 		model.addAttribute("market", market);
 		model.addAttribute("areaCode", areaCode);
 		model.addAttribute("pageMode", pageMode);
+		model.addAttribute("photoDomain", DomainConstant.PHOTO);
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		return "pc/market/market-index-new";
 	}
 
@@ -78,6 +81,7 @@ public class MarketController {
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
 		model.addAttribute("activityFlag", activityFlag);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		return "pc/market/wfw-market";
 	}
 
@@ -88,6 +92,7 @@ public class MarketController {
 		Optional.ofNullable(market).orElseThrow(() -> new BusinessException("活动市场不存在"));
 		model.addAttribute("market", MarketUpdateParamDTO.buildFromActivityMarket(market));
 		model.addAttribute("backUrl", backUrl);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		return "pc/market/wfw-market";
 	}
 

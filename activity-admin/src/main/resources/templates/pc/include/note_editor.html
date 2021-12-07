@@ -2,12 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="note_editor">
 	<!--音视频播放-start-->
-	<script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
-	<script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
-	<link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/plugin/smusic/css/smusic.css" />
-	<script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
-	<link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
-	<script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
+	<script type="text/javascript" th:src="|${noteDomain}/res/js/common/easydialog.min.js|"></script>
+	<script type="text/javascript" th:src="|${noteDomain}/res/plugin/ckplayer/ckplayer.js|"></script>
+	<link rel="stylesheet" type="text/css" th:href="|${noteDomain}/res/plugin/smusic/css/smusic.css|" />
+	<script type="text/javascript" th:src="|${noteDomain}/res/plugin/smusic/js/smusic.js|"></script>
+	<link rel="stylesheet" type="text/css" th:href="|${noteDomain}/res/pc/cssnew/media.css|" />
+	<script type="text/javascript" th:src="|${noteDomain}/res/pc/js/media.js|"></script>
 	<!-- 视频播放容器 -->
 	<div id="videoDiv">
 		<span class="videoCloseBtn"></span>

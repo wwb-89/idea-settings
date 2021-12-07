@@ -12,9 +12,6 @@
         activityApp.prototype.origin = W.location.origin;
     }
 
-    /** 活动管理的域名 */
-    activityApp.prototype.manage_domain = "https://manage.hd.chaoxing.com";
-
     /**
      * 字符串是否为空
      * @param str
@@ -176,16 +173,17 @@
     /**
      * 获取云盘图片的url
      * @param activity
+     * @param cloudDomain
      * @returns {string}
      */
-    activityApp.prototype.getCloudImgUrl = function (activity) {
+    activityApp.prototype.getCloudImgUrl = function (activity, cloudDomain) {
         var $this = this;
         var coverCloudId = activity.coverCloudId;
         var coverUrl = activity.coverUrl;
         if (!$this.isEmpty(coverUrl)) {
             return activity.coverUrl;
         }
-        return "http://p.ananas.chaoxing.com/star3/origin/" + coverCloudId;
+        return cloudDomain + "/star3/origin/" + coverCloudId;
     };
     /**
      * 生成新的签到报名
@@ -323,8 +321,8 @@
      * @param activityId
      * @returns {string}
      */
-    activityApp.prototype.getActivityManageIndexUrl = function (activityId) {
-        return "https://manage.hd.chaoxing.com/activity/" + activityId;
+    activityApp.prototype.getActivityManageIndexUrl = function (activityId, adminDomain) {
+        return adminDomain + "/activity/" + activityId;
     };
     /**
      * 是否被嵌入
@@ -347,8 +345,8 @@ Array.prototype.pushArray = function (array) {
         that.push(this);
     });
 };
-Vue.filter("getCloudImgUrl", function (cloudId) {
-    return activityApp.getCloudImgUrl(cloudId);
+Vue.filter("getCloudImgUrl", function (cloudId, cloudDomain) {
+    return activityApp.getCloudImgUrl(cloudId, cloudDomain);
 });
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);

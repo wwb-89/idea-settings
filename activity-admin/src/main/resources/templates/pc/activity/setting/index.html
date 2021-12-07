@@ -37,17 +37,16 @@
     <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
     <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
     <script th:inline="javascript">
-        var vm = new Vue({
+        vm = new Vue({
             el: '#vue',
-            data: function () {
-                return {
-                    url: "",
-                    tabs:[]
-                }
+            data: {
+                mainDomain: [[${mainDomain}]],
+                url: "",
+                tabs:[]
             },
             created: function () {
                 var $this = this;
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
                 $this.tabs.pushArray([
                     {name:'基本信息', url: ctx + "/activity/[[${activityId}]]/setting/basic-info/view", active: true, show: true},
                     {name:'报名设置', url: ctx + "/activity/[[${activityId}]]/setting/sign-up", active: false, show: [[${openSignUp}]]},

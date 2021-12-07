@@ -31,7 +31,7 @@
                     <div class="list clear" v-for="(rating, index) of ratings" :key="'rating-' + index">
                         <div class="head-box">
                             <img v-if="isAnonymousShow(index)" src="/static/mobile/assets/images/head-default.png" th:src="@{/mobile/assets/images/head-default.png}" class="jqthumbImg" />
-                            <img v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'" class="jqthumbImg">
+                            <img v-else :src="photoDomain + '/p/' + rating.scorerUid + '_80'" class="jqthumbImg">
                         </div>
                         <div class="content">
                             <img src="/static/mobile/assets/images/line.png" th:src="@{/mobile/assets/images/line.png}" class="more needsclick"
@@ -104,6 +104,7 @@
                 vm = new Vue({
                     el: "#rating-vue",
                     data: {
+                        photoDomain: [[${photoDomain}]],
                         ratings: [],
                         mescroll: null,
                         loaded: false,

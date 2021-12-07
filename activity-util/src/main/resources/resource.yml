@@ -1,4 +1,5 @@
 domain:
+  main: chaoxing.com
   api: https://api.hd.chaoxing.com
   web: https://hd.chaoxing.com
   admin: https://manage.hd.chaoxing.com
@@ -7,7 +8,7 @@ domain:
   work: https://reading.chaoxing.com
   work_api: http://api.reading.chaoxing.com
   mh: https://mh.chaoxing.com
-  dual_select: https://appcd.chaoxing.com
+  dual_select: https://appcd.chaoxing.com/form-employment
   passport: https://passport2.chaoxing.com
 
   wfw: http://v1.chaoxing.com
@@ -38,3 +39,7 @@ domain:
   mooc_api: http://mooc1-api.chaoxing.com
   mooc: http://mooc1.chaoxing.com
   score: http://score.jxlll.chaoxing.com
+
+  photo: http://photo.chaoxing.com
+  note: https://noteyd.chaoxing.com
+  space: https://i.chaoxing.com

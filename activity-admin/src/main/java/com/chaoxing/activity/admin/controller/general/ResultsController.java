@@ -8,6 +8,7 @@ import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,6 +57,7 @@ public class ResultsController {
 		model.addAttribute("tableFieldId", tableFieldId);
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("activityTableFields", activityTableFields);
+		model.addAttribute("photoDomain", DomainConstant.PHOTO);
 	 	if (UserAgentUtils.isMobileAccess(request)) {
 			model.addAttribute("qualifiedNum", userResultQueryService.countQualifiedStatusNum(activityId, UserResult.QualifiedStatusEnum.QUALIFIED));
 			model.addAttribute("unQualifiedNum", userResultQueryService.countQualifiedStatusNum(activityId, UserResult.QualifiedStatusEnum.NOT_QUALIFIED));
@@ -80,6 +82,7 @@ public class ResultsController {
 	public String personalGrade(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer uid) {
 		model.addAttribute("uid", uid);
 		model.addAttribute("activityId", activityId);
+		model.addAttribute("photoDomain", DomainConstant.PHOTO);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/result/person-grade";
 		}

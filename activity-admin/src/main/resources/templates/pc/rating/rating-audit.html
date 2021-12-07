@@ -28,7 +28,7 @@
         <div class="assess-header-right">
             <div class="login-container">
                 <div class="after-login">
-                    <img class="login-tx" :src="'http://photo.chaoxing.com/p/'+ loginUser.uid +'_80'">
+                    <img class="login-tx" :src="photoDomain + '/p/' + loginUser.uid + '_80'">
                     <span class="user-name">{{loginUser.realName}}</span>
                     <i class="icon-down">
                         <img src="/static/pc/assets/images/icon-down.png" th:src="@{/pc/assets/images/icon-down.png}">
@@ -61,7 +61,7 @@
             <li class="assess-list-item assess-check-list-item" v-for="(rating, index) of ratings">
                 <el-checkbox v-model="rating.checked" class="check-item-checkbox fl" @change="checkHandle"></el-checkbox>
                 <img class="fl" v-if="isAnonymousShow(index)" src="/static/pc/assets/images/niming-tx.png" th:src="@{/pc/assets/images/niming-tx.png}">
-                <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+ rating.scorerUid +'_80'">
+                <img class="fl" v-else :src="photoDomain + '/p/' + rating.scorerUid + '_80'">
                 <div class="check-item-content fl">
                     <span class="item-name" v-if="isAnonymousShow(index)">匿名</span>
                     <span class="item-name" v-else>{{rating.scorerUserName}}</span>
@@ -95,9 +95,10 @@
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script th:inline="javascript">
-        ratingVue = new Vue({
+        vm = new Vue({
             el: "#rating-vue",
             data: {
+                photoDomain: [[${photoDomain}]],
                 activity: [[${activity}]],
                 loginUser: [[${session._login_user_}]],
                 ratings: [],

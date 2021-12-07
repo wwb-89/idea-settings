@@ -82,7 +82,7 @@
 							</div>
 							<p class="num" v-if="item.openSignUp"><i></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
 							<div class="js-crop-img" @click="detail(index)">
-								<img :src="item | getCloudImgUrl">
+								<img :src="item | getCloudImgUrl(cloudDomain)">
 							</div>
 						</div>
 						<div class="card-info">
@@ -115,6 +115,8 @@
 		vm = new Vue({
 			el: '#activity-vue',
 			data: {
+                mainDomain: [[${mainDomain}]],
+                cloudDomain: [[${cloudDomain}]],
 				fids: [[${fids}]],
 				classifyNames: [[${classifyNames}]],
 				activityQueryDates: [[${activityQueryDates}]],
@@ -140,7 +142,7 @@
 			created: function () {
 				var $this = this;
                 // 解决跨域
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
 				$this.classifies.push({name: "全部",value: "", selected: true});
 				$($this.classifyNames).each(function () {
 					$this.classifies.push({name: this,value: this,selected: false});
@@ -175,7 +177,6 @@
 			},
 			mounted:function() {
 				var $this = this;
-				document.domain = "chaoxing.com";
 				$this.resetQueryParams();
 				// 如果topFid符合regions的manageFid那么选中
 				if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {

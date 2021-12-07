@@ -94,7 +94,7 @@
                                 :min-width="item.minWidth"
                         >
                             <template slot-scope="scope">
-                                <el-image class="table-img jqthumbImg" :src="scope.row | getCloudImgUrl" fit="cover"></el-image>
+                                <el-image class="table-img jqthumbImg" :src="scope.row | getCloudImgUrl(cloudDomain)" fit="cover"></el-image>
                                 <span class="table-img-top" v-show="scope.row.top">置顶</span>
                             </template>
                         </el-table-column>
@@ -286,6 +286,11 @@
         vm = new Vue({
             el: "#activity-vue",
             data: {
+                mainDomain: [[${mainDomain}]],
+                webDomain: [[${webDomain}]],
+                adminDomain: [[${adminDomain}]],
+                dualSelectDomain: [[${dualSelectDomain}]],
+                cloudDomain: [[${cloudDomain}]],
                 activities: [],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${fid != null ? fid : session._login_user_.fid}]],
@@ -351,7 +356,7 @@
             created: function () {
                 var $this = this;
                 // 解决跨域
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
                 $this.filterStatus = [
                     {text: "未发布", value: "1"},
                     {text: "未开始", value: "2"},
@@ -781,7 +786,8 @@
                     });
                 },
                 toDualSelectStatExport: function (activityId, fid) {
-                    var url = activityApp.generateDualSelectStatExportUrl(activityId, fid);
+                    var $this = this;
+                    var url = activityApp.generateDualSelectStatExportUrl(activityId, fid, $this.dualSelectDomain);
                     window.open(url);
                 },
                 // 配置页面
@@ -804,12 +810,14 @@
                     }
                 },
                 toPoster: function (activityId) {
-                    var url = "https://hd.chaoxing.com/activity/" + activityId + "/poster";
+                    var $this = this;
+                    var url = $this.webDomain + "/activity/" + activityId + "/poster";
                     window.open(url);
                 },
                 // 管理页面
                 toManage: function (activityId) {
-                    var url = "https://manage.hd.chaoxing.com/activity/" + activityId;
+                    var $this = this;
+                    var url = $this.adminDomain + "/activity/" + activityId;
                     window.open(url);
                 },
                 // 活动的来源是不是活动申报

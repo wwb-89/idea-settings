@@ -61,6 +61,10 @@ public class ActivityRatingController {
         model.addAttribute("activityRating", activityRating);
         model.addAttribute("canRating", canRating);
         model.addAttribute("isManager", isManager);
+        model.addAttribute("photoDomain", DomainConstant.PHOTO);
+        model.addAttribute("passportDomain", DomainConstant.PASSPORT);
+        model.addAttribute("adminDomain", DomainConstant.ADMIN);
+        model.addAttribute("spaceDomain", DomainConstant.SPACE);
         if (UserAgentUtils.isMobileAccess(request)) {
             // 管理端的域名
             model.addAttribute("adminDomain", DomainConstant.ADMIN);

@@ -25,7 +25,7 @@ public class ActivityMhUrlConstant {
 	/** 推荐活动外部数据源url */
 	public static final String ACTIVITY_RECOMMEND_URL = DomainConstant.API + "/mh/activity/%d/recommend";
 	/** 双选会外部数据源url */
-	public static final String DUAL_SELECT_URL = DomainConstant.DUAL_SELECT + "/form-employment/portal/api/org/double/selection/statistics?activityId=%d";
+	public static final String DUAL_SELECT_URL = DomainConstant.DUAL_SELECT + "/portal/api/org/double/selection/statistics?activityId=%d";
 	/** 报名签到外部数据源url */
 	public static final String ACTIVITY_SIGN_URL = DomainConstant.API + "/mh/activity/%d/sign/btn";
 	/** 活动海报的地址 */

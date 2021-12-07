@@ -197,20 +197,21 @@
     /**
      * 获取云盘图片的url
      * @param activity
+     * @param cloudDomain
      * @returns {string}
      */
-    activityApp.prototype.getCloudImgUrl = function (activity) {
+    activityApp.prototype.getCloudImgUrl = function (activity, cloudDomain) {
         var $this = this;
         var coverCloudId = activity.coverCloudId;
         var coverUrl = activity.coverUrl;
         if (!$this.isEmpty(coverUrl)) {
             return activity.coverUrl;
         }
-        return $this.buildCloudImgUrl(coverCloudId);
+        return $this.buildCloudImgUrl(coverCloudId, cloudDomain);
     };
 
-    activityApp.prototype.buildCloudImgUrl = function (cloudId) {
-        return "http://p.ananas.chaoxing.com/star3/origin/" + cloudId;
+    activityApp.prototype.buildCloudImgUrl = function (cloudId, cloudDomain) {
+        return cloudDomain + "/star3/origin/" + cloudId;
     };
 
     /**
@@ -264,7 +265,6 @@
      * @returns {string}
      */
     activityApp.prototype.generateActivityDefaultStartTimeStamp = function () {
-        var $this = this;
         return new Date().getTime();
     };
     /**
@@ -275,22 +275,14 @@
         return new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime();
     };
     /**
-     * 获取双选会主页地址
-     * @param activityId
-     * @param fid
-     * @returns {string}
-     */
-    activityApp.prototype.generateDualSelectIndexUrl = function (activityId, fid) {
-        return "http://appcd.chaoxing.com/form-employment/pc/double/election?activityId=" + activityId + "&wfwfid=" + fid;
-    };
-    /**
      * 双选会统计导出地址
      * @param activityId
      * @param fid
+     * @param dualSelectDomain
      * @returns {string}
      */
-    activityApp.prototype.generateDualSelectStatExportUrl = function (activityId, fid) {
-        return "http://appcd.chaoxing.com/form-employment/export/double/selection/statistics?activityId=" + activityId + "&wfwfid=" + fid;
+    activityApp.prototype.generateDualSelectStatExportUrl = function (activityId, fid, dualSelectDomain) {
+        return dualSelectDomain + "/export/double/selection/statistics?activityId=" + activityId + "&wfwfid=" + fid;
     };
     /**
      * 禁用滚动
@@ -357,18 +349,21 @@
     /**
      * 返回作品征集的管理地址
      * @param workId
+     * @param workDomain
      * @returns {string}
      */
-    activityApp.prototype.getWorkManageUrl = function (workId) {
-        return "http://reading.chaoxing.com/zj//manage/activity/" + workId + "/new?isHideHeader=false";
+    activityApp.prototype.getWorkManageUrl = function (workId, workDomain) {
+        return workDomain + "/zj/manage/activity/" + workId + "/new?isHideHeader=false";
     };
     /**
      * 返回阅读书单的管理地址
      * @param workId
+     * @param moduleId
+     * @param xueyaDomain
      * @returns {string}
      */
-    activityApp.prototype.getReadingBookManageUrl = function (readingId, moduleId) {
-        return "http://xueya.chaoxing.com/school-base/school-reading/" + readingId + "/" + moduleId + "/book-list";
+    activityApp.prototype.getReadingBookManageUrl = function (readingId, moduleId, xueyaDomain) {
+        return xueyaDomain + "/school-base/school-reading/" + readingId + "/" + moduleId + "/book-list";
     };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
@@ -384,8 +379,8 @@ Array.prototype.pushArray = function (array) {
         $this.push(this);
     });
 };
-Vue.filter("getCloudImgUrl", function (activity) {
-    return activityApp.getCloudImgUrl(activity);
+Vue.filter("getCloudImgUrl", function (activity, cloudDomain) {
+    return activityApp.getCloudImgUrl(activity, cloudDomain);
 });
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
-    <link rel="stylesheet" href="https://noteyd.chaoxing.com/res/css/pc/note/richtext_detail.css">
+    <link rel="stylesheet" th:href="|${noteDomain}/res/css/pc/note/richtext_detail.css|">
 
     <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/set.css" th:href="@{/pc/assets/css/set.css}">
@@ -108,7 +108,7 @@
                 <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
                 <div class="input-box">
                     <div class="img-box">
-                        <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
+                        <img :src="activity | getCloudImgUrl(cloudDomain)" class="cover-img jqthumbImg">
                     </div>
                     <div class="font-box">
                         <span>大小：小于5M</span>
@@ -160,7 +160,7 @@
                 <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                 <div class="input-box">
                     <div class="img-box">
-                        <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
+                        <img :src="activity | getCloudImgUrl(cloudDomain)" class="cover-img jqthumbImg">
                     </div>
                     <div class="font-box">
                         <span>大小：小于5M</span>
@@ -444,7 +444,7 @@
                     <!-- 选中的图片加上 current 类名-->
                     <div :class="{'item-box': true, current: activePicIndex == index }" v-for="(cloudId, index) in pictureCloudIds" @click="activePicIndex = index">
                         <div class="img-box">
-                            <img :src="'http://p.ananas.chaoxing.com/star3/origin/' + cloudId" alt="" class="jqthumbImg">
+                            <img :src="cloudDomain + '/star3/origin/' + cloudId" alt="" class="jqthumbImg">
                         </div>
                         <i class="select-pic"></i>
                     </div>
@@ -469,7 +469,7 @@
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
-    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+    <script th:src="|${noteDomain}/res/plugin/ueditor4thirdparty/rich.text.util.js|"></script>
     <script type="text/javascript">
         RichTextUitl.loadEditorProfile();
     </script>
@@ -487,6 +487,9 @@
         vm = new Vue({
             el: "#activity-vue",
             data: {
+                mainDomain: [[${mainDomain}]],
+                workDomain: [[${workDomain}]],
+                cloudDomain: [[${cloudDomain}]],
                 fid: [[${session._login_user_.fid}]],
                 templateId: [[${templateId}]],
                 activity: [[${activity}]],
@@ -533,7 +536,7 @@
             created: function () {
                 var $this = this;
                 // 解决跨域
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
                 var templateComponentMap = {};
                 var requiredFieldCodes = ['activity_name', 'activity_time_scope', 'activity_cover', 'activity_type'];
                 var existRequiredFieldCodes = []; // 已存在必填字段
@@ -688,7 +691,7 @@
                 confirmPicSelect: function () {
                     var $this = this;
                     var cloudId = $this.pictureCloudIds[$this.activePicIndex];
-                    $this.$set($this.activity, "coverUrl", "https://p.ananas.chaoxing.com/star3/origin/" + cloudId + ".jpg");
+                    $this.$set($this.activity, "coverUrl", $this.cloudDomain + "/star3/origin/" + cloudId + ".jpg");
                     $this.$set($this.activity, "coverCloudId", cloudId);
                     $this.$nextTick(function () {
                         $this.handleImg();
@@ -1104,7 +1107,7 @@
                 // 作品征集管理
                 workManage: function () {
                     var $this = this;
-                    var url = activityApp.getWorkManageUrl($this.activity.workId);
+                    var url = activityApp.getWorkManageUrl($this.activity.workId, $this.workDomain);
                     window.open(url);
                 },
                 // 自定义输入整型、小数数据处理

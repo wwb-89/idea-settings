@@ -70,6 +70,8 @@
             vm = new Vue({
                 el: "#activity-vue",
                 data: {
+                    mainDomain: [[${mainDomain}]],
+                    signWebDomain: [[${signWebDomain}]],
                     activity: [[${activity}]],
                     activityMenus: [[${activityMenus}]],
                     signActivityManageIndex: [[${signActivityManageIndex}]],
@@ -82,22 +84,20 @@
                     // 报名名单
                     signUpList: function () {
                         var $this = this;
-                        var url = "https://reading.chaoxing.com/qd/m/manage/sign-up/" + $this.signActivityManageIndex.signUpIds[0] + "/user-list";
+                        var url = $this.signWebDomain + "/m/manage/sign-up/" + $this.signActivityManageIndex.signUpIds[0] + "/user-list";
                         if ($this.signActivityManageIndex.signUpIds.length > 1) {
-                            url = "https://reading.chaoxing.com/qd/m/manage/sign/" + $this.signActivityManageIndex.signId + "/sign-up-list";
+                            url = $this.signWebDomain + "/m/manage/sign/" + $this.signActivityManageIndex.signId + "/sign-up-list";
                         }
                         app.openUrl(url);
                     },
                     // 签到管理
                     signInManage: function () {
                         var $this = this;
-                        var url = "https://reading.chaoxing.com/qd/m/manage/sign/" + $this.signActivityManageIndex.signId + "/sign-in-list";
+                        var url = $this.signWebDomain + "/m/manage/sign/" + $this.signActivityManageIndex.signId + "/sign-in-list";
                         app.openUrl(url);
                     },
                     // 考核管理
                     resultsManage: function () {
-                        var $this = this;
-                        // var url = "https://reading.chaoxing.com/qd/m/manage/results?signId=" + $this.signActivityManageIndex.signId;
                         var url = ctx + "/activity/" + [[${activity.id}]] + "/results/manage"
                         app.openUrl(url);
                     },
@@ -113,7 +113,7 @@
                         if (!$this.loaded) {
                             return;
                         }
-                        var url = "https://reading.chaoxing.com/qd/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
+                        var url = $this.signWebDomain + "/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
                         app.openUrl(url);
                     }
                 }

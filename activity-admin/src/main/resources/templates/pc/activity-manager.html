@@ -86,7 +86,7 @@
     <!--批量移除弹窗-->
     <vue-confirm-common ref="batchDeleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="batchDeleteSubmit"></vue-confirm-common>
     <!--人员选择-->
-    <vue-user-select ref="userSelectWindow" @callback="userSelectSubmit"></vue-user-select>
+    <vue-user-select ref="userSelectWindow" :photo-domain="photoDomain" @callback="userSelectSubmit"></vue-user-select>
 </div>
 </body>
 <th:block th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -97,9 +97,10 @@
     <script src="/static/pc/assets/component/user-select.js" th:src="@{/pc/assets/component/user-select.js}"></script>
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script th:inline="javascript">
-        activityManagerVue = new Vue({
+        vm = new Vue({
             el: "#activity-manager-vue",
             data: {
+                mainDomain: [[${mainDomain}]],
                 activity: [[${activity}]],
                 activityId: [[${activity.id}]],
                 managerUids: [[${managerUids}]],
@@ -114,12 +115,13 @@
                 operateManagerName: "",
                 permissionDialogShow: false,
                 allChecked: false,
-                loaded: false
+                loaded: false,
+                photoDomain: [[${photoDomain}]]
             },
             created: function () {
                 var $this = this;
                 // 解决跨域
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
             },
             mounted: function () {
                 var $this = this;

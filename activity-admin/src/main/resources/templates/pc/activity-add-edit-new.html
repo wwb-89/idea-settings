@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
-    <link rel="stylesheet" href="https://noteyd.chaoxing.com/res/css/pc/note/richtext_detail.css">
+    <link rel="stylesheet" th:href="|${noteDomain}/res/css/pc/note/richtext_detail.css|">
     <style type="text/css">
         body .create-class .layui-layer-btn0{
             width: 30px;
@@ -133,7 +133,7 @@
                             <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <div class="img-box">
-                                    <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
+                                    <img :src="activity | getCloudImgUrl(cloudDomain)" class="cover-img jqthumbImg">
                                 </div>
                                 <div class="font-box">
                                     <span>大小：小于5M</span>
@@ -718,7 +718,7 @@
                         <!-- 选中的图片加上 current 类名-->
                         <div :class="{'item-box': true, current: activePicIndex == index }" v-for="(cloudId, index) in pictureCloudIds" @click="activePicIndex = index">
                             <div class="img-box">
-                                <img :src="'http://p.ananas.chaoxing.com/star3/origin/' + cloudId" alt="" class="jqthumbImg">
+                                <img :src="cloudDomain + '/star3/origin/' + cloudId" alt="" class="jqthumbImg">
                             </div>
                             <i class="select-pic"></i>
                         </div>
@@ -779,7 +779,7 @@
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
-    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+    <script th:src="|${noteDomain}/res/plugin/ueditor4thirdparty/rich.text.util.js|"></script>
     <script type="text/javascript">
         RichTextUitl.loadEditorProfile();
     </script>
@@ -799,6 +799,12 @@
         vm = new Vue({
             el: "#activity-vue",
             data: {
+                mainDomain: [[${mainDomain}]],
+                signWebDomain: [[${signWebDomain}]],
+                workDomain: [[${workDomain}]],
+                xueyaDomain: [[${xueyaDomain}]],
+                cloudDomain: [[${cloudDomain}]],
+                wfwFormDomain: [[${wfwFormDomain}]],
                 isClone: [[${isClone}]],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${session._login_user_.fid}]],
@@ -904,9 +910,9 @@
             created: function () {
                 var $this = this;
                 // 解决跨域
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
                 window.addEventListener("message", function (e) {
-                    if (e.origin.indexOf("m.oa.chaoxing.com") > -1) {
+                    if (e.origin.indexOf($this.wfwFormDomain.replace(/http(|s):\/\//, "")) > -1) {
                         $this.wfwFormConfigWindow.close();
                     } else {
                         try {
@@ -1398,7 +1404,7 @@
                 confirmPicSelect: function () {
                     var $this = this;
                     var cloudId = $this.pictureCloudIds[$this.activePicIndex];
-                    $this.$set($this.activity, "coverUrl", "https://p.ananas.chaoxing.com/star3/origin/" + cloudId + ".jpg");
+                    $this.$set($this.activity, "coverUrl", $this.cloudDomain + "/star3/origin/" + cloudId + ".jpg");
                     $this.$set($this.activity, "coverCloudId", cloudId);
                     $this.$nextTick(function () {
                         $this.handleImg();
@@ -2030,7 +2036,7 @@
                     if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
                         formId = signUp.fillInfoFormId;
                     }
-                    var url = "//reading.chaoxing.com/qd/form/config?formId=" + formId;
+                    var url = "//"+ $this.signWebDomain.replace(/http(|s):\/\//, "") + "/form/config?formId=" + formId;
                     $('body').addClass('scroll');
                     $this.formConfigLayerIndex = layer.open({
                         title: "表单配置",
@@ -2250,13 +2256,13 @@
                 // 作品征集管理
                 workManage: function () {
                     var $this = this;
-                    var url = activityApp.getWorkManageUrl($this.activity.workId);
+                    var url = activityApp.getWorkManageUrl($this.activity.workId, $this.workDomain);
                     window.open(url);
                 },
                 // 阅读书单管理
                 readManage: function () {
                     var $this = this;
-                    var url = activityApp.getReadingBookManageUrl($this.activity.readingId, $this.activity.readingModuleId);
+                    var url = activityApp.getReadingBookManageUrl($this.activity.readingId, $this.activity.readingModuleId, $this.xueyaDomain);
                     window.open(url);
                 },
                 // 签到列表管理页
@@ -2265,9 +2271,9 @@
                     var signId = $this.sign.id;
                     var url = "";
                     if (signId) {
-                        url = "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + signId + "&back=true";
+                        url = "//" + $this.signWebDomain.replace(/http(|s):\/\//, "") + "/manage/sign-in/list?signId=" + signId + "&back=true";
                     } else {
-                        url = "//reading.chaoxing.com/qd/manage/sign-in/list/new?back=true";
+                        url = "//" + $this.signWebDomain.replace(/http(|s):\/\//, "") + "/manage/sign-in/list/new?back=true";
                     }
                     $("#sign-in-list").attr("src", url);
                     $this.showSignInListIframe = true;
