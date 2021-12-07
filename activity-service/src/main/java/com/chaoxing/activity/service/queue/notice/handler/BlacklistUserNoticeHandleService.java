@@ -117,8 +117,6 @@ public class BlacklistUserNoticeHandleService {
         if (CollectionUtils.isEmpty(uids)) {
             return;
         }
-
-
         // 封装通知模板字段值对象
         NoticeTemplateFieldDTO noticeTemplateField = buildNoticeField(marketId, activityId);
         noticeTemplateField.setBlacklistAddTime(addBlacklistTime.format(CommonConstant.NOTICE_ACTIVITY_TIME_FORMATTER));

@@ -65,7 +65,6 @@ public class SystemNoticeTemplate {
         ACTIVITY_ABOUT_END("活动即将结束", "activity_about_end"),
         SIGN_UP_ABOUT_START("报名即将开始", "sign_up_about_start"),
         SIGN_UP_ABOUT_END("报名即将结束", "sign_up_about_end"),
-        SIGN_IN_OUT_ABOUT_END("未签到/签退", "sign_in_out_about_end"),
         AUTO_ADD_TO_BLACKLIST("自动进入黑名单", "auto_add_to_blacklist"),
         MANUAL_ADD_TO_BLACKLIST("手动进入黑名单", "manual_add_to_blacklist"),
         REMOVE_FROM_BLACKLIST("移出黑名单", "remove_from_blacklist");
@@ -99,7 +98,6 @@ public class SystemNoticeTemplate {
         ACTIVITY_ADDRESS("活动地点", "activity_address"),
         ACTIVITY_TIME("活动时间", "activity_time"),
         SIGN_UP_TIME("报名时间", "sign_up_time"),
-        NOT_SIGN_IN_OUT_NUM("未签到/签退次数", "not_sign_in_out_num"),
         ACTIVITY_ORGANISERS("活动主办方", "activity_organisers"),
         BLACKLIST_ADD_TIME("黑名单进入时间", "blacklist_add_time"),
         BLACKLIST_REMOVE_TIME("黑名单移出时间", "blacklist_remove_time");
@@ -126,9 +124,6 @@ public class SystemNoticeTemplate {
             String activityOrganisers = Optional.ofNullable(noticeTemplateField.getActivityOrganisers()).orElse("");
             String blacklistAddTime = Optional.ofNullable(noticeTemplateField.getBlacklistAddTime()).orElse("");
             String blacklistRemoveTime = Optional.ofNullable(noticeTemplateField.getBlacklistRemoveTime()).orElse("");
-            Integer notSignInOutNum = Optional.ofNullable(noticeTemplateField.getNotSignInOutNum()).orElse(0);
-//            Boolean enableAutoRemove = Optional.ofNullable(noticeTemplateField.getEnableAutoRemove()).orElse(false);
-//            Integer autoRemoveHours = Optional.ofNullable(noticeTemplateField.getAutoRemoveHours()).orElse(null);
             StringBuilder signUpTime = new StringBuilder();
             List<NoticeTemplateFieldDTO.SignUpNoticeTemplateFieldDTO> signUps = noticeTemplateField.getSignUps();
             if (CollectionUtils.isNotEmpty(signUps)) {
@@ -165,9 +160,6 @@ public class SystemNoticeTemplate {
                         break;
                     case ACTIVITY_ORGANISERS:
                         value = activityOrganisers;
-                        break;
-                    case NOT_SIGN_IN_OUT_NUM:
-                        value = notSignInOutNum.toString();
                         break;
                     case BLACKLIST_ADD_TIME:
                         value = blacklistAddTime;

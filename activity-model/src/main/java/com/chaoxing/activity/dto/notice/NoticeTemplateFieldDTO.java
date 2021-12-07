@@ -28,8 +28,6 @@ public class NoticeTemplateFieldDTO {
     // 黑名单所需字段
     /** 活动主办方 */
     private String activityOrganisers;
-    /** 未签到/签退次数 */
-    private Integer notSignInOutNum;
     /** 黑名单添加时间 */
     private String blacklistAddTime;
     /** 黑名单移除时间 */

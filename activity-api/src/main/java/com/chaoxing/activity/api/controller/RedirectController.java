@@ -135,6 +135,21 @@ public class RedirectController {
         return "redirect:" + activity.getPreviewUrl();
     }
 
+    /**重定向到活动门户修改主页
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-01 15:39:34
+    * @param fid
+    * @param formId
+    * @param formUserId
+    * @return java.lang.String
+    */
+    @RequestMapping("activity-portal/edit/from/wfw-form")
+    public String redirectToActivityPortalEdit(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        return "redirect:" + activity.getEditUrl();
+    }
+
     /**重定向到活动管理主页
     * @Description 
     * @author huxiaolong
