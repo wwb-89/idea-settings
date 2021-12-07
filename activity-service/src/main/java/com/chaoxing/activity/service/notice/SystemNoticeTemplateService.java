@@ -75,6 +75,7 @@ public class SystemNoticeTemplateService {
 		String activityName = activity.getName();
 		String address = activity.getActivityFullAddress();
 		String activityTime = activity.getStartTime().format(CommonConstant.NOTICE_ACTIVITY_TIME_FORMATTER) + "~" + activity.getEndTime().format(CommonConstant.NOTICE_ACTIVITY_TIME_FORMATTER);
+		String activityOrganisers = activity.getOrganisers();
 		Integer signId = activity.getSignId();
 		SignCreateParamDTO signCreateParam = signApiService.getCreateById(signId);
 		List<SignUpCreateParamDTO> signUps = Optional.ofNullable(signCreateParam).map(SignCreateParamDTO::getSignUps).orElse(Lists.newArrayList());
@@ -95,6 +96,7 @@ public class SystemNoticeTemplateService {
 				.activityTime(activityTime)
 				.previewUrl(activity.getPreviewUrl())
 				.signUps(signUpNoticeTemplateFields)
+				.activityOrganisers(activityOrganisers)
 				.build();
 	}
 

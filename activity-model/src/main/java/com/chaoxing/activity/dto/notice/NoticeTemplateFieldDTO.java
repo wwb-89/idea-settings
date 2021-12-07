@@ -25,6 +25,18 @@ public class NoticeTemplateFieldDTO {
     private String address;
     private String activityTime;
     private String previewUrl;
+    // 黑名单所需字段
+    /** 活动主办方 */
+    private String activityOrganisers;
+    /** 黑名单添加时间 */
+    private String blacklistAddTime;
+    /** 黑名单移除时间 */
+    private String blacklistRemoveTime;
+    /** 黑名单规则是否自动移除 */
+    private Boolean enableAutoRemove;
+    /** 黑名单自动移除时间 */
+    private Integer autoRemoveHours;
+    // 黑名单所需字段
     private List<SignUpNoticeTemplateFieldDTO> signUps;
 
     @Data

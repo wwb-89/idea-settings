@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.blacklist;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.blacklist.BlacklistDTO;
@@ -15,6 +16,7 @@ import com.chaoxing.activity.model.BlacklistRule;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoRemoveQueue;
+import com.chaoxing.activity.service.queue.notice.handler.BlacklistUserNoticeHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,8 @@ public class BlacklistHandleService {
     private ActivityQueryService activityQueryService;
     @Resource
     private SignApiService signApiService;
+    @Resource
+    private BlacklistUserNoticeHandleService blacklistUserNoticeHandleService;
 
     /**新增或更新黑名单规则
      * @Description 
@@ -103,6 +107,8 @@ public class BlacklistHandleService {
         removeBlacklist(marketId, uids);
         List<Blacklist> blacklists = BlacklistDTO.buildBlacklist(blacklistDtos);
         blacklistMapper.batchAdd(blacklists);
+        // 添加手动添加黑名单通知
+        blacklistUserNoticeHandleService.handleManualAddBlacklistNotice(uids, marketId);
     }
 
     /**手动移除黑名单
@@ -117,11 +123,17 @@ public class BlacklistHandleService {
     @Transactional(rollbackFor = Exception.class)
     public void manualRemoveBlacklist(Integer marketId, Integer uid, OperateUserDTO operateUserDto) {
         blacklistValidationService.manageAble(marketId, operateUserDto);
+        List<Blacklist> blacklists = blacklistMapper.selectList(new LambdaQueryWrapper<Blacklist>()
+                .eq(Blacklist::getMarketId, marketId)
+                .eq(Blacklist::getUid, uid));
+
         blacklistMapper.delete(new LambdaUpdateWrapper<Blacklist>()
                 .eq(Blacklist::getMarketId, marketId)
-                .eq(Blacklist::getUid, uid)
-        );
+                .eq(Blacklist::getUid, uid));
+        // 添加手动移除黑名单通知
+        blacklistUserNoticeHandleService.handleBlacklistRemoveNotice(marketId, blacklists);
     }
+
 
     /**手动批量移除黑名单
      * @Description 
@@ -135,10 +147,18 @@ public class BlacklistHandleService {
     @Transactional(rollbackFor = Exception.class)
     public void manualBatchRemoveBlacklist(Integer marketId, List<Integer> uids, OperateUserDTO operateUserDto) {
         blacklistValidationService.manageAble(marketId, operateUserDto);
+        if (CollectionUtils.isEmpty(uids)) {
+            return;
+        }
+        List<Blacklist> blacklists = blacklistMapper.selectList(new LambdaQueryWrapper<Blacklist>()
+                .eq(Blacklist::getMarketId, marketId)
+                .in(Blacklist::getUid, uids));
+
         blacklistMapper.delete(new LambdaUpdateWrapper<Blacklist>()
                 .eq(Blacklist::getMarketId, marketId)
-                .in(Blacklist::getUid, uids)
-        );
+                .in(Blacklist::getUid, uids));
+        // 添加手动移除黑名单通知
+        blacklistUserNoticeHandleService.handleBlacklistRemoveNotice(marketId, blacklists);
         for (Integer uid : uids) {
             blacklistAutoRemoveQueueService.remove(marketId, uid);
         }
