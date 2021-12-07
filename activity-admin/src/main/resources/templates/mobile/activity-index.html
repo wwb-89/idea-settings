@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/static/mobile/assets/css/cssreset.css" th:href="@{/mobile/assets/css/cssreset.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/administrators.css" th:href="@{/mobile/assets/css/administrators.css}" />
-    <style type="text/css">
+    <style>
         [v-cloak] {
             display: none;
         }
@@ -23,7 +23,7 @@
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList" v-show="menuShow('sign_up')">
             <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
             <p class="flTxt">{{(signActivityManageIndex.signUpKeyword || '报名') + (signActivityManageIndex.signUpIds.length > 1 ? '项目' : '名单')}}</p>
-            <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已报名{{signUpKeyword}} {{signActivityManageIndex.signUpNum}}</p>
+            <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已{{signActivityManageIndex.signUpKeyword || '报名'}} {{signActivityManageIndex.signUpNum}}</p>
             <i :class="{'icon-arrow-r': true, 'marginAuto': (signActivityManageIndex.signUpIds.length > 1)}"></i>
         </div>
         <div class="item" @click="signInManage" v-show="menuShow('sign_in')">
@@ -67,7 +67,7 @@
             }
         });
         function ready() {
-            activityVue = new Vue({
+            vm = new Vue({
                 el: "#activity-vue",
                 data: {
                     activity: [[${activity}]],
