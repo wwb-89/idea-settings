@@ -16,6 +16,13 @@ public class MobileUtils {
 
     }
 
+    /**手机号脱敏
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-07 11:08:05
+     * @param mobile
+     * @return java.lang.String
+    */
     public static String desensitization(String mobile) {
         if (StringUtils.isNotBlank(mobile)) {
             return mobile.replaceAll("^(\\d{3})(\\d{0,4})(\\d{0,})", "$1****$3");
