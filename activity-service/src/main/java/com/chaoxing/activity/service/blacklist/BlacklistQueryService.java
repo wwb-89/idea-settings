@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.BlacklistRecord;
 import com.chaoxing.activity.model.BlacklistRule;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -158,4 +159,44 @@ public class BlacklistQueryService {
         );
     }
 
+    /**查询活动已处理的黑名单用户列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-06 18:15:37
+     * @param marketId
+     * @param activityId
+     * @return
+     */
+    public List<Integer> listHandledActivityBlacklistUid(Integer marketId, Integer activityId) {
+        List<BlacklistRecord> handledActivityBlacklistRecords = blacklistRecordMapper.selectList(new LambdaQueryWrapper<BlacklistRecord>()
+                .eq(BlacklistRecord::getMarketId, marketId)
+                .eq(BlacklistRecord::getActivityId, activityId)
+                .eq(BlacklistRecord::getHandled, Boolean.TRUE));
+        return handledActivityBlacklistRecords.stream().map(BlacklistRecord::getUid).distinct().collect(Collectors.toList());
+    }
+
+    /**查询需要添加到黑名单通知队列的自动移入黑名单的用户列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-06 18:23:47
+     * @param marketId
+     * @param activityId
+     * @return
+     */
+    public List<Integer> listNeedNoticeAutoAddBlacklistUids(Integer marketId, Integer activityId) {
+        // 查询市场下的黑名单列表
+        List<BlacklistRecord> handledActivityBlacklistRecords = blacklistRecordMapper.selectList(new LambdaQueryWrapper<BlacklistRecord>()
+                .eq(BlacklistRecord::getMarketId, marketId)
+                .eq(BlacklistRecord::getActivityId, activityId)
+                .eq(BlacklistRecord::getHandled, Boolean.TRUE));
+        List<Integer> blacklistUids = handledActivityBlacklistRecords.stream().map(BlacklistRecord::getUid).distinct().collect(Collectors.toList());
+        // 查询黑名单记录表中已处理且市场id为marketId，活动id为activityId的用户记录
+        List<Integer> handledBlacklistRecordUids = listHandledActivityBlacklistUid(marketId, activityId);
+        // 取两者的交集进行黑名单自动加入通知
+        if (CollectionUtils.isEmpty(blacklistUids) || CollectionUtils.isEmpty(handledBlacklistRecordUids)) {
+            return Lists.newArrayList();
+        }
+        blacklistUids.retainAll(handledBlacklistRecordUids);
+        return blacklistUids;
+    }
 }

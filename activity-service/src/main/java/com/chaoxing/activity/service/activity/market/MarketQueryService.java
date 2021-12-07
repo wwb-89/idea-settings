@@ -6,6 +6,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,8 @@ public class MarketQueryService {
 	private ComponentQueryService componentQueryService;
 	@Resource
 	private TemplateComponentService templateComponentService;
+	@Resource
+	private PassportApiService passportApiService;
 	
 	/**根据id查询
 	 * @Description 
@@ -196,5 +199,20 @@ public class MarketQueryService {
 			return Lists.newArrayList();
 		}
 		return templateComponentService.listCustomTemplateComponent(marketTemplate.getId());
+	}
+	
+	/**获取市场所属机构名称
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-07 11:57:06
+	 * @param marketId
+	 * @return 
+	 */
+	public String getMarketBelongOrgName(Integer marketId) {
+		Market market = getById(marketId);
+		if (market == null) {
+			return "";
+		}
+		return passportApiService.getOrgName(market.getFid());
 	}
 }
