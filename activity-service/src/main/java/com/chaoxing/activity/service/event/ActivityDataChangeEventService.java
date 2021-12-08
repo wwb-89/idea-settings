@@ -272,8 +272,8 @@ public class ActivityDataChangeEventService {
 		if (oldActivity == null || activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0 || activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0) {
 			// 新增活动或者时间发生了改变
 			Integer activityId = activity.getId();
-			Integer marketId = activity.getMarketId();
-			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+			LocalDateTime now = LocalDateTime.now();
+			Long timestamp = DateUtils.date2Timestamp(now);
 			if (oldActivity == null || activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0) {
 				ActivityAboutStartEventOrigin activityAboutStartEventOrigin = ActivityAboutStartEventOrigin.builder()
 						.activityId(activityId)
@@ -290,18 +290,22 @@ public class ActivityDataChangeEventService {
 						.build();
 				activityAboutEndEventQueue.push(activityAboutEndEventOrigin);
 			}
-			ActivityStartTimeReachEventOrigin activityStartTimeReachEventOrigin = ActivityStartTimeReachEventOrigin.builder()
-					.activityId(activityId)
-					.startTime(activity.getStartTime())
-					.timestamp(timestamp)
-					.build();
-			activityStartTimeReachEventQueue.push(activityStartTimeReachEventOrigin);
-			ActivityEndTimeReachEventOrigin activityEndTimeReachEventOrigin = ActivityEndTimeReachEventOrigin.builder()
-					.activityId(activityId)
-					.endTime(activity.getEndTime())
-					.timestamp(timestamp)
-					.build();
-			activityEndTimeReachEventQueue.push(activityEndTimeReachEventOrigin);
+			if (activity.getStartTime().isAfter(now)) {
+				ActivityStartTimeReachEventOrigin activityStartTimeReachEventOrigin = ActivityStartTimeReachEventOrigin.builder()
+						.activityId(activityId)
+						.startTime(activity.getStartTime())
+						.timestamp(timestamp)
+						.build();
+				activityStartTimeReachEventQueue.push(activityStartTimeReachEventOrigin);
+			}
+			if (activity.getEndTime().isAfter(now)) {
+				ActivityEndTimeReachEventOrigin activityEndTimeReachEventOrigin = ActivityEndTimeReachEventOrigin.builder()
+						.activityId(activityId)
+						.endTime(activity.getEndTime())
+						.timestamp(timestamp)
+						.build();
+				activityEndTimeReachEventQueue.push(activityEndTimeReachEventOrigin);
+			}
 		}
 	}
 
