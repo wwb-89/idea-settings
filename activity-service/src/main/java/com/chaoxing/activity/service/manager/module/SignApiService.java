@@ -69,7 +69,9 @@ public class SignApiService {
 	/** 统计报名签到在活动管理首页需要的信息 */
 	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = DomainConstant.SIGN_API + "/stat/sign/%d/activity-index";
 	/** 统计报名签到报名成功数量url */
-	private static final String STAT_SIGNED_UP_NUM = DomainConstant.SIGN_API + "/stat/sign/signed-up-num";
+	private static final String STAT_SIGNED_UP_NUM = DomainConstant.SIGN_API + "/stat/signs/signed-up-num";
+	/** 统计报名签到签到成功数量url */
+	private static final String STAT_SIGNED_IN_NUM = DomainConstant.SIGN_API + "/stat/signs/signed-in-num";
 	/** 用户已报名的报名签到列表url */
 	private static final String USER_SIGNED_UP_URL = DomainConstant.SIGN_API + "/stat/sign/user-signed-up/%d";
 	/** 报名签到参与范围描述yrl */
@@ -295,6 +297,27 @@ public class SignApiService {
 			return Optional.ofNullable(signedUpNum).orElse(0);
 		}
 		return signedUpNum;
+	}
+
+	/**统计签到人数
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-08 14:40:36
+	 * @param signIds
+	 * @return
+	 */
+	public Integer statSignedInNum(List<Integer> signIds) {
+		Integer signedInNum = 0;
+		if (CollectionUtils.isNotEmpty(signIds)) {
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signIds), httpHeaders);
+			String result = restTemplate.postForObject(STAT_SIGNED_IN_NUM, httpEntity, String.class);
+			JSONObject jsonObject = JSON.parseObject(result);
+			signedInNum = resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {});
+			return Optional.ofNullable(signedInNum).orElse(0);
+		}
+		return signedInNum;
 	}
 
 	/**分页查询用户报名的报名签到

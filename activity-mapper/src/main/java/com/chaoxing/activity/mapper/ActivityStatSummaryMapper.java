@@ -42,4 +42,17 @@ public interface ActivityStatSummaryMapper extends BaseMapper<ActivityStatSummar
      * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO>
      */
     List<ActivityStatSummaryDTO> listActivityStatSummariesByIds(@Param("activityIds") List<Integer> activityIds);
+
+    /**分页查询活动报名排行榜
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-12-08 15:59:24
+     * @param page
+     * @param marketId
+     * @param fid
+     * @return
+     */
+    Page<ActivityStatSummaryDTO> activitySignedUpRankPage(@Param("page") Page<ActivityStatSummaryDTO> page, 
+                                                          @Param("marketId") Integer marketId,
+                                                          @Param("fid") Integer fid);
 }

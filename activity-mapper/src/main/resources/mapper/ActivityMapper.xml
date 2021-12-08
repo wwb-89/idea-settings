@@ -1121,4 +1121,21 @@
             </choose>
     </select>
 
+    <select id="listActivityIdsByMarketIdOrFid" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM
+            t_activity t
+        WHERE
+        <choose>
+            <when test="marketId != null">
+                t.market_id = #{marketId}
+            </when>
+            <otherwise>
+                t.create_fid = #{fid}
+            </otherwise>
+        </choose>
+        AND t.status != 0
+    </select>
+
 </mapper>

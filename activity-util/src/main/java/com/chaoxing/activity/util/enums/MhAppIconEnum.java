@@ -108,5 +108,28 @@ public enum MhAppIconEnum {
             this.value = value;
         }
     }
+
+
+    /** 数据中心图标 */
+    @Getter
+    public enum FOUR {
+
+        /** 活动数 */
+        TOTAL_ACTIVITY_NUM("total_activity_num", "78b61dd0f9bbe6f83400aac481c8be59"),
+        /** 评论数 */
+        TOTAL_RATING_NUM("total_rating_num", "1d9c8993a861628dac2cee769cd83e8c"),
+        /** 报名数 */
+        TOTAL_SIGNED_UP_NUM("total_signed_up_num", "11957058304b8870197f39997ef995ad"),
+        /** 签到数 */
+        TOTAL_SIGNED_IN_NUM("total_signed_in_num", "29947113dcedfdfc0aa8adb08decfac9");
+
+        private final String name;
+        private final String value;
+
+        FOUR(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+    }
 }
 

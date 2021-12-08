@@ -1480,4 +1480,21 @@ public class ActivityQueryService {
 		return page.getRecords();
 	}
 
+
+	/**查询机构或市场下活动列表
+	 *
+	 * marketId 不为空，优先查询市场下的活动
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-07 17:13:48
+	 * @param marketId
+	 * @param fid
+	 * @return
+	 */
+	public List<Activity> listActivityIdsByMarketIdOrFid(Integer marketId, Integer fid) {
+		if (marketId == null && fid == null) {
+			return Lists.newArrayList();
+		}
+		return activityMapper.listActivityIdsByMarketIdOrFid(marketId, fid);
+	}
 }

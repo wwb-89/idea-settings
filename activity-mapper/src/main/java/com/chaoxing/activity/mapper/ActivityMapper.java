@@ -328,4 +328,15 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageOrgParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
+	/**统计机构或市场下活动数量
+	 *
+	 * marketId 不为空，优先统计市场下的活动数量
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-07 17:17:46
+	 * @param marketId
+	 * @param fid
+	 * @return
+	 */
+    List<Activity> listActivityIdsByMarketIdOrFid(@Param("marketId") Integer marketId, @Param("fid") Integer fid);
 }

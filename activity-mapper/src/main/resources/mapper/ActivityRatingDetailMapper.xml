@@ -74,6 +74,22 @@
         ORDER BY
             t.create_time DESC
     </select>
+    <select id="countActivityRatingNum" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM t_activity_rating_detail t
+        INNER JOIN t_activity t1 ON t1.id = t.activity_id
+            AND t1.status != 0
+            <choose>
+                <when test="marketId != null">
+                    AND t1.market_id = #{marketId}
+                </when>
+                <otherwise>
+                    AND t1.create_fid = #{fid}
+                </otherwise>
+            </choose>
+        WHERE t.is_deleted = 0
+    </select>
 
     <update id="batchUpAuditStatus">
         UPDATE `t_activity_rating_detail`
