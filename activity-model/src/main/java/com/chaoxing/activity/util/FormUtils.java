@@ -259,12 +259,12 @@ public class FormUtils {
 		String startTimeStr = activityTimes.get(0);
 		String endTimeStr = activityTimes.get(1);
 		if (StringUtils.isBlank(startTimeStr)) {
-			startTime = LocalDateTime.now();
+			startTime = null;
 		} else {
 			startTime = getTime(startTimeStr);
 		}
 		if (StringUtils.isBlank(endTimeStr)) {
-			endTime = startTime.plusMonths(1);
+			endTime = null;
 		} else {
 			endTime = getTime(endTimeStr);
 		}
