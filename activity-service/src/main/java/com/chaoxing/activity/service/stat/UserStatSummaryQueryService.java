@@ -330,15 +330,13 @@ public class UserStatSummaryQueryService {
 	 * @author huxiaolong
 	 * @Date 2021-10-22 14:36:25
 	 * @param page
-	 * @param flag
+	 * @param marketId
 	 * @param fid
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserSummaryStatDTO>
 	 */
-	public Page<UserSummaryStatDTO> pageUserSummaryStat(Page<UserSummaryStatDTO> page, String flag, Integer fid) {
-		Integer marketId = null;
-		if (StringUtils.isNotBlank(flag)) {
-			// 若flag不为空且市场id不存在，则查询结果为空
-			marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+	public Page<UserSummaryStatDTO> pageUserSummaryStat(Page<UserSummaryStatDTO> page, Integer marketId, Integer fid) {
+		if (marketId == null && fid == null) {
+			return page;
 		}
 		return userStatSummaryMapper.pageUserSummaryStat(page, marketId, fid);
 	}

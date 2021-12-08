@@ -9,9 +9,11 @@ import com.chaoxing.activity.api.util.MhPreParamsUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
+import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.mh.MhMarketDataCenterDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
+import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.dto.stat.UserSummaryStatDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
@@ -22,6 +24,9 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -30,6 +35,7 @@ import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -78,6 +81,12 @@ public class ActivityMhDataCenterApiController {
     private PassportApiService passportApiService;
     @Resource
     private UserStatSummaryQueryService userStatSummaryQueryService;
+    @Resource
+    private ActivityStatSummaryQueryService activityStatSummaryQueryService;
+    @Resource
+    private ActivityRatingQueryService activityRatingQueryService;
+    @Resource
+    private CloudApiService cloudApiService;
 
 
     /**获取机构下市场的门户数据源接口地址
@@ -372,7 +381,10 @@ public class ActivityMhDataCenterApiController {
         return RestRespDTO.success(jsonObject);
     }
 
-    /**排行榜
+    /**查询市场下或wfw机构下积分排行榜
+     *
+     * wfwfid必传参数，如果marketId为空且flag不为空，则根据flag查询对应的marketId
+     * 若marketId依旧不存在，查询wfwfid下的用户活动计分排行榜
      * @Description
      * @author huxiaolong
      * @Date 2021-10-22 14:20:58
@@ -380,21 +392,8 @@ public class ActivityMhDataCenterApiController {
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
     @RequestMapping("user/integral/ranking-list")
-    public RestRespDTO rankingList(@RequestBody String data) {
-        JSONObject params = JSON.parseObject(data);
-        Integer wfwfid = params.getInteger("wfwfid");
-        Integer uid = params.getInteger("uid");
-        String sw = params.getString("sw");
-        Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-        Integer pageNum = params.getInteger("page");
-        pageNum = Optional.ofNullable(pageNum).orElse(1);
-        Integer pageSize = params.getInteger("pageSize");
-        pageSize = Optional.ofNullable(pageSize).orElse(10);
-        Page<UserSummaryStatDTO> page = new Page(pageNum, pageSize);
-        String preParams = params.getString("preParams");
-        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
-        String flag = urlParams.getString("flag");
-        page = userStatSummaryQueryService.pageUserSummaryStat(page, flag, wfwfid);
+    public RestRespDTO integralRankingList(@RequestBody String data) {
+        Page<UserSummaryStatDTO> page = rankingList(data, "user_total_integral_rank");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("curPage", page.getCurrent());
         jsonObject.put("totalPages", page.getPages());
@@ -402,6 +401,90 @@ public class ActivityMhDataCenterApiController {
         List<UserSummaryStatDTO> records = page.getRecords();
         JSONArray jsonArray = packageUserStatSummary(records);
         jsonObject.put("results", jsonArray);
+        return RestRespDTO.success(jsonObject);
+    }
+
+    /**查询市场下或wfw机构下活动报名人数的排行榜
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-08 15:34:06
+     * @param data
+     * @return
+     */
+    @RequestMapping("activity/signed-up-num/ranking-list")
+    public RestRespDTO activitySignedUpNumRankingList(@RequestBody String data) {
+        Page<ActivityStatSummaryDTO> page = rankingList(data, "activity_signed_up_num_rank");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("curPage", page.getCurrent());
+        jsonObject.put("totalPages", page.getPages());
+        jsonObject.put("totalRecords", page.getTotal());
+        List<ActivityStatSummaryDTO> records = page.getRecords();
+        JSONArray jsonArray = packageActivityStatSummary(records);
+        jsonObject.put("results", jsonArray);
+        return RestRespDTO.success(jsonObject);
+    }
+
+    private Page rankingList(String data, String rankListType) {
+        JSONObject params = JSON.parseObject(data);
+        Integer wfwfid = params.getInteger("wfwfid");
+        Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
+        Integer pageNum = params.getInteger("page");
+        pageNum = Optional.ofNullable(pageNum).orElse(1);
+        Integer pageSize = params.getInteger("pageSize");
+        pageSize = Optional.ofNullable(pageSize).orElse(10);
+        Page page = new Page(pageNum, pageSize);
+        String preParams = params.getString("preParams");
+        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+        Integer marketId = urlParams.getInteger("marketId");
+        String flag = urlParams.getString("flag");
+        if (marketId == null && StringUtils.isNotBlank(flag)) {
+            // 若flag不为空且市场id不存在，则查询结果为空
+            marketId = marketQueryService.getMarketIdByFlag(wfwfid, flag);
+        }
+        if (Objects.equals(rankListType, "user_total_integral_rank")) {
+            return userStatSummaryQueryService.pageUserSummaryStat(page, marketId, wfwfid);
+        } else if (Objects.equals(rankListType, "activity_signed_up_num_rank")) {
+            return activityStatSummaryQueryService.activitySignedUpRankPage(page, marketId, wfwfid);
+        }
+        return page;
+    }
+
+    /**活动市场下活动数据统计
+     *
+     * 活动数统计
+     * 报名数统计
+     * 签到数统计
+     * 评论数统计
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-07 16:44:17
+     * @param data
+     * @return
+     */
+    @RequestMapping("market/{marketId}/stat")
+    public RestRespDTO marketActivityDataStat(@RequestBody String data, @PathVariable Integer marketId) {
+        JSONObject params = JSON.parseObject(data);
+        Integer wfwfid = params.getInteger("wfwfid");
+        Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
+        List<Activity> activities = activityQueryService.listActivityIdsByMarketIdOrFid(marketId, wfwfid);
+        // 活动数统计
+        String activityNum = Optional.of(activities.size()).map(String::valueOf).orElse("0");
+        // 评论数统计
+        Integer countRatingNum = activityRatingQueryService.countActivityRatingNum(marketId, wfwfid);
+        String ratingNum = Optional.ofNullable(countRatingNum).map(String::valueOf).orElse("0");
+        List<Integer> signIds = activities.stream().map(Activity::getSignId).filter(Objects::nonNull).collect(Collectors.toList());
+        // 签到统计
+        String signedInNum = Optional.ofNullable(signApiService.statSignedInNum(signIds)).map(String::valueOf).orElse("");
+        // 报名统计
+        String signedUpNum = Optional.ofNullable(signApiService.statSignedUpNum(signIds)).map(String::valueOf).orElse("");
+
+        List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        JSONObject jsonObject = new JSONObject();
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_ACTIVITY_NUM.getValue()), "活动数", activityNum , mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_RATING_NUM.getValue()), "评论数", ratingNum, mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_IN_NUM.getValue()), "签到数", signedInNum, mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_UP_NUM.getValue()), "报名数", signedUpNum, mainFields);
+        jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
 
@@ -422,6 +505,27 @@ public class ActivityMhDataCenterApiController {
             int fieldFlag = 0;
             fields.add(buildField("姓名", item.getRealName(), fieldFlag));
             fields.add(buildField("积分", item.getIntegralSum(), fieldFlag));
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
+    }
+
+    private JSONArray packageActivityStatSummary(List<ActivityStatSummaryDTO> records) {
+        JSONArray jsonArray = new JSONArray();
+        if (CollectionUtils.isEmpty(records)) {
+            return jsonArray;
+        }
+        for (ActivityStatSummaryDTO item : records) {
+            // 活动
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", item.getActivityId());
+            jsonObject.put("type", 3);
+            jsonObject.put("orsUrl", "");
+            JSONArray fields = new JSONArray();
+            jsonObject.put("fields", fields);
+            int fieldFlag = 0;
+            fields.add(buildField("活动名称", item.getActivityName(), fieldFlag));
+            fields.add(buildField("报名人数", item.getSignedUpNum(), fieldFlag));
             jsonArray.add(jsonObject);
         }
         return jsonArray;
@@ -472,4 +576,32 @@ public class ActivityMhDataCenterApiController {
         return field;
     }
 
+    private void buildField(String iconUrl,
+                            String key,
+                            String value,
+                            List<MhGeneralAppResultDataDTO> mainFields) {
+        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
+        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
+        int flag = 0;
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("图标")
+                .value(iconUrl)
+                .type("3")
+                .flag(String.valueOf(flag))
+                .build());
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("标题")
+                .value(key)
+                .type("3")
+                .flag(String.valueOf(++flag))
+                .build());
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("内容")
+                .value(value)
+                .type("3")
+                .flag(String.valueOf(++flag))
+                .build());
+        item.setFields(fields);
+        mainFields.add(item);
+    }
 }

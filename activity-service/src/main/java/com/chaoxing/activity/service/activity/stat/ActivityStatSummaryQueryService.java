@@ -100,6 +100,22 @@ public class ActivityStatSummaryQueryService {
         return page;
     }
 
+    /**分页查询活动报名排行榜
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-12-08 15:59:11
+     * @param page
+     * @param marketId
+     * @param fid
+     * @return
+     */
+    public Page<ActivityStatSummaryDTO> activitySignedUpRankPage(Page<ActivityStatSummaryDTO> page, Integer marketId, Integer fid) {
+        if (marketId == null && fid == null) {
+            return page;
+        }
+        return activityStatSummaryMapper.activitySignedUpRankPage(page, marketId, fid);
+    }
+
     /**对page里面的数据进行封装和转换
     * @Description
     * @author huxiaolong

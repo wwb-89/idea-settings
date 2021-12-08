@@ -167,4 +167,22 @@ public class ActivityRatingQueryService {
 				.in(ActivityRatingDetail::getId, ratingDetailIds)
 		);
     }
+
+
+	/**统计机构或市场下活动评价数量
+	 *
+	 * marketId 不为空，优先统计市场下的活动评价数量
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-07 17:10:34
+	 * @param marketId
+	 * @param fid
+	 * @return java.lang.Integer
+	 */
+	public Integer countActivityRatingNum(Integer marketId, Integer fid) {
+		if (marketId == null && fid == null) {
+			return 0;
+		}
+		return activityRatingDetailMapper.countActivityRatingNum(marketId, fid);
+	}
 }
