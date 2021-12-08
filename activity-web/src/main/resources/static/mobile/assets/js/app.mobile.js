@@ -187,7 +187,7 @@
      */
     app.prototype.isChaoxingApp = function(){
         var ua = navigator.userAgent.toLowerCase();
-        if (ua.match(/ChaoXingStudy/i) == "chaoxingstudy") {
+        if (ua.match(/ChaoXingStudy/i) == "chaoxingstudy" && !activityApp.isEmbedded()) {
             return true;
         }
         return false;
