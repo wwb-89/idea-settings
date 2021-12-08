@@ -39,6 +39,12 @@ public class ActivityExternalDTO {
 	/** 结束日期 */
 	@JSONField(serializeUsing = LocalDateSerializer.class, deserializeUsing = LocalDateDeserializer.class)
 	private LocalDate endDate;
+	/** 开始时间; column: start_time*/
+	@JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+	private LocalDateTime startTime;
+	/** 结束时间; column: end_time*/
+	@JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+	private LocalDateTime endTime;
 	/** 封面云盘id */
 	@JSONField(serialize = false)
 	private String coverCloudId;
