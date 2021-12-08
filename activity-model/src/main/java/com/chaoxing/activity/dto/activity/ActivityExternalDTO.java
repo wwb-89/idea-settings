@@ -50,6 +50,8 @@ public class ActivityExternalDTO {
 	private String coverCloudId;
 	/** 封面地址 */
 	private String coverUrl;
+	/** 主办方 */
+	private String organisers;
 	/** 活动形式 */
 	private String activityType;
 	/** 活动地址 */
