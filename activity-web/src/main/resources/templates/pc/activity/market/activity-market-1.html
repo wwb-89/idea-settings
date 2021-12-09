@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/activity-market.css" th:href="@{/pc/assets/css/activity-market.css}">
-	<style type="text/css">
+	<style>
         [v-cloak] {
             display: none;
         }
@@ -49,15 +49,6 @@
 				</div>
 				<div class="clear"></div>
 			</div>
-			<!--<div class="item">
-				<label>时间</label>
-				<div class="option-list">
-					<ul>
-						<li :class="{'active': item.selected}" v-for="(item, index) of activityQueryDates" @click="changeActivityTimeSelected(index)">{{item.name}}</li>
-					</ul>
-				</div>
-				<div class="clear"></div>
-			</div>-->
 			<div class="item" v-show="showFilter('region') && regions.length > 0">
 				<label>地区</label>
 				<div class="option-list">
@@ -102,7 +93,7 @@
 		<div class="noContent" v-show="total < 1 && loaded">
 			<p>无结果</p>
 		</div>
-		<el-pagination style="text-align: center;" v-if="signUpAble" v-show="pages > 1 && loaded" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
+		<el-pagination style="text-align: center;" v-if="!signUpAble" v-show="pages > 1 && loaded" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
 	</div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -182,13 +173,13 @@
 				if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {
 					var exist = false;
 					var index = 0;
-					$($this.regions).each(function (i) {
-						if (this.manageFid == $this.topFid) {
-							exist = true;
-							index = i;
-							return false;
-						}
-					});
+                    $($this.regions).each(function (i) {
+                        if (this.manageFid == $this.topFid && $this.topFid != 2120) {
+                            exist = true;
+                            index = i;
+                            return false;
+                        }
+                    });
 					if (exist) {
 						$this.changeActivityRegionsSelected(index);
 						return;
