@@ -167,5 +167,16 @@ public class CloudApiService {
 	public String buildImageUrl(String cloudId) {
 		return IMAGE_URL_SUFFIX + cloudId;
 	}
+	
+	/**构建用户头像地址
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-09 14:07:17
+	 * @param uid
+	 * @return 
+	 */
+	public String buildUserAvatar(Integer uid) {
+		return DomainConstant.PHOTO + "/p/" + uid +"_80";
+	}
 
 }

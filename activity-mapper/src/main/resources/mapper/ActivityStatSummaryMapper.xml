@@ -126,6 +126,7 @@
         SELECT
             t.activity_id as activityId,
             t.signed_up_num as signedUpNum,
+            t1.cover_url as coverUrl,
             t1.name as activityName
         FROM t_activity_stat_summary t
         INNER JOIN t_activity t1 ON t1.id = t.activity_id

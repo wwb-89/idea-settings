@@ -88,6 +88,11 @@ public class ActivityMhDataCenterApiController {
     @Resource
     private CloudApiService cloudApiService;
 
+    /** 用户活动总积分排行 */
+    private static final String USER_TOTAL_INTEGRAL_RANK = "user_total_integral_rank";
+    /** 活动报名数排行 */
+    private static final String ACTIVITY_SIGNED_UP_NUM_RANK = "activity_signed_up_num_rank";
+
 
     /**获取机构下市场的门户数据源接口地址
     * @Description
@@ -393,16 +398,28 @@ public class ActivityMhDataCenterApiController {
      */
     @RequestMapping("user/integral/ranking-list")
     public RestRespDTO integralRankingList(@RequestBody String data) {
-        Page<UserSummaryStatDTO> page = rankingList(data, "user_total_integral_rank");
+        Page<UserSummaryStatDTO> page = rankingList(data, USER_TOTAL_INTEGRAL_RANK);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("curPage", page.getCurrent());
         jsonObject.put("totalPages", page.getPages());
         jsonObject.put("totalRecords", page.getTotal());
         List<UserSummaryStatDTO> records = page.getRecords();
-        JSONArray jsonArray = packageUserStatSummary(records);
-        jsonObject.put("results", jsonArray);
+        jsonObject.put("results", packageUserStatSummary(records));
         return RestRespDTO.success(jsonObject);
     }
+
+    @RequestMapping("user/integral/ranking-list/v2")
+    public RestRespDTO integralRankingListV2(@RequestBody String data) {
+        Page<UserSummaryStatDTO> page = rankingList(data, USER_TOTAL_INTEGRAL_RANK);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("curPage", page.getCurrent());
+        jsonObject.put("totalPages", page.getPages());
+        jsonObject.put("totalRecords", page.getTotal());
+        List<UserSummaryStatDTO> records = page.getRecords();
+        jsonObject.put("results", packageUserStatSummaryV2(records));
+        return RestRespDTO.success(jsonObject);
+    }
+
 
     /**查询市场下或wfw机构下活动报名人数的排行榜
      * @Description
@@ -413,21 +430,27 @@ public class ActivityMhDataCenterApiController {
      */
     @RequestMapping("activity/signed-up-num/ranking-list")
     public RestRespDTO activitySignedUpNumRankingList(@RequestBody String data) {
-        Page<ActivityStatSummaryDTO> page = rankingList(data, "activity_signed_up_num_rank");
+        Page<ActivityStatSummaryDTO> page = rankingList(data, ACTIVITY_SIGNED_UP_NUM_RANK);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("curPage", page.getCurrent());
         jsonObject.put("totalPages", page.getPages());
         jsonObject.put("totalRecords", page.getTotal());
         List<ActivityStatSummaryDTO> records = page.getRecords();
-        JSONArray jsonArray = packageActivityStatSummary(records);
-        jsonObject.put("results", jsonArray);
+        jsonObject.put("results", packageActivityStatSummary(records));
         return RestRespDTO.success(jsonObject);
     }
 
+    /**分页查询排行榜数据
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-12-09 14:12:31
+     * @param data
+     * @param rankListType 排行榜类型
+     * @return
+     */
     private Page rankingList(String data, String rankListType) {
         JSONObject params = JSON.parseObject(data);
         Integer wfwfid = params.getInteger("wfwfid");
-        Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
         Integer pageNum = params.getInteger("page");
         pageNum = Optional.ofNullable(pageNum).orElse(1);
         Integer pageSize = params.getInteger("pageSize");
@@ -438,12 +461,13 @@ public class ActivityMhDataCenterApiController {
         Integer marketId = urlParams.getInteger("marketId");
         String flag = urlParams.getString("flag");
         if (marketId == null && StringUtils.isNotBlank(flag)) {
+            Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
             // 若flag不为空且市场id不存在，则查询结果为空
             marketId = marketQueryService.getMarketIdByFlag(wfwfid, flag);
         }
-        if (Objects.equals(rankListType, "user_total_integral_rank")) {
+        if (Objects.equals(rankListType, USER_TOTAL_INTEGRAL_RANK)) {
             return userStatSummaryQueryService.pageUserSummaryStat(page, marketId, wfwfid);
-        } else if (Objects.equals(rankListType, "activity_signed_up_num_rank")) {
+        } else if (Objects.equals(rankListType, ACTIVITY_SIGNED_UP_NUM_RANK)) {
             return activityStatSummaryQueryService.activitySignedUpRankPage(page, marketId, wfwfid);
         }
         return page;
@@ -493,7 +517,6 @@ public class ActivityMhDataCenterApiController {
         if (CollectionUtils.isEmpty(records)) {
             return jsonArray;
         }
-
         for (UserSummaryStatDTO item : records) {
             // 活动
             JSONObject jsonObject = new JSONObject();
@@ -510,25 +533,64 @@ public class ActivityMhDataCenterApiController {
         return jsonArray;
     }
 
-    private JSONArray packageActivityStatSummary(List<ActivityStatSummaryDTO> records) {
-        JSONArray jsonArray = new JSONArray();
-        if (CollectionUtils.isEmpty(records)) {
-            return jsonArray;
-        }
-        for (ActivityStatSummaryDTO item : records) {
-            // 活动
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", item.getActivityId());
-            jsonObject.put("type", 3);
-            jsonObject.put("orsUrl", "");
-            JSONArray fields = new JSONArray();
-            jsonObject.put("fields", fields);
-            int fieldFlag = 0;
-            fields.add(buildField("活动名称", item.getActivityName(), fieldFlag));
-            fields.add(buildField("报名人数", item.getSignedUpNum(), fieldFlag));
-            jsonArray.add(jsonObject);
-        }
-        return jsonArray;
+    private List<MhGeneralAppResultDataDTO> packageUserStatSummaryV2(List<UserSummaryStatDTO> records) {
+        List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        records.forEach(v -> {
+            MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
+            List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
+            int flag = 0;
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("头像")
+                    .value(cloudApiService.buildUserAvatar(v.getUid()))
+                    .type("3")
+                    .flag(String.valueOf(flag))
+                    .build());
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("用户名")
+                    .value(v.getRealName())
+                    .type("3")
+                    .flag(String.valueOf(++flag))
+                    .build());
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("积分")
+                    .value(Optional.ofNullable(v.getIntegralSum()).map(String::valueOf).orElse("0"))
+                    .type("3")
+                    .flag(String.valueOf(++flag))
+                    .build());
+            item.setFields(fields);
+            mainFields.add(item);
+        });
+        return mainFields;
+    }
+
+    private List<MhGeneralAppResultDataDTO> packageActivityStatSummary(List<ActivityStatSummaryDTO> records) {
+        List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        records.forEach(v -> {
+            MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
+            List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
+            int flag = 0;
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("封面")
+                    .value(v.getCoverUrl())
+                    .type("3")
+                    .flag(String.valueOf(flag))
+                    .build());
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("活动名称")
+                    .value(v.getActivityName())
+                    .type("3")
+                    .flag(String.valueOf(++flag))
+                    .build());
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("报名数")
+                    .value(Optional.ofNullable(v.getSignedUpNum()).map(String::valueOf).orElse("0"))
+                    .type("3")
+                    .flag(String.valueOf(++flag))
+                    .build());
+            item.setFields(fields);
+            mainFields.add(item);
+        });
+        return mainFields;
     }
 
     /**从signStat报名时间获取报名的进行状态
@@ -603,5 +665,40 @@ public class ActivityMhDataCenterApiController {
                 .build());
         item.setFields(fields);
         mainFields.add(item);
+    }
+
+
+    private MhGeneralAppResultDataDTO buildField(String key, String iconUrl, String url, String type, boolean isAjax, Integer sequence) {
+        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
+        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
+        if (isAjax) {
+            item.setType(7);
+        }
+        item.setOrsUrl(url);
+        int flag = 0;
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("封面")
+                .value(iconUrl)
+                .type("3")
+                .flag(String.valueOf(flag))
+                .build());
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("标题")
+                .orsUrl(isAjax ? url : "")
+                .value(key)
+                .type(isAjax ? "7" : "3")
+                .flag(String.valueOf(++flag))
+                .build());
+        if (StringUtils.isNotBlank(type)) {
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("按钮类型")
+                    .value(type)
+                    .type(isAjax ? "7" : "3")
+                    .flag(String.valueOf(++flag))
+                    .build());
+        }
+        item.setSequence(sequence);
+        item.setFields(fields);
+        return item;
     }
 }
