@@ -2,11 +2,13 @@ package com.chaoxing.activity.service.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.manager.cloud.CloudImageDTO;
 import com.chaoxing.activity.util.Base64Utils;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -177,6 +179,26 @@ public class CloudApiService {
 	 */
 	public String buildUserAvatar(Integer uid) {
 		return DomainConstant.PHOTO + "/p/" + uid +"_80";
+	}
+
+	/**获取图片信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-09 17:30:14
+	 * @param cloudId
+	 * @return com.chaoxing.activity.dto.manager.cloud.CloudImageDTO
+	*/
+	public CloudImageDTO getImage(String cloudId) {
+		CloudImageDTO cloudImage = null;
+		try {
+			String result = getStatus(cloudId);
+			if (StringUtils.isNotBlank(result)) {
+				cloudImage = JSON.parseObject(result, CloudImageDTO.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return cloudImage;
 	}
 
 }

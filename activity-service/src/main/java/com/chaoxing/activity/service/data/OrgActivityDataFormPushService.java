@@ -2,12 +2,14 @@ package com.chaoxing.activity.service.data;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.manager.cloud.CloudImageDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
@@ -50,6 +52,8 @@ public class OrgActivityDataFormPushService {
     private DataPushRecordHandleService dataPushRecordHandleService;
     @Resource
     private DataPushValidationService dataPushValidationService;
+    @Resource
+    private CloudApiService cloudApiService;
 
     /**推送数据
      * @Description 
@@ -156,6 +160,22 @@ public class OrgActivityDataFormPushService {
             if ("activity_name".equals(alias)) {
                 data.add(activity.getName());
                 item.put("val", data);
+                continue;
+            }
+            // 活动封面
+            if ("cover_cloud_id".equals(alias)) {
+                // 根据接口查询封面的数据
+                String coverCloudId = activity.getCoverCloudId();
+                CloudImageDTO cloudImage = cloudApiService.getImage(coverCloudId);
+                if (cloudImage != null) {
+                    JSONObject image = new JSONObject();
+                    image.put("name", cloudImage.getFileName());
+                    image.put("suffix", cloudImage.getSuffix());
+                    image.put("objectId", cloudImage.getObjectId());
+                    image.put("size", cloudImage.getLength());
+                    data.add(image);
+                    item.put("files", data);
+                }
                 continue;
             }
             // 报名参与范围
