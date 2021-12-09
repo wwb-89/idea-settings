@@ -320,6 +320,7 @@ public class ActivityMhAppController {
 	*/
 	@RequestMapping("activity/calendar/zjlib")
 	public RestRespDTO zjlibActivityCalendar(String areaCode, @RequestParam(defaultValue = "0") Integer strict, @RequestBody String data) throws ParseException {
+		log.info("根据参数: {} 获取浙江省图书馆的活动日历", data);
 		return activityCalendar(areaCode, strict, data, "https://share.zjlib.cn");
 	}
 	/**活动日历
