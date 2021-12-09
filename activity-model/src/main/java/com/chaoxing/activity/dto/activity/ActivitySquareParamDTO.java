@@ -1,6 +1,5 @@
 package com.chaoxing.activity.dto.activity;
 
-import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,8 +43,6 @@ public class ActivitySquareParamDTO {
     private String hideFilter;
     /** 为1则查询能报名的活动 */
     private Integer strict = 0;
-    /** 时间排序,默认逆序 */
-    private String timeOrder = OrderTypeEnum.DESC.getValue();
 
     public Integer getRealFid() {
         return Optional.ofNullable(getWfwfid()).orElse(Optional.ofNullable(getUnitId()).orElse(Optional.ofNullable(getState()).orElse(getFid())));

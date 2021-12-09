@@ -53,7 +53,6 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
-import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -1470,7 +1469,6 @@ public class ActivityQueryService {
 	 */
 	public List<Activity> listAllForecastActivity(ActivityQueryDTO activityQuery) {
 		activityQuery.setStatusList(Lists.newArrayList(2));
-		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
 		List<String> tagNames = activityQuery.getTags();
 		if (CollectionUtils.isNotEmpty(tagNames)) {
 			List<Tag> tags = tagQueryService.listByNames(tagNames);

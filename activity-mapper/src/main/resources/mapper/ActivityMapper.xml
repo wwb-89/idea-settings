@@ -207,7 +207,8 @@
                 <if test="params.marketId == null and params.topFid != null and (params.areaCode == null or params.areaCode == '')">
                     t1.fid <![CDATA[<>]]> #{params.topFid},
                 </if>
-                t.start_time <if test="params.timeOrder != null">${params.timeOrder.value}</if><if test="params.timeOrder == null">DESC</if>
+                CASE WHEN t.`status` = 2 THEN t.start_time END ASC,
+                CASE WHEN t.`status` = 3 OR t.`status` = 4 THEN t.start_time END DESC
             </trim>
     </select>
 
@@ -295,7 +296,8 @@
             <if test="params.marketId == null and params.topFid != null and (params.areaCode == null or params.areaCode == '')">
                 t1.fid <![CDATA[<>]]> #{params.topFid},
             </if>
-            t.start_time <if test="params.timeOrder != null">${params.timeOrder.value}</if><if test="params.timeOrder == null">DESC</if>
+            CASE WHEN t.`status` = 2 THEN t.start_time END ASC,
+            CASE WHEN t.`status` = 3 OR t.`status` = 4 THEN t.start_time END DESC
     </select>
 
     <!-- 活动分类join过滤条件 -->
@@ -389,12 +391,13 @@
             ISNULL(t.origin_activity_id)
         GROUP BY t.id
         ORDER BY
-            FIELD( t.`status`, 2, 3, 4 )
+            FIELD( t.`status`, 2, 3, 4 ),
         <if test="params.topFid != null">
-            , t.create_fid <![CDATA[<>]]> #{params.topFid}
+            t.create_fid <![CDATA[<>]]> #{params.topFid},
         </if>
-            ,t.start_time <if test="params.timeOrder != null">${params.timeOrder.value}</if><if test="params.timeOrder == null">DESC</if>
-    </select>
+        CASE WHEN t.`status` = 2 THEN t.start_time END ASC,
+        CASE WHEN t.`status` = 3 OR t.`status` = 4 THEN t.start_time END DESC
+        </select>
 
     <!--查询管理的活动-->
     <select id="pageManaging" resultMap="BaseResultMap">

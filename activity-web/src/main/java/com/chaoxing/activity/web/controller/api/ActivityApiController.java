@@ -18,7 +18,6 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.DomainConstant;
-import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
@@ -74,11 +73,12 @@ public class ActivityApiController {
 	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
-		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
-		List<Activity> activities = activityQueryService.listAllForecastActivity(activityQuery);
-		activityQueryService.fillTagNames(activities);
-		return RestRespDTO.success(activities);
+		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
+		// 旧有规则，不走此查询
+		if (keepOldRule) {
+			return RestRespDTO.success(Lists.newArrayList());
+		}
+		return RestRespDTO.success(listForecastActivity(activityQuery, loginUser));
 	}
 
 	/**分页查询可参与的活动列表
@@ -94,7 +94,6 @@ public class ActivityApiController {
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, String data) {
 		List<Activity> result = Lists.newArrayList();
-
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
@@ -104,9 +103,7 @@ public class ActivityApiController {
 			if (needLoadForecast && activityQuery.getStatus() == null) {
 				result = listForecastActivity(activityQuery, loginUser);
 			}
-			// 除了预告活动顺序，其余查询均逆序
-			OrderTypeEnum timeOrder = Objects.equals(activityQuery.getStatus(), 2) ? OrderTypeEnum.ASC : OrderTypeEnum.DESC;
-			activityQuery.setTimeOrder(timeOrder);
+			// 除了预告活动顺序，其余查询均逆序，如果status != null，statusList是不会参与最终的sql查询
 			activityQuery.setStatusList(Lists.newArrayList(3, 4));
 		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
@@ -127,10 +124,8 @@ public class ActivityApiController {
 	 */
 	private List<Activity> listForecastActivity(ActivityQueryDTO activityQuery, LoginUserDTO loginUser) {
 		activityQuery.setStatusList(Lists.newArrayList(2));
-		activityQuery.setTimeOrder(OrderTypeEnum.ASC);
 		Page<Activity> page = new Page<>(1, Integer.MAX_VALUE);
 		page = pageActivities(page, activityQuery, loginUser);
-
 		return Optional.ofNullable(page.getRecords()).map(Lists::newArrayList).orElse(Lists.newArrayList());
 	}
 

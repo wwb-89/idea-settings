@@ -1,6 +1,5 @@
 package com.chaoxing.activity.dto.query;
 
-import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -58,8 +57,6 @@ public class ActivityQueryDTO {
 	private Integer scope;
 	/** 是否只查询能报名的 */
 	private Boolean signUpAble;
-	/** 时间排序 */
-	private OrderTypeEnum timeOrder;
 	/** 标签 */
 	private List<String> tags;
 	/** 是否保持旧的查询规则, 仅针对样式1 */

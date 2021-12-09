@@ -41,6 +41,10 @@ public class ActivityVO {
     private Boolean released;
     /** 是否归档 */
     private Boolean archived;
+    /** 预览页面url */
+    private String previewUrl;
+    /** 配置页面url */
+    private String editUrl;
     /** 活动创建者uid */
     private Integer createUid;
     /** 活动创建机构fid */
@@ -68,6 +72,8 @@ public class ActivityVO {
                         .status(v.getStatus())
                         .released(v.getReleased())
                         .archived(v.getArchived())
+                        .previewUrl(v.getPreviewUrl())
+                        .editUrl(v.getEditUrl())
                         .createUid(v.getCreateUid())
                         .createFid(v.getCreateFid())
                         .build());
