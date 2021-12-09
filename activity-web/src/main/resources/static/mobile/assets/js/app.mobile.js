@@ -393,7 +393,8 @@
         if($this.isChaoxingApp()){
             $this.packageOpenUrl(option);
         }else{
-            window.location.href = url;
+            window.open(url);
+            // window.location.href = url;
         }
     };
     /**
