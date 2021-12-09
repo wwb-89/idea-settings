@@ -22,8 +22,10 @@ public enum MhAppIconEnum {
         BROWSE("browse", "7337c2c2951fbcd5ab3ec84b0ce87609"),
         /** 签到数 */
         SIGNED_IN_NUM("signed-in-num", "70a0bc103aedda1f1cd5fcc1b0524595"),
-        /** 时间 */
-        TIME("time", "9a08c693ef2457b6a26169603cea851d"),
+        /** 活动时间 */
+        ACTIVITY_TIME("activity_time", "2d330219d4529b16dcd898a558b117b6"),
+        /** 报名时间 */
+        SIGN_TIME_TIME("sign_up_time", "6b2136aef7541d5050ae0e686e4f0d50"),
         /** 统计-彩色 */
         STATISTICS_COLOR("statistics-color", "26352e7dcdbbd10b695dbcc015c19ba2"),
         /** 海报 */
@@ -31,17 +33,17 @@ public enum MhAppIconEnum {
         /** 已报名用户 */
         SIGNED_UP_USER("signed-up-user", "8b2229560d8df09a5c216b2ad38de9f3"),
         /** 积分 */
-        INTEGRAL("integral", "f71b7862035605bbd91a3ab8bf3dbcc4"),
+        INTEGRAL("integral", "40e0f4fd3b2e4b322985e3f4da09da3e"),
         /** 时间-透明 */
         TIME_TRANSPARENT("time-transparent", "339f5085fb968439dd0baaaa3a026aa9"),
         /** 活动地点 */
-        LOCATION("location", "b750b5f467e39fcb23bc8a6160305f21"),
+        LOCATION("location", "02b3b2e1949e3d630ff20a18d0e4e6f0"),
         /** 主办方 */
-        ORGANISER("organiser", "b8aa41af62d0dc9e2e873b13ebcf4949"),
+        ORGANISER("organiser", "67789e4dbe79f1440c1591a0fbfa5676"),
         /** 报名数 */
         SIGNED_UP_NUM("signed-up-num", "4ccd8f1195ca7712ac806ac441d14991"),
         /** 评价 */
-        RATING("rating", "c840a53bfc108db42b80710af8567465"),
+        RATING("rating", "eeebd9cfe583f476c7250a2d1a69d99e"),
         /** 管理 */
         MANAGE_TRANSPARENT("manage-transparent", "d83b11e4e2cebe4a25b0552bf8653a40");
 

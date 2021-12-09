@@ -264,7 +264,11 @@ public class ActivityHandleService {
 			if (signUp != null && signUp.getFillInfo()) {
 				fillFormId = signUp.getFillInfoFormId();
 			}
-			ClazzInteractionDTO clazzInteraction = clazzInteractionApiService.clazzCourseCreate(activityId, activity.getName(), loginUser.getUid(), activity.getCoverUrl(), fillFormId);
+			String activityName = activity.getName();
+			String coverUrl = activity.getCoverUrl();
+			String flag = activity.getActivityFlag();
+			Integer fid = activity.getCreateFid();
+			ClazzInteractionDTO clazzInteraction = clazzInteractionApiService.clazzCourseCreate(activityId, activityName, loginUser.getUid(), coverUrl, fillFormId, fid, flag);
 			if (clazzInteraction == null) {
 				return;
 			}

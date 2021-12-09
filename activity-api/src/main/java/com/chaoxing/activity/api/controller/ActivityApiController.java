@@ -1,5 +1,6 @@
 package com.chaoxing.activity.api.controller;
 
+import cn.hutool.http.HtmlUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.api.vo.ActivityStatSummaryVO;
@@ -20,10 +21,7 @@ import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.Group;
-import com.chaoxing.activity.model.LoginCustom;
-import com.chaoxing.activity.model.UserStatSummary;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
@@ -48,6 +46,7 @@ import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.CookieConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.vo.ActivityVO;
@@ -756,6 +755,26 @@ public class ActivityApiController {
 	public RestRespDTO releaseActivity(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid) {
 		activityHandleService.release(activityId, OperateUserDTO.build(uid, fid));
 		return RestRespDTO.success();
+	}
+
+	/**厦门研修平台根据活动id查询活动信息
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-09 18:26:04
+	 * @return
+	 */
+	@CrossOrigin
+	@RequestMapping("{activityId}/outer/info")
+	public RestRespDTO getActivityInfo(@PathVariable Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		ActivityVO activityVO = ActivityVO.activityConvert2Vo(activity);
+		String timescope = activity.getStartTime().format(CommonConstant.FULL_TIME_FORMAT) + "-" + activity.getEndTime().format(CommonConstant.FULL_TIME_FORMAT);
+		activityVO.setTimeScope(timescope);
+		ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
+		if (activityDetail != null && StringUtils.isNotBlank(activityDetail.getIntroduction())) {
+			activityVO.setIntroduction(HtmlUtil.cleanHtmlTag(activityDetail.getIntroduction()));
+		}
+		return RestRespDTO.success(activityVO);
 	}
 
 	/**

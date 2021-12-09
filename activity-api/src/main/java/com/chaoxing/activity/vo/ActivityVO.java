@@ -50,6 +50,11 @@ public class ActivityVO {
     /** 活动创建机构fid */
     private Integer createFid;
 
+    /** 活动简介 */
+    private String introduction;
+    /** 活动时间范围 */
+    private String timeScope;
+
     /**
      * 活动list转换为活动vo list
      * @Description
@@ -61,24 +66,26 @@ public class ActivityVO {
     public static List<ActivityVO> activitiesConvert2Vo(List<Activity> activities) {
         List<ActivityVO> newActivities = Lists.newArrayList();
         if (CollectionUtils.isNotEmpty(activities)) {
-            activities.forEach(v -> {
-                newActivities.add(ActivityVO.builder()
-                        .id(v.getId())
-                        .name(v.getName())
-                        .coverCloudId(v.getCoverCloudId())
-                        .coverUrl(v.getCoverUrl())
-                        .startTime(v.getStartTime() == null ? null : v.getStartTime().format(DateUtils.FULL_TIME_FORMATTER))
-                        .endTime(v.getEndTime() == null ? null : v.getEndTime().format(DateUtils.FULL_TIME_FORMATTER))
-                        .status(v.getStatus())
-                        .released(v.getReleased())
-                        .archived(v.getArchived())
-                        .previewUrl(v.getPreviewUrl())
-                        .editUrl(v.getEditUrl())
-                        .createUid(v.getCreateUid())
-                        .createFid(v.getCreateFid())
-                        .build());
-            });
+            activities.forEach(v -> newActivities.add(ActivityVO.activityConvert2Vo(v)));
         }
         return newActivities;
+    }
+
+    public static ActivityVO activityConvert2Vo(Activity activity) {
+        return ActivityVO.builder()
+                .id(activity.getId())
+                .name(activity.getName())
+                .coverCloudId(activity.getCoverCloudId())
+                .coverUrl(activity.getCoverUrl())
+                .startTime(activity.getStartTime() == null ? null : activity.getStartTime().format(DateUtils.FULL_TIME_FORMATTER))
+                .endTime(activity.getEndTime() == null ? null : activity.getEndTime().format(DateUtils.FULL_TIME_FORMATTER))
+                .status(activity.getStatus())
+                .released(activity.getReleased())
+                .archived(activity.getArchived())
+                .previewUrl(activity.getPreviewUrl())
+                .editUrl(activity.getEditUrl())
+                .createUid(activity.getCreateUid())
+                .createFid(activity.getCreateFid())
+                .build();
     }
 }

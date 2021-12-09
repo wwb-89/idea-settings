@@ -66,6 +66,8 @@ public class CommonConstant {
 	/** 活动考核配置签到默认分值 */
 	public static final BigDecimal DEFAULT_SIGNED_IN_SCORE = BigDecimal.valueOf(5);
 
+	/** 时间格式化yyyy-MM-dd HH:mm:ss*/
+	public static final DateTimeFormatter FULL_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	/** 活动时间格式化 */
 	public static final DateTimeFormatter NOTICE_ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
 	/** 报名时间格式化 */

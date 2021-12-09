@@ -39,12 +39,18 @@ public class ActivityCreateParticipateQueryDTO {
     private Boolean archived;
     /** 活动状态 */
     private Integer status;
+    /** 活动标识 */
+    private String flag;
     /** 机构fid */
     private Integer fid;
     /** start_time, end_time */
     private String orderField;
     /** 排序方式 */
     private String orderType;
+
+    // 非参数传递
+    /** 市场id */
+    private Integer marketId;
 
     public void init() {
         List<String> defaultOrderFields = Lists.newArrayList("start_time", "end_time");

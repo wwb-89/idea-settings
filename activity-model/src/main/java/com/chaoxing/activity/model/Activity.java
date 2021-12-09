@@ -354,7 +354,10 @@ public class Activity {
         REGION("区域活动", "region"),
         PREACH_ONLINE("线上宣讲会", "preach_online"),
         PREACH_OFFLINE("线下宣讲会", "preach_offline"),
-        ZJLIB("浙江省图书馆", "zjlib");
+        ZJLIB("浙江省图书馆", "zjlib"),
+        TRAINING("培训", "training"),
+        SUBJECT("课题", "subject"),
+        STUDIO("工作室", "studio");
 
         private final String name;
         private final String value;

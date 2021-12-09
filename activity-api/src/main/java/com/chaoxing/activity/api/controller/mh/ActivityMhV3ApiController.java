@@ -177,7 +177,7 @@ public class ActivityMhV3ApiController {
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.TIME.getValue()), fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"),  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
+                buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGN_TIME_TIME.getValue()), fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"),  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
             }
         }
         // 积分
