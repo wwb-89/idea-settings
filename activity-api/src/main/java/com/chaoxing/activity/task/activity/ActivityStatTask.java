@@ -59,7 +59,7 @@ public class ActivityStatTask {
             log.info("根据参数:{} 处理活动统计任务", taskId);
             result = activityStatHandleService.handleTask(taskId);
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (result) {
                 log.info("根据参数:{} 处理活动统计任务 success", taskId);

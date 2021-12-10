@@ -304,12 +304,16 @@ public class ActivityApiController {
 	 * @Date 2021-04-08 11:37:17
 	 * @param signId
 	 * @param uid
+	 * @param fid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("manager-judge")
-	public RestRespDTO isManager(@RequestParam Integer signId, @RequestParam Integer uid) {
+	public RestRespDTO isManager(@RequestParam Integer signId, @RequestParam Integer uid, @RequestParam Integer fid) {
 		Activity activity = activityQueryService.getBySignId(signId);
 		if (activity == null) {
+			return RestRespDTO.success(true);
+		}
+		if (Objects.equals(activity.getCreateFid(), fid)) {
 			return RestRespDTO.success(true);
 		}
 		boolean manager = activityValidationService.isManageAble(activity.getId(), uid);
