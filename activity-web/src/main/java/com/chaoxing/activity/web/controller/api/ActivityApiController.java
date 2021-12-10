@@ -363,6 +363,9 @@ public class ActivityApiController {
 			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
 			introduction = Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse("");
 		}
+		if (StringUtils.isBlank(introduction)) {
+			introduction = "<span style='color: rgb(165, 165, 165);'>暂无介绍</span>";
+		}
 		return RestRespDTO.success(introduction);
 	}
 
