@@ -16,6 +16,8 @@ public enum MhAppIconEnum {
     @Getter
     public enum ONE {
 
+        /** 默认图标(万能)，在没有给定图标的时候，均给这个图标占位 */
+        DEFAULT_ICON("default_icon", "beef95c1bc95d2e37a40f75901e8f8c3"),
         /** 收藏 */
         COLLECTED("collected", "265c36f8e17688c48bcea1290ae5b272"),
         /** 浏览 */

@@ -196,6 +196,7 @@
                     OR t5.name LIKE CONCAT('%', #{params.sw}, '%')
                 )
             </if>
+            AND t.is_archived = 0
         GROUP BY
             t.id
         ORDER BY
@@ -289,6 +290,7 @@
                 OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
                 )
             </if>
+            AND t.is_archived = 0
         GROUP BY
             t.id
         ORDER BY

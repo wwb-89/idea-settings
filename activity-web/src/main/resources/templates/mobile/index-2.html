@@ -43,8 +43,8 @@
                     <img :src="activity | getCloudImgUrl(cloudDomain)" class="jqthumbImg">
                     <div class="status-box">
                         <!--报名状态-->
-                        <span v-if="activity.hasSignUp && signUpAble && activity.signUpStatus == 2" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>报名中</span>
-                            <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
+                        <span style="margin-right: .25rem" :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
+                        <span v-if="activity.hasSignUp && signUpAble && activity.signUpStatus == 2 && activity.status == 2" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}">报名中</span>
                     </div>
                     <p class="num" v-if="activity.openSignUp"><i></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
                 </div>
@@ -252,6 +252,9 @@
                     }
                 },
                 methods: {
+                    calculationActivityClass() {
+
+                    },
                     // 显示搜索输入框
                     showSearchInput: function () {
                         var $this = this;
