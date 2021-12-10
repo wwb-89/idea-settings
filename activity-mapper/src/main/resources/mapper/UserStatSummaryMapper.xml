@@ -237,7 +237,7 @@
         GROUP BY
             t.uid
         ORDER BY
-            integralSum DESC;
+            integralSum DESC
     </select>
 
 </mapper>
