@@ -50,15 +50,6 @@
 				</div>
 				<div class="clear"></div>
 			</div>
-			<!--<div class="item">
-				<label>时间</label>
-				<div class="option-list">
-					<ul>
-						<li :class="{'active': item.selected}" v-for="(item, index) of activityQueryDates" @click="changeActivityTimeSelected(index)">{{item.name}}</li>
-					</ul>
-				</div>
-				<div class="clear"></div>
-			</div>-->
 			<div class="item" v-show="showFilter('region') && regions.length > 0">
 				<label>地区</label>
 				<div class="option-list">
@@ -67,6 +58,12 @@
 					</ul>
 				</div>
 				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="switch-box">
+			<p class="list-total fl">共 {{total}} 个</p>
+			<div class="fr">
+				<el-checkbox label="只看我能参与" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
 			</div>
 		</div>
 		<div class="card-list" id="mescroll">
@@ -100,10 +97,6 @@
 			</ul>
 			<div class="clear"></div>
 		</div>
-		<!-- 无数据 -->
-		<div class="noContent" v-show="activities.length < 1 && loaded">
-			<p>无结果</p>
-		</div>
 		<!-- 作为加载完成后占位显示没有更多-->
 		<div class="noMore"><span></span></div>
 	</div>
@@ -133,6 +126,7 @@
 				//筛选查询参数对象
 				queryParams: {},
 				activities: [],
+				total: 0,
 				loaded: false,
 				topFid: [[${topFid}]],
 				hideFilter: [[${hideFilter}]],
@@ -206,6 +200,12 @@
 				$this.initMescroll();
 			},
 			methods: {
+				changeSignUpAbleCheckedStatus: function (value) {
+					var $this = this;
+					$this.queryParams.signUpAble = value;
+					$this.resetDataAndParams();
+					$this.reloadMescoll();
+				},
 				resetDataAndParams: function () {
 					var $this = this;
 					$this.activities = [];
@@ -283,7 +283,7 @@
 						scope: [[${scope}]],
 						flag: [[${flag}]],
                         // 是否只查询能报名的，如果是则不分页
-                        signUpAble: [[${signUpAble}]],
+                        signUpAble: $this.signUpAble,
 						needLoadForecast: true
 					};
 					$this.activities = [];
@@ -300,6 +300,7 @@
 							$this.queryParams.needLoadForecast = false;
                             $this.queryParams.pageNum++;
 							var activities = $this.activities;
+							$this.total = data.data.total;
 							$this.mescroll.endByPage(data.data.size, $this.signUpAble ? data.data.records.length : data.data.pages);
 							if (data.data.records.length < 1) {
 								return;
@@ -377,10 +378,10 @@
 							callback: function () {
 								$this.loadData();
 							},
-							noMoreSize: 5
-						},
-						htmlNodata: '<p class="upwarp-nodata">' +
-								'没有更多内容' + '</p>'
+							noMoreSize: 5,
+							htmlNodata: '<p class="upwarp-nodata">' +
+									'没有更多内容' + '</p>'
+						}
 					});
 				}
 			}

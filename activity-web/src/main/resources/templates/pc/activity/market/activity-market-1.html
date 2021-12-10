@@ -59,6 +59,12 @@
 				<div class="clear"></div>
 			</div>
 		</div>
+		<div class="switch-box">
+			<p class="list-total fl">共 {{total}} 个</p>
+			<div class="fr">
+				<el-checkbox label="只看我能参与" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
+			</div>
+		</div>
 		<div class="card-list">
 			<ul>
 				<li v-for="(item, index) of activities" :key="'item-' + index">
@@ -195,6 +201,12 @@
 				$this.loadData();
 			},
 			methods: {
+				changeSignUpAbleCheckedStatus: function (value) {
+					var $this = this;
+					$this.queryParams.signUpAble = value;
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
 				//改变选中状态
 				changeActivityClassifySelected: function(index){
 					var $this = this;

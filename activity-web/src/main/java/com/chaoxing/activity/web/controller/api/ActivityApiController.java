@@ -97,11 +97,14 @@ public class ActivityApiController {
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
+		// 额外的预告总数
+		Integer additionalTotal = 0;
 		if (!keepOldRule) {
 			boolean needLoadForecast = Optional.ofNullable(activityQuery.getNeedLoadForecast()).orElse(false);
 			// 仅当重新加载数据，且状态查询条件不为空时，才加载预告活动列表
 			if (needLoadForecast && activityQuery.getStatus() == null) {
 				result = listForecastActivity(activityQuery, loginUser);
+				additionalTotal = result.size();
 			}
 			// 除了预告活动顺序，其余查询均逆序，如果status != null，statusList是不会参与最终的sql查询
 			activityQuery.setStatusList(Lists.newArrayList(3, 4));
@@ -112,6 +115,7 @@ public class ActivityApiController {
 
 		result.addAll(records);
 		page.setRecords(result);
+		page.setTotal(page.getTotal() + additionalTotal);
 		return RestRespDTO.success(page);
 	}
 

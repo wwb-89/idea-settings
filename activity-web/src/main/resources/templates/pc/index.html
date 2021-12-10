@@ -62,12 +62,10 @@
         </div>
         <div class="item-box">
             <div class="head">
-                <!--<ul>
-                    <li class="active1">最新</li>
-                    <li>热门</li>
-                    <li>推荐</li>
-                </ul>-->
                 <div class="count">共<span>{{total}}</span>个活动</div>
+                <div class="fr">
+                    <el-checkbox label="只看我能参与" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
+                </div>
             </div>
             <div style="min-height: 696px;">
                 <div v-show="activities.length > 0">
@@ -204,6 +202,12 @@
                 $this.loadData();
             },
             methods: {
+                changeSignUpAbleCheckedStatus: function (value) {
+                    var $this = this;
+                    $this.queryParams.signUpAble = value;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
                 //改变选中状态
                 changeActivityClassifySelected: function(index){
                     var $this = this;

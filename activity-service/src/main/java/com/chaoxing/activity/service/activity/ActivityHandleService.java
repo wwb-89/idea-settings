@@ -261,7 +261,7 @@ public class ActivityHandleService {
 		if (activity.getOpenClazzInteraction() && (activity.getClazzId() == null || activity.getCourseId() == null)) {
 			SignUpCreateParamDTO signUp = Optional.ofNullable(signCreateParamDto.getSignUps()).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 			Integer fillFormId = null;
-			if (signUp != null && signUp.getFillInfo()) {
+			if (signUp != null) {
 				fillFormId = signUp.getFillInfoFormId();
 			}
 			String activityName = activity.getName();

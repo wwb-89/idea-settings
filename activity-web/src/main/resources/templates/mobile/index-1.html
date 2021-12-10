@@ -68,14 +68,22 @@
             </ul>
         </div>
     </div>
-    <!-- 无数据 -->
-    <div class="noContent" v-show="loaded && activities.length < 1">
-        <p>无结果</p>
-    </div>
     <!-- 弹出层 -->
     <div class="pop" v-show="filterWindowShow">
         <div style="height: 100%;" @click="filterCancel"></div>
         <div class="popInner">
+            <div class="switch-box border-bottom">
+                <p class="fl">只看我能参与</p>
+                <div class="fr">
+                    <el-switch
+                            v-model="signUpAble"
+                            active-color="#0084FF"
+                            inactive-color="#AAB9C2"
+                            @change="changeSignUpAbleCheckedStatus"
+                    >
+                    </el-switch>
+                </div>
+            </div>
             <div class="popList mescroll-touch">
                 <div class="list-item" v-show="showFilter('activityType')">
                     <div class="title">类型</div>
@@ -363,6 +371,10 @@
                     toFilter: function () {
                         var $this = this;
                         $this.showFilterWindow();
+                    },
+                    changeSignUpAbleCheckedStatus: function (value) {
+                        var $this = this;
+                        $this.queryParams.signUpAble = value;
                     },
                     changeActivityClassify: function (index) {
                         var $this = this;
