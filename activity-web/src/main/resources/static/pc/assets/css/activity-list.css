@@ -89,6 +89,10 @@ body {
   margin: 0 32px;
 }
 
+.activity-list .filter .el-radio {
+  line-height: 30px;
+}
+
 .activity-list .filter .el-dropdown {
   line-height: 30px;
   margin-right: 20px;
@@ -130,6 +134,7 @@ body {
 
 .item-block .btns {
   display: block;
+  margin-right: 24px;
 }
 
 .item-block .btns button .addIcon {

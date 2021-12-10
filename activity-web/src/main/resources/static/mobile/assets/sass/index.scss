@@ -214,8 +214,14 @@ body{
     height: 28.125rem;
     padding-top: 1.25rem;
     .popList {
-      padding: 0 0.9375rem 1.25rem;
-      height: 23.75rem;
+      padding: 1.25rem 0.9375rem 1.25rem;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -ms-box-sizing: border-box;
+      -o-box-sizing: border-box;
+      -khtml-box-sizing: border-box;
+      box-sizing: border-box;
+      height: 22.25rem;
       overflow: auto;
       .title {
         line-height: 1.3125rem;
@@ -251,6 +257,16 @@ body{
                 border: none;
               }
           }
+      }
+    }
+    .switch-box {
+      margin: 0 1rem;
+      overflow: hidden;
+      padding: 0 0 1.25rem;
+      p{
+        font-weight: 500;
+        font-size: .9375rem;
+        line-height: 1.5rem;
       }
     }
     .btn {
@@ -311,10 +327,8 @@ body{
 .index .activity-list .img-box .num i {
   display: inline-block;
   vertical-align: top;
-  width: .75rem;
-  height: 1.875rem;
-  background: url("../images/pv.png") center center no-repeat;
-  background-size: 100%;
+  line-height: 1.875rem;
+  font-size: .75rem;
   margin-left: .75rem;
   margin-right: .375rem;
 }
@@ -413,7 +427,7 @@ body{
   top: -0.0625rem;
 }
 .index .searchDiv .delete{
-  position: absolute;
+  position: absolute; 
   right: .9375rem;
   top: 0;
   display: inline-block;
@@ -421,4 +435,44 @@ body{
   height: 1.875rem;
   background: url(../images/x-circle.png) center center no-repeat;
   background-size: 100%;
+}
+.floating-window {
+  position: fixed;
+  z-index: 5;
+  right: 1.5rem;
+  bottom: 2.25rem;
+  .more-circle {
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: 31.21875rem;
+    padding: 0;
+    border: none;
+    box-shadow: 0px .1875rem .625rem rgba(0, 0, 0, 0.16);
+    &:focus, &:hover{
+      color: #000000;
+      background: #ffffff;
+    }
+  }
+}
+.fixed-pop {
+  width: 6.59375rem;
+  border-radius: .3125rem;
+  padding: 0;
+  border: none;
+  box-shadow: 0px .1875rem .5rem -0.25rem rgba(0, 0, 0, 0.08), 0px .375rem 1.5rem .5rem rgba(0, 0, 0, 0.03);
+  &[x-placement^=top]{
+    margin-bottom: .53125rem;
+  }
+  ul {
+    li {
+      line-height: 2.75rem;
+      font-size: 1rem;
+      color: #333333;
+      text-align: center;
+      border-bottom: 1px solid #E9E9E9;
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
 }

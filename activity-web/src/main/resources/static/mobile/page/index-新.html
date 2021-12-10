@@ -8,6 +8,8 @@
     <meta name="format-detection" content="telephone=no, email=no">
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/css/public.css" />
     <link rel="stylesheet" href="../assets/css/index.css" />
     <style type="text/css">
@@ -50,7 +52,7 @@
                                 <span class="status status3" v-if="item.status==2">进行中</span>
                                 <span class="status status4" v-if="item.status==3">已结束</span>
                             </div>
-                            <p class="num"><i></i>1028</p>
+                            <p class="num"><i class="icon-user"></i>0/50</p>
                         </div>
                         <div class="info">
                             <h2 class="title"><span class="info-top" v-if="item.istop==true">置顶</span>{{item.name}}</h2>
@@ -81,6 +83,16 @@
         <!-- 弹出层 -->
         <div class="pop" v-show="popStatus">
             <div class="popInner">
+                <div class="switch-box border-bottom">
+                    <p class="fl">只看我能参与</p>
+                    <div class="fr">
+                        <el-switch
+                                v-model="switch1Value"
+                                active-color="#0084FF"
+                                inactive-color="#AAB9C2">
+                        </el-switch>
+                    </div>
+                </div>
                 <div class="popList">
                     <div class="list-item">
                         <div class="title">类型</div>
@@ -127,6 +139,19 @@
             </div>
             
         </div>
+        <div class="floating-window">
+            <el-popover
+                    placement="top-end"
+                    popper-class='fixed-pop'
+                    trigger="click">
+                <ul>
+                    <li>积分规则</li>
+                    <li>批量操作</li>
+                    <li>导出</li>
+                </ul>
+                <el-button class="more-circle" slot="reference"><i class="icon-more-horizontal"></i></el-button>
+            </el-popover>
+        </div>
     </div>
 
 
@@ -135,6 +160,7 @@
 </html>
 <script src="../assets/lib/jquery.1.8.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="../assets/lib/jqthumb.min.js"></script>
 <script>
@@ -188,6 +214,7 @@
                     createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
                     address:"四川农业大学雅安校区",
                 }],
+                switch1Value:false,
             }
         },
         created: function () {

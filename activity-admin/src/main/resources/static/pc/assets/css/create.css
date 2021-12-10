@@ -230,11 +230,15 @@ select {
      -moz-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  width: 900px;
+  width: 700px;
   margin-left: 24px;
   position: relative;
   color: #999999;
   font-size: 14px;
+}
+
+.display-block {
+  display: block;
 }
 
 .wrap {
@@ -518,6 +522,11 @@ input[type="number"]:not(.el-select__input) {
   margin-left: 16px;
 }
 
+.tips.first {
+  margin-left: 0;
+  margin-bottom: 14px;
+}
+
 .tips.set-information {
   color: #0084FF;
 }
@@ -643,6 +652,159 @@ input.btn-name,
 
 .cover-list ul li.current .img-inner-box {
   border: 3px solid #0084FF;
+}
+
+.picture-list {
+  padding: 16px 60px 36px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  background: #F7F8FA;
+  border-radius: 4px;
+  position: relative;
+}
+
+.picture-list .swiper-slide {
+  font-size: 14px;
+}
+
+.picture-list .swiper-slide .img-box {
+  width: 100%;
+  height: 180px;
+  border: 2px solid transparent;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.picture-list .swiper-slide .check_ {
+  width: 32px;
+  height: 32px;
+  background: url("../images/icon-checked.png") no-repeat;
+  background-size: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: none;
+}
+
+.picture-list .swiper-slide .zoom {
+  width: 32px;
+  height: 32px;
+  background: url("../images/icon-zoom.png") no-repeat;
+  background-size: 100%;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: none;
+}
+
+.picture-list .swiper-slide img {
+  width: 100%;
+  height: 100%;
+}
+
+.picture-list .swiper-slide p {
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 0.8);
+  text-align: center;
+  margin-top: 10px;
+}
+
+.picture-list .swiper-slide:hover .img-box {
+  border: 2px solid rgba(61, 130, 242, 0.5);
+}
+
+.picture-list .swiper-slide:hover .zoom {
+  display: block;
+}
+
+.picture-list .swiper-slide.active .img-box {
+  border: 2px solid #3D82F2;
+}
+
+.picture-list .swiper-slide.active .check_ {
+  display: block;
+}
+
+.picture-list .swiper-next {
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 99px;
+  position: absolute;
+  top: 50%;
+  margin-top: -14px;
+  z-index: 3;
+  right: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.picture-list .swiper-next i {
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.picture-list .swiper-next:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.picture-list .swiper-prev {
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 99px;
+  position: absolute;
+  top: 50%;
+  margin-top: -14px;
+  z-index: 3;
+  left: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.picture-list .swiper-prev i {
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.picture-list .swiper-prev:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.picture-list .swiper-pagination {
+  position: absolute;
+  text-align: center;
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+  z-index: 3;
+  width: 100%;
+  left: 0;
+  bottom: 16px;
+}
+
+.picture-list .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 100%;
+  background: #000;
+  opacity: .2;
+  margin: 0 5px;
+}
+
+.picture-list .swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #007aff;
 }
 
 .modle-item {
@@ -1249,23 +1411,8 @@ input.btn-name,
   margin-left: 24px;
 }
 
-.check {
-  width: 16px;
-  height: 16px;
-  background-color: white;
-  border-radius: 50%;
-  float: left;
-  margin-top: 2px;
-  margin-left: 2px;
-}
-
 .show {
   display: block;
-}
-
-.active {
-  border: 1px solid #0084ff;
-  color: #0084ff;
 }
 
 .look-dailog {

@@ -8,7 +8,7 @@ var auto = require('gulp-autoprefixer');//解决浏览器兼容问题的插件
 // (编译命令：gulp activity)
 //APP
 gulp.task('sasslist', function () {
-    return gulp.src(['./mobile/assets/sass/**/*.scss','./mobile/assets/sass/*.scss'])      //需要编译的文件目录
+    return gulp.src(['./pc/assets/sign/assets/sass/**/*.scss','./pc/assets/sign/assets/sass/*.scss'])      //需要编译的文件目录
         .pipe(sass({
             outputStyle: 'expanded', // 输出方式
         }))
@@ -22,10 +22,10 @@ gulp.task('sasslist', function () {
                 'last 10 versions'// 所有主流浏览器最近10版本用
             ]
         }))
-        .pipe(gulp.dest('./mobile/assets/css'));    //存放编译之后的目录
+        .pipe(gulp.dest('./pc/assets/sign/assets/css'));    //存放编译之后的目录
 });
 gulp.task('watchlist', function () {
-    gulp.watch(['./mobile/assets/sass/**/*.scss','./mobile/assets/sass/*.scss'],  ['sasslist']);// 监听的文件
+    gulp.watch(['./pc/assets/sign/assets/sass/**/*.scss','./pc/assets/sign/assets/sass/*.scss'],  ['sasslist']);// 监听的文件
 });
 
 //pc

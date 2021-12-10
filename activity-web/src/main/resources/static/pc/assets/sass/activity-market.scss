@@ -80,11 +80,9 @@ body {
     display: flex;
     cursor: pointer;
     .icon-user {
+      line-height: 30px;
+      color: #0084FF;
       display: inline-block;
-      width: 16px;
-      height: 30px;
-      background: url("../images/user.png") center center no-repeat;
-      background-size: 100%;
       margin-right: 4px;
     }
     a{
@@ -101,7 +99,7 @@ body {
 }
 .filter {
   padding-top: 63px;
-  margin-bottom: 12px;
+  //margin-bottom: 12px;
   .item {
     &:first-child {
       margin-top: 16px;
@@ -143,6 +141,18 @@ body {
 .inner-content {
   min-width: 936px;
   padding: 0 72px;
+  .switch-box {
+    overflow: hidden;
+    margin-top: 4px;
+    .list-total {
+      font-size: 12px;
+      line-height: 20px;
+      color: #999999;
+    }
+    .el-checkbox__label {
+      font-size: 12px;
+    }
+  }
 }
 .activity-market1 {
   .card-list {
@@ -313,6 +323,7 @@ body {
   }
   .card-list {
     overflow: hidden;
+    margin-top: 16px;
     ul {
       li {
         float: left;
@@ -338,7 +349,7 @@ body {
             left: 0;
             top: 0;
             width: 100%;
-            height: 151px;
+            height: 100%;
           }
           .num {
             display: flex;
@@ -356,10 +367,7 @@ body {
             color: #FFFFFF;
             i{
               display: inline-block;
-              width: 16px;
-              height: 16px;
-              background: url("../images/pv.png")  center center no-repeat;
-              background-size: 100%;
+              font-size: 14px;
               margin-left: 10px;
               margin-right:4px;
             }
@@ -473,7 +481,7 @@ body {
           }
         }
         &:hover {
-          border-color: transparent;
+          //border-color: transparent;
           box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
         }
       }
@@ -504,7 +512,7 @@ body {
       ul {
         li {
           width: calc(33.333% - 16px);
-          height: 311px;
+          height: 336px;
           margin-right: 24px!important;
           &:nth-child(3n){
             margin-right: 0!important;
@@ -523,7 +531,7 @@ body {
         li {
           width: calc(25% - 18px);
           margin-right: 24px!important;
-          height: 310px;
+          height: 336px;
           &:nth-child(4n){
             margin-right: 0!important;
           }
@@ -540,9 +548,12 @@ body {
         li {
           width: calc(20% - 19.2px);
           margin-right: 24px!important;
-          height: 335px;
+          height: 361px;
           .img-box {
             height: 173px;
+            .js-crop-img {
+              height: 100%;
+            }
           }
           &:nth-child(5n){
             margin-right: 0!important;
@@ -563,6 +574,9 @@ body {
           height: 336px;
           .img-box {
             height: 174px;
+            .js-crop-img {
+              height: 100%;
+            }
           }
           &:nth-child(6n){
             margin-right: 0!important;

@@ -74,6 +74,9 @@ body {
   .filter {
     display: flex;
     margin: 0 32px;
+    .el-radio {
+        line-height: 30px;
+    }
     .el-dropdown {
       line-height: 30px;
       margin-right: 20px;
@@ -107,6 +110,7 @@ body {
   }
   .btns {
     display: block;
+    margin-right: 24px;
     button {
       .addIcon {
         display: inline-block;

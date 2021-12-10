@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <link rel="stylesheet" href="../assets/lib/webuploader/webuploader.css">
-    <link rel="stylesheet" href="..//assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/lib/Swiper-3.4.2/dist/css/swiper.min.css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/create.css">
@@ -226,6 +227,54 @@
             <div class="form-item">
                 <label class="label"></label>
                 <p class="input-box">这是辅助说明，可能有可能没有。</p>
+            </div>
+            <div class="form-item align-start">
+                <label class="label">展示页面</label>
+                <div class="input-box display-block">
+                    <p class="tips first">请选择你的活动呈现页面</p>
+                    <div class="picture-list" style="background: #F7F8FA;position: relative">
+                        <div class="swiper-container">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide active">
+                                    <div class="img-box">
+                                        <img src="../assets/images/cover.png">
+                                        <div class="check_"></div>
+                                        <div class="zoom"></div>
+                                    </div>
+                                    <p class="overHidden1">活动模板2</p>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="img-box">
+                                        <img src="../assets/images/cover.png">
+                                        <div class="check_"></div>
+                                        <div class="zoom"></div>
+                                    </div>
+                                    <p class="overHidden1">活动模板2</p>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="img-box">
+                                        <img src="../assets/images/cover.png">
+                                        <div class="check_"></div>
+                                        <div class="zoom"></div>
+                                    </div>
+                                    <p class="overHidden1">活动模板2</p>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="img-box">
+                                        <img src="../assets/images/empty.png">
+                                        <div class="check_"></div>
+                                        <div class="zoom"></div>
+                                    </div>
+                                    <p class="overHidden1">活动模板2</p>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-next"><i class="icon-arrows-right"></i></div>
+                        <div class="swiper-prev"><i class="icon-arrows-left"></i></div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -944,22 +993,8 @@
             </div>
         </div>
     </div>
-    <!-- 编辑页面 页面设置 -->
-    <div class="info box">
-        <div class="set-box">
-            <div class="title">页面设置</div>
-        </div>
-        <div class="item-box">
-            <div class="page-demo"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
-            <div class="pageset-right">
-                <div class="copy-box">
-                    <a type="text" class="copy-link">{{link}}</a>
-                    <a href="javascript:;" class="copy">复制</a>
-                </div>
-                <button type="button" class="cancle-btn">页面配置</button>
-            </div>
-        </div>
-    </div>
+
+
     <!--    活动展示页-->
     <div class="info box">
         <div class="set-box">
@@ -1229,6 +1264,7 @@
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
 <script src="../../assets/js/vue.min.js"></script>
 <script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/Swiper-3.4.2/dist/js/swiper.min.js"></script>
 <script src="../assets/js/common.js"></script>
 <script src="../assets/js/create-active.js"></script>
 <script src="../assets/lib/jqthumb.min.js"></script>
@@ -1378,8 +1414,19 @@
             RichTextUitl.initUEditor();
             //文件上传
             this.initUploader()
+            this.swiperInit()
         },
         methods: {
+            swiperInit:function (){
+                var mySwiper = new Swiper('.swiper-container', {
+                    slidesPerView: 3,
+                    pagination: '.swiper-pagination',
+                    nextButton: '.swiper-next',
+                    prevButton: '.swiper-prev',
+                    paginationClickable: true,
+                    spaceBetween: 24,
+                })
+            },
             handleDelAddr:function(e){
                 //删除元素
             },

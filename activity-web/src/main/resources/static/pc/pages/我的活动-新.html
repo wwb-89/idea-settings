@@ -21,6 +21,11 @@
                 <div class="btns">
                     <button class="btn-main-gradient"><i class="addIcon"></i>添加</button>
                 </div>
+                <el-radio-group v-model="radioValue">
+                    <el-radio label="1">报名</el-radio>
+                    <el-radio label="2">收藏</el-radio>
+                    <el-radio label="3">管理</el-radio>
+                </el-radio-group>
                 <el-dropdown  trigger="click" class="marginLeftAuto">
                       <span class="el-dropdown-link">
                         下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
@@ -37,7 +42,7 @@
                     <i class="icon-search"></i>
                 </div>
             </div>
-            <div class="filter">
+            <div class="filter" style="display: none;">
                 <div class="searchDiv">
                     <input type="text" placeholder="搜索标题" v-model="inputValue" class="inputStyle">
                     <i class="icon-cancel" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
@@ -53,7 +58,6 @@
                         <el-dropdown-item>螺蛳粉</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
-
             </div>
             <div class="tabContent">
                 <div class="card-list card-list1">
@@ -142,6 +146,7 @@
                 tipsHtml:'',
                 btnTxt:'确定',
                 createActivity: false, //创建活动
+                radioValue:'',
             }
         },
         created: function () {

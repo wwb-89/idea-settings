@@ -23,6 +23,15 @@
             <div class="cancle" v-on:click="inputShow">取消</div>
         </div>
     </div>
+    <div class="filter">
+        <div class="tab-top">
+            <ul>
+                <li class="active">报名</li>
+                <li>收藏</li>
+                <li>管理</li>
+            </ul>
+        </div>
+    </div>
     <!--    应用样式加上 card-list1-->
     <div class="tabContent">
         <div class="card-list card-list1">
@@ -257,7 +266,18 @@
             <div class="cancle" v-on:click="tipsDialogShow=!tipsDialogShow">取消</div>
         </div>
     </div>
-
+<!--    确定类弹窗-->
+    <div class="tipsDialog" v-show="tipsDialogShow1">
+        <div class="inner-content">
+            <div class="content-list">
+                <ul>
+                    <li class="border-bottom tips">确定取消报名吗？</li>
+                    <li class="colorBlue">确定</li>
+                </ul>
+            </div>
+            <div class="cancle" v-on:click="tipsDialogShow1=!tipsDialogShow1">取消</div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
@@ -272,6 +292,7 @@
         data: function () {
             return {
                 tipsDialogShow:true,
+                tipsDialogShow1:true,
                 inputShowStatus:false,
                 inputValue:'',
                 inputDeleteShow:false,

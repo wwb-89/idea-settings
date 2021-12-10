@@ -405,6 +405,59 @@ input {
   margin-bottom: 0.625rem;
 }
 
+.tipsDialog {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.tipsDialog .inner-content {
+  position: fixed;
+  bottom: .5rem;
+  left: 0;
+  right: 0;
+  padding: 0 .5rem;
+}
+
+.tipsDialog .inner-content ul {
+  background: #FFFFFF;
+  border-radius: .78125rem;
+  margin-bottom: .5rem;
+}
+
+.tipsDialog .inner-content ul li {
+  line-height: 1.5625rem;
+  padding: 1rem 1.5rem;
+  font-size: 1.25rem;
+}
+
+.tipsDialog .inner-content ul li.tips {
+  color: #666666;
+  font-size: .9375rem;
+}
+
+.tipsDialog .inner-content ul li.colorRed {
+  color: #FF666D;
+}
+
+.tipsDialog .inner-content ul li.colorBlue {
+  color: #0084FF;
+}
+
+.tipsDialog .inner-content .cancle {
+  background: #FFFFFF;
+  border-radius: .78125rem;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.5625rem;
+  padding: 1rem;
+  color: #0084FF;
+}
+
 [v-cloak] {
   display: none;
 }

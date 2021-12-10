@@ -3,15 +3,16 @@ body {
 }
 .activity-list {
     .searchDiv {
-        padding: .75rem 1rem 0;
+        padding: .5rem 1rem;
         position: relative;
         z-index: 20;
+        background: #ffffff;
        .searchbefore {
            width: 100%;
            display: flex;
            align-items:center;
             justify-content:center;
-         background: #ffffff;
+         background: #F6F7FB;
            height: 1.125rem;
            line-height: 1.125rem;
            padding: .375rem 0;
@@ -37,7 +38,7 @@ body {
        }
        .searchafter {
            position: relative;
-         background: #ffffff;
+         background: #F6F7FB;
            border-radius: .9375rem;
            margin-right: 2.875rem;
            .search {
@@ -443,6 +444,33 @@ body {
         margin-top: 0.1875rem;
       }
     }
+    .filter {
+      padding: .75rem 1rem;
+      background: #ffffff;
+    }
+    .tab-top {
+      ul{
+        overflow: hidden;
+        li {
+          float: left;
+          color: #999999;
+          font-weight: 500;
+          font-size: .75rem;
+          background: #F6F7FB;
+          border-radius: 31.21875rem;
+          border: 1px solid transparent;
+          box-sizing: border-box;
+          padding: .3125rem .75rem;
+          margin-right: .75rem;
+          &.active {
+            background: #EBF5FF;
+            border: 1px solid #0084FF;
+            box-sizing: border-box;
+            color: #0084FF;
+          }
+        }
+      }
+    }
 }
 
 .model {
@@ -467,46 +495,4 @@ body {
     font-size: 0.9375rem;
   }
 }
-.tipsDialog {
-  position: fixed;
-  z-index: 99;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  .inner-content{
-    position: fixed;
-    bottom: .5rem;
-    left: 0;
-    right: 0;
-    padding: 0 .5rem;
-    ul {
-      background: #FFFFFF;
-      border-radius: .78125rem;
-      margin-bottom: .5rem;
-      li {
-        
-        line-height: 1.5625rem;
-        padding: 1rem 1.5rem;
-        font-size: 1.25rem;
-        &.tips {
-          color: #666666;
-          font-size: .9375rem;
-        }
-        &.colorRed {
-          color: #FF666D;
-        }
-      }
-    }
-    .cancle {
-      background: #FFFFFF;
-      border-radius: .78125rem;
-      font-weight: 500;
-      font-size: 1.25rem;
-      line-height: 1.5625rem;
-      padding: 1rem;
-      color: #0084FF;
-    }
-  }
-}
+
