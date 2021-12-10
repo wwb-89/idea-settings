@@ -18,6 +18,7 @@ public enum ActivitySystemFieldEnum {
     /** 活动id */
     ACTIVITY_ID("活动id", "activity_id"),
     ACTIVITY_NAME("活动名称", "activity_name"),
+    ACTIVITY_COVER("活动封面", "cover_cloud_id"),
     SIGN_UP_PARTICIPATE_SCOPE("报名参与范围", "sign_up_participate_scope"),
     CREATE_ORG("创建单位", "create_org"),
     ACTIVITY_CLASSIFY("活动分类", "activity_classify"),

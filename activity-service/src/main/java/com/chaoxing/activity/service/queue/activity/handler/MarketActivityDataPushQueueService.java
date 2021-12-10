@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.queue.activity.handler;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
+import com.chaoxing.activity.dto.manager.cloud.CloudImageDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.model.Activity;
@@ -13,6 +14,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.data.v2.DataPushConfigService;
 import com.chaoxing.activity.service.data.v2.MarketActivityDataPushRecordService;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.activity.MarketActivityDataPushQueue;
@@ -56,6 +58,8 @@ public class MarketActivityDataPushQueueService {
     private WfwFormApiService wfwFormApiService;
     @Resource
     private ActivityComponentValueService activityComponentValueService;
+    @Resource
+    private CloudApiService cloudApiService;
 
     @Transactional(rollbackFor = Exception.class)
     public void handle(MarketActivityDataPushQueue.QueueParamDTO queueParam) {
@@ -234,6 +238,19 @@ public class MarketActivityDataPushQueueService {
                 case ACTIVITY_NAME:
                     data.add(activity.getName());
                     item.put("val", data);
+                    break;
+                case ACTIVITY_COVER:
+                    String coverCloudId = activity.getCoverCloudId();
+                    CloudImageDTO cloudImage = cloudApiService.getImage(coverCloudId);
+                    if (cloudImage != null) {
+                        JSONObject image = new JSONObject();
+                        image.put("name", cloudImage.getFileName());
+                        image.put("suffix", cloudImage.getSuffix());
+                        image.put("objectId", cloudImage.getObjectId());
+                        image.put("size", cloudImage.getLength());
+                        data.add(image);
+                        item.put("files", data);
+                    }
                     break;
                 case SIGN_UP_PARTICIPATE_SCOPE:
                     data.add(signApiService.getActivitySignParticipateScopeDescribe(activity.getSignId()));
