@@ -99,6 +99,7 @@ public class SystemNoticeTemplate {
         ACTIVITY_TIME("活动时间", "activity_time"),
         SIGN_UP_TIME("报名时间", "sign_up_time"),
         ACTIVITY_ORGANISERS("活动主办方", "activity_organisers"),
+        BLACKLIST_AUTO_REMOVE_HOURS("黑名单自动移除", "blacklist_auto_remove_hours"),
         BLACKLIST_ADD_TIME("黑名单进入时间", "blacklist_add_time"),
         BLACKLIST_REMOVE_TIME("黑名单移出时间", "blacklist_remove_time");
 
@@ -124,6 +125,7 @@ public class SystemNoticeTemplate {
             String activityOrganisers = Optional.ofNullable(noticeTemplateField.getActivityOrganisers()).orElse("");
             String blacklistAddTime = Optional.ofNullable(noticeTemplateField.getBlacklistAddTime()).orElse("");
             String blacklistRemoveTime = Optional.ofNullable(noticeTemplateField.getBlacklistRemoveTime()).orElse("");
+            String autoRemoveHours = Optional.ofNullable(noticeTemplateField.getAutoRemoveHours()).map(String::valueOf).orElse("");
             StringBuilder signUpTime = new StringBuilder();
             List<NoticeTemplateFieldDTO.SignUpNoticeTemplateFieldDTO> signUps = noticeTemplateField.getSignUps();
             if (CollectionUtils.isNotEmpty(signUps)) {
@@ -167,6 +169,8 @@ public class SystemNoticeTemplate {
                     case BLACKLIST_REMOVE_TIME:
                         value = blacklistRemoveTime;
                         break;
+                    case BLACKLIST_AUTO_REMOVE_HOURS:
+                        value = autoRemoveHours;
                     default:
                         break;
                 }

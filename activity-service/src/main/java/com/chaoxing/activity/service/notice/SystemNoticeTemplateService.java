@@ -6,13 +6,16 @@ import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.notice.NoticeTemplateFieldDTO;
 import com.chaoxing.activity.mapper.SystemNoticeTemplateMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.BlacklistRule;
 import com.chaoxing.activity.model.SystemNoticeTemplate;
+import com.chaoxing.activity.service.blacklist.BlacklistQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,7 +36,8 @@ public class SystemNoticeTemplateService {
 
 	@Resource
 	private SystemNoticeTemplateMapper systemNoticeTemplateMapper;
-
+	@Resource
+	private BlacklistQueryService blacklistQueryService;
 	@Resource
 	private SignApiService signApiService;
 
@@ -75,7 +79,7 @@ public class SystemNoticeTemplateService {
 		String activityName = activity.getName();
 		String address = activity.getActivityFullAddress();
 		String activityTime = activity.getStartTime().format(CommonConstant.NOTICE_ACTIVITY_TIME_FORMATTER) + "~" + activity.getEndTime().format(CommonConstant.NOTICE_ACTIVITY_TIME_FORMATTER);
-		String activityOrganisers = activity.getOrganisers();
+		String activityOrganisers = StringUtils.isNotBlank(activity.getOrganisers()) ? activity.getOrganisers() : activity.getCreateOrgName();
 		Integer signId = activity.getSignId();
 		SignCreateParamDTO signCreateParam = signApiService.getCreateById(signId);
 		List<SignUpCreateParamDTO> signUps = Optional.ofNullable(signCreateParam).map(SignCreateParamDTO::getSignUps).orElse(Lists.newArrayList());
@@ -90,7 +94,7 @@ public class SystemNoticeTemplateService {
 						.build());
 			}
 		}
-		return NoticeTemplateFieldDTO.builder()
+		NoticeTemplateFieldDTO noticeTemplateField = NoticeTemplateFieldDTO.builder()
 				.activityName(activityName)
 				.address(address)
 				.activityTime(activityTime)
@@ -98,6 +102,13 @@ public class SystemNoticeTemplateService {
 				.signUps(signUpNoticeTemplateFields)
 				.activityOrganisers(activityOrganisers)
 				.build();
+		Integer marketId = activity.getMarketId();
+		if (marketId != null) {
+			BlacklistRule blacklistRule = blacklistQueryService.getBlacklistRuleByMarketId(marketId);
+			noticeTemplateField.setEnableAutoRemove(Optional.ofNullable(blacklistRule).map(BlacklistRule::getEnableAutoRemove).orElse(false));
+			noticeTemplateField.setAutoRemoveHours(Optional.ofNullable(blacklistRule).map(BlacklistRule::getAutoRemoveHours).orElse(null));
+		}
+		return noticeTemplateField;
 	}
 
 }

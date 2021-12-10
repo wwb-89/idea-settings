@@ -4,7 +4,6 @@ import com.chaoxing.activity.dto.notice.MarketNoticeTemplateDTO;
 import com.chaoxing.activity.dto.notice.NoticeTemplateFieldDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Blacklist;
-import com.chaoxing.activity.model.BlacklistRule;
 import com.chaoxing.activity.model.SystemNoticeTemplate;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
@@ -58,17 +57,12 @@ public class BlacklistUserNoticeHandleService {
             if (activity != null) {
                 noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
             }
-        }
-        if (marketId == null) {
-            return noticeTemplateField;
-        }
-        if (StringUtils.isBlank(noticeTemplateField.getActivityOrganisers())) {
-            noticeTemplateField.setActivityOrganisers(marketQueryService.getMarketBelongOrgName(marketId));
-        }
-        BlacklistRule blacklistRule = blacklistQueryService.getBlacklistRuleByMarketId(marketId);
-        if (blacklistRule != null) {
-            noticeTemplateField.setEnableAutoRemove(Optional.ofNullable(blacklistRule.getEnableAutoRemove()).orElse(false));
-            noticeTemplateField.setAutoRemoveHours(Optional.ofNullable(blacklistRule.getAutoRemoveHours()).orElse( null));
+            if (marketId == null) {
+                return noticeTemplateField;
+            }
+            if (StringUtils.isBlank(noticeTemplateField.getActivityOrganisers())) {
+                noticeTemplateField.setActivityOrganisers(marketQueryService.getMarketBelongOrgName(marketId));
+            }
         }
         return noticeTemplateField;
     }
