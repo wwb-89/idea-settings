@@ -553,7 +553,7 @@ public class ActivityMhDataCenterApiController {
                     .build());
             fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                     .key("积分")
-                    .value(Optional.ofNullable(v.getIntegralSum()).map(String::valueOf).orElse("0"))
+                    .value(Optional.ofNullable(v.getIntegralSum()).map(String::valueOf).orElse("0") + "分")
                     .type("3")
                     .flag(String.valueOf(++flag))
                     .build());
