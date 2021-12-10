@@ -8,16 +8,20 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="cache-control" content="no-cache" />
     <link rel="stylesheet" href="/static/mobile/assets/icomoon/style.css" th:href="@{/mobile/assets/icomoon/style.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/mobile/assets/lib/element-ui/lib/theme-chalk/index.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/index.css" th:href="@{/mobile/assets/css/index.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/activity-list.css" th:href="@{/mobile/assets/css/activity-list.css}"/>
     <link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}" />
-    <link rel="stylesheet" type="text/css" href="/static/mobile/assets/css/hover-button.css" th:href="@{/mobile/assets/css/hover-button.css}">
     <style>
         [v-cloak] {
             display: none;
+        }
+        .activity-list .filter {
+            padding: 0;
+            background: none;
         }
     </style>
 </head>
@@ -116,8 +120,17 @@
             </div>
         </div>
     </div>
-
-    <vue-button v-show="!isApp" :menu-config="menuConfig"></vue-button>
+    <div class="floating-window" v-show="!isApp">
+        <el-popover
+                placement="top-end"
+                popper-class='fixed-pop'
+                trigger="click">
+            <ul>
+                <li @click="my">我的活动</li>
+            </ul>
+            <el-button class="more-circle" slot="reference"><i class="icon-more-horizontal"></i></el-button>
+        </el-popover>
+    </div>
 </div>
 </body>
 </html>
@@ -125,9 +138,9 @@
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
+    <script src="/static/mobile/assets/lib/element-ui/lib/index.js" th:src="@{/mobile/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
-    <script src="/static/mobile/assets/component/hover-button.js" th:src="@{/mobile/assets/component/hover-button.js}"></script>
     <script th:inline="javascript">
         function ready() {
             vm = new Vue({
@@ -156,19 +169,6 @@
                         // 是否查询能报名的活动
                         signUpAble: [[${signUpAble}]],
                         isApp: app.isChaoxingApp(),
-                        menuConfig: {
-                            my: {
-                                show: true,
-                                name: "",
-                                children: [
-                                    {
-                                        show: true,
-                                        name: '我的活动',
-                                        callback: "vm.my()"
-                                    }
-                                ]
-                            }
-                        },
                         showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]])
                     }
                 },
