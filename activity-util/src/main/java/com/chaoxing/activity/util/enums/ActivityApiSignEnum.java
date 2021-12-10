@@ -19,13 +19,13 @@ public enum ActivityApiSignEnum {
     TESTER("tester", "activityEngineApi_test", "Xji!LPaYJuc^v2qnro");
 
     /** 所属人 */
-    private String owner;
+    private final String owner;
 
     /** sign */
-    private String sign;
+    private final String sign;
 
     /** key */
-    private String key;
+    private final String key;
 
     ActivityApiSignEnum(String owner, String sign, String key) {
         this.owner = owner;

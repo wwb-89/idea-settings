@@ -89,7 +89,6 @@ public class DataPushConfigService {
         return dataPushFormConfigMapper.selectList(new LambdaQueryWrapper<DataPushFormConfig>()
                 .eq(DataPushFormConfig::getConfigId, configId)
         );
-
     }
 
 }

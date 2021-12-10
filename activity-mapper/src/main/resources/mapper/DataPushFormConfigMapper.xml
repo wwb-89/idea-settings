@@ -5,11 +5,13 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="config_id" jdbcType="INTEGER" property="configId" />
         <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="is_custom_field" jdbcType="BIT" property="customField" />
         <result column="form_field_label" jdbcType="VARCHAR" property="formFieldLabel" />
+        <result column="form_field_alias" jdbcType="VARCHAR" property="formFieldAlias" />
         <result column="data_field" jdbcType="VARCHAR" property="dataField" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.config_id, t.market_id, t.form_field_label, t.data_field, t.create_time
+        t.id, t.config_id, t.market_id, t.is_custom_field, t.form_field_label, t.form_field_alias, t.data_field, t.create_time
     </sql>
 </mapper>

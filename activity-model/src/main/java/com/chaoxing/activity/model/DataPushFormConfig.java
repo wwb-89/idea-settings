@@ -1,6 +1,7 @@
 package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 活动市场数据推送表单配置
@@ -23,7 +23,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_activity_create_permission")
+@TableName(value = "t_data_push_form_config")
 public class DataPushFormConfig {
 
     /** 主键; column: id*/
@@ -33,8 +33,13 @@ public class DataPushFormConfig {
     private Integer configId;
     /** 活动市场id; column: market_id*/
     private Integer marketId;
+    /** 是否是自定义字段; column: is_custom_field*/
+    @TableField(value = "is_custom_field")
+    private Boolean customField;
     /** 表单字段名称; column: form_field_label*/
     private String formFieldLabel;
+    /** 表单字段别名; column: form_field_alias*/
+    private String formFieldAlias;
     /** 数据字段; column: data_field*/
     private String dataField;
     /** 创建时间; column: create_time*/
