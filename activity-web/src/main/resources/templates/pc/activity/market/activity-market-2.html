@@ -122,7 +122,7 @@
 				regions: [[${regions}]],
                 areaCode: [[${areaCode}]],
 				statuses: [],
-				sw: "",
+				sw: [[${sw == null ? "" : sw}]],
 				//筛选查询参数对象
 				queryParams: {},
 				activities: [],
@@ -272,7 +272,7 @@
 						pageNum: 1,
 						pageSize: 18,
 						style: 2,
-						sw: "",
+						sw: [[${sw == null ? "" : sw}]],
 						activityClassifyName: "",
 						date: "",
 						status: "",

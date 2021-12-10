@@ -28,7 +28,7 @@
 <body>
 <div class="activity-list index" id="activity-list" v-cloak>
     <div class="topFixed">
-        <div class="searchbefore" v-show="!searchShow" @click="showSearchInput"><i></i><span>搜索</span></div>
+        <div class="searchbefore" v-show="!searchShow" @click="showSearchInput"><i></i><span>{{!sw ? '搜索' : sw}}</span></div>
         <div class="searchDiv inputShow" v-show="searchShow">
             <i class="searchIcon"></i>
             <i class="delete" v-show="sw" @click="clearSearch"></i>
@@ -164,7 +164,7 @@
                         areaCode: [[${areaCode}]],
                         // 状态
                         statuses: [],
-                        sw: "",
+                        sw: [[${sw == null ? "" : sw}]],
                         queryParams: {},
                         activities: [],
                         loaded: false,
@@ -288,7 +288,7 @@
                         $this.queryParams = {
                             pageNum: 1,
                             pageSize: 10,
-                            sw: "",
+                            sw: [[${sw == null ? "" : sw}]],
                             activityClassifyName: "",
                             dateScope: "",
                             status: "",

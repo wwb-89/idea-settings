@@ -43,6 +43,8 @@ public class ActivitySquareParamDTO {
     private String hideFilter;
     /** 为1则查询能报名的活动 */
     private Integer strict = 0;
+    /** 搜索关键字 */
+    private String sw;
 
     public Integer getRealFid() {
         return Optional.ofNullable(getWfwfid()).orElse(Optional.ofNullable(getUnitId()).orElse(Optional.ofNullable(getState()).orElse(getFid())));

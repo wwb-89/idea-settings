@@ -118,7 +118,7 @@
                 hideFilter: [[${hideFilter}]],
                 statuses: [],
                 pages: 0,
-                sw: "",
+                sw: [[${sw == null ? "" : sw}]],
                 //筛选查询参数对象
                 queryParams: {},
                 activities: [],
@@ -268,7 +268,7 @@
                     $this.queryParams = {
                         pageNum: 1,
                         pageSize: 9,
-                        sw: "",
+                        sw: [[${sw == null ? "" : sw}]],
                         activityClassifyName: "",
                         dateScope: "",
                         status: "",

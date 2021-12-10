@@ -239,6 +239,7 @@ public class IndexController {
 		model.addAttribute("scope", activitySquareParam.getScope());
 		model.addAttribute("hideFilter", activitySquareParam.getHideFilter());
 		model.addAttribute("signUpAble", Objects.equals(1, activitySquareParam.getStrict()));
+		model.addAttribute("sw", activitySquareParam.getSw());
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		// 验证style是否存在
