@@ -504,10 +504,10 @@ public class ActivityMhDataCenterApiController {
 
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         JSONObject jsonObject = new JSONObject();
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_ACTIVITY_NUM.getValue()), "活动数", activityNum , mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_RATING_NUM.getValue()), "评论数", ratingNum, mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_IN_NUM.getValue()), "签到数", signedInNum, mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_UP_NUM.getValue()), "报名数", signedUpNum, mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_ACTIVITY_NUM.getValue()), "活动数", "个", activityNum , mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_RATING_NUM.getValue()), "评论数", "条", ratingNum, mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_IN_NUM.getValue()), "签到数", "个", signedInNum, mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_UP_NUM.getValue()), "报名数", "次", signedUpNum, mainFields);
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
@@ -583,7 +583,7 @@ public class ActivityMhDataCenterApiController {
                     .build());
             fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                     .key("报名数")
-                    .value(Optional.ofNullable(v.getSignedUpNum()).map(String::valueOf).orElse("0"))
+                    .value(Optional.ofNullable(v.getSignedUpNum()).map(String::valueOf).orElse("0") + "人报名")
                     .type("3")
                     .flag(String.valueOf(++flag))
                     .build());
@@ -641,6 +641,7 @@ public class ActivityMhDataCenterApiController {
     private void buildField(String iconUrl,
                             String key,
                             String value,
+                            String unit,
                             List<MhGeneralAppResultDataDTO> mainFields) {
         MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
@@ -660,6 +661,12 @@ public class ActivityMhDataCenterApiController {
         fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                 .key("内容")
                 .value(value)
+                .type("3")
+                .flag(String.valueOf(++flag))
+                .build());
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("单位")
+                .value(unit)
                 .type("3")
                 .flag(String.valueOf(++flag))
                 .build());

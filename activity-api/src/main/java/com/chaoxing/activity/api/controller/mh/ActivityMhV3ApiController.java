@@ -74,6 +74,8 @@ public class ActivityMhV3ApiController {
     @Resource
     private ActivityCollectionQueryService activityCollectionQueryService;
 
+    private static final String EMPTY_INTRODUCTION_TEXT = "<span style=\"color: rgb(165, 165, 165);\">暂无介绍</span>";
+
     @RequestMapping("activity/brief/info")
     public RestRespDTO briefInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
@@ -259,7 +261,7 @@ public class ActivityMhV3ApiController {
         if (activityDetail != null && StringUtils.isNotBlank(activityDetail.getIntroduction())) {
             MhGeneralAppResultDataDTO mhGeneralAppResultData = MhGeneralAppResultDataDTO.buildDefault();
             mhGeneralAppResultData.setOrsUrl("");
-            String introductionHtml = activityDetail.getIntroduction();
+            String introductionHtml = StringUtils.isNotBlank(activityDetail.getIntroduction()) ? activityDetail.getIntroduction() : EMPTY_INTRODUCTION_TEXT;
             String introductionText = HtmlUtil.cleanHtmlTag(introductionHtml);
             String firstImg = filterFirstImgFromHtmlStr(introductionHtml);
 

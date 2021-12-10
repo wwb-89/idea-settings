@@ -45,6 +45,10 @@ public class ActivityVO {
     private String previewUrl;
     /** 配置页面url */
     private String editUrl;
+    /** 课程id */
+    private Integer courseId;
+    /** 班级id */
+    private Integer clazzId;
     /** 活动创建者uid */
     private Integer createUid;
     /** 活动创建机构fid */
@@ -84,6 +88,8 @@ public class ActivityVO {
                 .archived(activity.getArchived())
                 .previewUrl(activity.getPreviewUrl())
                 .editUrl(activity.getEditUrl())
+                .courseId(activity.getCourseId())
+                .clazzId(activity.getClazzId())
                 .createUid(activity.getCreateUid())
                 .createFid(activity.getCreateFid())
                 .build();
