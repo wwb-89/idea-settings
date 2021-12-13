@@ -125,7 +125,13 @@ public class WfwFormSyncActivityQueueService {
             throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
         }
         Activity activity;
-        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), WfwFormAliasConstant.ACTIVITY_ID)).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getString("val")).orElse(null)).findFirst().filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null);
+        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), WfwFormAliasConstant.ACTIVITY_ID))
+                .map(u -> {
+                    if (CollectionUtils.isNotEmpty(u.getValues())) {
+                        return u.getValues().get(0).getString("val");
+                    }
+                    return null;
+                }).filter(StringUtils::isNotBlank).findFirst().map(Integer::parseInt).orElse(null);
         if (activityId == null) {
             activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
         } else {
