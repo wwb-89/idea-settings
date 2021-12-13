@@ -709,6 +709,14 @@ public class ActivityApiController {
 	@RequestMapping("create-participate/page")
 	public RestRespDTO createParticipateActivityPage(HttpServletRequest request, ActivityCreateParticipateQueryDTO activityQuery) {
 		Page page = HttpServletRequestUtils.buid(request);
+		if (activityQuery.getMarketId() == null && StringUtils.isNotBlank(activityQuery.getFlag())) {
+			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityQuery.getFlag());
+			if (activityFlagEnum != null) {
+				Integer fid = activityQuery.getFid();
+				Integer marketId = marketHandleService.getOrCreateMarket(fid, activityFlagEnum, LoginUserDTO.buildDefault(activityQuery.getUid(), fid));
+				activityQuery.setMarketId(marketId);
+			}
+		}
 		page = activityQueryService.createParticipateActivityPage(page, activityQuery);
 		List<Activity> activities = page.getRecords();
 		if (CollectionUtils.isNotEmpty(activities)) {

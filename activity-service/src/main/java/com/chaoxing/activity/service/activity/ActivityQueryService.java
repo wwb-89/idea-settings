@@ -1409,10 +1409,6 @@ public class ActivityQueryService {
 	 */
 	public Page createParticipateActivityPage(Page page, ActivityCreateParticipateQueryDTO activityQuery) {
 		activityQuery.init();
-		String flag = activityQuery.getFlag();
-		if (StringUtils.isNotBlank(flag)) {
-			activityQuery.setMarketId(marketQueryService.getMarketIdByFlag(activityQuery.getFid(), flag));
-		}
 		return activityMapper.createParticipateActivityPage(page, activityQuery);
 	}
 

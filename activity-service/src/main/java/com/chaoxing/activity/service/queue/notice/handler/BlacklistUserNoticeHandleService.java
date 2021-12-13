@@ -57,12 +57,12 @@ public class BlacklistUserNoticeHandleService {
             if (activity != null) {
                 noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
             }
-            if (marketId == null) {
-                return noticeTemplateField;
-            }
-            if (StringUtils.isBlank(noticeTemplateField.getActivityOrganisers())) {
-                noticeTemplateField.setActivityOrganisers(marketQueryService.getMarketBelongOrgName(marketId));
-            }
+        }
+        if (marketId == null) {
+            return noticeTemplateField;
+        }
+        if (StringUtils.isBlank(noticeTemplateField.getActivityOrganisers())) {
+            noticeTemplateField.setActivityOrganisers(marketQueryService.getMarketBelongOrgName(marketId));
         }
         return noticeTemplateField;
     }

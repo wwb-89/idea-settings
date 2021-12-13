@@ -47,6 +47,8 @@ public class ActivityCreateParticipateQueryDTO {
     private String orderField;
     /** 排序方式 */
     private String orderType;
+    /** 用户id */
+    private Integer uid;
 
     // 非参数传递
     /** 市场id */

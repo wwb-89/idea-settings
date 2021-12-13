@@ -308,7 +308,7 @@ public class RedirectController {
             Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
             Integer uid = CookieUtils.getUid(request);
             Integer fid = CookieUtils.getFid(request);
-            if (uid == null || fid ==null ) {
+            if (uid == null || fid == null ) {
                 throw new LoginRequiredException("请登录");
             }
             return marketHandleService.getOrCreateMarket(fid, activityFlagEnum, LoginUserDTO.buildDefault(uid, fid));
