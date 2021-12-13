@@ -23,6 +23,8 @@ public class CommonConstant {
 	public static final String DEFAULT_FILE_SEPARATOR = "/";
 	/** groupName分隔符 */
 	public static final String GROUP_NAME_SEPARATOR = "/";
+	/** 连接符号 */
+	public static final String  LINK_CHAR = "/";
 	/** 默认的分隔符 */
 	public static final String DEFAULT_SEPARATOR = ",";
 	/** 登录认证密钥 */

@@ -7,6 +7,7 @@ import com.chaoxing.activity.dto.manager.form.FormAdvanceSearchFilterConditionDT
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.constant.WfwFormConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
 import com.google.common.collect.Lists;
@@ -42,10 +43,6 @@ public class WfwFormApiService {
 
 	/** 日期格式化 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
-	/** sign */
-	private static final String SIGN = "appsFormsData_hdpt";
-	/** key */
-	private static final String KEY = "fCkw1Jq&oAHxYKmwsK";
 	/** 表单每页数据限制 */
 	private static final int MAX_PAGE_SIZE_LIMIT = 100;
 	private static final int MAX_DELETE_SIZE_LIMIT = 100;
@@ -74,7 +71,7 @@ public class WfwFormApiService {
 			enc.append("[").append(entry.getKey()).append("=")
 					.append(entry.getValue()).append("]");
 		}
-		return DigestUtils.md5Hex(enc + "[" + KEY + "]");
+		return DigestUtils.md5Hex(enc + "[" + WfwFormConstant.KEY + "]");
 	}
 
 	/**查询表单记录
@@ -94,7 +91,7 @@ public class WfwFormApiService {
 		paramsMap.put("deptId", fid);
 		paramsMap.put("formId", formId);
 		paramsMap.put("formUserIds", Optional.of(formUserIds).orElse(Lists.newArrayList()).stream().map(String::valueOf).collect(Collectors.joining(",")));
-		paramsMap.put("sign", SIGN);
+		paramsMap.put("sign", WfwFormConstant.SIGN);
 		paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
 		paramsMap.put("enc", getEnc(paramsMap));
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
@@ -177,7 +174,7 @@ public class WfwFormApiService {
 		paramsMap.put("cpage", pageNum);
 		paramsMap.put("pageSize", pageSize);
 		paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-		paramsMap.put("sign", SIGN);
+		paramsMap.put("sign", WfwFormConstant.SIGN);
 		paramsMap.put("enc", getEnc(paramsMap));
 		paramsMap.put("searchStr", JSON.toJSONString(formAdvanceSearchFilterConditionDto));
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
@@ -234,7 +231,7 @@ public class WfwFormApiService {
 			paramsMap.put("formId", formId);
 			paramsMap.put("formUserId", String.join(",", integers.stream().map(String::valueOf).collect(Collectors.toList())));
 			paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-			paramsMap.put("sign", SIGN);
+			paramsMap.put("sign", WfwFormConstant.SIGN);
 			paramsMap.put("enc", getEnc(paramsMap));
 			MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 			params.setAll(paramsMap);
@@ -263,7 +260,7 @@ public class WfwFormApiService {
 		TreeMap<String, Object> paramMap = Maps.newTreeMap();
 		paramMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
 		paramMap.put("deptId", fid);
-		paramMap.put("sign", SIGN);
+		paramMap.put("sign", WfwFormConstant.SIGN);
 		paramMap.put("formId", formId);
 		paramMap.put("uid", uid);
 		paramMap.put("comptIdValues", data);
@@ -297,7 +294,7 @@ public class WfwFormApiService {
 		paramMap.put("formId", formId);
 		paramMap.put("deptId", fid);
 		paramMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-		paramMap.put("sign", SIGN);
+		paramMap.put("sign", WfwFormConstant.SIGN);
 		paramMap.put("enc", getEnc(paramMap));
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap();
 		params.setAll(paramMap);
@@ -329,7 +326,7 @@ public class WfwFormApiService {
 		paramsMap.put("formUserId", formUserId);
 		paramsMap.put("comptIdValues", data);
 		paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-		paramsMap.put("sign", SIGN);
+		paramsMap.put("sign", WfwFormConstant.SIGN);
 		paramsMap.put("enc", getEnc(paramsMap));
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap();
 		params.setAll(paramsMap);
@@ -375,7 +372,7 @@ public class WfwFormApiService {
 		Map<String, Object> params = new TreeMap<>();
 		params.put("deptId", fid);
 		params.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-		params.put("sign", SIGN);
+		params.put("sign", WfwFormConstant.SIGN);
 		params.put("enc", getEnc(params));
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
 		paramMap.setAll(params);

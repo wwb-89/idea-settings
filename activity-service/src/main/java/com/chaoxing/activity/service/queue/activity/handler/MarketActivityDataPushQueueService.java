@@ -6,10 +6,9 @@ import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.cloud.CloudImageDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityDataPushRecord;
-import com.chaoxing.activity.model.DataPushConfig;
-import com.chaoxing.activity.model.DataPushFormConfig;
+import com.chaoxing.activity.dto.manager.wfwform.v2.WfwFormDataAddParamDTO;
+import com.chaoxing.activity.dto.manager.wfwform.v2.WfwFormDataUpdateParamDTO;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.data.v2.DataPushConfigService;
@@ -17,7 +16,10 @@ import com.chaoxing.activity.service.data.v2.MarketActivityDataPushRecordService
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.service.manager.wfw.v2.WfwFormNewApiService;
 import com.chaoxing.activity.service.queue.activity.MarketActivityDataPushQueue;
+import com.chaoxing.activity.service.tag.TagQueryService;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.enums.ActivitySystemFieldEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,6 +50,8 @@ import java.util.stream.Collectors;
 @Service
 public class MarketActivityDataPushQueueService {
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
@@ -56,10 +62,15 @@ public class MarketActivityDataPushQueueService {
     private SignApiService signApiService;
     @Resource
     private WfwFormApiService wfwFormApiService;
+    /** 新增/修改数据使用 */
+    @Resource
+    private WfwFormNewApiService wfwFormNewApiService;
     @Resource
     private ActivityComponentValueService activityComponentValueService;
     @Resource
     private CloudApiService cloudApiService;
+    @Resource
+    private TagQueryService tagQueryService;
 
     @Transactional(rollbackFor = Exception.class)
     public void handle(MarketActivityDataPushQueue.QueueParamDTO queueParam) {
@@ -128,7 +139,8 @@ public class MarketActivityDataPushQueueService {
                 String wfwFormData = generateWfwFormPushData(activity, formId, formIdFid, configId);
                 if (formUserId == null) {
                     // 新增
-                    formUserId = wfwFormApiService.fillForm(formId, formIdFid, activity.getCreateUid(), wfwFormData);
+                    WfwFormDataAddParamDTO wfwFormDataAddParam = WfwFormDataAddParamDTO.build(formId, wfwFormData, activity.getCreateUid(), formIdFid);
+                    formUserId = wfwFormNewApiService.dataAdd(wfwFormDataAddParam);
                     marketActivityDataPushRecordService.add(ActivityDataPushRecord.builder()
                                     .activityId(activityId)
                                     .configId(configId)
@@ -137,7 +149,8 @@ public class MarketActivityDataPushQueueService {
                             .build());
                 } else {
                     // 更新
-                    wfwFormApiService.updateForm(formId, formUserId, wfwFormData);
+                    WfwFormDataUpdateParamDTO wfwFormDataUpdateParam = WfwFormDataUpdateParamDTO.build(formUserId, wfwFormData, formIdFid);
+                    wfwFormNewApiService.dataUpdate(wfwFormDataUpdateParam);
                 }
         }
     }
@@ -225,68 +238,112 @@ public class MarketActivityDataPushQueueService {
     private JSONObject generateActivityField(Activity activity, FormStructureDTO field, Map<String, String> formFieldAliasActivityValueMap) {
         JSONObject item = new JSONObject();
         item.put("compt", field.getCompt());
-        item.put("comptId", field.getId());
+        item.put("id", field.getId());
         JSONArray data = new JSONArray();
         String alias = field.getAlias();
         ActivitySystemFieldEnum activitySystemFieldEnum = ActivitySystemFieldEnum.fromValue(alias);
+        JSONObject valueJsonObject = new JSONObject();
+        data.add(valueJsonObject);
         if (activitySystemFieldEnum != null) {
+            String address = Optional.ofNullable(activity.getAddress()).orElse("");
+            address += Optional.ofNullable(activity.getDetailAddress()).orElse("");
             switch (activitySystemFieldEnum) {
                 case ACTIVITY_ID:
-                    data.add(activity.getId());
-                    item.put("val", data);
+                    valueJsonObject.put("val", activity.getId());
+                    item.put("values", data);
                     break;
                 case ACTIVITY_NAME:
-                    data.add(activity.getName());
-                    item.put("val", data);
+                    valueJsonObject.put("val", activity.getName());
+                    item.put("values", data);
+                    break;
+                case ACTIVITY_START_TIME:
+                    valueJsonObject.put("val", activity.getStartTime().format(DATE_TIME_FORMATTER));
+                    item.put("values", data);
+                    break;
+                case ACTIVITY_END_TIME:
+                    valueJsonObject.put("val", activity.getEndTime().format(DATE_TIME_FORMATTER));
+                    item.put("values", data);
                     break;
                 case ACTIVITY_COVER:
                     String coverCloudId = activity.getCoverCloudId();
                     CloudImageDTO cloudImage = cloudApiService.getImage(coverCloudId);
                     if (cloudImage != null) {
-                        JSONObject image = new JSONObject();
-                        image.put("name", cloudImage.getFileName());
-                        image.put("suffix", cloudImage.getSuffix());
-                        image.put("objectId", cloudImage.getObjectId());
-                        image.put("size", cloudImage.getLength());
-                        data.add(image);
-                        item.put("files", data);
+                        valueJsonObject.put("name", cloudImage.getFileName());
+                        valueJsonObject.put("suffix", cloudImage.getSuffix());
+                        valueJsonObject.put("objectId", cloudImage.getObjectId());
+                        valueJsonObject.put("size", cloudImage.getLength());
+                        item.put("values", data);
+                    }
+                    break;
+                case ACTIVITY_TYPE:
+                    Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activity.getActivityType());
+                    valueJsonObject.put("val", Optional.ofNullable(activityTypeEnum).map(Activity.ActivityTypeEnum::getName).orElse(""));
+                    item.put("values", data);
+                    break;
+                case ACTIVITY_ADDRESS:
+                    valueJsonObject.put("val", address);
+                    item.put("values", data);
+                    break;
+                case LOCATION:
+                    BigDecimal lng = activity.getLongitude();
+                    BigDecimal lat = activity.getDimension();
+                    if (lng != null && lat != null) {
+                        valueJsonObject.put("lng", lng);
+                        valueJsonObject.put("lat", lat);
+                        valueJsonObject.put("address", address);
+                        item.put("values", data);
                     }
                     break;
                 case SIGN_UP_PARTICIPATE_SCOPE:
-                    data.add(signApiService.getActivitySignParticipateScopeDescribe(activity.getSignId()));
-                    item.put("val", data);
+                    valueJsonObject.put("val", signApiService.getActivitySignParticipateScopeDescribe(activity.getSignId()));
+                    item.put("values", data);
                     break;
                 case CREATE_ORG:
-                    data.add(activity.getCreateOrgName());
-                    item.put("val", data);
+                    valueJsonObject.put("val", activity.getCreateOrgName());
+                    item.put("values", data);
+                    break;
+                case ORGANISERS:
+                    valueJsonObject.put("val", activity.getOrganisers());
+                    item.put("values", data);
                     break;
                 case ACTIVITY_CLASSIFY:
-                    data.add(activity.getActivityClassifyName());
-                    item.put("val", data);
+                    valueJsonObject.put("val", activity.getActivityClassifyName());
+                    item.put("values", data);
                     break;
                 case ACTIVITY_INTEGRAL:
-                    data.add(activity.getIntegral());
-                    item.put("val", data);
+                    valueJsonObject.put("val", activity.getIntegral());
+                    item.put("values", data);
                     break;
                 case UNIT:
-                    data.add("积分");
-                    item.put("val", data);
+                    valueJsonObject.put("val", "积分");
+                    item.put("values", data);
                     break;
                 case PREVIEW_URL:
-                    data.add(activity.getPreviewUrl());
-                    item.put("val", data);
+                    valueJsonObject.put("val", activity.getPreviewUrl());
+                    item.put("values", data);
                     break;
                 case CREATE_USER:
-                    JSONObject user = new JSONObject();
-                    user.put("id", activity.getCreateUid());
-                    user.put("name", activity.getCreateUserName());
-                    data.add(user);
-                    item.put("idNames", data);
+                    valueJsonObject.put("puid", activity.getCreateUid());
+                    valueJsonObject.put("uname", activity.getCreateUserName());
+                    item.put("values", data);
                     break;
                 case ACTIVITY_STATUS:
-                    Integer status = activity.getStatus();
-                    data.add(Activity.getStatusDescription(status));
-                    item.put("val", data);
+                    Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(activity.getStatus());
+                    valueJsonObject.put("val", Optional.ofNullable(statusEnum).map(Activity.StatusEnum::getName).orElse(""));
+                    item.put("values", data);
+                    break;
+                case TAGS:
+                    List<Tag> tags = tagQueryService.listActivityAssociateTag(activity.getId());
+                    if (CollectionUtils.isNotEmpty(tags)) {
+                        String tagNames = String.join(CommonConstant.LINK_CHAR, tags.stream().map(Tag::getName).collect(Collectors.toList()));
+                        valueJsonObject.put("val", tagNames);
+                        item.put("values", data);
+                    }
+                    break;
+                case INTRODUCTION:
+                    ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
+                    valueJsonObject.put("val", Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).filter(StringUtils::isNotBlank).orElse(""));
+                    item.put("values", data);
                     break;
                 default:
             }
@@ -294,8 +351,8 @@ public class MarketActivityDataPushQueueService {
             boolean existAlias = formFieldAliasActivityValueMap.containsKey(alias);
             if (existAlias) {
                 String value = formFieldAliasActivityValueMap.get(alias);
-                data.add(value);
-                item.put("val", data);
+                valueJsonObject.put("val", value);
+                item.put("values", data);
             }
         }
         return item;
