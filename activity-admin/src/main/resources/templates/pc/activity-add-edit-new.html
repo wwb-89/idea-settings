@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
     <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/Swiper-3.4.2/dist/css/swiper.min.css" th:href="@{/pc/assets/lib/Swiper-3.4.2/dist/css/swiper.min.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
     <link rel="stylesheet" th:href="|${noteDomain}/res/css/pc/note/richtext_detail.css|">
@@ -651,40 +652,30 @@
                     </div>
                 </div>
             </div>
-            <!--展示页-->
-            <div class="info box" v-if="!activity.id">
-                <div class="set-box">
-                    <div class="title">展示页<span>请选择页面呈现样式</span></div>
-                </div>
-                <div class="cover-list">
-                    <ul>
-                        <li :class="{current: operateWebTemplateId == webTemplate.id}" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" v-if="!webTemplate.deleted" @click="selectTemplate(index)">
-                            <div class="img-inner-box">
-                                <img :src="webTemplate.coverUrl" class="img">
-                                <div class="magnifier" @click="previewTemplate(index, $event)"><i></i></div>
+            <!--展示页 || 重新选择展示页-->
+            <div class="info box" v-if="!activity.id || isReselectConfig">
+                <div class="form-item align-start">
+                    <label class="label">展示页面</label>
+                    <div class="input-box display-block">
+                        <p class="tips first">请选择你的活动呈现页面</p>
+                        <div class="picture-list" style="background: #F7F8FA;position: relative">
+                            <div class="swiper-container">
+                                <div class="swiper-wrapper">
+                                    <div v-for="(webTemplate, index) of webTemplates" :class="{'swiper-slide': true, active: (operateWebTemplateId == webTemplate.id) }" :key="'web-templates' + index" v-if="!webTemplate.deleted" @click="selectTemplate(index)">
+                                        <div class="img-box">
+                                            <img :src="webTemplate.coverUrl" class="img">
+                                            <div class="check_"></div>
+                                            <div class="zoom" @click="previewTemplate(index, $event)"></div>
+                                        </div>
+                                        <p class="overHidden1">{{webTemplate.name}}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <p class="overHidden1">{{webTemplate.name}}</p>
-                        </li>
-                    </ul>
-                    <div class="clear"></div>
-                </div>
-            </div>
-            <!--重新选择展示页-->
-            <div class="info box" v-if="isReselectConfig">
-                <div class="set-box">
-                    <div class="title">展示页<span>请选择页面呈现样式</span></div>
-                </div>
-                <div class="cover-list">
-                    <ul>
-                        <li :class="{current: operateWebTemplateId == webTemplate.id}" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" v-if="!webTemplate.deleted" @click="selectTemplate(index)">
-                            <div class="img-inner-box">
-                                <img :src="webTemplate.coverUrl" class="img">
-                                <div class="magnifier" @click="previewTemplate(index, $event)"><i></i></div>
-                            </div>
-                            <p class="overHidden1">{{webTemplate.name}}</p>
-                        </li>
-                    </ul>
-                    <div class="clear"></div>
+                            <div class="swiper-pagination"></div>
+                            <div class="swiper-next"><i class="icon-arrows-right"></i></div>
+                            <div class="swiper-prev"><i class="icon-arrows-left"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -788,6 +779,7 @@
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
+    <script src="/static/pc/assets/lib/Swiper-3.4.2/dist/js/swiper.min.js" th:src="@{/pc/assets/lib/Swiper-3.4.2/dist/js/swiper.min.js}"></script>
     <script src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
     <script src="/static/pc/assets/component/sign-map.js" th:src="@{/pc/assets/component/sign-map.js}"></script>
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
@@ -1234,6 +1226,7 @@
                 $this.initUploader();
                 $this.handleImg();
                 $this.initWfwGroups();
+                $this.swiperInit()
                 setTimeout(function(){
                     window.onscroll = function () {
                         var scrollTop = document.getElementById('edui1_toolbarbox').getBoundingClientRect().top;
@@ -1277,6 +1270,16 @@
                 }
             },
             methods: {
+                swiperInit:function (){
+                    var mySwiper = new Swiper('.swiper-container', {
+                        slidesPerView: 3,
+                        pagination: '.swiper-pagination',
+                        nextButton: '.swiper-next',
+                        prevButton: '.swiper-prev',
+                        paginationClickable: true,
+                        spaceBetween: 24,
+                    })
+                },
                 // 创建报名万能表单
                 createSignUpWfwForm: function (signUpTplComponentId) {
                     var $this =this;
