@@ -71,14 +71,7 @@ public class ActivityApiController {
 	@Deprecated
 	@RequestMapping("list/forecast/activities")
 	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
-		// 旧有规则，不走此查询
-		if (keepOldRule) {
-			return RestRespDTO.success(Lists.newArrayList());
-		}
-		return RestRespDTO.success(listForecastActivity(activityQuery, loginUser));
+		return RestRespDTO.success(Lists.newArrayList());
 	}
 
 	/**分页查询可参与的活动列表
@@ -95,21 +88,20 @@ public class ActivityApiController {
 	public RestRespDTO list(HttpServletRequest request, String data) {
 		List<Activity> result = Lists.newArrayList();
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
+		// 暂存查询条件中原始的活动状态statusList，防止预告查询中变更了statusList
+		List<Integer> originStatusList = activityQuery.getStatusList();
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		boolean keepOldRule = Optional.ofNullable(activityQuery.getKeepOldRule()).orElse(false);
 		// 额外的预告总数
-		Integer additionalTotal = 0;
-		if (!keepOldRule) {
-			boolean needLoadForecast = Optional.ofNullable(activityQuery.getNeedLoadForecast()).orElse(false);
-			// 仅当重新加载数据，且状态查询条件不为空时，才加载预告活动列表
-			if (needLoadForecast && activityQuery.getStatus() == null) {
-				result = listForecastActivity(activityQuery, loginUser);
-				additionalTotal = result.size();
-			}
-			// 除了预告活动顺序，其余查询均逆序，如果status != null，statusList是不会参与最终的sql查询
-			activityQuery.setStatusList(Lists.newArrayList(3, 4));
+		int additionalTotal = 0;
+		boolean needLoadForecast = Optional.ofNullable(activityQuery.getNeedLoadForecast()).orElse(false);
+		// 仅当重新加载数据，且状态查询条件不为空时，才加载预告活动列表
+		if (needLoadForecast && activityQuery.getStatus() == null) {
+			result = listForecastActivity(activityQuery, loginUser);
+			additionalTotal = result.size();
 		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
+		// 还原statusList
+		activityQuery.setStatusList(originStatusList);
 		page = pageActivities(page, activityQuery, loginUser);
 		List<Activity> records = Optional.ofNullable(page.getRecords()).orElse(Lists.newArrayList());
 
@@ -143,6 +135,7 @@ public class ActivityApiController {
 	 */
 	private Page<Activity> pageActivities(Page<Activity> page, ActivityQueryDTO activityQuery, LoginUserDTO loginUser) {
 		String areaCode = activityQuery.getAreaCode();
+		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
 		if (Objects.equals(activityQuery.getScope(), 1) || StringUtils.isNotBlank(areaCode)) {
 			activityQuery.setMarketId(null);
 			String flag = activityQuery.getFlag();
@@ -156,7 +149,6 @@ public class ActivityApiController {
 			}
 		}
 		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
-		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
 		page = activityQueryService.listParticipate(page, activityQuery);
 		packageActivitySignedStat(page);
 		activityQueryService.fillTagNames(page.getRecords());

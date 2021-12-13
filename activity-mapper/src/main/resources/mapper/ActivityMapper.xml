@@ -134,7 +134,14 @@
                             </foreach>
                         </when>
                         <otherwise>
-                            t.`status` IN ( 2, 3, 4 )
+                            <choose>
+                                <when test="params.signUpAble">
+                                    t.`status` IN ( 2, 3 )
+                                </when>
+                                <otherwise>
+                                    t.`status` IN ( 2, 3, 4 )
+                                </otherwise>
+                            </choose>
                         </otherwise>
                     </choose>
                 </otherwise>
@@ -243,7 +250,14 @@
                             </foreach>
                         </when>
                         <otherwise>
-                            t.`status` IN ( 2, 3, 4 )
+                            <choose>
+                                <when test="params.signUpAble">
+                                    t.`status` IN ( 2, 3 )
+                                </when>
+                                <otherwise>
+                                    t.`status` IN ( 2, 3, 4 )
+                                </otherwise>
+                            </choose>
                         </otherwise>
                     </choose>
                 </otherwise>

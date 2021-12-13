@@ -15,6 +15,7 @@ import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
 import com.chaoxing.activity.util.exception.WfwFormActivityNotGeneratedException;
 import org.apache.commons.lang3.StringUtils;
@@ -203,6 +204,9 @@ public class RedirectController {
     @RequestMapping("sign-up-manage/by/activity/{activityId}")
     public String redirectToSignUpManage(@PathVariable Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
+        if (activity == null || activity.getSignId() == null) {
+            throw new BusinessException("活动或报名签到不存在");
+        }
         return "redirect:" + SignDTO.getSignUpManageUrl(activity.getSignId());
     }
 

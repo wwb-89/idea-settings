@@ -153,30 +153,48 @@ public class ActivityQueryService {
 		}
 		activityQuery.setTagIds(tagIds);
 		if (currentUid != null && Optional.ofNullable(signUpAble).orElse(false)) {
-			page.setSize(Integer.MAX_VALUE);
-			page = activityMapper.pageParticipate(page, activityQuery);
-			List<Activity> records = Optional.ofNullable(page.getRecords()).orElse(Lists.newArrayList());
-			// 只查询能报名的
-			List<Integer> signIds = records.stream().map(Activity::getSignId).filter(Objects::nonNull).collect(Collectors.toList());
-			List<SignUpAbleSignDTO> signUpAbleSigns = signApiService.listSignUpAbleSign(currentUid, signIds);
-			List<Activity> activities = Lists.newArrayList();
-			if (CollectionUtils.isNotEmpty(signUpAbleSigns)) {
-				Map<Integer, SignUpAbleSignDTO> signIdSignUpAbleSignMap = signUpAbleSigns.stream().collect(Collectors.toMap(SignUpAbleSignDTO::getSignId, v -> v, (v1, v2) -> v2));
-				for (Activity record : records) {
-					SignUpAbleSignDTO signUpAbleSign = signIdSignUpAbleSignMap.get(record.getSignId());
-					if (signUpAbleSign != null) {
-						record.setHasSignUp(true);
-						record.setSignUpStatus(signUpAbleSign.getSignUpStatus());
-						record.setSignUpStatusDescribe(signUpAbleSign.getSignUpStatusDescribe());
-						activities.add(record);
-					}
-				}
-			}
-			page.setRecords(activities);
-			page.setTotal(activities.size());
+			page = pageSignUpAbleActivity(page, activityQuery, currentUid);
 		} else {
 			page = activityMapper.pageParticipate(page, activityQuery);
 		}
+		return page;
+	}
+
+	/**查询所有用户可报名的活动，并将活动封装到page返回
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-13 16:34:28
+	 * @param page
+	 * @param activityQuery
+	 * @param currentUid
+	 * @return
+	 */
+	private Page<Activity> pageSignUpAbleActivity(Page<Activity> page, ActivityQueryDTO activityQuery, Integer currentUid) {
+		page.setSize(Integer.MAX_VALUE);
+		// 查询可报名活动时，过滤掉已经结束的状态的活动
+		if (CollectionUtils.isNotEmpty(activityQuery.getStatusList())) {
+			activityQuery.getStatusList().remove(Activity.StatusEnum.ENDED.getValue());
+		}
+		page = activityMapper.pageParticipate(page, activityQuery);
+		List<Activity> records = Optional.ofNullable(page.getRecords()).orElse(Lists.newArrayList());
+		// 只查询能报名的
+		List<Integer> signIds = records.stream().map(Activity::getSignId).filter(Objects::nonNull).collect(Collectors.toList());
+		List<SignUpAbleSignDTO> signUpAbleSigns = signApiService.listSignUpAbleSign(currentUid, signIds);
+		List<Activity> activities = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(signUpAbleSigns)) {
+			Map<Integer, SignUpAbleSignDTO> signIdSignUpAbleSignMap = signUpAbleSigns.stream().collect(Collectors.toMap(SignUpAbleSignDTO::getSignId, v -> v, (v1, v2) -> v2));
+			for (Activity record : records) {
+				SignUpAbleSignDTO signUpAbleSign = signIdSignUpAbleSignMap.get(record.getSignId());
+				if (signUpAbleSign != null) {
+					record.setHasSignUp(true);
+					record.setSignUpStatus(signUpAbleSign.getSignUpStatus());
+					record.setSignUpStatusDescribe(signUpAbleSign.getSignUpStatusDescribe());
+					activities.add(record);
+				}
+			}
+		}
+		page.setRecords(activities);
+		page.setTotal(activities.size());
 		return page;
 	}
 
@@ -190,7 +208,13 @@ public class ActivityQueryService {
 	 */
 	public Page<Activity> pageFlag(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
-		page = activityMapper.pageFlag(page, activityQuery);
+		Integer currentUid = activityQuery.getCurrentUid();
+		Boolean signUpAble = Optional.ofNullable(activityQuery.getSignUpAble()).orElse(false);
+		if (currentUid != null && signUpAble) {
+			page = pageSignUpAbleActivity(page, activityQuery, currentUid);
+		} else {
+			page = activityMapper.pageFlag(page, activityQuery);
+		}
 		return page;
 	}
 
