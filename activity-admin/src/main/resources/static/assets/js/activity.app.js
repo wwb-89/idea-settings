@@ -203,15 +203,11 @@
     activityApp.prototype.getCloudImgUrl = function (activity, cloudDomain) {
         var $this = this;
         var coverCloudId = activity.coverCloudId;
-        var coverUrl = activity.coverUrl;
-        if (!$this.isEmpty(coverUrl)) {
-            return activity.coverUrl;
-        }
         return $this.buildCloudImgUrl(coverCloudId, cloudDomain);
     };
 
     activityApp.prototype.buildCloudImgUrl = function (cloudId, cloudDomain) {
-        return cloudDomain + "/star3/origin/" + cloudId;
+        return cloudDomain + "/star3/380_160c/" + cloudId;
     };
 
     /**

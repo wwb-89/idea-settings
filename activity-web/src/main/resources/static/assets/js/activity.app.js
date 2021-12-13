@@ -179,11 +179,7 @@
     activityApp.prototype.getCloudImgUrl = function (activity, cloudDomain) {
         var $this = this;
         var coverCloudId = activity.coverCloudId;
-        var coverUrl = activity.coverUrl;
-        if (!$this.isEmpty(coverUrl)) {
-            return activity.coverUrl;
-        }
-        return cloudDomain + "/star3/origin/" + coverCloudId;
+        return cloudDomain + "/star3/380_160c/" + coverCloudId;
     };
     /**
      * 生成新的签到报名
