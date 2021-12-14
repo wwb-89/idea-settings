@@ -209,8 +209,7 @@ public class ActivityStatHandleService {
                             log.error("活动:" + detail.getActivityId() + "统计失败！异常信息:" + detail.getErrorMessage());
                         }
                     } else {
-                        execSuccessNum++;
-                        detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
+                        detail.setStatus(ActivityStatTaskDetail.Status.FAIL.getValue());
                     }
                     // 更新统计任务状态
                     activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
