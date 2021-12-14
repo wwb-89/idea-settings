@@ -23,10 +23,10 @@
 				<i class="icon-delete1" v-show="sw" @click="clearSearch"></i>
 				<i class="icon-search1" @click="search"></i>
 			</div>
-<!--			<div class="user fr" th:if="${session._login_user_ != null}">-->
-<!--				<i class="icon-user"></i>-->
-<!--				<a href="javascript:" @click="my">我的活动</a>-->
-<!--			</div>-->
+			<div class="user fr" th:if="${session._login_user_ != null}" v-show="showFilter('my')">
+				<i class="icon-user"></i>
+				<a href="javascript:" @click="my">我的活动</a>
+			</div>
 			<div class="clear"></div>
 		</div>
 	</div>
@@ -105,6 +105,7 @@
 				loaded: false,
 				topFid: [[${topFid}]],
 				levelFilter: [[${levelFilter}]],
+				hideFilter: [[${hideFilter}]],
 				mescroll: null
 			},
 			created: function () {
@@ -156,6 +157,10 @@
 						timeOrder: [[${timeOrder}]]
 					};
 					$this.activities = [];
+				},
+				showFilter: function (type) {
+					var $this = this;
+					return activityApp.isEmpty($this.hideFilter) || $this.hideFilter.indexOf(type) == -1;
 				},
 				//数据加载渲染
 				loadData: function () {

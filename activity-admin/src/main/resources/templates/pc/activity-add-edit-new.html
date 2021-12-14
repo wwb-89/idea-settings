@@ -2315,6 +2315,9 @@
                 sureReSelectWebTemplate: function () {
                     var $this = this;
                     $this.isReselectConfig = true;
+                    $this.$nextTick(function () {
+                        $this.swiperInit();
+                    })
                 },
                 toInspectionConfig: function () {
                     var $this = this;
