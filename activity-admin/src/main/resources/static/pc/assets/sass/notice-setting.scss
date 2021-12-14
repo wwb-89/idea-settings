@@ -291,6 +291,24 @@ html {
         box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.04);
         font-size: 16px;
         color: #fff;
+        padding: 0 24px;
+        box-sizing: border-box;
+        .go-back{
+            display: flex;
+            cursor: pointer;
+            margin-top: 5px;
+            i {
+                font-size: 16px;
+                margin-right: 6px;
+                vertical-align: middle;
+                margin-top: 6px;
+            }
+            span {
+                font-size: 14px;
+                line-height: 30px;
+                color: rgba(255, 255, 255, 0.6);
+            }
+        }
     }
     .main-container {
         width: calc(100% - 40px);
@@ -346,5 +364,43 @@ html {
                 border-bottom-right-radius: 8px;
             }
         }
+    }
+}
+.color333{
+    color: #333333;
+}
+.color999{
+    color: #999999;
+}
+.fs16{
+    font-size: 16px;
+}
+.fs14{
+    font-size: 14px;
+}
+.font500{
+    font-weight: 500;
+}
+/*活动字段页面*/
+.activity-field-page{
+    padding: 16px 24px;
+    box-sizing: border-box;
+    .page-title-box{
+        padding: 6px 0;
+        line-height: 20px;
+        margin-bottom: 16px;
+        .title1{
+            margin-right: 24px;
+        }
+    }
+    .set-button{
+        border-radius: 30px;
+        padding: 6px 12px;
+        line-height: 16px;
+    }
+    .el-button--primary.is-plain {
+        color: #0084FF;
+        background: white;
+        border-color: #82C3FF;
     }
 }

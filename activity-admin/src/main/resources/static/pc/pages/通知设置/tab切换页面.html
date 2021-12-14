@@ -19,7 +19,9 @@
 </style>
 <body>
     <div class="tab-page" id="index" v-cloak>
-        <div class="page-header">活动引擎后台设置</div>
+        <div class="page-header">
+            <div class="go-back fl"><i class="icon-back"></i><span>返回</span></div>
+            <div class="name-txt">活动引擎后台设置</div></div>
         <div class="main-container" >
             <div class="left-content fl">
                 <ul class="menu-lists">
@@ -47,6 +49,7 @@
                     {id: 1, name:'报名规则'},
                     {id: 2, name:'数据推送'},
                     {id: 3, name:'自动通知'},
+                    {id: 4, name:'活动字段'},
                 ],
                 active: 2,
                 iframelink: './通知设置.html',
@@ -73,6 +76,8 @@
                     this.iframelink = ''
                 }else if(index===1){
                     this.iframelink = ''
+                }else if(index===3){
+                  this.iframelink = './活动字段.html'
                 }
             },
             setIframeHeight: function (iframe) {

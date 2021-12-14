@@ -536,7 +536,7 @@
             max-height: 561px;
             overflow: auto;
             .label{
-                width: 45px;
+                min-width: 45px;
             }
         }
     }
@@ -1663,4 +1663,127 @@
 }
 .el-popper .popper__arrow, .el-popper .popper__arrow::after{
     display: none;
+}
+
+.fs13{
+    font-size: 13px;
+}
+.fs14{
+    font-size: 14px;
+}
+.fs16{
+  font-size: 16px;
+}
+.color999{
+    color: #999999;
+}
+.color333{
+    color: #333333;
+}
+.color666{
+    color: #666666;
+}
+.color-blue{
+    color: #0084FF;
+}
+.marginBottom16{
+    margin-bottom: 16px;
+}
+/*选择应用---链接--弹窗*/
+.selectLinkPop{
+  .body{
+    padding: 21px 32px;
+    .form{
+      .el-input__inner{
+        color: #333333;
+      }
+    }
+    .content-switch-box{
+      background: #F8F8F8;
+      border-radius: 4px;
+      padding: 16px;
+      .switch-box{
+        .label{
+          color: #666666;
+        }
+        .switch{
+          margin-right: 0;
+        }
+      }
+      .link-lists{
+        padding-top: 16px;
+        .link-list{
+          position: relative;
+          padding-right: 24px;
+          box-sizing: border-box;
+          .left-box{
+            .line1{
+              overflow: hidden;
+              width: 100%;
+              .icon-img{
+                width: 32px;
+                height: 32px;
+                border: 1px solid #E7E7E7;
+                box-sizing: border-box;
+                border-radius: 6px;
+                text-align: center;
+                float: left;
+                cursor: pointer;
+                background-color: white;
+                img{
+                  width: 16px;
+                  margin-top: 8px;
+                }
+              }
+              .el-input{
+                width: calc(100% - 48px);
+                float: right;
+              }
+            }
+          }
+          .delete-btn-icon{
+            position: absolute;
+            right: 0;
+            top: 32px;
+            z-index: 1;
+            cursor: pointer;
+            color: #cccccc;
+          }
+        }
+      }
+    }
+  }
+}
+/*选择图标*/
+.selectIconPop{
+  .body{
+    padding: 24px 32px;
+    .icon-lists{
+      .icon-list{
+        display: inline-block;
+        width: 54px;
+        height: 54px;
+        margin-right: 20px;
+        margin-bottom: 24px;
+        text-align: center;
+        cursor: pointer;
+        border: 1px solid #ffffff;
+        box-sizing: border-box;
+        border-radius: 4px;
+        &:nth-of-type(6n){
+          margin-right: 0;
+        }
+        &:hover{
+          background-color: #F2F2F2;
+        }
+        img{
+          margin-top: 11px;
+        }
+        &.active{
+          background-color: #ffffff;
+          border: 1px solid #0084FF;
+        }
+      }
+    }
+  }
 }

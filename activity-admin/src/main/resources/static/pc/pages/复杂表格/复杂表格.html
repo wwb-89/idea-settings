@@ -354,8 +354,8 @@
                             </div>
                             <!-- 超过三个链接显示 -->
                             <div class="more-three-link" v-if="scope.row.status === 2">
-                                <el-button type="text" size="middle">链接</el-button>
-                                <el-button type="text" size="middle">链接</el-button>
+                                <el-button type="text" size="middle" @click="showImgFunc(1)">查看</el-button>
+                                <el-button type="text" size="middle" @click="showImgFunc(2)">预览</el-button>
                                 <el-button type="text" size="middle">链接</el-button>
                                 <el-dropdown class="status-dropdown inlineMiddle">
                                       <span class="el-dropdown-link">
@@ -601,6 +601,25 @@
           </span>
     </el-dialog>
 
+  <!--查看图片弹窗-->
+  <div class="dialog-box showImgPop" v-if="showImg">
+    <div class="masking" @click="showImg = false"></div>
+    <div class="confirm_dialog">
+      <div class="header">
+        <span class="color333" v-if="showImgType == 1">证书查看</span>
+        <span class="color333" v-if="showImgType == 2">证书预览</span>
+        <img src="../../assets/images/close.png" @click="showImg = false">
+      </div>
+      <div class="dialog-center">
+        <div class="dialog-img-box">
+          <img src="../../assets/images/example.jpg" alt="">
+        </div>
+      </div>
+      <div class="dialog-footer btn" v-if="showImgType == 1">
+        <span class="cancel">下载</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="../../assets/lib/jquery.min.js"></script>
@@ -1173,6 +1192,8 @@
             tbodyHeight: 0,
             changeTimePop: false, //修改签到时间
             signinTimeVal:'', //修改签到时间值
+            showImg: false, //展示图片弹窗
+            showImgType: 1,  //展示图片弹窗的类型
         },
         created: function () {
 
@@ -1270,6 +1291,11 @@
                 this.showToast()
                 this.ifModifyPop = false
             },
+        //  查看图片弹窗
+          showImgFunc: function (eval) {
+            this.showImgType = eval;
+            this.showImg = true;
+          }
         }
     })
 </script>
