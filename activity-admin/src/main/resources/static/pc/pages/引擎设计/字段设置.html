@@ -962,7 +962,7 @@
             </div>
         </div>
         <!-- 报名条件-->
-        <div class="dialog-mask" v-show="!signUpDialog">
+        <div class="dialog-mask" v-show="signUpDialog">
             <div class="dailog">
                 <div class="header">
                     <span>报名条件</span>
@@ -993,7 +993,7 @@
                         </div>
                         <div class="marginBottom20 display-flex">
                             <label>设置条件</label>
-                            <el-switch v-model="switch4" :class="margin-auto" inactive-text="活动发起时配置字段值">
+                            <el-switch v-model="switch4" class="margin-auto" inactive-text="活动发起时配置字段值">
                             </el-switch>
                         </div>
                         <div class="condition-box">
@@ -1029,6 +1029,110 @@
                 </div>
             </div>
         </div>
+
+        <!--选择应用---链接-->
+        <div class="dialog-mask selectLinkPop" v-show="selectLinkDialog">
+        <div class="dailog">
+          <div class="header">
+            <span>链接</span>
+            <i class="close" @click="selectLinkDialog=false"></i>
+          </div>
+          <div class="body">
+            <div class="form">
+              <el-input v-model="linkName" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+              <el-input v-model="linkSubname" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+              <div class="content-tip fs13 color999 marginBottom20">
+                <span>在活动里访问链接时，或自动追加参数，点击 </span><a href="#" target="_blank" class="color-blue">查看参数</a>
+              </div>
+              <div class="content-switch-box marginBottom20">
+                <div class="switch-title">
+                  <span class="color333 fs14">前台链接</span>
+                  <div class="switch-box fr">
+                    <label class="label color666">报名后显示</label>
+                    <el-switch class="switch" v-model="linkSwitch1" @change="changeLinkShow(1)"></el-switch>
+                  </div>
+                </div>
+                <div class="link-lists link-lists1">
+                  <div class="link-list marginBottom16" v-for="(item ,index) in linkLists1" :key="index">
+                    <div class="left-box">
+                      <div class="line1 marginBottom16">
+                        <div class="icon-img" @click="showSelectIconFunc()"><img :src="item.icon" alt=""></div>
+                        <el-input v-model="item.name" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                      </div>
+                      <div class="line2">
+                        <el-input v-model="item.link" type="text" placeholder="链接"></el-input>
+                      </div>
+                    </div>
+                    <div class="delete-btn-icon icon-minus-circle fs16" @click="deleteListFunc(item,index,1)"></div>
+                  </div>
+                  <a href="javascript:;" class="fs14 color-blue" @click="addLinklist(1)">
+                    <i class="icon-plus-circle"></i>
+                    <span>添加</span>
+                  </a>
+                </div>
+              </div>
+              <div class="content-switch-box">
+                <div class="switch-title">
+                  <span class="color333 fs14">后台连接</span>
+                  <div class="switch-box fr">
+                    <label class="label color666">新页面打开</label>
+                    <el-switch class="switch" v-model="linkSwitch2" @change="changeLinkShow(2)"></el-switch>
+                  </div>
+                </div>
+                <div class="link-lists link-lists2">
+                  <div class="link-list marginBottom16" v-for="(item ,index) in linkLists2" :key="index">
+                    <div class="left-box">
+                      <div class="line1 marginBottom16">
+                        <div class="icon-img" @click="showSelectIconFunc()"><img :src="item.icon" alt=""></div>
+                        <el-input v-model="item.name" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                      </div>
+                      <div class="line2">
+                        <el-input v-model="item.link" type="text" placeholder="链接"></el-input>
+                      </div>
+                    </div>
+                    <div class="delete-btn-icon icon-minus-circle fs16" @click="deleteListFunc(item,index,2)"></div>
+                  </div>
+                    <a href="javascript:;" class="fs14 color-blue" @click="addLinklist(2)">
+                      <i class="icon-plus-circle"></i>
+                      <span>添加</span>
+                    </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="footer">
+            <div class="btn-box">
+              <div class="border-btn" @click="selectLinkDialog=false">取消</div>
+              <div class="normal-btn">确定</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!--选择图标-->
+        <div class="dialog-mask selectIconPop" v-show="selectIconDialog">
+        <div class="dailog">
+          <div class="header">
+            <span>选择图标</span>
+            <i class="close" @click="selectIconDialog=false"></i>
+          </div>
+          <div class="body">
+            <ul class="icon-lists">
+              <li class="icon-list" v-for="(item,index) in iconlist" :key="index"
+                  :class="isActive==index?'active':''" @click="selectIconFunc(item,index)">
+                <img :src="item.url" alt="">
+              </li>
+            </ul>
+          </div>
+          <div class="footer">
+            <div class="btn-box">
+              <div class="border-btn" @click="selectIconDialog=false">取消</div>
+              <div class="normal-btn">确定</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <script src="../../assets/lib/jquery.min.js"></script>
     <script src="../../assets/lib/vue.js"></script>
@@ -1096,6 +1200,34 @@
                     select8: '',
                 },
                 input:'',
+                selectLinkDialog: true,   //选择应用---链接弹窗
+              linkName: '班级互动',
+              linkSubname: '学生的补充信息规则配置',
+              linkSwitch1: true,
+              linkLists1:[
+                {
+                  icon: '../../assets/images/link-icon/link1.png',
+                  name:'班级互动',
+                  link: 'https://www.iconfont.cn/collections/detail'
+                }
+              ],
+              linkSwitch2: true,
+              linkLists2:[],
+              selectIconDialog: false,
+              iconlist:[
+                {url:'../../assets/images/link-icon/link1.png'},
+                {url:'../../assets/images/link-icon/link2.png'},
+                {url:'../../assets/images/link-icon/link3.png'},
+                {url:'../../assets/images/link-icon/link4.png'},
+                {url:'../../assets/images/link-icon/link5.png'},
+                {url:'../../assets/images/link-icon/link6.png'},
+                {url:'../../assets/images/link-icon/link7.png'},
+                {url:'../../assets/images/link-icon/link8.png'},
+                {url:'../../assets/images/link-icon/link9.png'},
+                {url:'../../assets/images/link-icon/link10.png'},
+                {url:'../../assets/images/link-icon/link11.png'},
+              ],
+              isActive: 0,
             },
             watch: {
                 /* 监听选项列表的改变 */
@@ -1134,7 +1266,52 @@
                 },
                 delOption2: function(index){
                     this.option2.splice(index,1);
+                },
+            //  删除链接弹窗的链接
+              deleteListFunc: function (item,index, type) {
+                  if(type===1 ){
+                    this.linkLists1.splice(index,1);
+                  }else if(type===2 ){
+                    this.linkLists2.splice(index,1);
+                  }
+
+              },
+              //添加链接
+              addLinklist: function (type) {
+                var obj = {
+                  icon: '../../assets/images/link-icon/link1.png',
+                  name:'',
+                  link: ''
+                };
+                if(type===1){
+                  this.linkLists1.push(obj);
+                }else{
+                  this.linkLists2.push(obj);
                 }
+              },
+              //switch切换
+              changeLinkShow: function (type) {
+                if(type===1){
+                  if(this.linkSwitch1){
+                    $('.link-lists1').slideDown()
+                  }else{
+                    $('.link-lists1').slideUp()
+                  }
+                }else{
+                  if(this.linkSwitch2){
+                    $('.link-lists2').slideDown()
+                  }else{
+                    $('.link-lists2').slideUp()
+                  }
+                }
+              },
+              //选择图标
+              showSelectIconFunc: function () {
+                this.selectIconDialog = true;
+              },
+              selectIconFunc: function (item,index) {
+                this.isActive = index;
+              }
             }
         })
     </script>
