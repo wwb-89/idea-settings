@@ -169,7 +169,7 @@ public class ActivityStatHandleService {
                 // 活动统计处理中
                 return handleActivityStat(task);
             }
-            return Objects.equals(ActivityStatTask.Status.SUCCESS, statusEnum);
+            return true;
         }, fail);
     }
 
@@ -188,17 +188,18 @@ public class ActivityStatHandleService {
             if (CollectionUtils.isNotEmpty(taskDetailList)) {
                 int execSuccessNum = 0;
                 for (ActivityStatTaskDetail detail : taskDetailList) {
-                    boolean result = false;
                     int count = activityStatTaskDetailMapper.selectCount(new QueryWrapper<ActivityStatTaskDetail>()
                             .lambda()
                             .lt(ActivityStatTaskDetail::getTaskId, taskId)
                             .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
                             .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue()));
                     if (count == 0) {
+                        boolean result = false;
                         // 5次最大尝试处理，成功则跳出处理循环
                         for (int i = 0; i < CommonConstant.MAX_ERROR_TIMES; i++) {
                             result = handleActivityStatItem(detail, statTask.getDate());
                             if (result) {
+                                detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
                                 execSuccessNum++;
                                 break;
                             }
@@ -208,7 +209,8 @@ public class ActivityStatHandleService {
                             log.error("活动:" + detail.getActivityId() + "统计失败！异常信息:" + detail.getErrorMessage());
                         }
                     } else {
-                        detail.setStatus(ActivityStatTaskDetail.Status.FAIL.getValue());
+                        execSuccessNum++;
+                        detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
                     }
                     // 更新统计任务状态
                     activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
@@ -225,9 +227,6 @@ public class ActivityStatHandleService {
                     }
                 }
             }
-        } catch (BusinessException e) {
-            log.error("活动:{}的统计error:{}", taskId, e.getMessage());
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
             log.error("活动:{}的统计error:{}", taskId, e.getMessage());
@@ -274,9 +273,8 @@ public class ActivityStatHandleService {
             activityStat.setSignedInIncrement(signedInIncrement);
 
             activityStatMapper.insert(activityStat);
-            // 统计成功，则给任务设置成功
-            detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
         } catch (Exception e) {
+            e.printStackTrace();
             errorMsg = e.getMessage();
         }
         detail.setErrorMessage(errorMsg);
