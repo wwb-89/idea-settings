@@ -272,12 +272,13 @@ public class ActivityStatHandleService {
             activityStat.setSignedInIncrement(signedInIncrement);
 
             activityStatMapper.insert(activityStat);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             errorMsg = e.getMessage();
         }
         detail.setErrorMessage(errorMsg);
-        return Objects.equals(ActivityStatTaskDetail.Status.SUCCESS.getValue(), detail.getStatus());
+        return false;
     }
 
     @Transactional(rollbackFor = Exception.class)
