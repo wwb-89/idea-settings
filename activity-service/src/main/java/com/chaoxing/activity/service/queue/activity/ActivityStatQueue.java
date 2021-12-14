@@ -49,6 +49,21 @@ public class ActivityStatQueue implements IQueue<Integer> {
         }
     }
 
+
+    /**重跑失败任务
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-12-14 14:38:07
+     * @return
+     */
+    public void rerunFailedStatActivityTask() {
+        List<Integer> taskIds = activityStatHandleService.rerunFailedStatActivity();
+        RBlockingDeque<Object> blockingDeque = redissonClient.getBlockingDeque(QUEUE_ACTIVITY_STAT_CACHE_KEY);
+        for (Integer taskId : taskIds) {
+            blockingDeque.offer(taskId);
+        }
+    }
+
     /**新增活动统计任务
      *
      * @Description

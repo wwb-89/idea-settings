@@ -1,6 +1,8 @@
 package com.chaoxing.activity.service.activity.stat;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatDTO;
@@ -12,7 +14,6 @@ import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.model.ActivityStatTask;
 import com.chaoxing.activity.model.ActivityStatTaskDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
@@ -280,5 +281,25 @@ public class ActivityStatHandleService {
         }
         detail.setErrorMessage(errorMsg);
         return Objects.equals(ActivityStatTaskDetail.Status.SUCCESS.getValue(), detail.getStatus());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public List<Integer> rerunFailedStatActivity() {
+        // 查询失败的活动统计任务
+        List<ActivityStatTask> failedActivityStatTasks = activityStatTaskMapper.selectList(new LambdaQueryWrapper<ActivityStatTask>()
+                .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.FAIL.getValue()));
+        if (CollectionUtils.isEmpty(failedActivityStatTasks)) {
+            return Lists.newArrayList();
+        }
+        List<Integer> taskIds = failedActivityStatTasks.stream().map(ActivityStatTask::getId).sorted().collect(Collectors.toList());
+        // 将失败的任务改为待处理
+        activityStatTaskMapper.update(null, new LambdaUpdateWrapper<ActivityStatTask>()
+                .in(ActivityStatTask::getId, taskIds)
+                .set(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue()));
+        // 将失败的任务明细改为待处理
+        activityStatTaskDetailMapper.update(null, new LambdaUpdateWrapper<ActivityStatTaskDetail>()
+                .in(ActivityStatTaskDetail::getTaskId, taskIds)
+                .set(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.WAIT_HANDLE.getValue()));
+        return taskIds;
     }
 }
