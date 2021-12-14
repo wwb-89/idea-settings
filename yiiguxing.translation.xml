@@ -1,0 +1,50 @@
+<application>
+  <component name="AppStorage">
+    <option name="newTranslationDialogX" value="1103" />
+    <option name="newTranslationDialogY" value="603" />
+    <histories>
+      <item value="Dispatcher Servlet" />
+      <item value="Extension" />
+      <item value="implementation" />
+      <item value="register Natives" />
+      <item value="Data" />
+      <item value="Copyright (c) 2013-2021 Nikita Koksharov Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http:www.apache.orglicensesLICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License." />
+      <item value="Documented" />
+      <item value="/** * Simple utility methods for working with network sockets &amp;mdash; for example, * for finding available ports on {@code localhost}. * * &lt;p&gt;Within this class, a TCP port refers to a port for a {@link ServerSocket}; * whereas, a UDP port refers to a port for a {@link DatagramSocket}. * * @author Sam Brannen * @author Ben Hale * @author Arjen Poutsma * @author Gunnar Hillert * @author Gary Russell * @since 4.0 */" />
+      <item value="Source code recreated from a .class file by IntelliJ IDEA" />
+      <item value="exposes" />
+      <item value="Annotation for handling exceptions in specific handler classes and/or * handler methods" />
+      <item value="agree Num Increment Map" />
+      <item value="batch Update Reply Num" />
+      <item value="score" />
+      <item value="/** * Encapsulates information about a handler method consisting of a * {@linkplain #getMethod() method} and a {@linkplain #getBean() bean}. * Provides convenient access to method parameters, the method return value, * method annotations, etc. * * &lt;p&gt;The class may be created with a bean instance or with a bean name * (e.g. lazy-init bean, prototype bean). Use {@link #createWithResolvedBean()} * to obtain a {@code HandlerMethod} instance with a bean instance resolved * through the associated {@link BeanFactory}. * * @author Arjen Poutsma * @author Rossen Stoyanchev * @author Juergen Hoeller * @author Sam Brannen * @since 3.1 */" />
+      <item value="Specify if the condition should match if the property is not set. Defaults to" />
+      <item value="get Compilation Units" />
+      <item value="Failed to determine a suitable driver class" />
+      <item value="/* * Copyright 2002-2016 the original author or authors. * * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); * you may not use this file except in compliance with the License. * You may obtain a copy of the License at * * https://www.apache.org/licenses/LICENSE-2.0 * * Unless required by applicable law or agreed to in writing, software * distributed under the License is distributed on an &quot;AS IS&quot; BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the License for the specific language governing permissions and * limitations under the License. */ package org.springframework.security.web.firewall; import javax.servlet.http.HttpServletRequest; import javax.servlet.http.HttpServletResponse; /** * Interface which can be used to reject potentially dangerous requests and/or wrap them * to control their behaviour. * &lt;p&gt; * The implementation is injected into the {@code FilterChainProxy} and will be invoked * before sending any request through the filter chain. It can also provide a response * wrapper if the response behaviour should also be restricted. * * @author Luke Taylor */ public interface HttpFirewall { /** * Provides the request object which will be passed through the filter chain. * * @throws RequestRejectedException if the request should be rejected immediately */ FirewalledRequest getFirewalledRequest(HttpServletRequest request) throws RequestRejectedException; /** * Provides the response which will be passed through the filter chain. * * @param response the original response * @return either the original response or a replacement/wrapper. */ HttpServletResponse getFirewalledResponse(HttpServletResponse response); }" />
+      <item value="price" />
+    </histories>
+    <option name="languageScores">
+      <map>
+        <entry key="CHINESE" value="15" />
+        <entry key="ENGLISH" value="16" />
+      </map>
+    </option>
+  </component>
+  <component name="Cache">
+    <option name="lastTrimTime" value="1632747791712" />
+  </component>
+  <component name="Settings">
+    <option name="googleTranslateSettings">
+      <google-translate>
+        <option name="useTranslateGoogleCom" value="true" />
+      </google-translate>
+    </option>
+    <option name="targetLanguageSelection" value="PRIMARY_LANGUAGE" />
+    <option name="youdaoTranslateSettings">
+      <youdao-translate>
+        <option name="appId" value="3376380652f4a93f" />
+      </youdao-translate>
+    </option>
+  </component>
+</application>
