@@ -8,16 +8,19 @@ import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.GroupRegionFilter;
+import com.chaoxing.activity.model.MarketSignUpConfig;
 import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.enums.SignUpBtnEnum;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
@@ -68,6 +71,8 @@ public class IndexController {
 	private MarketQueryService marketQueryService;
 	@Resource
 	private WfwAreaApiService wfwAreaApiService;
+	@Resource
+	private MarketSignupConfigService marketSignupConfigService;
 
 	/**通用
 	 * @Description
@@ -225,6 +230,11 @@ public class IndexController {
 		} else {
 			groupRegionFilters = Lists.newArrayList();
 		}
+		String signUpKeyword = SignUpBtnEnum.BTN_1.getKeyword();
+		if (marketId != null) {
+			MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
+			signUpKeyword = StringUtils.isNotBlank(marketSignUpConfig.getSignUpKeyword()) ? marketSignUpConfig.getSignUpKeyword() : signUpKeyword;
+		}
 		model.addAttribute("regions", groupRegionFilters);
 		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
 		model.addAttribute("activityQueryDates", activityQueryDates);
@@ -239,6 +249,7 @@ public class IndexController {
 		model.addAttribute("scope", activitySquareParam.getScope());
 		model.addAttribute("hideFilter", activitySquareParam.getHideFilter());
 		model.addAttribute("signUpAble", Objects.equals(1, activitySquareParam.getStrict()));
+		model.addAttribute("signUpKeyword", signUpKeyword);
 		model.addAttribute("sw", activitySquareParam.getSw());
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);

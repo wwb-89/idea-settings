@@ -64,7 +64,7 @@
             <div class="head">
                 <div class="count">共<span>{{total}}</span>个活动</div>
                 <div class="fr">
-                    <el-checkbox label="只看我能参与" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
+                    <el-checkbox :label="'只看我能' + signUpKeyword" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
                 </div>
             </div>
             <div style="min-height: 696px;">
@@ -109,6 +109,7 @@
                 mainDomain: [[${mainDomain}]],
                 cloudDomain: [[${cloudDomain}]],
                 fids: [[${fids}]],
+                signUpKeyword: [[${signUpKeyword}]],
                 classifyNames: [[${classifyNames}]],
                 activityQueryDates: [[${activityQueryDates}]],
                 classifies: [],

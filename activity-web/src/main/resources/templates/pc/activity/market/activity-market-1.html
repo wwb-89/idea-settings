@@ -63,7 +63,7 @@
 		<div class="switch-box">
 			<p class="list-total fl">共 {{total}} 个</p>
 			<div class="fr">
-				<el-checkbox label="只看我能参与" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
+				<el-checkbox :label="'只看我能' + signUpKeyword" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
 			</div>
 		</div>
 		<div class="card-list">
@@ -114,6 +114,7 @@
                 mainDomain: [[${mainDomain}]],
                 cloudDomain: [[${cloudDomain}]],
 				fids: [[${fids}]],
+				signUpKeyword: [[${signUpKeyword}]],
 				classifyNames: [[${classifyNames}]],
 				activityQueryDates: [[${activityQueryDates}]],
 				classifies: [],

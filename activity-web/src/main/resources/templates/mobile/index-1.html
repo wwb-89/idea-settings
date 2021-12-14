@@ -73,7 +73,7 @@
         <div style="height: 100%;" @click="filterCancel"></div>
         <div class="popInner">
             <div class="switch-box border-bottom">
-                <p class="fl">只看我能参与</p>
+                <p class="fl">只看我能{{signUpKeyword}}</p>
                 <div class="fr">
                     <el-switch
                             v-model="signUpAble"
@@ -155,6 +155,7 @@
                 el: '#activity-list',
                 data: function () {
                     return {
+                        signUpKeyword: [[${signUpKeyword}]],
                         classifyNames: [[${classifyNames}]],
                         activityQueryDates: [[${activityQueryDates}]],
                         cloudDomain: [[${cloudDomain}]],
