@@ -1,6 +1,8 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import lombok.AllArgsConstructor;
@@ -27,6 +29,9 @@ import java.util.List;
 @TableName(value = "t_activity_scope")
 public class ActivityScope {
 
+    /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
     /** 机构id; column: hierarchy_id*/

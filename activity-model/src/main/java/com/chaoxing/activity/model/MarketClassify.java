@@ -1,5 +1,7 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +27,9 @@ import java.util.stream.Collectors;
 @TableName(value = "t_market_classify")
 public class MarketClassify {
 
+    /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 活动市场id; column: market_id*/
     private Integer marketId;
     /** 分类id; column: classify_id*/

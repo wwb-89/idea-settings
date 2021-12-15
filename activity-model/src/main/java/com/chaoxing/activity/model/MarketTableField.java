@@ -1,6 +1,8 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +26,9 @@ import java.time.LocalDateTime;
 @TableName(value = "t_market_table_field")
 public class MarketTableField {
 
+    /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 市场id; column: market_id*/
     private Integer marketId;
     /** 表格字段配置id; column: table_field_id*/

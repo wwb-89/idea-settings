@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chaoxing.activity.mapper.ActivityScopeMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityScope">
+        <id column="id" jdbcType="INTEGER" property="id" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="hierarchy_id" jdbcType="INTEGER" property="hierarchyId" />
         <result column="name" jdbcType="VARCHAR" property="name" />
@@ -15,7 +16,7 @@
         <result column="sort" jdbcType="INTEGER" property="sort" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.activity_id, t.hierarchy_id, t.name, t.hierarchy_pid, t.code, t.links, t.level, t.adjusted_level, t.fid, t.is_exist_child, t.sort
+        t.id, t.activity_id, t.hierarchy_id, t.name, t.hierarchy_pid, t.code, t.links, t.level, t.adjusted_level, t.fid, t.is_exist_child, t.sort
     </sql>
 
     <insert id="batchAdd">

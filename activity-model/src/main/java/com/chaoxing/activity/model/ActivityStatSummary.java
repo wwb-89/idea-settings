@@ -1,6 +1,8 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +27,9 @@ import java.time.LocalDateTime;
 @TableName(value = "t_activity_stat_summary")
 public class ActivityStatSummary {
 
+    /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
     /** 签到数量; column: signed_in_num*/

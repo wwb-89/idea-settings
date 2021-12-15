@@ -22,8 +22,10 @@ import java.util.Objects;
 @TableName(value = "t_activity_stat_task_detail")
 public class ActivityStatTaskDetail {
 
-    /** 任务id; column: task_id*/
+    /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
+    private Integer id;
+    /** 任务id; column: task_id*/
     private Integer taskId;
     /** 活动id; column: activity_id*/
     private Integer activityId;

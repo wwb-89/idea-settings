@@ -1,5 +1,7 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +23,9 @@ import lombok.NoArgsConstructor;
 @TableName(value = "t_org_market_data_push")
 public class OrgMarketDataPush {
 
+    /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 机构id; column: fid*/
     private Integer fid;
     /** 市场id; column: market_id*/

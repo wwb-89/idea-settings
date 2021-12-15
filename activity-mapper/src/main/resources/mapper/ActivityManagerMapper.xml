@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chaoxing.activity.mapper.ActivityManagerMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityManager">
+        <id column="id" jdbcType="INTEGER" property="id" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="uid" jdbcType="INTEGER" property="uid" />
         <result column="user_name" jdbcType="VARCHAR" property="userName" />
@@ -10,7 +11,7 @@
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.activity_id, t.uid, t.user_name, t.menu, t.create_time, t.create_uid
+        t.id, t.activity_id, t.uid, t.user_name, t.menu, t.create_time, t.create_uid
     </sql>
 
     <select id="paging" resultMap="BaseResultMap">

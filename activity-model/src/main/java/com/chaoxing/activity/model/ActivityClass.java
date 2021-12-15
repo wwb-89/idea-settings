@@ -1,5 +1,7 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +25,9 @@ import java.util.Date;
 @TableName(value = "t_activity_class")
 public class ActivityClass {
 
+    /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
     /** 班级id; column: class_id*/

@@ -1,5 +1,7 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,9 @@ import java.time.LocalDateTime;
 @TableName(value = "t_activity_manager")
 public class ActivityManager {
 
+    /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
     /** 用户id; column: uid*/

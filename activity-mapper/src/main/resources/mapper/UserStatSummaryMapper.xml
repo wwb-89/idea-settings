@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chaoxing.activity.mapper.UserStatSummaryMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.UserStatSummary">
+        <id column="id" jdbcType="INTEGER" property="id" />
         <result column="uid" jdbcType="INTEGER" property="uid" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="uname" jdbcType="VARCHAR" property="uname" />
@@ -27,7 +28,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time,
+        t.id, t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time,
         t.sign_in_num, t.signed_in_num, t.sign_in_leave_num, t.not_sign_in_num, t.signed_in_rate, t.rating_num, t.integral, t.activity_integral, t.participate_time_length,
         t.is_qualified, t.is_valid, t.create_time, t.update_time
     </sql>

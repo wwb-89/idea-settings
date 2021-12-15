@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chaoxing.activity.mapper.OrgTableFieldMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.OrgTableField">
+        <id column="id" jdbcType="INTEGER" property="id" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="table_field_id" jdbcType="INTEGER" property="tableFieldId" />
         <result column="table_field_detail_id" jdbcType="INTEGER" property="tableFieldDetailId" />
@@ -13,7 +14,7 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.fid, t.table_field_id, t.table_field_detail_id, t.is_top, t.sequence, t.create_time, t.create_uid, t.update_time, t.update_uid
+        t.id, t.fid, t.table_field_id, t.table_field_detail_id, t.is_top, t.sequence, t.create_time, t.create_uid, t.update_time, t.update_uid
     </sql>
     <insert id="batchAdd">
         INSERT INTO t_org_table_field ( fid, table_field_id, table_field_detail_id, is_top, sequence, create_uid, update_uid )
