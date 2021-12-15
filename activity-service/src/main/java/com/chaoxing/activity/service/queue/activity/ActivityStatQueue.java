@@ -64,6 +64,21 @@ public class ActivityStatQueue implements IQueue<Integer> {
         }
     }
 
+
+    /**将失败任务改为待处理，并将所有待处理的任务加入任务队列
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-15 11:30:29
+     * @return
+     */
+    public void rerunWaitHandleStatActivityTask() {
+        List<Integer> taskIds = activityStatHandleService.rerunWaitHandleStatActivityTask();
+        RBlockingDeque<Object> blockingDeque = redissonClient.getBlockingDeque(QUEUE_ACTIVITY_STAT_CACHE_KEY);
+        for (Integer taskId : taskIds) {
+            blockingDeque.offer(taskId);
+        }
+    }
+
     /**新增活动统计任务
      *
      * @Description

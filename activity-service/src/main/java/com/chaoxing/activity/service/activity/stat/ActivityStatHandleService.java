@@ -188,28 +188,28 @@ public class ActivityStatHandleService {
             if (CollectionUtils.isNotEmpty(taskDetailList)) {
                 int execSuccessNum = 0;
                 for (ActivityStatTaskDetail detail : taskDetailList) {
+                    // 判断活动id前面的任务是否执行成功，若未执行成功，该detail不做任何处理
                     int count = activityStatTaskDetailMapper.selectCount(new QueryWrapper<ActivityStatTaskDetail>()
                             .lambda()
                             .lt(ActivityStatTaskDetail::getTaskId, taskId)
                             .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
                             .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue()));
-                    if (count == 0) {
-                        boolean result = false;
-                        // 5次最大尝试处理，成功则跳出处理循环
-                        for (int i = 0; i < CommonConstant.MAX_ERROR_TIMES; i++) {
-                            result = handleActivityStatItem(detail, statTask.getDate());
-                            if (result) {
-                                detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
-                                execSuccessNum++;
-                                break;
-                            }
+                    if (count != 0) {
+                        continue;
+                    }
+                    boolean result = false;
+                    // 5次最大尝试处理，成功则跳出处理循环
+                    for (int i = 0; i < CommonConstant.MAX_ERROR_TIMES; i++) {
+                        result = handleActivityStatItem(detail, statTask.getDate());
+                        if (result) {
+                            detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
+                            execSuccessNum++;
+                            break;
                         }
-                        if (!result) {
-                            detail.setStatus(ActivityStatTaskDetail.Status.FAIL.getValue());
-                            log.error("活动:" + detail.getActivityId() + "统计失败！异常信息:" + detail.getErrorMessage());
-                        }
-                    } else {
+                    }
+                    if (!result) {
                         detail.setStatus(ActivityStatTaskDetail.Status.FAIL.getValue());
+                        log.error("活动:" + detail.getActivityId() + "统计失败！异常信息:" + detail.getErrorMessage());
                     }
                     // 更新统计任务状态
                     activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
@@ -299,5 +299,20 @@ public class ActivityStatHandleService {
                 .in(ActivityStatTaskDetail::getTaskId, taskIds)
                 .set(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.WAIT_HANDLE.getValue()));
         return taskIds;
+    }
+
+    public List<Integer> rerunWaitHandleStatActivityTask() {
+        // 将失败的任务改为待处理
+        activityStatTaskMapper.update(null, new LambdaUpdateWrapper<ActivityStatTask>()
+                .in(ActivityStatTask::getStatus, ActivityStatTask.Status.FAIL.getValue())
+                .set(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue()));
+        // 将失败的任务明细改为待处理，失败次数改为0
+        activityStatTaskDetailMapper.update(null, new LambdaUpdateWrapper<ActivityStatTaskDetail>()
+                .eq(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.FAIL.getValue())
+                .set(ActivityStatTaskDetail::getErrorTimes, 0)
+                .set(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.WAIT_HANDLE.getValue()));
+        return activityStatTaskMapper.selectList(new LambdaQueryWrapper<ActivityStatTask>()
+                        .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue()))
+                .stream().map(ActivityStatTask::getId).sorted().collect(Collectors.toList());
     }
 }

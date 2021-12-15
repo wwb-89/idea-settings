@@ -89,6 +89,12 @@ public class QueueApiController {
 		return RestRespDTO.success();
 	}
 
+	@RequestMapping("rerun-wait-handle/activity/stat")
+	public RestRespDTO rerunWaitHandleStatActivity() {
+		activityStatQueueService.rerunWaitHandleStatActivityTask();
+		return RestRespDTO.success();
+	}
+
 
 
 	/**初始化活动封面队列
