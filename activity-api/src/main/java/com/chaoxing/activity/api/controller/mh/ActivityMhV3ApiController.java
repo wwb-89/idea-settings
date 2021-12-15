@@ -475,6 +475,8 @@ public class ActivityMhV3ApiController {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.WORK_REVIEW.getValue());
                 } else if (Objects.equals(btnName, "作品优选")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.WORK_PREFERRED_SELECTION.getValue());
+                } else {
+                    buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue());
                 }
                 result.add(buildBtnField(btnName, buttonIcon, workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
             }

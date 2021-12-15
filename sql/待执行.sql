@@ -15,3 +15,19 @@ SET `content` = '您好，您已被<input type="text" class="tag" readonly="read
 WHERE
         id = 7
   AND notice_type = 'manual_add_to_blacklist';
+
+-- 补充主键sql
+ALTER TABLE t_activity_area_flag ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_activity_class ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_activity_manager ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_activity_scope ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_activity_sign_module ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_activity_stat_summary ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_activity_stat_task_detail ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_activity_table_field ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_market_classify ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_market_table_field ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_org_classify ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_org_market_data_push ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_org_table_field ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE t_user_stat_summary ADD id INT(11) PRIMARY KEY AUTO_INCREMENT;
