@@ -301,16 +301,13 @@ public class ActivityStatHandleService {
         return taskIds;
     }
 
-    public List<Integer> rerunWaitHandleStatActivityTask() {
-        // 将失败的任务改为待处理
-        activityStatTaskMapper.update(null, new LambdaUpdateWrapper<ActivityStatTask>()
-                .in(ActivityStatTask::getStatus, ActivityStatTask.Status.FAIL.getValue())
-                .set(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue()));
-        // 将失败的任务明细改为待处理，失败次数改为0
-        activityStatTaskDetailMapper.update(null, new LambdaUpdateWrapper<ActivityStatTaskDetail>()
-                .eq(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.FAIL.getValue())
-                .set(ActivityStatTaskDetail::getErrorTimes, 0)
-                .set(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.WAIT_HANDLE.getValue()));
+    /**查询所有待处理任务id
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-15 11:32:57
+     * @return
+     */
+    public List<Integer> getWaitHandleStatActivityTaskIds() {
         return activityStatTaskMapper.selectList(new LambdaQueryWrapper<ActivityStatTask>()
                         .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue()))
                 .stream().map(ActivityStatTask::getId).sorted().collect(Collectors.toList());

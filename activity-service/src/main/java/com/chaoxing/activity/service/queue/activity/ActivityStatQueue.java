@@ -72,7 +72,7 @@ public class ActivityStatQueue implements IQueue<Integer> {
      * @return
      */
     public void rerunWaitHandleStatActivityTask() {
-        List<Integer> taskIds = activityStatHandleService.rerunWaitHandleStatActivityTask();
+        List<Integer> taskIds = activityStatHandleService.getWaitHandleStatActivityTaskIds();
         RBlockingDeque<Object> blockingDeque = redissonClient.getBlockingDeque(QUEUE_ACTIVITY_STAT_CACHE_KEY);
         for (Integer taskId : taskIds) {
             blockingDeque.offer(taskId);
