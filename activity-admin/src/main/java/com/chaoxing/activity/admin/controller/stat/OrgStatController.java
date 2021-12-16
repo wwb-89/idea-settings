@@ -14,6 +14,7 @@ import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.SchoolYearSemesterUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -82,6 +83,7 @@ public class OrgStatController {
         // 机构名称
         String orgName = passportApiService.getOrgName(realFid);
         model.addAttribute("orgName", orgName);
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
         return "pc/stat/org-user-stat";
     }
 
@@ -118,6 +120,7 @@ public class OrgStatController {
         model.addAttribute("tableFieldId", tableFieldId);
         model.addAttribute("tableFieldDetails", tableFieldDetails);
         model.addAttribute("orgTableFields", orgTableFields);
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
         return "pc/stat/org-activity-stat-summary";
     }
 

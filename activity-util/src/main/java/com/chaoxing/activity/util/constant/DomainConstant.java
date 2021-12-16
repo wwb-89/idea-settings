@@ -110,4 +110,7 @@ public class DomainConstant {
     /** 空间域名 */
     public static final String SPACE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.space");
 
+    /** 证书 */
+    public static final String CERTIFICATE = YamlUtils.getStringValue(DOMAIN_RESOURCE_CLASS_PATH, "domain.certificate");
+
 }

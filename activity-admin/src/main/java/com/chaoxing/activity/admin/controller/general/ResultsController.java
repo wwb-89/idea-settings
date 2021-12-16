@@ -58,6 +58,7 @@ public class ResultsController {
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("activityTableFields", activityTableFields);
 		model.addAttribute("photoDomain", DomainConstant.PHOTO);
+		model.addAttribute("mainDomain", DomainConstant.MAIN);
 	 	if (UserAgentUtils.isMobileAccess(request)) {
 			model.addAttribute("qualifiedNum", userResultQueryService.countQualifiedStatusNum(activityId, UserResult.QualifiedStatusEnum.QUALIFIED));
 			model.addAttribute("unQualifiedNum", userResultQueryService.countQualifiedStatusNum(activityId, UserResult.QualifiedStatusEnum.NOT_QUALIFIED));

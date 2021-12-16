@@ -66,7 +66,7 @@ public class ActivityAddressTimeChangeEventQueueService {
                 .activityId(activityId)
                 .title(title)
                 .content(content)
-                .attachment(NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl()))
+                .attachment(NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl()))
                 .build();
         activityCollectedUserNoticeQueue.push(activityCollectedUserNoticeQueueParam);
     }
@@ -77,7 +77,7 @@ public class ActivityAddressTimeChangeEventQueueService {
                 .activityId(activityId)
                 .title(title)
                 .content(content)
-                .attachment(NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl()))
+                .attachment(NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl()))
                 .build();
         activitySignedUpUserNoticeQueue.push(activitySignedUpUserNoticeQueueParam);
     }

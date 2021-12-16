@@ -42,6 +42,14 @@
                     <span>{{menus.results_manage.name}}</span>
                 </div>
             </div>
+            <div class="entry menu-item" v-if="menuShow('certificate')">
+                <!--证书-->
+                <div :class="{'item': true, 'active': menus.certificate.selected}" @click="toCertificate">
+                    <img :src="menus.certificate.activeIconUrl" v-if="menus.certificate.selected">
+                    <img :src="menus.certificate.defaultIconUrl" v-else>
+                    <span>{{menus.certificate.name}}</span>
+                </div>
+            </div>
             <div class="message menu-item" v-if="menuShow('notice')">
                 <!--发通知-->
                 <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
@@ -122,6 +130,14 @@
                         url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage",
                         selected: false
                     },
+                    // 证书
+                    certificate: {
+                        name: "证书",
+                        defaultIconUrl: ctx + "/pc/assets/images/certificate-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/certificate-active.png",
+                        url: ctx + "/activity/" + [[${activity.id}]] + "/certificate",
+                        selected: false
+                    },
                     // 通知
                     notice: {
                         name: "发通知",
@@ -200,6 +216,9 @@
                             break;
                         case 'results_manage':
                             $this.toResultsManage();
+                            break;
+                        case 'certificate':
+                            $this.toCertificate();
                             break;
                         case 'notice':
                             $this.toAddNotice();
@@ -286,6 +305,11 @@
                 toResultsManage: function () {
                     var $this = this;
                     $this.selectMenu("results_manage");
+                },
+                // 证书
+                toCertificate: function () {
+                    var $this = this;
+                    $this.selectMenu("certificate");
                 },
                 // 设置
                 toSetting: function () {

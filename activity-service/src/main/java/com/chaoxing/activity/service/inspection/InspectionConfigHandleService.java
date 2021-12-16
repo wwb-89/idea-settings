@@ -83,11 +83,12 @@ public class InspectionConfigHandleService {
 	 * @Date 2021-06-16 17:50:12
 	 * @param inspectionConfig
 	 * @param inspectionConfigDetails
+	 * @param autoIssueCertificate
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public Integer config(InspectionConfig inspectionConfig, List<InspectionConfigDetail> inspectionConfigDetails, LoginUserDTO loginUser) {
+	public Integer config(InspectionConfig inspectionConfig, List<InspectionConfigDetail> inspectionConfigDetails, boolean autoIssueCertificate, LoginUserDTO loginUser) {
 		if (inspectionConfig.getId() == null) {
 			return add(inspectionConfig, inspectionConfigDetails);
 		} else {
@@ -150,6 +151,7 @@ public class InspectionConfigHandleService {
 				.eq(InspectionConfig::getId, existInspectionConfig.getId())
 				.set(InspectionConfig::getPassDecideWay, inspectionConfig.getPassDecideWay())
 				.set(InspectionConfig::getDecideValue, inspectionConfig.getDecideValue())
+				.set(InspectionConfig::getAutoIssueCertificate, inspectionConfig.getAutoIssueCertificate())
 		);
 
 		Integer configId = inspectionConfig.getId();

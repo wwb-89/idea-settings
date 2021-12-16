@@ -62,6 +62,7 @@
         <result column="is_open_clazz_interaction" jdbcType="BIT" property="openClazzInteraction" />
         <result column="course_id" jdbcType="INTEGER" property="courseId" />
         <result column="clazz_id" jdbcType="INTEGER" property="clazzId" />
+        <result column="certificate_template_id" jdbcType="INTEGER" property="certificateTemplateId" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
@@ -69,7 +70,7 @@
         t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
         t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
         t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.status, t.create_time, t.update_time, t.is_signed_up_notice, t.origin_activity_id,
-        t.is_open_group, t.group_bbsid, t.is_archived, t.is_open_clazz_interaction, t.course_id, t.clazz_id
+        t.is_open_group, t.group_bbsid, t.is_archived, t.is_open_clazz_interaction, t.course_id, t.clazz_id, t.certificate_template_id
     </sql>
     <sql id="Base_Market_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
@@ -77,7 +78,7 @@
         t.is_timing_release, t.timing_release_time, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
         t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
         t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.create_time, t.update_time, t.is_open_group, t.group_bbsid, t.is_archived,
-        t.is_open_clazz_interaction, t.course_id, t.clazz_id
+        t.is_open_clazz_interaction, t.course_id, t.clazz_id, t.certificate_template_id
     </sql>
 
     <select id="pageParticipate" resultMap="BaseResultMap">

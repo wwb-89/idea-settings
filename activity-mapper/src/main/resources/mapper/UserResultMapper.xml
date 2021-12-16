@@ -4,6 +4,8 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.UserResult">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="real_name" jdbcType="VARCHAR" property="realName" />
+        <result column="uname" jdbcType="VARCHAR" property="uname" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="qualified_status" jdbcType="INTEGER" property="qualifiedStatus" />
         <result column="manual_qualified_status" jdbcType="INTEGER" property="manualQualifiedStatus" />
@@ -13,7 +15,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.uid, qualifiedStatust.activity_id, t.qualified_status, t.manual_qualified_status, t.auto_qualified_status, t.total_score, t.create_time, t.update_time
+        t.id, t.uid, t.real_name, t.uname, qualifiedStatust.activity_id, t.qualified_status, t.manual_qualified_status, t.auto_qualified_status, t.total_score, t.create_time, t.update_time
     </sql>
 
     <select id="pageUserResult" resultType="com.chaoxing.activity.dto.UserResultDTO">

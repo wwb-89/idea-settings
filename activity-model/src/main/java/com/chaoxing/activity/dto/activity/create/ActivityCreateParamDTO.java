@@ -152,6 +152,8 @@ public class ActivityCreateParamDTO {
 	private Integer clazzId;
 	/** 课程id */
 	private Integer courseId;
+	/** 证书模版id */
+	private Integer certificateTemplateId;
 
 	// 附加
 	/** 网页模版名称 */
@@ -210,6 +212,7 @@ public class ActivityCreateParamDTO {
 				.openClazzInteraction(getOpenClazzInteraction())
 				.clazzId(getClazzId())
 				.courseId(getCourseId())
+				.certificateTemplateId(getCertificateTemplateId())
 				.build();
 	}
 
@@ -286,6 +289,7 @@ public class ActivityCreateParamDTO {
 				.openClazzInteraction(activity.getOpenClazzInteraction())
 				.clazzId(activity.getClazzId())
 				.courseId(activity.getCourseId())
+				.certificateTemplateId(activity.getCertificateTemplateId())
 				.build();
 	}
 

@@ -2,13 +2,15 @@ package com.chaoxing.activity.service.user.result;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.model.InspectionConfig;
 import com.chaoxing.activity.model.InspectionConfigDetail;
 import com.chaoxing.activity.model.UserActionRecord;
 import com.chaoxing.activity.model.UserResult;
+import com.chaoxing.activity.service.event.UserQualifiedStatusChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
-import com.chaoxing.activity.service.queue.user.UserResultStatSummaryQueue;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
 import com.chaoxing.activity.util.CalculateUtils;
@@ -52,9 +54,11 @@ public class UserResultHandleService {
     private InspectionConfigQueryService inspectionConfigQueryService;
     @Resource
     private UserStatSummaryQueryService userStatSummaryQueryService;
+    @Resource
+    private PassportApiService passportApiService;
 
     @Resource
-    private UserResultStatSummaryQueue userResultStatSummaryQueue;
+    private UserQualifiedStatusChangeEventService userQualifiedStatusChangeEventService;
 
     /**更新用户成绩
      * @Description
@@ -92,6 +96,10 @@ public class UserResultHandleService {
      * @return void
      */
     public void addUserResult(UserResult userResult) {
+        // 补充用户姓名、账号
+        PassportUserDTO user = passportApiService.getByUid(userResult.getUid());
+        userResult.setRealName(Optional.ofNullable(user).map(PassportUserDTO::getRealName).orElse(""));
+        userResult.setUname(Optional.ofNullable(user).map(PassportUserDTO::getLoginName).orElse(""));
         userResultMapper.insert(userResult);
     }
 
@@ -220,9 +228,8 @@ public class UserResultHandleService {
                 .eq(UserResult::getUid, uid)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
                 .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue()));
-        // 通知用户活动汇总更新成绩
-        UserResultStatSummaryQueue.QueueParamDTO queueParam = new UserResultStatSummaryQueue.QueueParamDTO(uid, activityId);
-        userResultStatSummaryQueue.push(queueParam);
+        // 用户合格状态改变
+        userQualifiedStatusChangeEventService.handle(uid, activityId);
     }
 
     /**批量改变用户合格状态
@@ -250,11 +257,8 @@ public class UserResultHandleService {
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
                 .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue())
         );
-        for (Integer uid : uidList) {
-            // 通知用户活动汇总更新成绩
-            UserResultStatSummaryQueue.QueueParamDTO queueParam = new UserResultStatSummaryQueue.QueueParamDTO(uid, activityId);
-            userResultStatSummaryQueue.push(queueParam);
-        }
+        // 用户合格状态改变
+        userQualifiedStatusChangeEventService.handle(uidList, activityId);
     }
 
     /**合格自动判定
@@ -296,12 +300,8 @@ public class UserResultHandleService {
         }
         // 查询活动下的用户活动汇总数据
         List<Integer> uids = userStatSummaryQueryService.listUidByActivityId(activityId);
-        if (CollectionUtils.isNotEmpty(uids)) {
-            for (Integer uid : uids) {
-                UserResultStatSummaryQueue.QueueParamDTO queueParam = new UserResultStatSummaryQueue.QueueParamDTO(uid, activityId);
-                userResultStatSummaryQueue.push(queueParam);
-            }
-        }
+        // 用户合格状态改变
+        userQualifiedStatusChangeEventService.handle(uids, activityId);
     }
 
     private List<Integer> listAutoDecideQualifiedUid(Integer activityId, InspectionConfig inspectionConfig) {

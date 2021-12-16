@@ -92,7 +92,7 @@ public class UserSignedUpEventQueueService {
         }
         String title = generateUserSignedUpNoticeTitle(activity);
         String content = generateUserSignedUpNoticeContent(activity);
-        String attachment = NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl());
+        String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
         List<Integer> uids = Lists.newArrayList();
         uids.add(uid);
         noticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, uids);

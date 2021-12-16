@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+	<title>证书</title>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/pc/assets/table-icomoon/style.css" th:href="@{/pc/assets/table-icomoon/style.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/sign/assets/css/commonTable.css" th:href="@{/pc/assets/sign/assets/css/commonTable.css}">
+	<link rel="stylesheet" href="/static/pc/assets/sign/assets/css/confirm_dialog.css" th:href="@{/pc/assets/sign/assets/css/confirm_dialog.css}">
+	<style>
+        [v-cloak]{
+            display: none;
+        }
+	</style>
+</head>
+
+<body>
+<div id="vm" v-cloak>
+	<div style="display: block">
+		<div class="header-box">
+			<div class="header header-type-3">
+                <span slot="label" class="menu-item-customize registered_title">
+                    <span class="title">证书发放</span>
+                </span>
+				<div class="top-btns">
+					<el-button class="btn-customize export-btn" round @click="configCertificate">证书编辑</el-button>
+				</div>
+			</div>
+		</div>
+		<!-- 选项卡内容 -->
+		<div class="tab-content-box">
+			<div class="tab-item">
+				<div class="operate-box">
+					<!-- 操作栏 -->
+					<div class="table-operate-box fs0">
+						<el-button class="btn-customize" round @click="batchIssue" v-if="batchBtnShow">发放证书</el-button>
+						<el-button class="btn-customize" round @click="batchRevocation" v-if="batchBtnShow">撤回</el-button>
+
+						<el-button class="btn-customize disabled" round disabled v-if="!batchBtnShow">发放证书</el-button>
+						<el-button class="btn-customize disabled" round disabled v-if="!batchBtnShow">撤回</el-button>
+						<div class="search-Box">
+							<el-input placeholder="搜索"
+							          icon="search"
+							          class="search"
+							          v-model="queryParams.sw"
+							          suffix-icon="el-icon-search"
+							          @keydown.enter.native="search"
+							>
+							</el-input>
+							<i class="icon-cancel btn-cancel fs16" v-show="queryParams.sw && queryParams.sw.length > 0" @click="resetSearch"></i>
+						</div>
+					</div>
+					<!-- 计数栏 -->
+					<div class="table-count-box fs12">
+						<div class="count-info fl">
+							<span class="colorBlue marginr8" v-show="selections.length > 0">已选择 {{ selections.length }} 人</span>
+							<span class="color999">共 {{ total }} 人</span>
+						</div>
+						<div class="clear"></div>
+					</div>
+				</div>
+
+				<el-table v-if="tbodyHeight > 0"
+				          class="table-box"
+				          :data="tableData"
+				          :height="tbodyHeight"
+				          :empty-text="loaded && tableData.length === 0 ? '暂无数据' : '数据加载中'"
+				          @sort-change="sortChange"
+				          @filter-change="filterChange"
+				          @selection-change="selectChange">
+					<el-table-column fixed type="selection" width="24"></el-table-column>
+					<el-table-column label="姓名" min-width="80">
+						<template slot-scope="scope">
+							{{scope.row.realName}}
+						</template>
+					</el-table-column>
+					<el-table-column label="账号" min-width="80">
+						<template slot-scope="scope">
+							{{scope.row.uname}}
+						</template>
+					</el-table-column>
+					<el-table-column label="发放时间" min-width="120">
+						<template slot-scope="scope">
+							{{scope.row.issueTimestamp | timestampFormat}}
+						</template>
+					</el-table-column>
+					<el-table-column label="发放状态" align="center" min-width="80" column-key="status" :filters="filterStatus" :filter-multiple="false" filter-placement="bottom">
+						<template slot-scope="scope">
+							{{scope.row.issued ? "已发放" : "未发放"}}
+						</template>
+					</el-table-column>
+					<el-table-column label="操作" min-width="200">
+						<template slot-scope="scope">
+							<el-button type="text" style="padding-right: 5px" v-if="!scope.row.issued" @click="issue(scope.row)">发放</el-button>
+							<el-button type="text" v-else @click="revocation(scope.row)">撤回</el-button>
+							<el-button type="text" v-if="scope.row.issued" @click="againIssue(scope.row)">再次发放</el-button>
+							<el-button type="text" v-if="scope.row.issued" @click="show(scope.row)">查看</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+				<el-pagination background layout="prev, pager, next, sizes" :total="total" :page-sizes="[10, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage">
+				</el-pagination>
+			</div>
+		</div>
+		<!-- 表格内容 -->
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
+	<script th:inline="javascript">
+        vm = new Vue({
+            el: "#vm",
+            data: {
+                mainDomain: [[${mainDomain}]],
+                loaded: false,
+                activity: [[${activity}]],
+                queryParams: {
+                    activityId: [[${activity.id}]],
+                    pageNum: 1,
+                    pageSize: 10,
+                    sw: '',
+	                status: null
+                },
+                filterStatus: [
+                    {text: "已发放", value: "1"},
+                    {text: "未发放", value: "0"}
+                ],
+                // 表格显示的字段列表
+                showTableFieldDetails: [],
+                // 页面数据
+                tableData: [],
+                selections: [],
+                // 总记录数
+                total: 0,
+                selectNumber:0, //表格选中的人数
+                ifCancelPop: false,
+                ifModifyPop: false, //修改合格状态弹窗展示
+                bodyHeight: $(window).height(),
+                tbodyHeight: 0,
+                batchBtnShow: false
+            },
+            created: function () {
+                var $this = this;
+            },
+            mounted: function () {
+                var $this = this;
+                var headH = $('.header-box').height();
+                var operateH = $('.operate-box').height();
+                $this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 16 + 32);
+                $this.loadData();
+            },
+            methods: {
+                selectChange: function (val) {
+                    var $this = this;
+                    $this.selections = val;
+                    $this.batchBtnShow = val.length > 0;
+                },
+                filterChange: function (filterItem) {
+                    var $this = this;
+                    var key = Object.keys(filterItem)[0]
+                    if (key == "status") {
+                        var value = filterItem[key][0];
+                        $this.queryParams.status = activityApp.isEmpty(value) ? null : parseInt(value);
+                        $this.queryParams.pageNum = 1;
+                        $this.loadData();
+                    }
+                },
+                search: function () {
+                    var $this = this;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                resetSearch: function () {
+                    var $this = this;
+                    $this.queryParams.sw = ''
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                // 处理分页大小变更
+                sizeChangeHandle: function (val) {
+                    var $this = this;
+                    $this.queryParams.pageSize = val;
+                    $this.loadData();
+                },
+                // 重新加载数据
+                loadData: function() {
+                    var $this = this;
+                    var url = ctx + "/api/certificate/page";
+                    $this.loaded = false;
+                    app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.tableData = data.data.records;
+                            $this.total = data.data.total;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载数据失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        $this.loaded = true;
+                        app.showMsg("加载数据失败");
+                    });
+                },
+                changePage: function (pageNum) {
+                    var $this = this;
+                    $this.queryParams.pageNum = pageNum;
+                    $this.loadData();
+                },
+                sortChange: function (column) {
+                    var $this = this;
+                    var sortFieldItem = $($this.showTableFieldDetails).filter(function() {
+                        return this.code === column.prop
+                    })[0];
+                    $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
+                    if (column.order === 'descending') {
+                        $this.queryParams.orderType = 'DESC';
+                    } else if (column.order === 'ascending'){
+                        $this.queryParams.orderType = 'ASC';
+                    } else {
+                        $this.queryParams.orderType = null;
+                    }
+                    $this.loadData();
+                },
+                configCertificate: function () {
+                    var $this = this;
+                    var url = ctx + "/api/certificate/config?templateId=" + $this.activity.certificateTemplateId + "&uid=" + $this.activity.createUid + "&fid=" + $this.activity.createFid;
+                    app.ajaxPost(url, {}, function (data) {
+                        if (data.success) {
+                            window.open(data.data);
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "获取配置地址失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("获取配置地址失败");
+                    });
+                },
+                issue: function (row) {
+					var $this = this;
+                    var url = ctx + "/api/certificate/issue";
+                    var params = {
+                        uid: row.uid,
+	                    activityId: $this.activity.id
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("发放成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "发放失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("发放失败");
+                    });
+                },
+                batchIssue: function () {
+                    var $this = this;
+                    var url = ctx + "/api/certificate/issue/batch";
+                    var uids = [];
+                    $($this.selections).each(function () {
+                        uids.push(this.uid);
+                    });
+                    var params = {
+                        activityId: $this.activity.id,
+                        uids: uids
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("发放成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "发放失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("发放失败");
+                    });
+                },
+                againIssue: function (row) {
+                    var $this = this;
+                    var url = ctx + "/api/certificate/issue/again";
+                    var params = {
+                        uid: row.uid,
+                        activityId: $this.activity.id
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("发放成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "发放失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("发放失败");
+                    });
+                },
+                revocation: function (row) {
+                    var $this = this;
+                    var url = ctx + "/api/certificate/revocation";
+                    var params = {
+                        uid: row.uid,
+                        activityId: $this.activity.id
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("撤回成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "撤回失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("撤回失败");
+                    });
+                },
+                batchRevocation: function () {
+                    var $this = this;
+                    var url = ctx + "/api/certificate/revocation/batch";
+                    var uids = [];
+                    $($this.selections).each(function () {
+                        uids.push(this.uid);
+                    });
+                    var params = {
+                        activityId: $this.activity.id,
+                        uids: uids
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("撤回成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "撤回失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("撤回失败");
+                    });
+                },
+                show: function (row) {
+					var $this = this;
+                    var url = ctx + "/api/certificate/download?activityId=" + $this.activity.id + "&uid=" + row.uid;
+                    app.ajaxPost(url, {}, function (data) {
+                        if (data.success) {
+                            window.open(data.data);
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "获取查看地址失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("获取查看地址失败");
+                    });
+                }
+            }
+        })
+	</script>
+</div>
+</body>
+
+</html>

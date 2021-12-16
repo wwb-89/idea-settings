@@ -29,6 +29,10 @@ public class UserResult {
     private Long id;
     /** 用户uid; column: uid*/
     private Integer uid;
+    /** 姓名; column: real_name*/
+    private String realName;
+    /** 用户名; column: uname*/
+    private String uname;
     /** 活动id; column: activity_id*/
     private Integer activityId;
     /** 合格状态; column: qualified_status*/

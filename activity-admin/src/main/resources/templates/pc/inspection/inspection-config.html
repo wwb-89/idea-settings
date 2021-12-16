@@ -79,6 +79,20 @@
 				</div>
 			</form>
 		</div>
+		<div class="white-block">
+			<p class="item-name">其它设置</p>
+			<form action="" class="el-form" onsubmit="return false;">
+				<div class="form-item">
+					<label class="label">自动发放证书</label>
+					<div class="input-box">
+						<el-switch v-model="inspectionConfig.autoIssueCertificate" class="flex-switch"></el-switch>
+						<div class="tips-box">
+							<span class="decTips" style="margin-top: 0px;">考核状态为合格的用户会自动发放证书</span>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">

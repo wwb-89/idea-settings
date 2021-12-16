@@ -6,10 +6,11 @@
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="pass_decide_way" jdbcType="VARCHAR" property="passDecideWay" />
         <result column="decide_value" jdbcType="DECIMAL" property="decideValue" />
+        <result column="is_auto_issue_certificate" jdbcType="DECIMAL" property="autoIssueCertificate" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.activity_id, t.pass_decide_way, t.decide_value, t.create_time, t.update_time
+        t.id, t.activity_id, t.pass_decide_way, t.decide_value, t.is_auto_issue_certificate, t.create_time, t.update_time
     </sql>
 </mapper>

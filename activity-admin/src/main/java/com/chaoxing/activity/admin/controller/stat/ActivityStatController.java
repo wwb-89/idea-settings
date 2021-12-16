@@ -9,6 +9,7 @@ import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +53,7 @@ public class ActivityStatController {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityStatDTO activityStat = activityStatQueryService.activityStat(activityId, loginUser);
         model.addAttribute("activityStat", activityStat);
+        model.addAttribute("mainDomain", DomainConstant.MAIN);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/stat/activity-stat";
         } else {

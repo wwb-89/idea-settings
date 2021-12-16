@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.CertificateIssueMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.CertificateIssue">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="no" jdbcType="VARCHAR" property="no" />
+        <result column="serial_no" jdbcType="INTEGER" property="serialNo" />
+        <result column="issue_time" jdbcType="TIMESTAMP" property="issueTime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.activity_id, t.uid, t.no, t.serial_no, t.issue_time, t.create_time, t.update_time
+    </sql>
+
+    <select id="pageCertificate" resultType="com.chaoxing.activity.dto.UserCertificateDTO">
+        SELECT
+            t.uid uid,
+            t.real_name realName,
+            t.uname uname,
+            t1.issue_time issueTime
+        FROM
+            t_user_result t
+            LEFT JOIN t_certificate_issue t1 ON t.activity_id = t1.activity_id
+            AND t.uid = t1.uid
+        WHERE
+            t.activity_id = #{queryParam.activityId}
+            AND t.qualified_status = 1
+            <if test="queryParam.sw != null and queryParam.sw != ''">
+                AND (
+                    t.real_name LIKE concat('%', #{queryParam.sw}, '%')
+                    OR
+                    t.uname LIKE concat('%', #{queryParam.sw}, '%')
+                )
+            </if>
+            <if test="queryParam.status eq 1">
+                AND t1.issue_time IS NOT NULL
+            </if>
+            <if test="queryParam.status eq 0">
+                AND t1.issue_time IS NULL
+            </if>
+        ORDER BY
+            t1.create_time DESC
+    </select>
+
+    <insert id="batchAdd">
+        INSERT INTO t_certificate_issue ( activity_id, uid, no, serial_no, issue_time )
+        VALUES
+            <foreach collection="certificateIssues" index="key" item="value" open="" close="" separator=",">
+                ( #{value.activityId}, #{value.uid}, #{value.no}, #{value.serialNo}, #{value.issueTime} )
+            </foreach>
+    </insert>
+
+    <select id="getActivityMaxSerialNo" resultType="java.lang.Integer">
+        SELECT
+            CASE WHEN MAX( t.serial_no ) IS NULL THEN 0 ELSE MAX( t.serial_no ) END
+        FROM
+            t_certificate_issue t
+        WHERE
+            t.activity_id = #{activityId}
+    </select>
+
+</mapper>

@@ -116,18 +116,6 @@ public class ActivityValidationService {
 		return activity;
 	}
 
-	/**活动是否存在
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-05-10 15:18:04
-	 * @param activityId
-	 * @return boolean
-	*/
-	public boolean isActivityExist(Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
-		return activity != null;
-	}
-
 	/**是不是活动的创建者
 	 * @Description 
 	 * @author wwb

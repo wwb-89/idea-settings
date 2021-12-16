@@ -119,6 +119,7 @@
         vm = new Vue({
             el: "#stat-vue",
             data: {
+                mainDomain: [[${mainDomain}]],
                 fid: [[${fid}]],
 	            orgName: [[${orgName}]],
                 tableFieldId: [[${tableFieldId}]],
@@ -156,7 +157,7 @@
             created: function () {
 				var $this = this;
 	            // 解决跨域
-	            document.domain = "chaoxing.com";
+	            document.domain = $this.mainDomain;
 				// 计算表格显示的字段列表
                 if ($this.orgTableFields.length < 1) {
                     // 机构没有配置显示的字段。使用默认的

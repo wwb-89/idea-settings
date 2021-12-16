@@ -170,6 +170,8 @@ public class Activity {
     private Integer clazzId;
     /** 课程id; column: course_id */
     private Integer courseId;
+    /** 证书模版id; column: certificate_template_id */
+    private Integer certificateTemplateId;
 
     // 附加
     /** 开始时间字符串 */

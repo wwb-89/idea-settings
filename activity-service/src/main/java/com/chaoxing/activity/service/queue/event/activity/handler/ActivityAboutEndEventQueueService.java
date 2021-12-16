@@ -72,7 +72,7 @@ public class ActivityAboutEndEventQueueService {
         String waitConvertContent = generateContent(noticeTemplateField, noticeTemplate);
         String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, noticeTemplateField);
         String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, noticeTemplateField);
-        String attachment = NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl());
+        String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
         xxtNoticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, noRateSignedUpUids);
     }
 

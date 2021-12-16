@@ -212,6 +212,7 @@
         vm = new Vue({
             el: '#orgActivityStatVue',
             data: {
+                mainDomain: [[${mainDomain}]],
                 loaded: false,
                 fid: [[${fid}]],
                 tableFieldId: [[${tableFieldId}]],
@@ -263,7 +264,7 @@
             created: function () {
                 var $this = this;
                 // 解决跨域
-                document.domain = "chaoxing.com";
+                document.domain = $this.mainDomain;
                 $this.calShowTableFieldDetails();
                 $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
             },

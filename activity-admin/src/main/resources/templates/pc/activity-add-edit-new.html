@@ -335,6 +335,16 @@
                                 </div>
                             </div>
                         </div>
+                        <!--证书设置-->
+                        <div class="form-item align-start" v-else-if="item.code == 'certificate'">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box column">
+                                <div class="set-box configurationForm" style="margin-top: 0px;" @click="certificateEdit">
+                                    <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                    <span class="tips set-information">证书编辑</span>
+                                </div>
+                            </div>
+                        </div>
                         <!--标签-->
                         <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
                             <label class="label">{{item.name}}</label>
@@ -901,6 +911,7 @@
             },
             created: function () {
                 var $this = this;
+                $this.newCertificate();
                 // 解决跨域
                 document.domain = $this.mainDomain;
                 window.addEventListener("message", function (e) {
@@ -2375,6 +2386,59 @@
                     } else if (type == 'decimal') {
                         $this.activityComponentValueMap[tplComponentId].value = parseFloat(value);
                     }
+                },
+                // 创建证书
+                newCertificate: function () {
+                    var $this = this;
+                    var certificateTemplateId = $this.activity.certificateTemplateId;
+                    if (!activityApp.isEmpty(certificateTemplateId)) {
+                        return;
+                    }
+                    var url = ctx + "/api/certificate/new";
+                    app.ajaxPost(url, {}, function (data) {
+                        if (data.success) {
+                            $this.activity.certificateTemplateId = data.data;
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "创建证书模版失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("创建证书模版失败");
+                    });
+                },
+                // 证书编辑
+                certificateEdit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/certificate/config";
+                    var certificateTemplateId = $this.activity.certificateTemplateId;
+                    if (activityApp.isEmpty(certificateTemplateId)) {
+                        app.showMsg("未创建证书模版");
+                        return;
+                    }
+                    var uid = $this.activity.createUid;
+                    var fid = $this.activity.createFid;
+                    var params = {
+                        uid: uid,
+                        fid: fid,
+                        templateId: certificateTemplateId
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            var configUrl = data.data;
+                            window.open(configUrl);
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "获取证书配置地址失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("获取证书配置地址失败");
+                    });
                 }
             }
         });

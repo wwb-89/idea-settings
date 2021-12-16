@@ -143,6 +143,8 @@ public class ActivityUpdateParamDTO {
 	private Integer clazzId;
 	/** 课程id */
 	private Integer courseId;
+	/** 证书模版id */
+	private Integer certificateTemplateId;
 
 	/**构建活动
 	 * @Description 
@@ -191,6 +193,7 @@ public class ActivityUpdateParamDTO {
 				.openClazzInteraction(getOpenClazzInteraction())
 				.clazzId(getClazzId())
 				.courseId(getCourseId())
+				.certificateTemplateId(getCertificateTemplateId())
 				.build();
 	}
 
@@ -270,6 +273,7 @@ public class ActivityUpdateParamDTO {
 				.openClazzInteraction(activity.getOpenClazzInteraction())
 				.clazzId(activity.getClazzId())
 				.courseId(activity.getCourseId())
+				.certificateTemplateId(activity.getCertificateTemplateId())
 				.build();
 	}
 

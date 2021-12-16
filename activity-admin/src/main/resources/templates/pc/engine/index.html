@@ -180,6 +180,10 @@
                                     </el-select>
                                     <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
+                                <!--证书设置-->
+                                <template v-else-if="item.code == 'certificate'">
+                                    <p class="tips third">{{item.introduction}}</p>
+                                </template>
                             </div>
                         </div>
                         <!-- 特殊活动报名设置 -->

@@ -9,6 +9,7 @@ import com.chaoxing.activity.model.InspectionConfigDetail;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -40,11 +41,11 @@ public class InspectionApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@PostMapping("config")
-	public RestRespDTO config(HttpServletRequest request, String inspectionConfigStr, String inspectionConfigDetailsStr) {
+	public RestRespDTO config(HttpServletRequest request, String inspectionConfigStr, String inspectionConfigDetailsStr, @RequestParam(defaultValue = "false") Boolean autoIssueCertificate) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		InspectionConfig inspectionConfig = JSON.parseObject(inspectionConfigStr, InspectionConfig.class);
 		List<InspectionConfigDetail> inspectionConfigDetails = JSON.parseArray(inspectionConfigDetailsStr, InspectionConfigDetail.class);
-		return RestRespDTO.success(inspectionConfigHandleService.config(inspectionConfig, inspectionConfigDetails, loginUser));
+		return RestRespDTO.success(inspectionConfigHandleService.config(inspectionConfig, inspectionConfigDetails, autoIssueCertificate, loginUser));
 	}
 
 }

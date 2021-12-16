@@ -63,7 +63,20 @@ public class NoticeDTO {
 		}
 	}
 
-	public static String generateAttachment(String title, String url) {
+	public static String generateActivityAttachment(String title, String url) {
+		List<AttachmentDTO> attachments = Lists.newArrayList();
+		AttachmentDTO.AttWebDTO attWeb = AttachmentDTO.AttWebDTO.builder()
+				.logo(UrlConstant.NOTICE_LOGO_URL)
+				.title(title)
+				.content("")
+				.url(url)
+				.build();
+		AttachmentDTO attachment = AttachmentDTO.builder().attWeb(attWeb).build();
+		attachments.add(attachment);
+		return JSON.toJSONString(attachments);
+	}
+
+	public static String generateActivityCertificateAttachment(String title, String url) {
 		List<AttachmentDTO> attachments = Lists.newArrayList();
 		AttachmentDTO.AttWebDTO attWeb = AttachmentDTO.AttWebDTO.builder()
 				.logo(UrlConstant.NOTICE_LOGO_URL)

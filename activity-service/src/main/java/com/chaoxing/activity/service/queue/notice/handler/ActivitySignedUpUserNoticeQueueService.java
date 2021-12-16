@@ -45,7 +45,7 @@ public class ActivitySignedUpUserNoticeQueueService {
         }
         String title = queueParam.getTitle();
         String content = queueParam.getContent();
-        String attachment = NoticeDTO.generateAttachment(activity.getName(), activity.getPreviewUrl());
+        String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
         xxtNoticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, signedUids);
     }
 

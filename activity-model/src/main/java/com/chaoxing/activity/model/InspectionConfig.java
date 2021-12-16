@@ -2,6 +2,7 @@ package com.chaoxing.activity.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
@@ -35,6 +36,9 @@ public class InspectionConfig {
     private String passDecideWay;
     /** 判定值; column: decide_value */
     private BigDecimal decideValue;
+    /** 是否自动发放证书; column: is_auto_issue_certificate */
+    @TableField(value = "is_auto_issue_certificate")
+    private Boolean autoIssueCertificate;
     /** 创建时间; column: create_time */
     @JSONField(serialize = false, deserialize = false)
     private LocalDateTime createTime;
