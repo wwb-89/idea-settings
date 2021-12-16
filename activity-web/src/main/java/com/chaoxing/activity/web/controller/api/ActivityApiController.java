@@ -263,6 +263,7 @@ public class ActivityApiController {
 				.startTime(LocalDateTime.parse("2021-05-31 00:00", dateTimeFormatter))
 				.endTime(LocalDateTime.parse("2022-07-01 23:59", dateTimeFormatter))
 				.status(3)
+				.coverCloudId("c9f16401f786b2357e98a6f37b13830e")
 				.coverUrl(DomainConstant.CLOUD_RESOURCE + "/star3/origin/c9f16401f786b2357e98a6f37b13830e.png")
 				.previewUrl("https://tsjy.chaoxing.com/plaza/x?courseId=218798245&classId=42416979")
 				.build();
