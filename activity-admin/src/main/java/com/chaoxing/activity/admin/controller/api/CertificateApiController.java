@@ -12,13 +12,15 @@ import com.chaoxing.activity.service.manager.module.CertificateApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**证书服务
@@ -78,18 +80,37 @@ public class CertificateApiController {
         return RestRespDTO.success(configUrl);
     }
 
-    /**获取证书下载路径
+    /**下载证书
      * @Description 
      * @author wwb
      * @Date 2021-12-15 20:12:15
      * @param activityId
      * @param uid
-     * @return com.chaoxing.activity.dto.RestRespDTO
+     * @param response
+     * @return void
     */
     @RequestMapping("download")
-    public RestRespDTO download(@RequestParam Integer activityId, @RequestParam Integer uid) throws UnsupportedEncodingException {
-        String url = certificateHandleService.getDownloadUrl(activityId, uid);
-        return RestRespDTO.success(url);
+    public void download(@RequestParam Integer activityId, @RequestParam Integer uid, HttpServletResponse response) throws IOException {
+        byte[] bytes = certificateHandleService.download(activityId, uid);
+        response.setContentType("application/pdf;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + new String("证书.pdf".getBytes("gb2312"), "ISO8859-1"));
+        FileCopyUtils.copy(bytes, response.getOutputStream());
+    }
+
+    /**查看证书
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-16 19:33:02
+     * @param activityId
+     * @param uid
+     * @param response
+     * @return void
+    */
+    @RequestMapping("show")
+    public void show(@RequestParam Integer activityId, @RequestParam Integer uid, HttpServletResponse response) throws IOException {
+        byte[] bytes = certificateHandleService.download(activityId, uid);
+        response.setContentType("application/pdf;charset=UTF-8");
+        FileCopyUtils.copy(bytes, response.getOutputStream());
     }
 
     /**分页查询证书发放

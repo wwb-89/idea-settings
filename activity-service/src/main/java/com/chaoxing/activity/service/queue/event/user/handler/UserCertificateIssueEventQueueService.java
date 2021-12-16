@@ -7,6 +7,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.certificate.CertificateHandleService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,8 @@ public class UserCertificateIssueEventQueueService {
         }
         String title = generateNoticeTitle(activity);
         String content = generateNoticeContent(activity);
-        String attachment = NoticeDTO.generateActivityCertificateAttachment("证书", certificateHandleService.getDownloadUrl(activityId, uid));
+        String url = DomainConstant.ADMIN + "/api/certificate/download?uid=" + uid + "&activityId=" + activityId;
+        String attachment = NoticeDTO.generateActivityCertificateAttachment("证书", url);
         List<Integer> uids = Lists.newArrayList(uid);
         xxtNoticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, uids);
     }

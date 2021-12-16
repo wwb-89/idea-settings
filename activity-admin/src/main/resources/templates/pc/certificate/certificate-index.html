@@ -370,20 +370,8 @@
                 },
                 show: function (row) {
 					var $this = this;
-                    var url = ctx + "/api/certificate/download?activityId=" + $this.activity.id + "&uid=" + row.uid;
-                    app.ajaxPost(url, {}, function (data) {
-                        if (data.success) {
-                            window.open(data.data);
-                        } else {
-                            var message = data.message;
-                            if (activityApp.isEmpty(message)) {
-                                message = "获取查看地址失败";
-                            }
-                            app.showMsg(message);
-                        }
-                    }, function () {
-                        app.showMsg("获取查看地址失败");
-                    });
+                    var url = ctx + "/api/certificate/show?activityId=" + $this.activity.id + "&uid=" + row.uid;
+                    window.open(url);
                 }
             }
         })

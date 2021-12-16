@@ -6,15 +6,14 @@ import com.chaoxing.activity.dto.manager.CertificateFieldDTO;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -38,7 +37,7 @@ public class CertificateApiService {
     /** 模版配置页面地址 */
     private static final String TEMPLATE_CONFIG_URL = DomainConstant.CERTIFICATE + "/template/newview?tid=%d&uid=%d&fid=%d&enc=";
     /** 下载模版url */
-    private static final String DOWNLOAD_TEMPLATE_URL = DomainConstant.CERTIFICATE + "/template/topdf?tid=%d&uid=%d&fid=%d&params=%s&enc";
+    private static final String DOWNLOAD_TEMPLATE_URL = DomainConstant.CERTIFICATE + "/template/topdf";
 
     @Resource
     private RestTemplate restTemplate;
@@ -105,11 +104,18 @@ public class CertificateApiService {
      * @param uid
      * @param fid
      * @param certificateField
-     * @return java.lang.String
+     * @return byte[]
     */
-    public String getDownloadUrl(Integer tid, Integer uid, Integer fid, CertificateFieldDTO certificateField) throws UnsupportedEncodingException {
-        String params = URLEncoder.encode(JSON.toJSONString(certificateField), StandardCharsets.UTF_8.name());
-        return String.format(DOWNLOAD_TEMPLATE_URL, tid, uid, fid, params);
+    public byte[] getDownloadUrl(Integer tid, Integer uid, Integer fid, CertificateFieldDTO certificateField) {
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("tid", tid);
+        params.add("uid", uid);
+        params.add("fid", fid);
+        params.add("enc", "");
+        params.add("params", JSON.toJSONString(certificateField));
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(params, headers);
+        return restTemplate.postForObject(DOWNLOAD_TEMPLATE_URL, httpEntity, byte[].class);
     }
 
 }

@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -104,9 +103,9 @@ public class CertificateHandleService {
      * @Date 2021-12-15 14:49:44
      * @param activityId
      * @param uid
-     * @return java.lang.String
+     * @return byte[]
     */
-    public String getDownloadUrl(Integer activityId, Integer uid) throws UnsupportedEncodingException {
+    public byte[] download(Integer activityId, Integer uid) {
         Activity activity = activityValidationService.activityExist(activityId);
         // 证书发放记录
         CertificateIssue certificateIssue = certificateValidationService.isIssued(uid, activityId);
