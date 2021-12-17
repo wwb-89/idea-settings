@@ -21,6 +21,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**证书服务
@@ -93,7 +95,8 @@ public class CertificateApiController {
     public void download(@RequestParam Integer activityId, @RequestParam Integer uid, HttpServletResponse response) throws IOException {
         byte[] bytes = certificateHandleService.download(activityId, uid);
         response.setContentType("application/pdf;charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment;filename=" + new String("证书.pdf".getBytes("gb2312"), "ISO8859-1"));
+        String fileName = "证书.pdf";
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()));
         FileCopyUtils.copy(bytes, response.getOutputStream());
     }
 
