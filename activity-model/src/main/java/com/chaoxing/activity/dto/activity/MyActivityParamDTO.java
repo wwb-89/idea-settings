@@ -27,14 +27,14 @@ public class MyActivityParamDTO {
     private String hide;
     /** 我的活动界面标题 */
     private String title;
+    /** 添加按钮名称 */
+    private String addBtnName;
     /** 活动标识 */
     private String flag;
     /** 万能表单地址(填写表单内容) */
-    private String wfwFormUrl;
+    private String addUrl;
     /** 是否可管理，即是否展示发布操作按钮 */
     private Boolean managAble;
-    /** 我的活动pc端样式，临时参数，后续合并删除 */
-    private String style;
 
     public String buildBackUrl(String url) throws UnsupportedEncodingException {
         url += "?managAble=" + (managAble == null ? Boolean.FALSE : managAble);
@@ -47,8 +47,8 @@ public class MyActivityParamDTO {
         if (StringUtils.isNotBlank(flag)) {
             url += "&flag=" + flag;
         }
-        if (StringUtils.isNotBlank(wfwFormUrl)) {
-            url += "&wfwFormUrl=" + URLEncoder.encode(wfwFormUrl, StandardCharsets.UTF_8.name());
+        if (StringUtils.isNotBlank(addUrl)) {
+            url += "&addUrl=" + URLEncoder.encode(addUrl, StandardCharsets.UTF_8.name());
         }
         return url;
     }

@@ -287,17 +287,13 @@ public class IndexController {
 		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
 		model.addAttribute("managAble", myActivityParam.getManagAble());
 		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl(DomainConstant.WEB + "/my"), StandardCharsets.UTF_8.name());
-		myActivityParam.setWfwFormUrl(myActivityParam.getWfwFormUrl() + "&backurl=" + backUrl);
-		model.addAttribute("wfwFormUrl", myActivityParam.getWfwFormUrl());
+		myActivityParam.setAddUrl(myActivityParam.getAddUrl() + "&backurl=" + backUrl);
+		model.addAttribute("wfwFormUrl", myActivityParam.getAddUrl());
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("adminDomain", DomainConstant.ADMIN);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/my";
-		}
-		String style = Optional.ofNullable(myActivityParam.getStyle()).orElse("1");
-		if (Objects.equals(style, "2")) {
-			return "pc/activity/my-new";
 		}
 		return "pc/activity/my";
 	}
