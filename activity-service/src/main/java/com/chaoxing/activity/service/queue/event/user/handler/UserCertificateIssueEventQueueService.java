@@ -3,8 +3,8 @@ package com.chaoxing.activity.service.queue.event.user.handler;
 import com.chaoxing.activity.dto.event.user.UserCertificateIssueEventOrigin;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.CertificateIssue;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.certificate.CertificateHandleService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -32,8 +32,6 @@ public class UserCertificateIssueEventQueueService {
     private XxtNoticeApiService xxtNoticeApiService;
     @Resource
     private ActivityQueryService activityQueryService;
-    @Resource
-    private CertificateHandleService certificateHandleService;
 
     public void handle(UserCertificateIssueEventOrigin userCertificateIssueEventOrigin) throws UnsupportedEncodingException {
         if (userCertificateIssueEventOrigin == null) {
@@ -47,7 +45,7 @@ public class UserCertificateIssueEventQueueService {
         }
         String title = generateNoticeTitle(activity);
         String content = generateNoticeContent(activity);
-        String url = DomainConstant.ADMIN + "/api/certificate/download?uid=" + uid + "&activityId=" + activityId;
+        String url = CertificateIssue.getDownloadUrl(uid, activityId);
         String attachment = NoticeDTO.generateActivityCertificateAttachment("证书", url);
         List<Integer> uids = Lists.newArrayList(uid);
         xxtNoticeApiService.sendNotice(title, content, attachment, CommonConstant.NOTICE_SEND_UID, uids);
@@ -58,8 +56,7 @@ public class UserCertificateIssueEventQueueService {
     }
 
     private String generateNoticeContent(Activity activity) {
-        String content = "您好，您在\"" + activity.getName() + "\"中获得证书，点击以下连接或在报名详情中查看";
-        return content;
+        return "您好，您在\"" + activity.getName() + "\"中获得证书，点击以下连接或在报名详情中查看";
     }
 
 }

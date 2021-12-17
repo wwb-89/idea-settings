@@ -248,8 +248,6 @@
             },
             created: function () {
                 var $this = this;
-                // 解决跨域
-                document.domain = $this.mainDomain;
                 $this.calShowTableFieldDetails();
                 $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
             },
@@ -257,7 +255,7 @@
                 var $this = this;
                 var headH = $('.header-box').height();
                 var operateH = $('.operate-box').height();
-                $this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 16 + 32);
+                $this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 32 + 32);
                 $this.loadData();
                 $this.reSortSettingData();
             },
