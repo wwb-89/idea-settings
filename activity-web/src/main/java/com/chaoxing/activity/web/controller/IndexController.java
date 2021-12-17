@@ -282,7 +282,6 @@ public class IndexController {
 	@LoginRequired
 	@RequestMapping("my")
 	public String my(HttpServletRequest request, Model model, MyActivityParamDTO myActivityParam) throws UnsupportedEncodingException {
-		model.addAttribute("areaCode", myActivityParam.getAreaCode());
 		model.addAttribute("flag", myActivityParam.getFlag());
 		model.addAttribute("hide", myActivityParam.getHide());
 		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
@@ -295,6 +294,10 @@ public class IndexController {
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/my";
+		}
+		String style = Optional.ofNullable(myActivityParam.getStyle()).orElse("1");
+		if (Objects.equals(style, "2")) {
+			return "pc/activity/my-new";
 		}
 		return "pc/activity/my";
 	}

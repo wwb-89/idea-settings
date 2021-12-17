@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
@@ -21,7 +20,6 @@ import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -144,13 +142,11 @@ public class ActivityApiController {
 					activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
 				}
 				page = activityQueryService.pageFlag(page, activityQuery);
-				packageActivitySignedStat(page);
 				return page;
 			}
 		}
 		activityQuery.setFids(getFidsByAreaCode(activityQuery.getTopFid(), activityQuery.getAreaCode()));
 		page = activityQueryService.listParticipate(page, activityQuery);
-		packageActivitySignedStat(page);
 		activityQueryService.fillTagNames(page.getRecords());
 		return page;
 	}
@@ -170,35 +166,6 @@ public class ActivityApiController {
 			fids.add(Optional.ofNullable(groupRegionFilter).map(GroupRegionFilter::getManageFid).orElse(topFid));
 		}
 		return fids;
-	}
-
-	/** 查询并设置活动已报名人数
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-10-27 15:12:25
-	 * @param
-	 * @return void
-	 */
-	private void packageActivitySignedStat(Page<Activity> page) {
-		if (CollectionUtils.isEmpty(page.getRecords())) {
-			return;
-		}
-		List<Integer> signIds = page.getRecords().stream().map(Activity::getSignId).filter(Objects::nonNull).collect(Collectors.toList());
-		Map<Integer, SignStatDTO> signIdSignStatMap = Maps.newHashMap();
-		if (CollectionUtils.isNotEmpty(signIds)) {
-			List<SignStatDTO> signStats = signApiService.statSignSignUps(signIds);
-			signIdSignStatMap = signStats.stream().collect(Collectors.toMap(SignStatDTO::getId, v -> v, (v1, v2) -> v2));
-		}
-		for (Activity activity : page.getRecords()) {
-			// 活动报名签到状态数据
-			SignStatDTO signStatItem = Optional.ofNullable(activity.getSignId()).map(signIdSignStatMap::get).orElse(null);
-			boolean openSignUp = signStatItem != null && CollectionUtils.isNotEmpty(signStatItem.getSignUpIds());
-			activity.setOpenSignUp(openSignUp);
-			if (openSignUp) {
-				activity.setSignedUpNum(Optional.ofNullable(signStatItem.getSignedUpNum()).orElse(0));
-				activity.setPersonLimit(Optional.ofNullable(signStatItem.getLimitNum()).orElse(0));
-			}
-		}
 	}
 
 	/**可参与的活动（鄂尔多斯）
@@ -293,10 +260,15 @@ public class ActivityApiController {
 	 */
 	@LoginRequired
 	@RequestMapping("signed-up")
-	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag) {
+	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag, Boolean keepOldRule, Boolean loadWaitAudit) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
+		keepOldRule = Optional.ofNullable(keepOldRule).orElse(false);
+		if (keepOldRule) {
+			page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
+		} else {
+			page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, loadWaitAudit);
+		}
 		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}

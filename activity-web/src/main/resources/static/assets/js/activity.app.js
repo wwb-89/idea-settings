@@ -278,7 +278,7 @@
                 return "已删除";
             case 1:
             case 2:
-                return "未开始";
+                return "即将开始";
             case 3:
                 return "进行中";
             default:
