@@ -40,3 +40,11 @@ SET t.real_name = t1.real_name,
     t.uname = t1.login_name
 WHERE
     t.uid = t1.uid;
+
+
+-- 报名成功通知模板
+INSERT INTO `activity_engine`.`t_system_notice_template` (`id`, `notice_type`, `receiver_description`, `title`, `code_title`, `content`, `code_content`, `send_time_description`, `is_support_time_config`, `delay_hour`, `delay_minute`, `is_enable`, `sequence`) VALUES (9, 'sign_up_success', '报名用户', '成功报名活动<input type=\"text\" class=\"tag\" readonly=\"readonly\" value=\"活动名称\" code=\"activity_name\" style=\"width: 55px;\">', '成功报名活动{activity_name}', '您好，您已成功报名活动！<div>活动名称：<input type=\"text\" class=\"tag\" readonly=\"readonly\" value=\"活动名称\" code=\"activity_name\" style=\"width: 55px;\"></div><div>活动地点：<input type=\"text\" class=\"tag\" readonly=\"readonly\" value=\"活动地点\" code=\"activity_address\" style=\"width: 55px;\"></div><div>活动地点：<input type=\"text\" class=\"tag\" readonly=\"readonly\" value=\"活动时间\" code=\"activity_time\" style=\"width: 55px;\"></div>', '您好，您已成功报名活动！\n\n活动名称：{activity_name}\n活动地点：{activity_address}\n活动时间：{activity_time}\n', '', 0, 0, 0, 1, 9);
+
+-- 系统通知模板增加is_deleted字段，更新报名即将开始和报名即将结束为删除状态
+ALTER TABLE t_system_notice_template ADD is_deleted TINYINT(1) DEFAULT 0 COMMENT '是否删除';
+UPDATE t_system_notice_template SET is_deleted = 1 WHERE id IN (4, 5);

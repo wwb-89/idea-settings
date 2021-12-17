@@ -57,6 +57,8 @@ public class ActivityStatSummaryQueryService {
     @Resource
     private ActivityStatQueryService activityStatQueryService;
 
+    private static final List<String> SORTABLE_FIELDS = Lists.newArrayList("integral", "signedInNum", "signInRate", "qualifiedNum", "signedUpNum", "avgParticipateTimeLength", "rateScore", "rateNum", "startTime", "endTime", "releaseTime");
+
     /**根据活动activityIds，查询对应的活动统计汇总列表
      * @Description
      * @author huxiaolong
@@ -79,6 +81,9 @@ public class ActivityStatSummaryQueryService {
     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO>
     */
     public Page<ActivityStatSummaryDTO> activityStatSummaryPage(Page<ActivityStatSummaryDTO> page, ActivityStatSummaryQueryDTO queryParam) {
+        if (StringUtils.isNotBlank(queryParam.getOrderField()) && !SORTABLE_FIELDS.contains(queryParam.getOrderField())) {
+            queryParam.setOrderField(null);
+        }
         List<Integer> externalIds = queryParam.getExternalIds();
         List<Integer> searchSignIds = signApiService.listSignIdsByExternalIds(externalIds);
         if (queryParam.getOrderFieldId() != null) {

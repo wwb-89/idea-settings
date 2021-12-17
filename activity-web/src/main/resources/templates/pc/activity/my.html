@@ -70,9 +70,9 @@
                                     <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)">取消报名</a>
                                     <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)">撤销申请</a>
                                 </template>
-                                <template v-else-if="currentTab.code == 'collected'">
-                                    <a class="cancel" href="javascript:" @click="cancelCollect(index, $event)">取消收藏</a>
-                                </template>
+<!--                                <template v-else-if="currentTab.code == 'collected'">-->
+<!--                                    <a class="cancel" href="javascript:" @click="cancelCollect(index, $event)">取消收藏</a>-->
+<!--                                </template>-->
                                 <template v-else-if="currentTab.code == 'managing'">
                                     <a class="edit" href="javascript:" @click="toDelete(index, $event)">删除</a>
                                 </template>
@@ -172,9 +172,9 @@
                     if ($this.showTab('signedUp')) {
                         $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
                     }
-                    if ($this.showTab('collected')) {
-                        $this.tabList.push({name: '收藏', code: 'collected', url: ctx + '/api/activity/collected'});
-                    }
+                    // if ($this.showTab('collected')) {
+                    //     $this.tabList.push({name: '收藏', code: 'collected', url: ctx + '/api/activity/collected'});
+                    // }
                     if ($this.showTab('managing')) {
                         $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
                     }
@@ -372,15 +372,15 @@
                 cancelCollect: function (index, e) {
                     e.stopPropagation();
                     var $this = this;
-                    var activity = $this.collecteds[index];
+                    var activity = $this.activities[index];
                     var url = ctx + "/api/activity/" + activity.id + "/cancel-collect";
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("取消收藏成功", function () {
                                 // 删除这条数据
-                                var collecteds = $this.collecteds;
-                                collecteds.splice(index, 1);
-                                $this.collecteds = collecteds;
+                                var activities = $this.activities;
+                                activities.splice(index, 1);
+                                $this.activities = activities;
                                 $this.$nextTick(function () {
                                     cropImgFun("body");
                                 });
@@ -400,7 +400,7 @@
                 release: function (index) {
                     var $this = this;
                     $this.operateIndex = index;
-                    var activity = $this.managings[$this.operateIndex];
+                    var activity = $this.activities[$this.operateIndex];
                     if (activityApp.isEmpty(activity.pageId)) {
                         app.showMsg("活动未创建完成，请选择活动模板", function () {
                             var url = $this.adminDomain + "/activity/" + activity.id + "/edit?step=2";
@@ -412,12 +412,12 @@
                 },
                 releaseSubmit: function () {
                     var $this = this;
-                    var activity = $this.managings[$this.operateIndex];
+                    var activity = $this.activities[$this.operateIndex];
                     var url = ctx + "/api/manage/activity/" + activity.id + "/release";
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("发布成功", function () {
-                                $this.resetManaging();
+                                $this.resetData();
                             });
                         } else {
                             var errorMessage = data.message;
@@ -438,12 +438,12 @@
                 },
                 cancelReleaseSubmit: function () {
                     var $this = this;
-                    var activity = $this.managings[$this.operateIndex];
+                    var activity = $this.activities[$this.operateIndex];
                     var url = ctx + "/api/manage/activity/" + activity.id + "/release/cancel";
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("下架成功", function () {
-                                $this.resetManaging();
+                                $this.resetData();
                             });
                         } else {
                             var errorMessage = data.message;
@@ -465,12 +465,12 @@
                 // 删除提交
                 deleteSubmit: function () {
                     var $this = this;
-                    var activity = $this.managings[$this.operateIndex];
+                    var activity = $this.activities[$this.operateIndex];
                     var url = ctx + "/api/manage/activity/" + activity.id + "/delete";
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("删除成功", function () {
-                                $this.resetManaging();
+                                $this.resetData();
                             });
                         } else {
                             var errorMessage = data.message;

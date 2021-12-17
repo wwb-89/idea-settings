@@ -55,6 +55,8 @@ public class SystemNoticeTemplate {
     private Integer delayMinute;
     /** 顺序; column: sequence*/
     private Integer sequence;
+    /** 是否删除; column: is_deleted */
+    private Boolean deleted;
 
     @Getter
     public enum NoticeTypeEnum {
@@ -63,6 +65,7 @@ public class SystemNoticeTemplate {
         ACTIVITY_INFO_CHANGE("活动信息变更", "activity_info_change"),
         ACTIVITY_ABOUT_START("活动即将开始", "activity_about_start"),
         ACTIVITY_ABOUT_END("活动即将结束", "activity_about_end"),
+        SIGN_UP_SUCCESS("成功报名活动", "sign_up_success"),
         SIGN_UP_ABOUT_START("报名即将开始", "sign_up_about_start"),
         SIGN_UP_ABOUT_END("报名即将结束", "sign_up_about_end"),
         AUTO_ADD_TO_BLACKLIST("自动进入黑名单", "auto_add_to_blacklist"),

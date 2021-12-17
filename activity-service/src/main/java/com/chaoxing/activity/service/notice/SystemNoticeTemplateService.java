@@ -50,6 +50,7 @@ public class SystemNoticeTemplateService {
 	*/
 	public List<SystemNoticeTemplate> list() {
 		return systemNoticeTemplateMapper.selectList(new LambdaQueryWrapper<SystemNoticeTemplate>()
+				.eq(SystemNoticeTemplate::getDeleted, false)
 				.orderByAsc(SystemNoticeTemplate::getSequence)
 		);
 	}
@@ -64,6 +65,7 @@ public class SystemNoticeTemplateService {
 	public SystemNoticeTemplate getByNoticeType(String noticeType) {
 		List<SystemNoticeTemplate> systemNoticeTemplates = systemNoticeTemplateMapper.selectList(new LambdaQueryWrapper<SystemNoticeTemplate>()
 				.eq(SystemNoticeTemplate::getNoticeType, noticeType)
+				.eq(SystemNoticeTemplate::getDeleted, false)
 		);
 		return Optional.ofNullable(systemNoticeTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}

@@ -14,10 +14,11 @@
         <result column="delay_hour" jdbcType="INTEGER" property="delayHour" />
         <result column="delay_minute" jdbcType="INTEGER" property="delayMinute" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.notice_type, t.receiver_description, t.title, t.code_title, t.content, t.code_content, t.send_time_description,
-        t.is_support_time_config, t.delay_hour, t.delay_minute, t.sequence
+        t.is_support_time_config, t.delay_hour, t.delay_minute, t.sequence, t.is_deleted
     </sql>
 
 </mapper>
