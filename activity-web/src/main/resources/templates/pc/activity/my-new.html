@@ -13,11 +13,11 @@
 </head>
 <body>
 <div class="container " id="activity-list" v-cloak>
-    <div class="header">
+    <div class="header" v-if="!isEmbedded">
         <div class="title" th:text="${title == null ? '我的活动' : title}">我的活动</div>
     </div>
 <!--    自用版加：width1000-->
-    <div class="activity-list width1000">
+    <div :class="{'activity-list': true, 'width1000': !isEmbedded}">
         <div class="item-block nopadding minHeight800">
             <div class="filter" style="height: 30px">
                 <div class="btns" v-show="managAble && flag == 'tcol'">
@@ -143,6 +143,7 @@
                     activities: [],
                     // 操作的活动下标
                     operateIndex: "",
+                    isEmbedded: activityApp.isEmbedded(),
 
                     inputValue:'',
                     dialogVisible:false,
