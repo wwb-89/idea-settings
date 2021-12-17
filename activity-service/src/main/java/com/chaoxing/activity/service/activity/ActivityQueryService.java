@@ -624,27 +624,6 @@ public class ActivityQueryService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	 */
-	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag) {
-		Integer uid = loginUser.getUid();
-		Integer fid = loginUser.getFid();
-		List<Integer> marketIds = Lists.newArrayList();
-		Integer marketId = marketQueryService.getMarketIdByFlag(fid, flag);
-		if (marketId != null) {
-			marketIds.add(marketId);
-		}
-		// 若flag不为空且市场id不存在，则查询结果为空
-		if (StringUtils.isNotBlank(flag) && marketId == null) {
-			page.setRecords(Lists.newArrayList());
-			return page;
-		}
-		Page signedUpPage = signApiService.pageUserSignedUp(new Page(1, Integer.MAX_VALUE), uid, sw);
-		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
-			pageSignedUpActivities(page, signedUpPage.getRecords(), null, marketIds);
-		}
-		packageActivitySignedStat(page);
-		return page;
-	}
-
 	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag, Boolean loadWaitAudit) {
 		Integer uid = loginUser.getUid();
 		Integer fid = loginUser.getFid();
@@ -658,7 +637,7 @@ public class ActivityQueryService {
 			page.setRecords(Lists.newArrayList());
 			return page;
 		}
-		// 查询用户待审核或成功报名的报名签到信息
+		// 查询用户全部待审核或成功报名的报名签到信息
 		Page signedUpPage = signApiService.pageUserSignedUp(new Page<>(1, Integer.MAX_VALUE), uid, sw);
 		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
 			List<UserSignUpStatusStatDTO> signedUpRecords = JSONArray.parseArray(JSON.toJSONString(signedUpPage.getRecords()), UserSignUpStatusStatDTO.class);
@@ -667,6 +646,34 @@ public class ActivityQueryService {
 		packageActivitySignedStat(page);
 		return page;
 	}
+
+	/**封装报名的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-20 18:15:26
+	 * @param page
+	 * @param marketIds
+	 * @return void
+	 */
+	private void pageSignedUpActivities(Page page, List<UserSignUpStatusStatDTO> userSignUpStatuses, List<Integer> marketIds, Boolean loadWaitAudit) {
+		List<ActivitySignedUpDTO> result = Lists.newArrayList();
+		List<Integer> successSignIds = userSignUpStatuses.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 1)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
+		List<Integer> waitAuditSignIds = userSignUpStatuses.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 2)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
+		waitAuditSignIds.removeAll(successSignIds);
+		int additionalTotal = 0;
+		if (loadWaitAudit && CollectionUtils.isNotEmpty(waitAuditSignIds)) {
+			Page<Activity> waitAuditPage= activityMapper.pageSignedUpActivities(new Page<>(1, Integer.MAX_VALUE), waitAuditSignIds, null, marketIds);
+			result = activitiesConvert2ActivitySignedUp(waitAuditPage.getRecords(), userSignUpStatuses);
+			additionalTotal = result.size();
+		}
+		page = activityMapper.pageSignedUpActivities(page, successSignIds, null, marketIds);
+		List<ActivitySignedUpDTO> records = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatuses);
+		result.addAll(records);
+
+		page.setRecords(result);
+		page.setTotal(page.getTotal() + additionalTotal);
+	}
+
 
 	/**门户我报名的活动查询
 	 * @Description
@@ -696,39 +703,22 @@ public class ActivityQueryService {
 
 		Page signedUpPage = signApiService.pageUserSignedUp(new Page(1, Integer.MAX_VALUE), uid, sw, specificFid);
 		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
-			pageSignedUpActivities(page, signedUpPage.getRecords(), activityClassifyId, marketIds);
+			mhPageSignedUpActivities(page, signedUpPage.getRecords(), activityClassifyId, marketIds);
 		}
 		return page;
 	}
 
-	/**封装报名的活动
-	 * @Description
+	/**门户分页查询封装
+	 * @Description 
 	 * @author huxiaolong
-	 * @Date 2021-10-20 18:15:26
+	 * @Date 2021-12-17 11:08:09
 	 * @param page
+	 * @param records	UserSignUpStatusStatDTO 列表(由于从Page中获取，类型为Object，需要进行类型转换)
+	 * @param activityClassifyId
 	 * @param marketIds
-	 * @return void
+	 * @return
 	 */
-	private void pageSignedUpActivities (Page page, List<UserSignUpStatusStatDTO> userSignUpStatuses, List<Integer> marketIds, Boolean loadWaitAudit) {
-		List<ActivitySignedUpDTO> result = Lists.newArrayList();
-		List<Integer> successSignIds = userSignUpStatuses.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 1)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
-		List<Integer> waitAuditSignIds = userSignUpStatuses.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 2)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
-		waitAuditSignIds.removeAll(successSignIds);
-		int additionalTotal = 0;
-		if (loadWaitAudit && CollectionUtils.isNotEmpty(waitAuditSignIds)) {
-			Page<Activity> waitAuditPage= activityMapper.pageSignedUpActivities(new Page<>(1, Integer.MAX_VALUE), waitAuditSignIds, null, marketIds);
-			result = activitiesConvert2ActivitySignedUp(waitAuditPage.getRecords(), userSignUpStatuses);
-			additionalTotal = result.size();
-		}
-		page = activityMapper.pageSignedUpActivities(page, successSignIds, null, marketIds);
-		List<ActivitySignedUpDTO> records = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatuses);
-		result.addAll(records);
-
-		page.setRecords(result);
-		page.setTotal(page.getTotal() + additionalTotal);
-	}
-
-	private void pageSignedUpActivities(Page page, List records, Integer activityClassifyId, List<Integer> marketIds) {
+	private void mhPageSignedUpActivities(Page page, List records, Integer activityClassifyId, List<Integer> marketIds) {
 		if (CollectionUtils.isEmpty(records)) {
 			return;
 		}

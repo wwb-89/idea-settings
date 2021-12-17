@@ -256,19 +256,16 @@ public class ActivityApiController {
 	 * @Date 2021-01-27 19:34:56
 	 * @param request
 	 * @param sw
+	 * @param flag	活动标识
+	 * @param loadWaitAudit	是否直接加载待审核报名
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@LoginRequired
 	@RequestMapping("signed-up")
-	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag, Boolean keepOldRule, Boolean loadWaitAudit) {
+	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag, Boolean loadWaitAudit) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		keepOldRule = Optional.ofNullable(keepOldRule).orElse(false);
-		if (keepOldRule) {
-			page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
-		} else {
-			page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, loadWaitAudit);
-		}
+		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, loadWaitAudit);
 		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}
