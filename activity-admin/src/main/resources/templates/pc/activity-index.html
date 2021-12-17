@@ -34,6 +34,32 @@
                     <span>{{menus.sign_in.name}}</span>
                 </div>
             </div>
+            <div class="entry menu-item" v-show="activity.openClazzInteraction">
+                <!--讨论-->
+                <div :class="{'item': true, 'active': menus.discuss.selected}" @click="toDiscuss" v-if="menuShow('discuss')">
+                    <img :src="menus.discuss.activeIconUrl" v-if="menus.discuss.selected">
+                    <img :src="menus.discuss.defaultIconUrl" v-else>
+                    <span>{{menus.discuss.name}}</span>
+                </div>
+                <!--任务-->
+                <div :class="{'item': true, 'active': menus.task.selected}" @click="toTask" v-if="menuShow('task')">
+                    <img :src="menus.task.activeIconUrl" v-if="menus.task.selected">
+                    <img :src="menus.task.defaultIconUrl" v-else>
+                    <span>{{menus.task.name}}</span>
+                </div>
+                <!--作业-->
+                <div :class="{'item': true, 'active': menus.homework.selected}" @click="toHomework" v-if="menuShow('homework')">
+                    <img :src="menus.homework.activeIconUrl" v-if="menus.homework.selected">
+                    <img :src="menus.homework.defaultIconUrl" v-else>
+                    <span>{{menus.homework.name}}</span>
+                </div>
+                <!--评审管理-->
+                <div :class="{'item': true, 'active': menus.review_management.selected}" @click="toReviewManagement" v-if="menuShow('review_management')">
+                    <img :src="menus.review_management.activeIconUrl" v-if="menus.review_management.selected">
+                    <img :src="menus.review_management.defaultIconUrl" v-else>
+                    <span>{{menus.review_management.name}}</span>
+                </div>
+            </div>
             <div class="entry menu-item" v-if="menuShow('results_manage')">
                 <!--考核管理-->
                 <div :class="{'item': true, 'active': menus.results_manage.selected}" @click="toResultsManage">
@@ -107,6 +133,7 @@
                 loginUser: [[${session._login_user_}]],
                 signActivityManageIndex: [[${signActivityManageIndex}]],
                 activityMenus: [[${activityMenus}]],
+                clazzInteractionMenus: [[${clazzInteractionMenus}]],
                 menus: {
                     // 报名签到
                     sign_up: {
@@ -170,6 +197,7 @@
                 var $this = this;
                 // 解决跨域
                 document.domain = $this.mainDomain;
+                $this.additionalMenus();
                 $this.$nextTick(function () {
                     var signUpIds = $this.signActivityManageIndex.signUpIds;
                     if (!activityApp.isEmpty(signUpIds) && signUpIds.length > 1) {
@@ -192,8 +220,6 @@
                         }
                     });
                 })
-
-
             },
             mounted: function () {
                 var $this = this;
@@ -229,12 +255,40 @@
                         case 'setting':
                             $this.toSetting();
                             break;
+                        case 'discuss':
+                            $this.toDiscuss();
+                            break;
+                        case 'task':
+                            $this.toTask();
+                            break;
+                        case 'homework':
+                            $this.toHomework();
+                            break;
+                        case 'review_management':
+                            $this.toReviewManagement();
+                            break;
                         default:
                             break;
                     }
                 })
             },
             methods: {
+                additionalMenus: function () {
+                    var $this = this;
+                    if (!$this.activity.openClazzInteraction) {
+                        return;
+                    }
+                    $($this.clazzInteractionMenus).each(function () {
+                        $this.activityMenus.push(this.code);
+                        $this.menus[this.code] = {
+                            name: this.name,
+                            defaultIconUrl: ctx + "/pc/assets/images/" + this.defaultIcon + ".png",
+                            activeIconUrl: ctx + "/pc/assets/images/" + this.activeIcon + ".png",
+                            url: this.url,
+                            selected: false
+                        }
+                    });
+                },
                 menuShow: function (menu) {
                     // 目前固定notice和setting存在
                     return this.activityMenus.indexOf(menu) != -1;
@@ -315,6 +369,22 @@
                 toSetting: function () {
                     var $this = this;
                     $this.selectMenu("setting");
+                },
+                toDiscuss: function () {
+                    var $this = this;
+                    $this.selectMenu("discuss");
+                },
+                toTask: function () {
+                    var $this = this;
+                    $this.selectMenu("task");
+                },
+                toHomework: function () {
+                    var $this = this;
+                    $this.selectMenu("homework");
+                },
+                toReviewManagement: function () {
+                    var $this = this;
+                    $this.selectMenu("review_management");
                 },
                 // 发通知
                 toAddNotice: function () {

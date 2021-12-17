@@ -124,6 +124,7 @@ public class IndexController {
 		model.addAttribute("topFid", fid);
 		model.addAttribute("marketId", marketId);
 		model.addAttribute("flag", activitySquareParam.getFlag());
+		model.addAttribute("hideFilter", activitySquareParam.getHideFilter());
 		model.addAttribute("levelFilter", levelFilter);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);

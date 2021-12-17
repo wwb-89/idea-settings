@@ -9,6 +9,7 @@ import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.module.ClazzInteractionDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
@@ -136,6 +137,12 @@ public class ActivityManageController {
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("webDomain", DomainConstant.WEB);
+		List<ClazzInteractionDTO.ClazzInteractionMenu> clazzInteractionMenus = Lists.newArrayList();
+		if (activity.getOpenClazzInteraction()) {
+			clazzInteractionMenus = ClazzInteractionDTO.listClazzInteractionMenus(activity, operateUid, loginUser.getFid());
+		}
+		model.addAttribute("clazzInteractionMenus", clazzInteractionMenus);
+
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {
