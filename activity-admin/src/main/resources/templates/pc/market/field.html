@@ -7,9 +7,14 @@
 	<link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
 	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/notice-setting.css" th:href="@{/pc/assets/css/notice-setting.css}">
+	<style>
+        [v-cloak] {
+            display: none;
+        }
+	</style>
 </head>
 <body>
-<div class="activity-field-page" id="vue">
+<div class="activity-field-page" id="vue" v-cloak>
 	<p class="page-title-box">
 		<span class="color333 fs16 font500 title1">活动字段</span>
 		<span class="color999 fs14">创建活动页面的字段和更多报名条件设置</span>

@@ -22,7 +22,10 @@
 </head>
 <body>
 <div class="tab-page" id="vm" v-cloak>
-	<div class="page-header">{{market.name}}设置</div>
+	<div class="page-header">
+		<div class="go-back fl" v-show="false"><i class="icon-back"></i><span>返回</span></div>
+		<div class="name-txt">{{market.name}}设置</div>
+	</div>
 	<div class="main-container" >
 		<div class="left-content fl">
 			<ul class="menu-lists">
