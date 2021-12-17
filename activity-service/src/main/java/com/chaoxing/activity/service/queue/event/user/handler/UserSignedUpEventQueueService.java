@@ -2,9 +2,14 @@ package com.chaoxing.activity.service.queue.event.user.handler;
 
 import com.chaoxing.activity.dto.event.user.UserSignedUpEventOrigin;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
+import com.chaoxing.activity.dto.notice.MarketNoticeTemplateDTO;
+import com.chaoxing.activity.dto.notice.NoticeTemplateFieldDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.SystemNoticeTemplate;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
+import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
+import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
 import com.chaoxing.activity.service.queue.IntegralPushQueue;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
@@ -48,6 +53,10 @@ public class UserSignedUpEventQueueService {
     private UserSignStatSummaryQueue userSignStatSummaryQueue;
     @Resource
     private UserActionRecordQueue userActionRecordQueue;
+    @Resource
+    private SystemNoticeTemplateService systemNoticeTemplateService;
+    @Resource
+    private MarketNoticeTemplateService marketNoticeTemplateService;
 
     /** 活动时间格式化 */
     private static final DateTimeFormatter ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
@@ -90,8 +99,19 @@ public class UserSignedUpEventQueueService {
         if (!signedUpNotice) {
             return;
         }
-        String title = generateUserSignedUpNoticeTitle(activity);
-        String content = generateUserSignedUpNoticeContent(activity);
+        MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.SIGN_UP_SUCCESS.getValue());
+        NoticeTemplateFieldDTO noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
+        String waitConvertTitle;
+        String waitConvertContent;
+        if (noticeTemplate == null) {
+            waitConvertTitle = generateUserSignedUpNoticeTitle(noticeTemplateField);
+            waitConvertContent = generateUserSignedUpNoticeContent(noticeTemplateField);
+        } else {
+            waitConvertTitle = Optional.ofNullable(noticeTemplate.getCodeTitle()).orElse("");
+            waitConvertContent = Optional.ofNullable(noticeTemplate.getCodeContent()).orElse("");
+        }
+        String title = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertTitle, noticeTemplateField);
+        String content = SystemNoticeTemplate.NoticeFieldEnum.convertNoticeField(waitConvertContent, noticeTemplateField);
         String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
         List<Integer> uids = Lists.newArrayList();
         uids.add(uid);
@@ -115,18 +135,17 @@ public class UserSignedUpEventQueueService {
     }
 
 
-    private String generateUserSignedUpNoticeTitle(Activity activity) {
-        return "成功报名活动 " + activity.getName();
+    private String generateUserSignedUpNoticeTitle(NoticeTemplateFieldDTO noticeTemplateField) {
+        return "成功报名活动 " + noticeTemplateField.getActivityName();
     }
 
-    private String generateUserSignedUpNoticeContent(Activity activity) {
+    private String generateUserSignedUpNoticeContent(NoticeTemplateFieldDTO noticeTemplateField) {
         String content = "您好，您已成功报名活动！" + CommonConstant.NEW_LINE_CHAR;
-        content += "活动名称：" + activity.getName() + CommonConstant.NEW_LINE_CHAR;
-        String address = Optional.ofNullable(activity.getAddress()).filter(StringUtils::isNotBlank).orElse("") + Optional.ofNullable(activity.getDetailAddress()).filter(StringUtils::isNotBlank).orElse("");
-        if (StringUtils.isNotBlank(address)) {
-            content += "活动地点：" + address + CommonConstant.NEW_LINE_CHAR;
+        content += "活动名称：" + noticeTemplateField.getActivityName() + CommonConstant.NEW_LINE_CHAR;
+        if (StringUtils.isNotBlank(noticeTemplateField.getAddress())) {
+            content += "活动地点：" + noticeTemplateField.getAddress() + CommonConstant.NEW_LINE_CHAR;
         }
-        content += "会议时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + CommonConstant.NEW_LINE_CHAR;
+        content += "活动时间：" + noticeTemplateField.getActivityTime();
         return content;
     }
 
