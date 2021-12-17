@@ -26,7 +26,7 @@ domain:
   baidu_map_api: http://api.map.baidu.com
 
   wfw_form_api: https://m.oa.chaoxing.com
-  xiamen_training_platform_api: http://appcd.chaoxing.com/ixiamen
+  xiamen_training_platform_api: https://appcd.chaoxing.com/ixiamen
 
   group_api: https://groupyd.chaoxing.com
   group_web: https://groupweb.chaoxing.com
@@ -37,7 +37,7 @@ domain:
   bigdata_score_spend: http://bigdata-score.chaoxing.com
   uc: https://uc.chaoxing.com
   mooc_api: http://mooc1-api.chaoxing.com
-  mooc: http://mooc1.chaoxing.com
+  mooc: https://mooc1.chaoxing.com
   score: http://score.jxlll.chaoxing.com
 
   photo: http://photo.chaoxing.com
