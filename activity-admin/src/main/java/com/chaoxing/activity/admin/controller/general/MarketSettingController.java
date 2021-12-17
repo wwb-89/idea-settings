@@ -87,4 +87,19 @@ public class MarketSettingController {
         return "pc/market/setting";
     }
 
+    /**字段配置主页
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-17 18:15:46
+     * @param request
+     * @param model
+     * @param marketId
+     * @return java.lang.String
+    */
+    @RequestMapping("field")
+    public String activityField(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
+        model.addAttribute("marketId", marketId);
+        return "pc/market/field";
+    }
+
 }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<meta charset="UTF-8">
+	<title>活动字段</title>
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/notice-setting.css" th:href="@{/pc/assets/css/notice-setting.css}">
+</head>
+<body>
+<div class="activity-field-page" id="vue">
+	<p class="page-title-box">
+		<span class="color333 fs16 font500 title1">活动字段</span>
+		<span class="color999 fs14">创建活动页面的字段和更多报名条件设置</span>
+	</p>
+
+	<el-button type="primary" plain icon="el-icon-setting" class="set-button" @click="toConfigActivityField">字段设置</el-button>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script th:inline="javascript">
+        vm = new Vue({
+            el: "#vue",
+	        data: {
+                marketId: [[${marketId}]]
+	        },
+	        methods: {
+                toConfigActivityField: function () {
+                    var $this = this;
+                    var url = ctx + "/market/" + $this.marketId + "/template";
+                    window.open(url);
+                }
+	        }
+        });
+	</script>
+</div>
+</body>
+</html>
