@@ -22,7 +22,10 @@
 </head>
 <body>
 <div class="tab-page" id="vm" v-cloak>
-	<div class="page-header">{{market.name}}设置</div>
+	<div class="page-header">
+		<div class="go-back fl" v-show="false"><i class="icon-back"></i><span>返回</span></div>
+		<div class="name-txt">{{market.name}}设置</div>
+	</div>
 	<div class="main-container" >
 		<div class="left-content fl">
 			<ul class="menu-lists">
@@ -44,7 +47,8 @@
                 market: [[${market}]],
                 menus: [
                     {name: "报名规则", url: ctx + "/market/" + [[${market.id}]] + "/rule" , active: true},
-                    {name: "自动通知", url: ctx + "/market/" + [[${market.id}]] + "/notice-template", active: false}
+                    {name: "自动通知", url: ctx + "/market/" + [[${market.id}]] + "/notice-template", active: false},
+                    {name: "活动字段", url: ctx + "/market/" + [[${market.id}]] + "/field", active: false}
                 ],
 	            activeMenu: null
             },
