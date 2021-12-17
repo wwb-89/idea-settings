@@ -911,7 +911,6 @@
             },
             created: function () {
                 var $this = this;
-                $this.newCertificate();
                 // 解决跨域
                 document.domain = $this.mainDomain;
                 window.addEventListener("message", function (e) {
@@ -1084,6 +1083,7 @@
                     });
                     $this.$set($this.activity, "tagNames", tagNames);
                 }
+                $this.newCertificate();
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
                 $($this.activityTypes).each(function (i) {
                     if ($this.activity.activityType == this.value) {
