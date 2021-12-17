@@ -56,6 +56,7 @@ public class SystemNoticeTemplate {
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否删除; column: is_deleted */
+    @TableField(value = "is_deleted")
     private Boolean deleted;
 
     @Getter
