@@ -28,5 +28,7 @@ public class WfwFormAliasConstant {
     public static final String INTRODUCTION = "introduction";
     /** 活动发布状态 */
     public static final String ACTIVITY_RELEASE_STATUS = "release_status";
+    /** 是否开启报名信息填写 */
+    public static final String OPEN_FILL_INFO = "open_fill_info";
 
 }

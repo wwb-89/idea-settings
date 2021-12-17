@@ -218,7 +218,8 @@ public class WfwFormSyncActivityQueueService {
         if (signUpCreateParam != null) {
             WfwFormCreateResultDTO wfwFormCreateResult = createWfwFormId(templateId, operateUser);
             if (wfwFormCreateResult != null) {
-                signUpCreateParam.setFillInfo(true);
+                String openFillInfo = FormUtils.getValue(formUserRecord, WfwFormAliasConstant.OPEN_FILL_INFO);
+                signUpCreateParam.setFillInfo(Objects.equals("是", openFillInfo));
                 signUpCreateParam.setFormType(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
                 signUpCreateParam.setFillInfoFormId(wfwFormCreateResult.getFormId());
                 signUpCreateParam.setPcUrl(wfwFormCreateResult.getPcUrl());
