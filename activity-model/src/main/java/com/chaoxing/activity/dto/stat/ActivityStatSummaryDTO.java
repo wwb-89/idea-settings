@@ -88,5 +88,7 @@ public class ActivityStatSummaryDTO {
     private String createOrgName;
     /** 主办方 */
     private String organisers;
+    /** 发布时间 */
+    private LocalDateTime releaseTime;
 
 }

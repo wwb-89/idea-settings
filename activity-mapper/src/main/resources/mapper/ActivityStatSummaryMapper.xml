@@ -31,6 +31,7 @@
         t1.cover_url as coverUrl,
         t1.address as address,
         t1.detail_address as detailAddress,
+        t1.release_time as releaseTime,
         t3.introduction as introduction,
         t.signed_in_num as signedInNum,
         t.sign_in_rate as signInRate,

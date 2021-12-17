@@ -91,6 +91,8 @@ public class ActivityStatSummaryVO {
     private Long signUpEndTime;
     /** 报名起止时间 */
     private String signUpStartEndTime;
+    /** 发布时间 */
+    private Long releaseTime;
 
 
     public static ActivityStatSummaryVO buildActivityStatSummaryVo(ActivityStatSummaryDTO actStatSummary) {
@@ -139,6 +141,7 @@ public class ActivityStatSummaryVO {
                 .signUpStartTime(Optional.ofNullable(signUp).map(SignUpCreateParamDTO::getStartTime).orElse(null))
                 .signUpEndTime(Optional.ofNullable(signUp).map(SignUpCreateParamDTO::getEndTime).orElse(null))
                 .signUpStartEndTime(signUpStartEndTime)
+                .releaseTime(DateUtils.date2Timestamp(actStatSummary.getReleaseTime()))
                 .build();
     }
 }
