@@ -51,8 +51,9 @@
                                 </div>
                                 <div class="card-info">
                                     <div class="title-box">
-                                        <h2 class="title overHidden1 fl">{{activity.name}}</h2>
-                                        <label style="margin-left: 8px;" v-if="currentTab.code == 'managing'">管理</label>
+                                        <h2 v-if="currentTab.code == 'signedUp'" class="title overHidden1 fl" @click="activityDetail(index)">{{activity.name}}</h2>
+                                        <h2 v-else class="title overHidden1 fl" @click="activityManageIndex(index)">{{activity.name}}</h2>
+                                        <label style="margin-left: 8px;" v-if="currentTab.code == 'signedUp' && activity.managAble">管理</label>
                                         <div class="clear"></div>
                                     </div>
                                     <div class="time-box">
@@ -70,9 +71,6 @@
                                     <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)">取消报名</a>
                                     <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)">撤销申请</a>
                                 </template>
-<!--                                <template v-else-if="currentTab.code == 'collected'">-->
-<!--                                    <a class="cancel" href="javascript:" @click="cancelCollect(index, $event)">取消收藏</a>-->
-<!--                                </template>-->
                                 <template v-else-if="currentTab.code == 'managing'">
                                     <a class="edit" href="javascript:" @click="toDelete(index, $event)">删除</a>
                                 </template>
@@ -172,9 +170,6 @@
                     if ($this.showTab('signedUp')) {
                         $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
                     }
-                    // if ($this.showTab('collected')) {
-                    //     $this.tabList.push({name: '收藏', code: 'collected', url: ctx + '/api/activity/collected'});
-                    // }
                     if ($this.showTab('managing')) {
                         $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
                     }
@@ -486,6 +481,19 @@
                 toCreateActivity: function () {
                     var $this = this;
                     window.location.replace($this.addUrl)
+                },
+               activityDetail: function (index) {
+                   var $this = this;
+                   var activity = $this.activities[index];
+                   if (!activityApp.isEmpty(activity.previewUrl)) {
+                       window.open(activity.previewUrl);
+                   }
+                },
+                // 活动管理主页
+                activityManageIndex: function (index) {
+                    var $this = this;
+                    var activity = $this.activities[index];
+                    window.open(activityApp.getActivityManageIndexUrl(activity.id, $this.adminDomain));
                 },
                 //输入框的交互
                 inputDeleteFun:function (){

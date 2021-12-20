@@ -15,10 +15,12 @@ import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
+import com.chaoxing.activity.model.MarketSignUpConfig;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
+import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
@@ -29,6 +31,7 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
+import com.chaoxing.activity.util.enums.SignUpBtnEnum;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +76,8 @@ public class ActivityMhV3ApiController {
     private ActivityStatQueryService activityStatQueryService;
     @Resource
     private ActivityCollectionQueryService activityCollectionQueryService;
+    @Resource
+    private MarketSignupConfigService marketSignupConfigService;
 
     private static final String EMPTY_INTRODUCTION_TEXT = "<span style=\"color: rgb(165, 165, 165);\">暂无介绍</span>";
 
@@ -87,6 +92,7 @@ public class ActivityMhV3ApiController {
             jsonObject.put("results", mainFields);
             return RestRespDTO.success(jsonObject);
         }
+        String signUpKeyword = getSignUpKeyword(activity.getMarketId());
         Map<String, String> fieldCodeNameMap = activityQueryService.getFieldCodeNameRelation(activity);
         // 封面
         buildField(0, "", "", "", fields);
@@ -123,7 +129,7 @@ public class ActivityMhV3ApiController {
         }
 
         // 已报名人数
-        buildField(104, "已报名", signedUpNumDescribe, "", fields);
+        buildField(104, "已" + signUpKeyword, signedUpNumDescribe, "", fields);
         // 报名时间
         buildField(105, "", "", "", fields);
         jsonObject.put("results", Lists.newArrayList(mainFields));
@@ -155,6 +161,7 @@ public class ActivityMhV3ApiController {
             jsonObject.put("results", Lists.newArrayList());
             return RestRespDTO.success(jsonObject);
         }
+        String signUpKeyword = getSignUpKeyword(activity.getMarketId());
         Map<String, String> fieldCodeNameMap = activityQueryService.getFieldCodeNameRelation(activity);
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         // 主办方
@@ -179,7 +186,7 @@ public class ActivityMhV3ApiController {
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGN_TIME_TIME.getValue()), fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"),  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
+                buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGN_TIME_TIME.getValue()), fieldCodeNameMap.getOrDefault("sign_up_time_scope", signUpKeyword + "时间"),  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
             }
         }
         // 积分
@@ -219,6 +226,7 @@ public class ActivityMhV3ApiController {
             jsonObject.put("results", mainFields);
             return RestRespDTO.success(jsonObject);
         }
+        String signUpKeyword = getSignUpKeyword(activity.getMarketId());
         // 获取浏览量
         String startTimeStr = activity.getStartTime().format(DateUtils.FULL_TIME_FORMATTER);
         String endTimeStr = activity.getEndTime().format(DateUtils.FULL_TIME_FORMATTER);
@@ -232,9 +240,8 @@ public class ActivityMhV3ApiController {
             signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
         }
         buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
-//        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_IN_NUM.getValue()), "签到", signedInNum, mainFields);
         buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), "报名", signedUpNum, mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
 
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
@@ -381,6 +388,7 @@ public class ActivityMhV3ApiController {
         boolean signedUp = true;
         // 报名信息
         boolean existSignUpInfo = false;
+        String signUpKeyword = getSignUpKeyword(activity.getMarketId());
         if (existSignUp) {
             // 如果开启了学生报名则需要报名（报名任意一个报名）才能看见"进入会场"
             if (activityFlagValidateService.isDualSelect(activity)) {
@@ -414,21 +422,21 @@ public class ActivityMhV3ApiController {
                 signedUp = false;
                 if (userSignParticipationStat.getSignUpAudit()) {
                     // 审核中
-                    result.add(buildBtnField("报名审核中", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField(signUpKeyword +"审核中", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     existSignUpInfo = true;
                 } else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
                     // 活动和报名都结束的情况显示活动已结束
                     result.add(buildBtnField("活动已结束", "", "", "0", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
                 } else if (userSignParticipationStat.getSignUpEnded()) {
-                    result.add(buildBtnField("报名已结束", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField(signUpKeyword + "已结束", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getSignUpNotStart()) {
-                    result.add(buildBtnField("报名未开始", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField(signUpKeyword + "未开始", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
                     result.add(buildBtnField("不在参与范围内", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getNoPlaces()) {
                     result.add(buildBtnField("名额已满", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else {
-                    String showName = "报名参加";
+                    String showName = signUpKeyword + "参加";
                     List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
                     boolean setSignUpBtn = Boolean.FALSE;
                     if (signUpIds.size() == 1) {
@@ -498,7 +506,7 @@ public class ActivityMhV3ApiController {
             result.add(buildBtnField("评价", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.RATING.getValue()), activityQueryService.getActivityRatingUrl(activity.getId()), "1", false, MhBtnSequenceEnum.RATING.getSequence()));
         }
         if (existSignUpInfo) {
-            result.add(buildBtnField("报名信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
+            result.add(buildBtnField(signUpKeyword + "信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
         }
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
@@ -537,6 +545,18 @@ public class ActivityMhV3ApiController {
      */
     private String getWorkIndexUrl(Integer workId) {
         return String.format(UrlConstant.WORK_INDEX_URL, workId);
+    }
+
+    private String getSignUpKeyword(Integer marketId) {
+        String signUpKeyword = SignUpBtnEnum.BTN_1.getKeyword();
+        if (marketId == null) {
+            return signUpKeyword;
+        }
+        MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
+        if (marketSignUpConfig != null && StringUtils.isNotBlank(marketSignUpConfig.getSignUpKeyword())) {
+            signUpKeyword = marketSignUpConfig.getSignUpKeyword();
+        }
+        return signUpKeyword;
     }
 
     private void buildField(Integer flag,

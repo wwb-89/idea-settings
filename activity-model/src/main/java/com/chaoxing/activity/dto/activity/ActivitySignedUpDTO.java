@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ActivitySignedUpDTO extends Activity {
 
+	/** 是否可管理 */
+	private Boolean managAble;
 	/** 报名id */
 	private Integer signUpId;
 	/** 报名状态 */

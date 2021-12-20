@@ -131,6 +131,8 @@ public class ActivityQueryService {
 	private TagQueryService tagQueryService;
 	@Resource
 	private ActivityScopeQueryService activityScopeQueryService;
+	@Resource
+	private ActivityValidationService activityValidationService;
 
 	/**查询参与的活动
 	 * @Description
@@ -641,7 +643,7 @@ public class ActivityQueryService {
 		Page signedUpPage = signApiService.pageUserSignedUp(new Page<>(1, Integer.MAX_VALUE), uid, sw);
 		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
 			List<UserSignUpStatusStatDTO> signedUpRecords = JSONArray.parseArray(JSON.toJSONString(signedUpPage.getRecords()), UserSignUpStatusStatDTO.class);
-			pageSignedUpActivities(page, signedUpRecords, marketIds, loadWaitAudit);
+			pageSignedUpActivities(page, signedUpRecords, marketIds, uid, loadWaitAudit);
 		}
 		packageActivitySignedStat(page);
 		return page;
@@ -655,7 +657,7 @@ public class ActivityQueryService {
 	 * @param marketIds
 	 * @return void
 	 */
-	private void pageSignedUpActivities(Page page, List<UserSignUpStatusStatDTO> userSignUpStatuses, List<Integer> marketIds, Boolean loadWaitAudit) {
+	private void pageSignedUpActivities(Page page, List<UserSignUpStatusStatDTO> userSignUpStatuses, List<Integer> marketIds, Integer uid, Boolean loadWaitAudit) {
 		List<ActivitySignedUpDTO> result = Lists.newArrayList();
 		List<Integer> successSignIds = userSignUpStatuses.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 1)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
 		List<Integer> waitAuditSignIds = userSignUpStatuses.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 2)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
@@ -663,11 +665,11 @@ public class ActivityQueryService {
 		int additionalTotal = 0;
 		if (loadWaitAudit && CollectionUtils.isNotEmpty(waitAuditSignIds)) {
 			Page<Activity> waitAuditPage= activityMapper.pageSignedUpActivities(new Page<>(1, Integer.MAX_VALUE), waitAuditSignIds, null, marketIds);
-			result = activitiesConvert2ActivitySignedUp(waitAuditPage.getRecords(), userSignUpStatuses);
+			result = activitiesConvert2ActivitySignedUp(waitAuditPage.getRecords(), userSignUpStatuses, uid);
 			additionalTotal = result.size();
 		}
 		page = activityMapper.pageSignedUpActivities(page, successSignIds, null, marketIds);
-		List<ActivitySignedUpDTO> records = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatuses);
+		List<ActivitySignedUpDTO> records = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatuses, uid);
 		result.addAll(records);
 
 		page.setRecords(result);
@@ -703,7 +705,7 @@ public class ActivityQueryService {
 
 		Page signedUpPage = signApiService.pageUserSignedUp(new Page(1, Integer.MAX_VALUE), uid, sw, specificFid);
 		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
-			mhPageSignedUpActivities(page, signedUpPage.getRecords(), activityClassifyId, marketIds);
+			mhPageSignedUpActivities(page, signedUpPage.getRecords(), activityClassifyId, marketIds, uid);
 		}
 		return page;
 	}
@@ -718,14 +720,14 @@ public class ActivityQueryService {
 	 * @param marketIds
 	 * @return
 	 */
-	private void mhPageSignedUpActivities(Page page, List records, Integer activityClassifyId, List<Integer> marketIds) {
+	private void mhPageSignedUpActivities(Page page, List records, Integer activityClassifyId, List<Integer> marketIds, Integer uid) {
 		if (CollectionUtils.isEmpty(records)) {
 			return;
 		}
 		List<UserSignUpStatusStatDTO> userSignUpStatusStatuses = JSONArray.parseArray(JSON.toJSONString(records), UserSignUpStatusStatDTO.class);
 		List<Integer> signIds = userSignUpStatusStatuses.stream().map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
 		page = activityMapper.pageSignedUpActivities(page, signIds, activityClassifyId, marketIds);
-		List<ActivitySignedUpDTO> activitySignedUps = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatusStatuses);
+		List<ActivitySignedUpDTO> activitySignedUps = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatusStatuses, uid);
 		page.setRecords(activitySignedUps);
 	}
 
@@ -737,7 +739,7 @@ public class ActivityQueryService {
 	 * @param records
 	 * @return
 	 */
-	private List<ActivitySignedUpDTO> activitiesConvert2ActivitySignedUp(List<Activity> activities, List<UserSignUpStatusStatDTO> records) {
+	private List<ActivitySignedUpDTO> activitiesConvert2ActivitySignedUp(List<Activity> activities, List<UserSignUpStatusStatDTO> records, Integer uid) {
 		Map<Integer, UserSignUpStatusStatDTO> signIdSignedUpMap = records.stream().collect(Collectors.toMap(UserSignUpStatusStatDTO::getSignId, v -> v, (v1, v2) -> {
 			if (Objects.equals(v1.getUserSignUpStatus(), 1)) {
 				return v1;
@@ -759,6 +761,7 @@ public class ActivityQueryService {
 					activitySignedUp.setSignUpId(signedUp.getSignUpId());
 					activitySignedUp.setUserSignUpStatus(signedUp.getUserSignUpStatus());
 				}
+				activitySignedUp.setManagAble(activityValidationService.isManageAble(activity, uid));
 				activitySignedUps.add(activitySignedUp);
 			}
 		}
