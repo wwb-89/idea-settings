@@ -274,12 +274,12 @@
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载已报名的活动失败";
+                                errorMessage = "加载活动列表失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("加载已报名的活动失败");
+                        app.showMsg("加载活动列表失败");
                     });
                 },
 
