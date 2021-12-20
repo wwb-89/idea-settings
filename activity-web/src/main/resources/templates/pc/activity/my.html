@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/activity-list.css" th:href="@{/pc/assets/css/activity-list.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/confirm-dialog.css" th:href="@{/pc/assets/css/confirm-dialog.css}">
+    <link rel="stylesheet" href="/static/assets/lib/mescroll/mescroll.css" th:href="@{/assets/lib/mescroll/mescroll.css}">
     <style>
         .no-border-radius {
             border-radius: 0;
@@ -37,9 +38,9 @@
                     <i class="icon-search" @click="search"></i>
                 </div>
             </div>
-            <div class="tabContent" style="overflow: auto">
+            <div class="tabContent">
                 <div class="card-list card-list1">
-                    <ul v-infinite-scroll="loadData" infinite-scroll-disabled="dataLoading" infinite-scroll-distance="10">
+                    <ul>
                         <li v-for="(activity, index) of activities" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)">
                             <div class="inner">
                                 <div class="img-box">
@@ -103,9 +104,9 @@
 
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
-    <script src="/static/pc/assets/lib/vue-infinite-scroll.js" th:src="@{/pc/assets/lib/vue-infinite-scroll.js}"></script>
     <!-- 引入组件库 -->
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/assets/lib/mescroll/mescroll.js" th:src="@{/assets/lib/mescroll/mescroll.js}"></script>
     <script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
@@ -134,13 +135,10 @@
                     managAble: [[${managAble}]],
                     flag: [[${flag}]],
                     addUrl: [[${addUrl}]],
-
                     hideList: [],
                     currentTab: {},
                     dataLoading: false,
                     dataLoaded: false,
-                    dataNoMore: false,
-                    dataLock: false,
                     queryParams: {},
                     tabList: [],
                     sw: '',
@@ -148,6 +146,7 @@
                     // 操作的活动下标
                     operateIndex: "",
                     isEmbedded: activityApp.isEmbedded(),
+                    mescroll: null,
 
                     inputValue:'',
                     dialogVisible:false,
@@ -185,6 +184,10 @@
                     flag: [[${flag}]],
                     loadWaitAudit: true
                 }
+            },
+            mounted: function () {
+                var $this = this;
+                $this.initMescroll();
             },
             methods: {
                 showTab: function (tabName) {
@@ -235,60 +238,48 @@
                 },
                 resetData: function () {
                     var $this = this;
+                    $this.dataNoMore = false;
                     $this.queryParams.pageNum = 1;
-                    $this.dataLoaded = true;
-                    $this.dataNoMore  =false;
                     $this.activities = [];
-                    $this.dataLock = true;
-                    $("html,body").animate({scrollTop: $this.activities.length > 0 ? 0 : 10}, 0);
-                    $this.dataLock = false;
+                    $this.reloadMescoll();
                 },
                 loadData: function () {
                     var $this = this;
-                    if ($this.dataNoMore || $this.dataLock) {
-                        return;
-                    }
                     $this.dataLoading = true;
                     var url = $this.currentTab && $this.currentTab.url;
                     if (activityApp.isEmpty(url)) {
                         return;
                     }
+                    $this.dataLoaded = false;
                     app.ajaxPost(url , $this.queryParams, function (data) {
                         $this.dataLoading = false;
-                        $this.queryParams.loadWaitAudit = false;
                         if (data.success) {
                             $this.dataLoaded = true;
+                            $this.queryParams.loadWaitAudit = false;
+                            $this.queryParams.pageNum++;
                             var activities = $this.activities;
+                            $this.mescroll.endByPage(data.data.size, data.data.pages);
+                            if ($this.queryParams.pageNum > data.data.pages) {
+                                $this.dataNoMore = true;
+                            }
+                            if (data.data.records.length < 1) {
+                                return;
+                            }
                             activities.pushArray(data.data.records);
+                            $this.activities = [];
                             $this.activities = activities;
                             $this.$nextTick(function () {
                                 cropImgFun("body");
                             });
-                            if (data.data.records.length > 0) {
-                                $this.queryParams.pageNum++;
-                            }
-                            if (data.data.records.length < $this.queryParams.pageSize) {
-                                // 没有更多数据
-                                $this.dataNoMore = true;
-                            }
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
                                 errorMessage = "加载已报名的活动失败";
                             }
                             app.showMsg(errorMessage);
-                            if ($this.queryParams.pageNum == 1) {
-                                // 不允许搜索了
-                                $this.dataNoMore = true;
-                            }
                         }
                     }, function () {
-                        $this.dataLoading = false;
                         app.showMsg("加载已报名的活动失败");
-                        if ($this.queryParams.pageNum == 1) {
-                            // 不允许搜索了
-                            $this.dataNoMore = true;
-                        }
                     });
                 },
 
@@ -297,7 +288,6 @@
                     var $this = this;
                     $this.operateIndex = index;
                     $this.$refs.cancelSignUp.show = true;
-                    debugger
                 },
                 cancelSignUpSubmit: function () {
                     var $this = this;
@@ -500,6 +490,31 @@
                     this.dialogVisible = !this.dialogVisible;
 
                 },
+                // 重载mescroll依旧会请求数据
+                reloadMescoll: function () {
+                    var $this = this;
+                    if ($this.mescroll) {
+                        $this.mescroll.destroy();
+                        $this.mescroll = null;
+                    }
+                    $this.initMescroll();
+                },
+                initMescroll: function () {
+                    var $this = this;
+                    if ($this.mescroll != null) {
+                        return;
+                    }
+                    $this.mescroll = new MeScroll("body", {
+                        up: {
+                            callback: function () {
+                                $this.loadData();
+                            },
+                            noMoreSize: 8,
+                            htmlNodata: '<p class="upwarp-nodata"></p>',
+                            htmlLoading: '<p class="upwarp-progress mescroll-rotate"></p><p class="upwarp-tip"></p>'
+                        }
+                    });
+                }
             }
         });
     </script>
