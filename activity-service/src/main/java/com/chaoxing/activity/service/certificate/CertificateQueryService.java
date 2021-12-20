@@ -34,6 +34,23 @@ public class CertificateQueryService {
     @Resource
     private TableFieldQueryService tableFieldQueryService;
 
+    /**获取用户在活动activityId下的证书发放信息
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-20 16:59:13
+     * @param uid
+     * @param activityId
+     * @return
+     */
+    public UserCertificateDTO getUserCertificateInfo(Integer uid, Integer activityId) {
+        UserCertificateDTO userCertificate = certificateIssueMapper.getUserCertificate(uid, activityId);
+        if (userCertificate != null) {
+            userCertificate.setIssued(userCertificate.getIssueTime() != null);
+            userCertificate.setIssueTimestamp(DateUtils.date2Timestamp(userCertificate.getIssueTime()));
+        }
+        return userCertificate;
+    }
+
     /**查询证书发放记录
      * @Description 
      * @author wwb

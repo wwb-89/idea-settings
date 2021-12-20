@@ -44,6 +44,15 @@ public interface CertificateIssueMapper extends BaseMapper<CertificateIssue> {
     */
     Page<UserCertificateDTO> pageCertificate1(@Param("page") Page<UserCertificateDTO> page, @Param("queryParam") UserCertificateQueryDTO queryParam);
 
+    /**获取用户在活动activityId下的证书发放信息
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-12-20 16:59:42
+     * @param uid
+     * @param activityId
+     * @return
+     */
+    UserCertificateDTO getUserCertificate(@Param("uid") Integer uid, @Param("activityId") Integer activityId);
     /**
      * 批量新增
      *

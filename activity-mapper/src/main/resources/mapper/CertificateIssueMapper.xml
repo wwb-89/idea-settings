@@ -79,6 +79,18 @@
             </if>
     </select>
 
+    <select id="getUserCertificate" resultType="com.chaoxing.activity.dto.UserCertificateDTO">
+        SELECT
+            t.uid uid,
+            t.real_name realName,
+            t.uname uname,
+            t1.issue_time issueTime
+        FROM t_user_result t
+        LEFT JOIN t_certificate_issue t1 ON t.activity_id = t1.activity_id
+            AND t.uid = t1.uid
+        WHERE t1.activity_id = #{activityId} AND t1.uid = #{uid}
+    </select>
+
     <insert id="batchAdd">
         INSERT INTO t_certificate_issue ( activity_id, uid, no, serial_no, issue_time )
         VALUES

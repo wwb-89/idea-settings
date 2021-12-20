@@ -33,6 +33,7 @@ import com.chaoxing.activity.service.activity.create.ActivityCreateService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.certificate.CertificateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -127,6 +128,8 @@ public class ActivityApiController {
 	private SystemNoticeTemplateService systemNoticeTemplateService;
 	@Resource
 	private MarketQueryService marketQueryService;
+	@Resource
+	private CertificateQueryService certificateQueryService;
 
 	/**组活动推荐
 	 * @Description 
@@ -830,6 +833,20 @@ public class ActivityApiController {
 			activityHandleService.deleteMarketActivity(activityId, marketId, operateUser);
 		}
 		return RestRespDTO.success();
+	}
+
+	/**获取用户在活动activityId下的证书发放信息
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-20 17:00:03
+	 * @param activityId
+	 * @param uid
+	 * @return
+	 */
+	@CrossOrigin
+	@RequestMapping("/outer/user-certificate")
+	public RestRespDTO getUserCertificateInfo(@RequestParam Integer activityId, @RequestParam Integer uid) {
+		return RestRespDTO.success(certificateQueryService.getUserCertificateInfo(uid, activityId));
 	}
 
 }
