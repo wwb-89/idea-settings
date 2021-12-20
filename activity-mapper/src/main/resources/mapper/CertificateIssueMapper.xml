@@ -27,7 +27,6 @@
             AND t.uid = t1.uid
         WHERE
             t.activity_id = #{queryParam.activityId}
-            AND t.qualified_status = 1
             <if test="queryParam.sw != null and queryParam.sw != ''">
                 AND (
                     t.real_name LIKE concat('%', #{queryParam.sw}, '%')
