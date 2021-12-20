@@ -210,6 +210,10 @@
         return cloudDomain + "/star3/380_160c/" + cloudId;
     };
 
+    activityApp.prototype.buildOriginCloudImgUrl = function (cloudId, cloudDomain) {
+        return cloudDomain + "/star3/origin/" + cloudId;
+    };
+
     /**
      * 获取活动状态说明
      * @param status

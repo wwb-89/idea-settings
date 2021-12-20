@@ -262,7 +262,7 @@
 						var result = data.result;
 						if (result == 1) {
 							var cloudId = data.objectid;
-							$this.$set($this.market, "iconUrl", activityApp.buildCloudImgUrl(cloudId, $this.cloudDomain));
+							$this.$set($this.market, "iconUrl", activityApp.buildOriginCloudImgUrl(cloudId, $this.cloudDomain));
 							$this.$set($this.market, "iconCloudId", cloudId);
 						} else {
 							app.showMsg("上传失败");
