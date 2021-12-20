@@ -45,10 +45,19 @@ public class WfwFormApiServiceTests {
 
 	@Test
 	public void listData() {
-		Integer fid = 180739;
-		Integer formId = 121635;
+		Integer fid = 44798;
+		Integer formId = 111687;
 		List<FormDataDTO> formDatas = wfwFormApiService.listFormRecord(formId, fid);
 		System.out.println(JSON.toJSONString(formDatas));
+	}
+
+	@Test
+	public void getData() {
+		Integer formUserId = 132292465;
+		Integer formId = 111687;
+		Integer fid = 44798;
+		FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
+		System.out.println(JSON.toJSONString(formRecord));
 	}
 
 }

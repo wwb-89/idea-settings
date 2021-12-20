@@ -130,6 +130,9 @@ public class FormDataDTO {
 		return FormUtils.getDepartment(this, alias);
 	}
 
+	public FormImageDTO getImage(String alias) {
+		return FormUtils.getImage(this, alias);
+	}
 
 	public String getValueByAlias(String aliasName) {
 		if (CollectionUtils.isEmpty(formData)) {

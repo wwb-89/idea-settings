@@ -1,14 +1,12 @@
 package com.chaoxing.activity.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
-import com.chaoxing.activity.dto.manager.form.FormDataDTO;
-import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
-import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
-import com.chaoxing.activity.dto.manager.form.FormUserDTO;
+import com.chaoxing.activity.dto.manager.form.*;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -112,12 +110,28 @@ public class FormUtils {
 		return null;
 	}
 
+	/**获取图片
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-20 18:35:52
+	 * @param formDataDto
+	 * @param alias
+	 * @return com.chaoxing.activity.dto.manager.form.FormImageDTO
+	*/
+	public static FormImageDTO getImage(FormDataDTO formDataDto, String alias) {
+		JSONObject jsonValue = getJsonValue(formDataDto, alias);
+		if (jsonValue != null) {
+			return JSON.parseObject(jsonValue.toJSONString(), FormImageDTO.class);
+		}
+		return null;
+	}
+
 	/**获取部门信息
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-08-31 14:25:47
 	 * @param formDataDto
- * @param alias
+	 * @param alias
 	 * @return com.chaoxing.secondclassroom.dto.manager.DepartmentDTO
 	*/
 	public static DepartmentDTO getDepartment(FormDataDTO formDataDto, String alias) {
