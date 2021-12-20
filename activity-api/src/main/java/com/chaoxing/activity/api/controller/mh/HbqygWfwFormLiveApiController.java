@@ -93,7 +93,7 @@ public class HbqygWfwFormLiveApiController {
                 String liveStartTime = formRecord.getStringValue("Live_start_time");
                 mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                         .value(liveStartTime)
-                        .flag("6")
+                        .flag("7")
                         .build());
                 // 直播跳转地址
                 String liveAddress = formRecord.getStringValue("Portal_address");
@@ -101,6 +101,7 @@ public class HbqygWfwFormLiveApiController {
                 mhGeneralAppResultDatas.add(MhGeneralAppResultDataDTO.builder()
                         .id(activity.getId())
                         .orsUrl(liveAddress)
+                        .type(3)
                         .fields(mhGeneralAppResultDataFields)
                         .build());
                 result.put("results", mhGeneralAppResultDatas);
