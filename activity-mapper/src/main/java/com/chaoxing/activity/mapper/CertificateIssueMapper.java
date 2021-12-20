@@ -34,6 +34,16 @@ public interface CertificateIssueMapper extends BaseMapper<CertificateIssue> {
      */
     Page<UserCertificateDTO> pageCertificate(@Param("page") Page<UserCertificateDTO> page, @Param("queryParam") UserCertificateQueryDTO queryParam);
 
+    /**分页查询证书发放情况
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-20 11:26:00
+     * @param page
+     * @param queryParam
+     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.UserCertificateDTO>
+    */
+    Page<UserCertificateDTO> pageCertificate1(@Param("page") Page<UserCertificateDTO> page, @Param("queryParam") UserCertificateQueryDTO queryParam);
+
     /**
      * 批量新增
      *

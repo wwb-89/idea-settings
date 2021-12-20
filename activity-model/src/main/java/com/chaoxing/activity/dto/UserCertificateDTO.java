@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**证书
@@ -33,5 +34,12 @@ public class UserCertificateDTO {
     private LocalDateTime issueTime;
     /** 发放时间戳 */
     private Long issueTimestamp;
+    /** 签到数 */
+    private Integer signedInNum;
+    /** 签到率 */
+    private BigDecimal signedInRate;
+    /** 合格状态 */
+    private Integer qualifiedStatus;
+
 
 }

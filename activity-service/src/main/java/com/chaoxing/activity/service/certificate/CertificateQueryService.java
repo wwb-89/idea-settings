@@ -6,12 +6,15 @@ import com.chaoxing.activity.dto.UserCertificateDTO;
 import com.chaoxing.activity.dto.query.UserCertificateQueryDTO;
 import com.chaoxing.activity.mapper.CertificateIssueMapper;
 import com.chaoxing.activity.model.CertificateIssue;
+import com.chaoxing.activity.model.TableFieldDetail;
+import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 /**证书查询服务
  * @author wwb
@@ -27,6 +30,9 @@ public class CertificateQueryService {
 
     @Resource
     private CertificateIssueMapper certificateIssueMapper;
+
+    @Resource
+    private TableFieldQueryService tableFieldQueryService;
 
     /**查询证书发放记录
      * @Description 
@@ -68,7 +74,11 @@ public class CertificateQueryService {
      * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.UserCertificateDTO>
     */
     public Page<UserCertificateDTO> pageCertificate(Page<UserCertificateDTO> page, UserCertificateQueryDTO queryParams) {
-        page = certificateIssueMapper.pageCertificate(page, queryParams);
+        if (queryParams.getOrderFieldId() != null) {
+            TableFieldDetail tableFieldDetail = tableFieldQueryService.getFieldDetailById(queryParams.getOrderFieldId());
+            queryParams.setOrderField(tableFieldDetail.getCode());
+        }
+        page = certificateIssueMapper.pageCertificate1(page, queryParams);
         List<UserCertificateDTO> records = page.getRecords();
         records.stream().forEach(v -> {
             v.setIssued(v.getIssueTime() != null);

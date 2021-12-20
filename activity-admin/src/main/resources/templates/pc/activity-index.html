@@ -124,7 +124,7 @@
     <script th:inline="javascript">
         var signWebSimpleDomain = [[${signWebDomain}]];
         signWebSimpleDomain = signWebSimpleDomain.replace(/http(|s):\/\//, "");
-        activityVue = new Vue({
+        vm = new Vue({
             el: "#activity-vue",
             data: {
                 mainDomain: [[${mainDomain}]],
@@ -434,7 +434,7 @@
          * 重置iframe的高度
          */
         function resetIframeHeight() {
-            activityVue.resizePageHeight();
+            vm.resizePageHeight();
         }
     </script>
 </div>

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 
 <head>
-	<title>证书</title>
+	<title>证书发放</title>
 	<meta charset="UTF-8">
 	<meta name="renderer" content="webkit">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,17 +36,17 @@
 				<div class="operate-box">
 					<!-- 操作栏 -->
 					<div class="table-operate-box fs0">
-						<el-button class="btn-customize" round @click="batchIssue" v-if="batchBtnShow">发放证书</el-button>
-						<el-button class="btn-customize" round @click="batchRevocation" v-if="batchBtnShow">撤回</el-button>
+						<el-button class="btn-customize" round @click="batchIssue" v-if="selections.length > 0">发放证书</el-button>
+						<el-button class="btn-customize" round @click="batchRevocation" v-if="selections.length > 0">撤回</el-button>
 
-						<el-button class="btn-customize disabled" round disabled v-if="!batchBtnShow">发放证书</el-button>
-						<el-button class="btn-customize disabled" round disabled v-if="!batchBtnShow">撤回</el-button>
+						<el-button class="btn-customize disabled" round disabled v-if="selections.length < 1">发放证书</el-button>
+						<el-button class="btn-customize disabled" round disabled v-if="selections.length < 1">撤回</el-button>
 						<div class="search-Box">
 							<el-input placeholder="搜索"
 							          icon="search"
 							          class="search"
 							          v-model="queryParams.sw"
-							          suffix-icon="el-icon-search"
+							          prefix-icon="el-icon-search"
 							          @keydown.enter.native="search"
 							>
 							</el-input>
@@ -58,6 +58,26 @@
 						<div class="count-info fl">
 							<span class="colorBlue marginr8" v-show="selections.length > 0">已选择 {{ selections.length }} 人</span>
 							<span class="color999">共 {{ total }} 人</span>
+						</div>
+						<div class="fr fs14 export-box">
+							<el-dropdown :hide-on-click="false" trigger="click">
+								<span class="icon-column fs14"><span class="path1"></span><span class="path2"></span></i>列设置</span>
+								<el-dropdown-menu slot="dropdown" class="set-dropdown">
+									<div class="dropdown-lists">
+										<el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
+											<el-checkbox v-model="item.defaultChecked" :disabled="!item.allowUncheck" @change="checkFieldChange(item)"> {{item.name}}</el-checkbox>
+											<el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
+												<i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
+											</el-tooltip>
+											<i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`"></i>
+										</el-dropdown-item>
+									</div>
+									<div class="bottom-btns fs14 colorBlue">
+										<el-button type="text" class="btn-confirm" @click="configSubmit">确定</el-button>
+										<el-button type="text" class="btn-reset" @click="resetConfig">重置</el-button>
+									</div>
+								</el-dropdown-menu>
+							</el-dropdown>
 						</div>
 						<div class="clear"></div>
 					</div>
@@ -72,27 +92,65 @@
 				          @filter-change="filterChange"
 				          @selection-change="selectChange">
 					<el-table-column fixed type="selection" width="24"></el-table-column>
-					<el-table-column label="姓名" min-width="80">
+					<el-table-column label="姓名" min-width="60">
 						<template slot-scope="scope">
 							{{scope.row.realName}}
 						</template>
 					</el-table-column>
-					<el-table-column label="账号" min-width="80">
+					<el-table-column label="账号" min-width="60">
 						<template slot-scope="scope">
 							{{scope.row.uname}}
 						</template>
 					</el-table-column>
-					<el-table-column label="发放时间" min-width="120">
+					<template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
+						<el-table-column
+								v-if="item.code === 'signedInRate'"
+								:prop="item.code"
+								:fixed="item.defaultTop"
+								:label="item.name"
+								:ifCenter="item.align"
+								:min-width="item.minWidth"
+								:sortable="item.sortable ? 'custom' : item.sortable"
+						>
+							<template slot-scope="scope">
+								{{scope.row.signedInRate | percentConversion}}
+							</template>
+						</el-table-column>
+						<el-table-column
+								v-else-if="item.code === 'qualifiedStatus'"
+								class-name="th-dropdwon-radio"
+								:fixed="item.defaultTop"
+								column-key="qualifiedStatus"
+								:label="item.name"
+								:ifCenter="item.align"
+								:min-width="item.minWidth"
+						>
+							<template slot-scope="scope">
+								{{scope.row.qualifiedStatus == 1 ? '合格' : (scope.row.qualifiedStatus == 2 ? '-' : '不合格')}}
+							</template>
+						</el-table-column>
+						<el-table-column
+								v-else
+								:prop="item.code"
+								:fixed="item.defaultTop"
+								:label="item.name"
+								:ifCenter="item.align"
+								:min-width="item.minWidth"
+								:sortable="item.sortable ? 'custom' : item.sortable"
+						>
+						</el-table-column>
+					</template>
+					<el-table-column label="发放时间" min-width="60">
 						<template slot-scope="scope">
 							{{scope.row.issueTimestamp | timestampFormat}}
 						</template>
 					</el-table-column>
-					<el-table-column label="发放状态" align="center" min-width="80" column-key="status" :filters="filterStatus" :filter-multiple="false" filter-placement="bottom">
+					<el-table-column label="发放状态" align="center" min-width="60" column-key="status" :filters="filterStatus" :filter-multiple="false" filter-placement="bottom">
 						<template slot-scope="scope">
 							{{scope.row.issued ? "已发放" : "未发放"}}
 						</template>
 					</el-table-column>
-					<el-table-column label="操作" min-width="200">
+					<el-table-column label="操作" min-width="120">
 						<template slot-scope="scope">
 							<el-button type="text" style="padding-right: 5px" v-if="!scope.row.issued" @click="issue(scope.row)">发放</el-button>
 							<el-button type="text" v-else @click="revocation(scope.row)">撤回</el-button>
@@ -108,27 +166,45 @@
 		<!-- 表格内容 -->
 	</div>
 </div>
+
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
 	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
 	<script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
 	<script th:inline="javascript">
+        Vue.filter("percentConversion", function (value) {
+            if (!value) {
+                return '0';
+            }
+            var str = parseInt(value);
+            str += "%";
+            return str;
+        });
         vm = new Vue({
-            el: "#vm",
+            el: '#vm',
             data: {
-                mainDomain: [[${mainDomain}]],
                 loaded: false,
+                activityId: [[${activityId}]],
                 activity: [[${activity}]],
+                tableFieldId: [[${tableFieldId}]],
                 queryParams: {
                     activityId: [[${activity.id}]],
                     pageNum: 1,
                     pageSize: 10,
+                    status: null,
                     sw: '',
-	                status: null
+                    orderFieldId: null,
+                    orderType: 'DESC'
                 },
                 filterStatus: [
                     {text: "已发放", value: "1"},
                     {text: "未发放", value: "0"}
                 ],
+                // 配置项源数据
+                tableFieldDetails: [[${tableFieldDetails}]],
+                // 配置项数据
+                configTableFieldDetails: [],
+                // 页面展示字段配置源数据
+                activityTableFields: [[${activityTableFields}]],
                 // 表格显示的字段列表
                 showTableFieldDetails: [],
                 // 页面数据
@@ -136,38 +212,72 @@
                 selections: [],
                 // 总记录数
                 total: 0,
-                selectNumber:0, //表格选中的人数
-                ifCancelPop: false,
-                ifModifyPop: false, //修改合格状态弹窗展示
                 bodyHeight: $(window).height(),
-                tbodyHeight: 0,
-                batchBtnShow: false
+                tbodyHeight: 0
             },
             created: function () {
                 var $this = this;
+                $this.calShowTableFieldDetails();
+                $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
             },
             mounted: function () {
                 var $this = this;
                 var headH = $('.header-box').height();
                 var operateH = $('.operate-box').height();
-                $this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 48 + 32);
+                $this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 32 + 32);
                 $this.loadData();
+                $this.reSortSettingData();
             },
             methods: {
                 selectChange: function (val) {
                     var $this = this;
                     $this.selections = val;
-                    $this.batchBtnShow = val.length > 0;
                 },
-                filterChange: function (filterItem) {
+                calShowTableFieldDetails: function () {
                     var $this = this;
-                    var key = Object.keys(filterItem)[0]
-                    if (key == "status") {
-                        var value = filterItem[key][0];
-                        $this.queryParams.status = activityApp.isEmpty(value) ? null : parseInt(value);
-                        $this.queryParams.pageNum = 1;
-                        $this.loadData();
+                    // 计算表格显示的字段列表
+                    if ($this.activityTableFields.length < 1) {
+                        // 机构没有配置显示的字段。使用默认的
+                        $($this.tableFieldDetails).each(function () {
+                            if (this.defaultChecked) {
+                                $this.showTableFieldDetails.push($.extend({}, this));
+                            }
+                        });
+                    } else {
+                        $($this.activityTableFields).each(function () {
+                            var activityTableField = this;
+                            var tableFieldDetailId = activityTableField.tableFieldDetailId;
+                            $($this.tableFieldDetails).each(function () {
+                                if (tableFieldDetailId === this.id) {
+                                    var tableFieldDetail = $.extend({}, this);
+                                    tableFieldDetail.defaultChecked = true;
+                                    tableFieldDetail.defaultTop = activityTableField.top;
+                                    $this.showTableFieldDetails.push(tableFieldDetail);
+                                    return false;
+                                }
+                            });
+                        });
                     }
+                },
+                calConfigTableFieldDetails: function () {
+                    var $this = this;
+                    var configTableFieldDetails = [];
+                    $($this.tableFieldDetails).each(function () {
+                        configTableFieldDetails.push($.extend({}, this));
+                    });
+                    if ($this.activityTableFields.length > 0) {
+                        $(configTableFieldDetails).each(function () {
+                            var configTableFieldDetail = this;
+                            configTableFieldDetail.defaultChecked = false;
+                            $($this.activityTableFields).each(function () {
+                                if (configTableFieldDetail.id === this.tableFieldDetailId) {
+                                    configTableFieldDetail.defaultChecked = true;
+                                    configTableFieldDetail.defaultTop = this.top;
+                                }
+                            });
+                        });
+                    }
+                    return configTableFieldDetails;
                 },
                 search: function () {
                     var $this = this;
@@ -208,6 +318,80 @@
                         app.showMsg("加载数据失败");
                     });
                 },
+                showToast(){
+                    $('.toast-box').fadeIn();
+                    setTimeout(function () {
+                        $('.toast-box').fadeOut();
+                    },2000)
+                },
+                // 取消勾选
+                checkFieldChange: function (item) {
+                    var $this = this;
+                    if (!item.defaultChecked) {
+                        item.defaultTop = item.defaultChecked;
+                    }
+                    $this.reSortSettingData()
+                },
+                // 取消置顶配置
+                topConfigChange: function(item) {
+                    var $this = this;
+                    item.defaultTop = !item.defaultTop;
+                    $this.reSortSettingData();
+                },
+                // 对设置重排序
+                reSortSettingData: function() {
+                    var $this = this;
+                    $this.configTableFieldDetails.sort(function(a, b) {
+                        if (b.defaultChecked > a.defaultChecked) {
+                            return 1;
+                        } else if (b.defaultChecked < a.defaultChecked){
+                            return -1;
+                        } else {
+                            return b.defaultTop - a.defaultTop;
+                        }
+                    });
+                    $($this.configTableFieldDetails).each(function(i) {
+                        this.sequence = i;
+                    });
+                },
+                // 配置提交
+                configSubmit: function () {
+                    var $this = this;
+                    var activityTableFieldDetails = $this.packageSubmitTableFieldDetails();
+                    var url = ctx + "/api/activity/" + $this.activityId + "/table-field/" + $this.tableFieldId + "/config";
+                    var params = {
+                        activityTableFieldsStr: activityApp.getJsonStr(activityTableFieldDetails)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        window.location.reload();
+                    }, function () {
+
+                    });
+                },
+                // 重置配置
+                resetConfig: function () {
+                    var $this = this;
+                    $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
+                    $this.reSortSettingData();
+                },
+                // 封装提交的配置
+                packageSubmitTableFieldDetails: function () {
+                    var $this = this;
+                    var activityTableFieldDetails = [];
+                    var sequence = 1;
+                    $($this.configTableFieldDetails).each(function () {
+                        if (this.defaultChecked) {
+                            var activityTableFieldDetail = {
+                                tableFieldDetailId: this.id,
+                                top: this.defaultTop,
+                                sequence: sequence++
+                            }
+                            activityTableFieldDetails.push(activityTableFieldDetail);
+
+                        }
+                    });
+                    return activityTableFieldDetails;
+                },
                 changePage: function (pageNum) {
                     var $this = this;
                     $this.queryParams.pageNum = pageNum;
@@ -216,7 +400,7 @@
                 sortChange: function (column) {
                     var $this = this;
                     var sortFieldItem = $($this.showTableFieldDetails).filter(function() {
-                        return this.code === column.prop
+                        return this.code === column.prop;
                     })[0];
                     $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
                     if (column.order === 'descending') {
@@ -228,6 +412,17 @@
                     }
                     $this.loadData();
                 },
+                filterChange: function (filterItem) {
+                    var $this = this;
+                    var key = Object.keys(filterItem)[0]
+                    if (key == "status") {
+                        var value = filterItem[key][0];
+                        $this.queryParams.status = activityApp.isEmpty(value) ? null : parseInt(value);
+                        $this.queryParams.pageNum = 1;
+                        $this.loadData();
+                    }
+                },
+	            // 证书编辑
                 configCertificate: function () {
                     var $this = this;
                     var url = ctx + "/api/certificate/config?templateId=" + $this.activity.certificateTemplateId + "&uid=" + $this.activity.createUid + "&fid=" + $this.activity.createFid;
@@ -246,11 +441,11 @@
                     });
                 },
                 issue: function (row) {
-					var $this = this;
+                    var $this = this;
                     var url = ctx + "/api/certificate/issue";
                     var params = {
                         uid: row.uid,
-	                    activityId: $this.activity.id
+                        activityId: $this.activity.id
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
@@ -369,7 +564,7 @@
                     });
                 },
                 show: function (row) {
-					var $this = this;
+                    var $this = this;
                     var url = ctx + "/api/certificate/show?activityId=" + $this.activity.id + "&uid=" + row.uid;
                     window.open(url);
                 }
