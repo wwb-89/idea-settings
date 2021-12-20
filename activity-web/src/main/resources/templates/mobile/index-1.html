@@ -50,7 +50,7 @@
                             <div class="tips-box">
                                 <p :class="{'tips': true, 'color5': (activity.status == 2), 'color1': (activity.status == 3), 'color3': (activity.status == 4) }">{{activity.status | activityStatusInstructions}}</p>
                             </div>
-                            <p class="num" style="z-index: 1" v-if="activity.openSignUp"><i></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
+                            <p class="num" style="z-index: 1" v-if="activity.openSignUp"><i class="icon-user"></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
                             <div class="js-crop-img">
                                 <img :src="activity | getCloudImgUrl(cloudDomain)" class="jqthumbImg">
                             </div>
