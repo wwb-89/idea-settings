@@ -19,7 +19,7 @@ public enum ActivityMenuEnum {
     SIGN_UP("报名名单", "sign_up", "管理报名名单、报名审核等功能"),
     SIGN_IN("签到管理", "sign_in", "管理签到、发布签到"),
     RESULTS_MANAGE("考核管理", "results_manage", "审核用户参与活动的成绩是否为合格"),
-    CERTIFICATE("证书", "certificate", ""),
+    CERTIFICATE("证书发放", "certificate", ""),
     NOTICE("发通知", "notice", ""),
     STAT("统计", "stat", ""),
     SETTING("设置", "setting", "");
