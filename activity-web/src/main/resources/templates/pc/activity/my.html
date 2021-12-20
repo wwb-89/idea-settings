@@ -186,19 +186,10 @@
                     loadWaitAudit: true
                 }
             },
-            mounted: function () {
-                cropImgFun("body");
-            },
             methods: {
                 showTab: function (tabName) {
                     var $this = this;
                     return $this.hideList.indexOf(tabName) == -1;
-                },
-                initScroll: function () {
-                    var $this = this;
-                    $this.dataLock = true;
-                    $("html,body").animate({scrollTop: $this.activities.length > 0 ? 0 : 10}, 0);
-                    $this.dataLock = false;
                 },
                 calSignedUpClass: function (activity) {
                     var userSignUpStatus = activity.userSignUpStatus;
@@ -228,8 +219,7 @@
                     if (code == 'signedUp') {
                         $this.queryParams.loadWaitAudit = true;
                     }
-                    $this.resetData()
-                    $this.initScroll();
+                    $this.resetData();
                 },
                 clearSearch: function () {
                     var $this = this;
@@ -246,10 +236,12 @@
                 resetData: function () {
                     var $this = this;
                     $this.queryParams.pageNum = 1;
-                    $this.dataLock = false;
-                    $this.dataNoMore = false;
+                    $this.dataLoaded = true;
+                    $this.dataNoMore  =false;
                     $this.activities = [];
-                    $this.loadData();
+                    $this.dataLock = true;
+                    $("html,body").animate({scrollTop: $this.activities.length > 0 ? 0 : 10}, 0);
+                    $this.dataLock = false;
                 },
                 loadData: function () {
                     var $this = this;
