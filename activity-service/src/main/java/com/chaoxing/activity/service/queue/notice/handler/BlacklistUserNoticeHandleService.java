@@ -138,6 +138,7 @@ public class BlacklistUserNoticeHandleService {
         if (marketId == null || CollectionUtils.isEmpty(blacklists)) {
             return;
         }
+        blacklists = blacklists.stream().filter(v -> v.getUid() != null && v.getCreateTime() != null).collect(Collectors.toList());
         LocalDateTime removeTime = LocalDateTime.now();
         Map<Integer, LocalDateTime> userAddBlacklistTimeMap = blacklists.stream().collect(Collectors.toMap(Blacklist::getUid, Blacklist::getCreateTime, (v1, v2) -> v2));
 

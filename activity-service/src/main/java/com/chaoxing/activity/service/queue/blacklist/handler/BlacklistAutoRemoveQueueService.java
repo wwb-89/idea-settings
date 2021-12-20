@@ -33,6 +33,9 @@ public class BlacklistAutoRemoveQueueService {
         Blacklist userBlacklist = blacklistQueryService.getUserBlacklist(uid, marketId);
         // 自动移除黑名单
         blacklistHandleService.autoRemoveBlacklist(marketId, uid);
+        if (userBlacklist == null) {
+            return;
+        }
         // 处理用户自动移除黑名单通知，放入黑名单通知队列
         blacklistUserNoticeHandleService.handleBlacklistRemoveNotice(marketId, Lists.newArrayList(userBlacklist));
 
