@@ -72,7 +72,7 @@
     <div class="pop" v-show="filterWindowShow">
         <div style="height: 100%;" @click="filterCancel"></div>
         <div class="popInner">
-            <div class="switch-box border-bottom">
+            <div class="switch-box border-bottom" v-show="loginUser">
                 <p class="fl">只看我能{{signUpKeyword}}</p>
                 <div class="fr">
                     <el-switch
@@ -155,6 +155,7 @@
                 el: '#activity-list',
                 data: function () {
                     return {
+                        loginUser: [[${session._login_user_}]],
                         signUpKeyword: [[${signUpKeyword}]],
                         classifyNames: [[${classifyNames}]],
                         activityQueryDates: [[${activityQueryDates}]],

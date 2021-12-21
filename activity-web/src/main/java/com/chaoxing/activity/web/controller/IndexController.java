@@ -194,16 +194,20 @@ public class IndexController {
 		Integer marketId = activitySquareParam.getMarketId();
 		String flag = activitySquareParam.getFlag();
 		String areaCode = activitySquareParam.getAreaCode();
+		if (marketId == null && fid == null) {
+			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+			Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
+			fid = loginUser.getFid();
+		}
 		// 根据fid和flag查询模版
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			if (StringUtils.isNotBlank(areaCode)) {
 				// 查询code对应的机构fid
 				WfwAreaDTO topWfwArea = wfwAreaApiService.getTopWfwArea(areaCode);
-				Integer areaCodeFid = Optional.ofNullable(topWfwArea).map(WfwAreaDTO::getFid).orElse(fid);
-				marketId = marketQueryService.getMarketIdByFlag(areaCodeFid, flag);
-			} else {
-				marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+				fid = Optional.ofNullable(topWfwArea).map(WfwAreaDTO::getFid).orElse(fid);
 			}
+			marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+
 		}
 		List<Classify> classifies;
 		Integer classifyFid = fid;
@@ -212,14 +216,9 @@ public class IndexController {
 				// 查询区域所属的机构
 				classifyFid = groupService.getGroupFid(areaCode);
 			}
-			if (fid == null) {
-				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-				Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
-				fid = loginUser.getFid();
-			}
 			classifyFid = Optional.ofNullable(classifyFid).orElse(fid);
 			classifies = classifyQueryService.listOrgClassifies(classifyFid);
-		}else {
+		} else {
 			classifies = classifyQueryService.listMarketClassifies(marketId);
 		}
 		List<String> classifyNames = Optional.ofNullable(classifies).orElse(Lists.newArrayList()).stream().map(Classify::getName).collect(Collectors.toList());
@@ -232,7 +231,7 @@ public class IndexController {
 			groupRegionFilters = Lists.newArrayList();
 		}
 		String signUpKeyword = SignUpBtnEnum.BTN_1.getKeyword();
-		if (marketId != null) {
+		if (StringUtils.isBlank(areaCode) && marketId != null) {
 			MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
 			signUpKeyword = StringUtils.isNotBlank(marketSignUpConfig.getSignUpKeyword()) ? marketSignUpConfig.getSignUpKeyword() : signUpKeyword;
 		}

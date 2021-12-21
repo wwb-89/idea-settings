@@ -44,7 +44,7 @@
                     <div class="status-box">
                         <!--报名状态-->
                         <span style="margin-right: .25rem" :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
-                        <span v-if="activity.hasSignUp && activity.signUpStatus == 2 && activity.status == 2" class="status sign status5">报名中</span>
+                        <span v-if="activity.hasSignUp && activity.signUpStatus == 2 && activity.status == 2" class="status sign status5">{{signUpKeyword}}中</span>
                     </div>
                     <p class="num" v-if="activity.openSignUp"><i class="icon-user"></i>{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
                 </div>
@@ -67,7 +67,7 @@
     <div class="pop" v-show="filterWindowShow">
         <div style="height: 100%;" @click="filterCancel"></div>
         <div class="popInner">
-            <div class="switch-box border-bottom">
+            <div class="switch-box border-bottom" v-show="loginUser">
                 <p class="fl">只看我能{{signUpKeyword}}</p>
                 <div class="fr">
                     <el-switch
@@ -147,6 +147,7 @@
             vm = new Vue({
                 el: "#activity-vue",
                 data: {
+                    loginUser: [[${session._login_user_}]],
                     signUpKeyword: [[${signUpKeyword}]],
                     classifyNames: [[${classifyNames}]],
                     activityQueryDates: [[${activityQueryDates}]],

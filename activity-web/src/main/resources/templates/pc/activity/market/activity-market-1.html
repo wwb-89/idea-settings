@@ -62,7 +62,7 @@
 		</div>
 		<div class="switch-box">
 			<p class="list-total fl">共 {{total}} 个</p>
-			<div class="fr">
+			<div class="fr" v-show="loginUser">
 				<el-checkbox :label="'只看我能' + signUpKeyword" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
 			</div>
 		</div>
@@ -74,7 +74,7 @@
 							<div class="tips-box">
 								<!--报名状态-->
 								<p style="margin-right: .25rem" :class="{'tips': true, 'color5': (item.status == 2), 'color1': (item.status == 3), 'color3': (item.status == 4)}">{{item.status | activityStatusInstructions}}</p>
-								<p v-if="item.hasSignUp && signUpAble && item.signUpStatus == 2 && item.status == 2" class="tips sign color6">报名中</p>
+								<p v-if="item.hasSignUp && signUpAble && item.signUpStatus == 2 && item.status == 2" class="tips sign color6">{{signUpKeyword}}中</p>
 							</div>
 							<p class="num" v-if="item.openSignUp"><i class="icon-user"></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
 							<div class="js-crop-img" @click="detail(index)">
@@ -113,6 +113,7 @@
 			data: {
                 mainDomain: [[${mainDomain}]],
                 cloudDomain: [[${cloudDomain}]],
+				loginUser: [[${session._login_user_}]],
 				fids: [[${fids}]],
 				signUpKeyword: [[${signUpKeyword}]],
 				classifyNames: [[${classifyNames}]],
