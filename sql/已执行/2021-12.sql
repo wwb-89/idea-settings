@@ -172,3 +172,11 @@ INSERT INTO `activity_engine`.`t_system_notice_template` (`id`, `notice_type`, `
 -- 系统通知模板增加is_deleted字段，更新报名即将开始和报名即将结束为删除状态
 ALTER TABLE t_system_notice_template ADD is_deleted TINYINT(1) DEFAULT 0 COMMENT '是否删除';
 UPDATE t_system_notice_template SET is_deleted = 1 WHERE id IN (4, 5);
+
+-- 2021-12-20
+INSERT INTO `activity_engine`.`t_table_field`(`id`, `type`, `associated_type`, `is_deleted`, `create_time`, `update_time`) VALUES (5, 'certificate_issue', 'activity', 0, '2021-12-20 10:45:43', '2021-12-20 10:45:48');
+INSERT INTO `activity_engine`.`t_table_field_detail`(`id`, `table_field_id`, `name`, `code`, `is_default_checked`, `is_allow_uncheck`, `is_default_top`, `is_allow_top`, `is_sortable`, `min_width`, `align`, `sequence`, `is_deleted`, `create_time`, `update_time`) VALUES (54, 5, '签到次数', 'signedInNum', 0, 1, 0, 0, 1, 50, 'left', 10, 0, '2021-12-20 10:46:48', '2021-12-20 10:50:26');
+INSERT INTO `activity_engine`.`t_table_field_detail`(`id`, `table_field_id`, `name`, `code`, `is_default_checked`, `is_allow_uncheck`, `is_default_top`, `is_allow_top`, `is_sortable`, `min_width`, `align`, `sequence`, `is_deleted`, `create_time`, `update_time`) VALUES (55, 5, '签到率', 'signedInRate', 0, 1, 0, 0, 1, 50, 'left', 20, 0, '2021-12-20 10:46:50', '2021-12-20 10:50:27');
+INSERT INTO `activity_engine`.`t_table_field_detail`(`id`, `table_field_id`, `name`, `code`, `is_default_checked`, `is_allow_uncheck`, `is_default_top`, `is_allow_top`, `is_sortable`, `min_width`, `align`, `sequence`, `is_deleted`, `create_time`, `update_time`) VALUES (56, 5, '参与时长', 'participateTimeLength', 0, 1, 0, 0, 1, 50, 'left', 30, 0, '2021-12-20 10:46:52', '2021-12-20 10:50:28');
+INSERT INTO `activity_engine`.`t_table_field_detail`(`id`, `table_field_id`, `name`, `code`, `is_default_checked`, `is_allow_uncheck`, `is_default_top`, `is_allow_top`, `is_sortable`, `min_width`, `align`, `sequence`, `is_deleted`, `create_time`, `update_time`) VALUES (57, 5, '合格状态', 'qualifiedStatus', 0, 1, 0, 0, 0, 50, 'left', 40, 0, '2021-12-20 10:46:53', '2021-12-20 10:50:30');
+

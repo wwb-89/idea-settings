@@ -45,6 +45,8 @@ public class UserResultDTO {
     private Integer qualifiedStatus;
     /** 已填报表单采集数 */
     private Integer filledFormCollectionNum;
+    /** 参与时长 */
+    private Integer participateTimeLength;
 
     public void setMobile(String mobile) {
         // 手机号脱敏
