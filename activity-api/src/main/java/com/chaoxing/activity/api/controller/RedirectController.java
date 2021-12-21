@@ -8,12 +8,14 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.data.DataPushRecordQueryService;
 import com.chaoxing.activity.service.manager.GroupApiService;
+import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.constant.HttpRequestHeaderConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
@@ -54,6 +56,8 @@ public class RedirectController {
     private GroupApiService groupApiService;
     @Resource
     private MarketHandleService marketHandleService;
+    @Resource
+    private MhApiService mhApiService;
 
     /**根据表单行id重定向到活动的详情页面
      * @Description 
@@ -319,6 +323,27 @@ public class RedirectController {
 
         }
         return marketId;
+    }
+
+    /**重定向到评价url
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-21 16:40:04
+     * @param request
+     * @param websiteId
+     * @return java.lang.String
+    */
+    @RequestMapping("evaluation")
+    public String redirectToEvaluationUrl(HttpServletRequest request, @RequestParam Integer websiteId) {
+        String redirectUrl = "";
+        String url = request.getHeader(HttpRequestHeaderConstant.REFERER);
+        Activity activity = activityQueryService.getByWebsiteId(websiteId);
+        String origin = Optional.ofNullable(activity).map(Activity::getOrigin).orElse(null);
+        Integer originFormUserId = Optional.ofNullable(activity).map(Activity::getOriginFormUserId).orElse(null);
+        if (StringUtils.isNotBlank(origin) && originFormUserId != null) {
+            redirectUrl = mhApiService.getEvaluationUrl(originFormUserId, Integer.parseInt(origin), url);
+        }
+        return "redirect:" + redirectUrl;
     }
 
 }

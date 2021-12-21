@@ -15,6 +15,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -46,6 +48,8 @@ public class MhApiService {
 	private static final String WEBSITE_TOTAL_VIEW_NUM_URL = DomainConstant.MH + "/data-count/website/%d/homepage/pv";
 	/** 网站按天访问量统计 */
 	public static final String WEBSITE_DAILY_VIEW_NUM_STAT_URL = DomainConstant.MH + "/data-count/website/%d/daily-uv?startTime=%s&endTime=%s";
+	/** 获取评价的地址 */
+	public static final String GET_EVALUATION_URL = DomainConstant.MH + "/engine2/api/wuhan/comment";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -182,6 +186,26 @@ public class MhApiService {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**获取评价的url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-21 16:38:30
+	 * @param formUserId
+	 * @param formId
+	 * @param url
+	 * @return java.lang.String
+	*/
+	public String getEvaluationUrl(Integer formUserId, Integer formId, String url) {
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("shopId", 5);
+		params.add("goodsId", formId);
+		params.add("goodsRowId", formUserId);
+		params.add("resourceType", 0);
+		params.add("url", url);
+		String result = restTemplate.postForObject(GET_EVALUATION_URL, params, String.class);
+		return result;
 	}
 
 }
