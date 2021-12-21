@@ -25,6 +25,8 @@ public class UserCertificateQueryDTO {
     private String sw;
     /** 排序字段 */
     private Integer status;
+    /** 考核状态 */
+    private Integer qualifiedStatus;
     /** 排序字段 */
     private Integer orderFieldId;
     /** 排序方式 */

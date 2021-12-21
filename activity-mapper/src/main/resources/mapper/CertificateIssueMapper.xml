@@ -59,12 +59,21 @@
             LEFT JOIN t_certificate_issue t2 ON t.activity_id = t2.activity_id AND t.uid = t2.uid
         WHERE
             t.activity_id = #{queryParam.activityId}
-            <if test="queryParam.status eq 1">
-                AND t2.issue_time IS NOT NULL
-            </if>
-            <if test="queryParam.status eq 0">
-                AND t2.issue_time IS NULL
-            </if>
+            <choose>
+                <when test="queryParam.status != null">
+                    <if test="queryParam.status eq 1">
+                        AND t2.issue_time IS NOT NULL
+                    </if>
+                    <if test="queryParam.status eq 0">
+                        AND t2.issue_time IS NULL
+                    </if>
+                </when>
+            </choose>
+            <choose>
+                <when test="queryParam.qualifiedStatus != null">
+                    AND t.qualified_status = #{queryParam.qualifiedStatus}
+                </when>
+            </choose>
             <if test="queryParam.sw != null and queryParam.sw != ''">
                 AND (
                     t.real_name LIKE concat('%', #{queryParam.sw}, '%')

@@ -124,6 +124,9 @@
 								:label="item.name"
 								:ifCenter="item.align"
 								:min-width="item.minWidth"
+								:filters="filterQualifiedStatus"
+								:filter-multiple="false"
+								filter-placement="bottom"
 						>
 							<template slot-scope="scope">
 								{{scope.row.qualifiedStatus == 1 ? '合格' : (scope.row.qualifiedStatus == 2 ? '-' : '不合格')}}
@@ -191,10 +194,16 @@
                     pageNum: 1,
                     pageSize: 10,
                     status: null,
+                    qualifiedStatus: null,
                     sw: '',
                     orderFieldId: null,
                     orderType: 'DESC'
                 },
+                filterQualifiedStatus: [
+                    {text: "不合格", value: "0"},
+                    {text: "合格", value: "1"},
+                    {text: "待处理", value: "2"}
+                ],
                 filterStatus: [
                     {text: "已发放", value: "1"},
                     {text: "未发放", value: "0"}
@@ -414,10 +423,15 @@
                 },
                 filterChange: function (filterItem) {
                     var $this = this;
-                    var key = Object.keys(filterItem)[0]
+                    var key = Object.keys(filterItem)[0];
                     if (key == "status") {
                         var value = filterItem[key][0];
                         $this.queryParams.status = activityApp.isEmpty(value) ? null : parseInt(value);
+                        $this.queryParams.pageNum = 1;
+                        $this.loadData();
+                    }else if (key == "qualifiedStatus") {
+                        var value = filterItem[key][0];
+                        $this.queryParams.qualifiedStatus = activityApp.isEmpty(value) ? null : parseInt(value);
                         $this.queryParams.pageNum = 1;
                         $this.loadData();
                     }
