@@ -63,7 +63,7 @@
         <div class="item-box">
             <div class="head">
                 <div class="count">共<span>{{total}}</span>个活动</div>
-                <div class="fr">
+                <div class="fr" v-show="loginUser">
                     <el-checkbox :label="'只看我能' + signUpKeyword" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
                 </div>
             </div>
@@ -108,6 +108,7 @@
             data: {
                 mainDomain: [[${mainDomain}]],
                 cloudDomain: [[${cloudDomain}]],
+                loginUser: [[${session._login_user_}]],
                 fids: [[${fids}]],
                 signUpKeyword: [[${signUpKeyword}]],
                 classifyNames: [[${classifyNames}]],

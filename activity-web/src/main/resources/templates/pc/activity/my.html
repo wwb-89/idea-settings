@@ -61,9 +61,9 @@
                                         <i class="icon-clock"></i>
                                         <p class="time inlineMiddle">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
                                     </div>
-                                    <div class="user-box" v-if="activity.openSignUp">
-                                        <i class="icon-user"></i>
-                                        <p class="user inlineMiddle">{{activity.signedUpNum + (!activity.personLimit ? '' : ('/' + activity.personLimit))}}</p>
+                                    <div class="user-box" v-show="activity.address || activity.detailAddress">
+                                        <i class="icon-map-mark"></i>
+                                        <p class="user inlineMiddle">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
                                     </div>
                                 </div>
                             </div>
