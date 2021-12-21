@@ -68,7 +68,7 @@
                     <span>{{menus.results_manage.name}}</span>
                 </div>
             </div>
-            <div class="entry menu-item" v-if="menuShow('certificate')">
+            <div class="entry menu-item" v-if="menuShow('certificate') && activity.certificateTemplateId">
                 <!--证书-->
                 <div :class="{'item': true, 'active': menus.certificate.selected}" @click="toCertificate">
                     <img :src="menus.certificate.activeIconUrl" v-if="menus.certificate.selected">
