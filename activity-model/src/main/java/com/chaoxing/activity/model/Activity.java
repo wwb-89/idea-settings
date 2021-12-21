@@ -302,7 +302,7 @@ public class Activity {
         /** 已删除 */
         DELETED("已删除", 0),
         WAIT_RELEASE("未发布", 1),
-        RELEASED("已发布", 2),
+        RELEASED("未开始", 2),
         ONGOING("进行中", 3),
         ENDED("已结束", 4);
 
