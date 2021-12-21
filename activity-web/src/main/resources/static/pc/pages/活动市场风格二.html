@@ -49,6 +49,18 @@
                             <li>近半年</li>
                             <li>近一年</li>
                             <li>更早</li>
+                            <li class="date-li">{{selectTime}}
+                                <el-date-picker
+                                    class="select-time"
+                                    v-model="value"
+                                    size="mini"
+                                    prefix-icon="false"
+                                    type="date"
+                                    placeholder="选择日期"
+                                    format="yyyy-MM-dd"
+                                    @change="selectChange">
+                                </el-date-picker>
+                            </li>
                         </ul>
                     </div>
                     <div class="clear"></div>
@@ -106,20 +118,21 @@
                                     <p class="tips color5">即将开始</p>
                                 </div>
                                 <p class="num"><i class="icon-user"></i>1028</p>
+                                <div class="type-box">
+                                    <span class="type-item">绘画</span>
+                                    <span class="type-item">艺术</span>
+                                    <span class="type-item" title="艺术、学校活动">+2</span>
+                                </div> 
                                 <div class="js-crop-img">
                                     <img src="../assets/images/qrcode.png">
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2"><span class="info-top">置顶</span>浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                                <div class="type-box">
-                                    <span class="type-item">绘画</span>
-                                    <span class="type-item">艺术</span>
-                                    <span class="type-item">学校活动</span>
-                                </div> 
-                                <p class="address overHidden1">全国活动运营中心</p>
-                                <p class="address overHidden1">浙江图书馆</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2" title="浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动"><span class="info-top">置顶</span>浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
+                                <p class="address overHidden1">全国活动运营中心<span title="浙江图书馆浙江图书馆浙江图书馆"><i>·</i>浙江图书馆浙江图书馆浙江图书馆</span></p>
                             </div>
                         </div>
                     </li>
@@ -132,20 +145,21 @@
                                     <p class="tips color5">即将开始</p>
                                 </div>
                                 <p class="num"><i class="icon-user"></i>1028</p>
+                                <div class="type-box">
+                                    <span class="type-item">绘画</span>
+                                    <span class="type-item">艺术</span>
+                                    <span class="type-item" title="艺术、学校活动">+2</span>
+                                </div> 
                                 <div class="js-crop-img">
                                     <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2"><span class="info-top">置顶</span> 浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                                <div class="type-box">
-                                    <span class="type-item">绘画</span>
-                                    <span class="type-item">艺术</span>
-                                    <span class="type-item">学校活动</span>
-                                </div> 
-                                <p class="address overHidden1">全国活动运营中心</p>
-                                <p class="address overHidden1">浙江图书馆</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2" title="浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动"><span class="info-top">置顶</span> 浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
+                                <p class="address overHidden1">全国活动运营中心<span title="浙江图书馆浙江图书馆浙江图书馆"><i>·</i>浙江图书馆浙江图书馆浙江图书馆</span></p>
                             </div>
                         </div>
                     </li>
@@ -158,20 +172,21 @@
                                     <p class="tips color1">进行中</p>
                                 </div>
                                 <p class="num"><i class="icon-user"></i>1028</p>
-                                <div class="js-crop-img">
-                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
-                                </div>
-                            </div>
-                            <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
                                 <div class="type-box">
                                     <span class="type-item">绘画</span>
                                     <span class="type-item">艺术</span>
-                                    <span class="type-item">学校活动</span>
+                                    <span class="type-item" title="艺术、学校活动">+2</span>
                                 </div> 
-                                <p class="address overHidden1">全国活动运营中心</p>
-                                <p class="address overHidden1">浙江图书馆</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <div class="height80">
+                                    <h2 class="title overHidden2" title="浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
+                                <p class="address overHidden1">全国活动运营中心<span title="浙江图书馆浙江图书馆浙江图书馆"><i>·</i>浙江图书馆浙江图书馆浙江图书馆</span></p>
                             </div>
                         </div>
                     </li>
@@ -188,10 +203,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                                <p class="address overHidden1">全国活动运营中心</p>
-                                <p class="address overHidden1">浙江图书馆</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
+                                <p class="address overHidden1">全国活动运营中心<span title="浙江图书馆"><i>·</i>浙江图书馆</span></p>
                             </div>
                         </div>
                     </li>
@@ -208,10 +224,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <div class="height80">
+                                   <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p> 
+                                </div>
                                 <p class="address overHidden1">全国活动运营中心</p>
-                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
                     </li>
@@ -228,10 +245,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
                                 <p class="address overHidden1">全国活动运营中心</p>
-                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
                     </li>
@@ -248,10 +266,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
                                 <p class="address overHidden1">全国活动运营中心</p>
-                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
                     </li>
@@ -268,10 +287,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
                                 <p class="address">全国活动运营中心</p>
-                                <p class="address">浙江图书馆</p>
                             </div>
                         </div>
                     </li>
@@ -288,10 +308,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>  
+                                </div>
                                 <p class="address">全国活动运营中心</p>
-                                <p class="address">浙江图书馆</p>
                             </div>
                         </div>
                     </li>
@@ -308,10 +329,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
                                 <p class="address">全国活动运营中心</p>
-                                <p class="address">浙江图书馆</p>
                             </div>
                         </div>
                     </li>
@@ -328,10 +350,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <div class="height80">
+                                   <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p> 
+                                </div>
                                 <p class="address">全国活动运营中心</p>
-                                <p class="address">浙江图书馆</p>
                             </div>
                         </div>
                     </li>
@@ -348,10 +371,11 @@
                                 </div>
                             </div>
                             <div class="card-info">
-                                <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <div class="height80">
+                                    <h2 class="title overHidden2">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                </div>
                                 <p class="address">全国活动运营中心</p>
-                                <p class="address">浙江图书馆</p>
                             </div>
                         </div>
                     </li>
@@ -385,6 +409,8 @@
             return {
                 inputValue:'',
                 checkValue:false,
+                value:'',
+                selectTime:'选择日期',
             }
         },
         created: function () {
@@ -421,7 +447,20 @@
                 // return widthPic;
 
             },
-
+            selectChange: function (time){
+                var date = new Date();
+                $('.option-list .date-li').siblings().removeClass('active');
+                $('.option-list .date-li').addClass('active');
+                this.selectTime = this.timeToString(time);
+            },
+            timeToString: function(time){
+                var datetime = new Date();
+                datetime.setTime(time);
+                var year = datetime.getFullYear();
+                var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+                var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+                return year + "-" + month + "-" + date;
+            },
         }
     });
 </script>

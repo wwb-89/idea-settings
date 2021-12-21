@@ -141,6 +141,7 @@ body {
 }
 
 .filter .item .option-list ul li {
+  position: relative;
   float: left;
   margin-right: 10px;
   font-size: 14px;
@@ -149,6 +150,7 @@ body {
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 12px;
+  line-height: 20px;
 }
 
 .filter .item .option-list ul li:hover {
@@ -158,6 +160,27 @@ body {
 .filter .item .option-list ul li.active {
   color: #0084FF;
   background: rgba(0, 132, 255, 0.1);
+}
+
+.filter .item .option-list ul li .select-time {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+.filter .item .option-list ul li .select-time .el-input__icon {
+  display: none;
+}
+
+.filter .item .option-list ul li .select-time.el-input--prefix .el-input__inner {
+  padding-left: 0;
+  cursor: pointer;
+}
+
+.filter .item .option-list ul li .select-time.el-input--suffix .el-input__inner {
+  padding-right: 0;
 }
 
 .inner-content {
@@ -446,6 +469,31 @@ body {
   margin-right: 4px;
 }
 
+.activity-market2 .card-list ul li .img-box .type-box {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 0;
+  z-index: 10;
+}
+
+.activity-market2 .card-list ul li .img-box .type-box .type-item {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 4px;
+  background: rgba(0, 0, 0, 0.32);
+  border-radius: 99px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 22px;
+  line-height: 17px;
+  padding: 2.5px 6px;
+  font-size: 12px;
+  color: #FFFFFF;
+  text-align: center;
+}
+
 .activity-market2 .card-list ul li .img-box .tips-box {
   position: absolute;
   left: 8px;
@@ -519,9 +567,13 @@ body {
   padding: 8px 16px 16px;
 }
 
+.activity-market2 .card-list ul li .card-info .height80 {
+  height: 80px;
+}
+
 .activity-market2 .card-list ul li .card-info .title {
   color: #333333;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 24px;
   cursor: pointer;
 }
@@ -546,8 +598,8 @@ body {
 
 .activity-market2 .card-list ul li .card-info .time {
   color: #666666;
-  font-size: 14px;
-  line-height: 24px;
+  font-size: 13px;
+  line-height: 18px;
   margin-top: 8px;
 }
 
@@ -577,6 +629,10 @@ body {
   line-height: 18px;
   color: #999999;
   margin-top: 8px;
+}
+
+.activity-market2 .card-list ul li .card-info .address i {
+  margin: 0 4px;
 }
 
 .activity-market2 .card-list ul li:hover {
@@ -616,7 +672,7 @@ body {
 @media screen and (min-width: 1080px) and (max-width: 1365px) {
   .activity-market2 .card-list ul li {
     width: calc(33.333% - 16px);
-    height: 336px;
+    height: 283.51px;
     margin-right: 24px !important;
   }
   .activity-market2 .card-list ul li:nth-child(3n) {
@@ -628,7 +684,7 @@ body {
   .activity-market2 .card-list ul li {
     width: calc(25% - 18px);
     margin-right: 24px !important;
-    height: 336px;
+    height: 279.11px;
   }
   .activity-market2 .card-list ul li:nth-child(4n) {
     margin-right: 0 !important;
@@ -639,7 +695,7 @@ body {
   .activity-market2 .card-list ul li {
     width: calc(20% - 19.2px);
     margin-right: 24px !important;
-    height: 361px;
+    height: 304.26px;
   }
   .activity-market2 .card-list ul li .img-box {
     height: 173px;
@@ -656,7 +712,7 @@ body {
   .activity-market2 .card-list ul li {
     width: calc(16.666% - 20px);
     margin-right: 24px !important;
-    height: 336px;
+    height: 305.99px;
   }
   .activity-market2 .card-list ul li .img-box {
     height: 174px;

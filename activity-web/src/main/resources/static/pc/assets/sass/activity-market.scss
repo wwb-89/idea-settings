@@ -118,6 +118,7 @@ body {
       padding-left: 44px;
       ul {
         li {
+          position: relative;
           float: left;
           margin-right: 10px;
           font-size: 14px;
@@ -126,12 +127,30 @@ body {
           border-radius: 4px;
           cursor: pointer;
           margin-bottom: 12px;
+          line-height: 20px;
           &:hover {
             background: rgba(0, 0, 0, 0.04);
           }
           &.active  {
             color: #0084FF;
             background: rgba(0, 132, 255, 0.1);
+          }
+          .select-time{
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            .el-input__icon{
+              display: none;
+            }
+            &.el-input--prefix .el-input__inner{
+              padding-left: 0;
+              cursor: pointer;
+            }
+            &.el-input--suffix .el-input__inner{
+              padding-right: 0;
+            }
           }
         }
       }
@@ -200,7 +219,6 @@ body {
               display: inline-block;
               width: 16px;
               height: 16px;
-              background: url("../images/pv.png")  center center no-repeat;
               background-size: 100%;
               margin-left: 10px;
               margin-right:4px;
@@ -371,6 +389,27 @@ body {
               margin-right:4px;
             }
           }
+          .type-box {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            font-size: 0;
+            z-index: 10;
+            .type-item {
+              display: inline-block;
+              vertical-align: top;
+              margin-left: 4px;
+              background: rgba(0, 0, 0, 0.32);
+              border-radius: 99px;
+              box-sizing: border-box;
+              height: 22px;
+              line-height: 17px;
+              padding: 2.5px 6px;
+              font-size: 12px;
+              color: #FFFFFF;
+              text-align: center;
+            }
+          }
           .tips-box {
             position: absolute;
             left: 8px;
@@ -427,9 +466,12 @@ body {
         .card-info {
           text-align: left;
           padding: 8px 16px 16px;
+          .height80{
+            height: 80px;
+          }
           .title {
             color: #333333;
-            font-size: 18px;
+            font-size: 15px;
             line-height: 24px;
             cursor: pointer;
             &:hover {
@@ -451,8 +493,8 @@ body {
           }
           .time {
             color: #666666;
-            font-size: 14px;
-            line-height: 24px;
+            font-size: 13px;
+            line-height: 18px;
             margin-top: 8px;
           }
           .type-box {
@@ -477,6 +519,9 @@ body {
             line-height: 18px;
             color: #999999;
             margin-top: 8px;
+            i{
+              margin: 0 4px;
+            }
           }
         }
         &:hover {
@@ -511,7 +556,7 @@ body {
       ul {
         li {
           width: calc(33.333% - 16px);
-          height: 336px;
+          height: 283.51px;
           margin-right: 24px!important;
           &:nth-child(3n){
             margin-right: 0!important;
@@ -530,7 +575,7 @@ body {
         li {
           width: calc(25% - 18px);
           margin-right: 24px!important;
-          height: 336px;
+          height: 279.11px;
           &:nth-child(4n){
             margin-right: 0!important;
           }
@@ -547,7 +592,7 @@ body {
         li {
           width: calc(20% - 19.2px);
           margin-right: 24px!important;
-          height: 361px;
+          height: 304.26px;
           .img-box {
             height: 173px;
             .js-crop-img {
@@ -570,7 +615,7 @@ body {
         li {
           width: calc(16.666% - 20px);
           margin-right: 24px!important;
-          height: 336px;
+          height: 305.99px;
           .img-box {
             height: 174px;
             .js-crop-img {
