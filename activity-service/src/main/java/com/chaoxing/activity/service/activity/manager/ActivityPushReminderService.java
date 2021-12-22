@@ -102,13 +102,14 @@ public class ActivityPushReminderService {
             }
             String content = StringUtils.isNotBlank(activityPushReminder.getContent()) ? activityPushReminder.getContent() : "请查看";
             String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
-            // 获取推送人员列表
+            // 查询机构下的通讯录部门列表
             List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
             // 非叶子节点
             List<SignUpParticipateScopeDTO> participateScopes = JSON.parseArray(activityPushReminder.getReceiveScope(), SignUpParticipateScopeDTO.class);
             List<Integer> nonLeafDeptIds = participateScopes.stream().filter(v -> Objects.equals(v.getLeaf(), false)).map(SignUpParticipateScopeDTO::getExternalId).collect(Collectors.toList());
             Set<Integer> allGroupIds = Sets.newHashSet();
             if (CollectionUtils.isNotEmpty(nonLeafDeptIds)) {
+                // 获取非叶子节点的子节点部门列表
                 List<WfwGroupDTO> matchWfwGroups = wfwGroups.stream().filter(v -> nonLeafDeptIds.contains(Integer.parseInt(v.getId()))).collect(Collectors.toList());
                 for (WfwGroupDTO matchWfwGroup : matchWfwGroups) {
                     allGroupIds.add(Integer.valueOf(matchWfwGroup.getId()));
@@ -116,8 +117,10 @@ public class ActivityPushReminderService {
                     allGroupIds.addAll(children.stream().map(WfwGroupDTO::getId).map(Integer::valueOf).collect(Collectors.toSet()));
                 }
             }
+            // 获取非叶子节点
             List<Integer> leafDeptIds = participateScopes.stream().filter(SignUpParticipateScopeDTO::getLeaf).map(SignUpParticipateScopeDTO::getExternalId).collect(Collectors.toList());
             allGroupIds.addAll(leafDeptIds);
+            // 获取推送人员列表
             Set<Integer> uidSet = Sets.newHashSet();
             allGroupIds.forEach(v -> {
                 List<Integer> uids = wfwContactApiService.listDepartmentUid(v);
