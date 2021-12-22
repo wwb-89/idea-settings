@@ -2,7 +2,7 @@ package com.chaoxing.activity.task.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateActivity;
-import com.chaoxing.activity.service.manager.WfwFormApprovalApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApprovalApiService;
 import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
