@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
-import com.chaoxing.activity.dto.activity.create.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.group.GroupCreateParamDTO;
 import com.chaoxing.activity.dto.manager.group.GroupCreateResultDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
@@ -27,6 +27,7 @@ import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
+import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
@@ -144,6 +145,8 @@ public class ActivityHandleService {
 	private TagHandleService tagHandleService;
 	@Resource
 	private ClazzInteractionApiService clazzInteractionApiService;
+	@Resource
+	private ActivityPushReminderService activityPushReminderService;
 
 	/**
 	 * @Description
@@ -191,6 +194,12 @@ public class ActivityHandleService {
 		activity.beforeCreate(loginUser.getUid(), loginUser.getRealName(), loginUser.getFid(), loginUser.getOrgName());
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
+		// 保存活动推送提醒
+		ActivityPushReminder activityPushReminder = activityCreateParamDto.getActivityPushReminder();
+		if (activity.getOpenPushReminder() && activityPushReminder != null) {
+			activityPushReminder.setActivityId(activityId);
+			activityPushReminderService.addOrUpdate(activityPushReminder);
+		}
 		// 保存活动报名的报名条件启用
 		signUpConditionService.saveActivitySignUpConditionEnables(activityId, activityCreateParamDto.getSucTemplateComponentIds());
 		signUpConditionService.saveActivitySignUpConditionsFromConditions(activityId, activityCreateParamDto.getSignUpConditions());
@@ -357,6 +366,9 @@ public class ActivityHandleService {
 		String activityEditLockKey = getActivityEditLockKey(activityId);
 		return distributedLock.lock(activityEditLockKey, () -> {
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			if (activity.getOpenPushReminder()) {
+				activityPushReminderService.addOrUpdate(activityUpdateParamDto.getActivityPushReminder());
+			}
 			activity.updatePerfectFromExistActivity(existActivity);
 			// 添加小组
 			handleGroup(activity, existActivity.getCreateUid());
@@ -468,6 +480,7 @@ public class ActivityHandleService {
 		if (marketId == null) {
 			return;
 		}
+		activityPushReminderService.sendNotice(activity);
 		// 更新活动市场下活动的状态
 		activityMarketService.release(activity, marketId);
 	}

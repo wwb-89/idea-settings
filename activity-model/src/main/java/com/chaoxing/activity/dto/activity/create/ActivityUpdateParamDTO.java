@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
+import com.chaoxing.activity.model.ActivityPushReminder;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.FormUtils;
@@ -145,7 +146,10 @@ public class ActivityUpdateParamDTO {
 	private Integer courseId;
 	/** 证书模版id */
 	private Integer certificateTemplateId;
+	/** 是否开启推送提醒 */
+	private Boolean openPushReminder;
 
+	private ActivityPushReminder activityPushReminder;
 	/**构建活动
 	 * @Description 
 	 * @author wwb
@@ -194,6 +198,7 @@ public class ActivityUpdateParamDTO {
 				.clazzId(getClazzId())
 				.courseId(getCourseId())
 				.certificateTemplateId(getCertificateTemplateId())
+				.openPushReminder(getOpenPushReminder())
 				.build();
 	}
 
@@ -274,6 +279,7 @@ public class ActivityUpdateParamDTO {
 				.clazzId(activity.getClazzId())
 				.courseId(activity.getCourseId())
 				.certificateTemplateId(activity.getCertificateTemplateId())
+				.openPushReminder(activity.getOpenPushReminder())
 				.build();
 	}
 
@@ -300,6 +306,7 @@ public class ActivityUpdateParamDTO {
 		this.openReading = Optional.ofNullable(openReading).orElse(false);
 		this.openGroup = Optional.ofNullable(openGroup).orElse(false);
 		this.openClazzInteraction = Optional.ofNullable(openClazzInteraction).orElse(false);
+		this.openPushReminder = Optional.ofNullable(openPushReminder).orElse(false);
 	}
 
 	public void fillFromFormData(FormDataDTO formData, Integer classifyId) {

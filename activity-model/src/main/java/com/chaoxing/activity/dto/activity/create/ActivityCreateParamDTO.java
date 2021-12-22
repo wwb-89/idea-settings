@@ -7,6 +7,7 @@ import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
+import com.chaoxing.activity.model.ActivityPushReminder;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.FormUtils;
@@ -154,6 +155,10 @@ public class ActivityCreateParamDTO {
 	private Integer courseId;
 	/** 证书模版id */
 	private Integer certificateTemplateId;
+	/** 是否开启推送提醒 */
+	private Boolean openPushReminder;
+
+	private ActivityPushReminder activityPushReminder;
 
 	// 附加
 	/** 网页模版名称 */
@@ -213,6 +218,7 @@ public class ActivityCreateParamDTO {
 				.clazzId(getClazzId())
 				.courseId(getCourseId())
 				.certificateTemplateId(getCertificateTemplateId())
+				.openPushReminder(getOpenPushReminder())
 				.build();
 	}
 
@@ -290,6 +296,7 @@ public class ActivityCreateParamDTO {
 				.clazzId(activity.getClazzId())
 				.courseId(activity.getCourseId())
 				.certificateTemplateId(activity.getCertificateTemplateId())
+				.openPushReminder(activity.getOpenPushReminder())
 				.build();
 	}
 

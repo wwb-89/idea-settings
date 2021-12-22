@@ -71,7 +71,7 @@ public class ClazzInteractionDTO {
         String homeworkUrl = DomainConstant.MOOC + "/course/isNewCourse?v=2&pageHeader=6&single=1&clazzId=" + clazzId + "&courseId=" + courseId + "&enc=" + enc;
         menus.add(ClazzInteractionMenu.buildMenu("作业", "homework", homeworkUrl, "icon-discuss-default", "icon-discuss-active"));
         // 评审管理
-        String reviewManagementUrl = DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/review/list";
+        String reviewManagementUrl = DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/review/list?activityId=" + activity.getId();
         menus.add(ClazzInteractionMenu.buildMenu("评审管理", "review_management", reviewManagementUrl, "icon-statistics-default", "icon-statistics-active"));
         return menus;
     }

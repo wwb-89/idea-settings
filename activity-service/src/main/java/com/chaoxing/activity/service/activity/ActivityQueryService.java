@@ -14,6 +14,7 @@ import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpAbleSignDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
@@ -33,6 +34,7 @@ import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
+import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
@@ -133,6 +135,8 @@ public class ActivityQueryService {
 	private ActivityScopeQueryService activityScopeQueryService;
 	@Resource
 	private ActivityValidationService activityValidationService;
+	@Resource
+	private ActivityPushReminderService activityPushReminderService;
 
 	/**查询参与的活动
 	 * @Description
@@ -1136,6 +1140,14 @@ public class ActivityQueryService {
 		createParamDTO.setActivityComponentValues(activityComponentValues);
 		// set 考核管理id
 		packageInspectConfig(createParamDTO, activityId);
+		// 查询活动提醒
+		ActivityPushReminder activityPushReminder = activityPushReminderService.getByActivityId(activityId);
+		if (activityPushReminder != null && StringUtils.isNotBlank(activityPushReminder.getReceiveScope())) {
+			activityPushReminder.setReceiveScopes(JSONArray.parseArray(activityPushReminder.getReceiveScope(), SignUpParticipateScopeDTO.class));
+		} else {
+			activityPushReminder = ActivityPushReminder.buildDefault(activityId);
+		}
+		createParamDTO.setActivityPushReminder(activityPushReminder);
 		// 封装标签
 		List<Integer> tagIds = tagQueryService.listActivityAssociateTagId(activityId);
 		createParamDTO.setTagIds(tagIds);
