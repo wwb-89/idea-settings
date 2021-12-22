@@ -1,5 +1,5 @@
 Vue.component("vue-custom-participate-scope", {
-    props: [],
+    props: ["domScopeId"],
     template: "<div class='dailog-box1' style='z-index: 999' v-show='show'>\n" +
         "        <div class='dailog'>\n" +
         "            <div class='header'>\n" +
@@ -9,7 +9,7 @@ Vue.component("vue-custom-participate-scope", {
         "            <div class='body'>\n" +
         "                <div class='tree'>\n" +
         "                    <div class='tree-box'>\n" +
-        "                        <div id='custom-participate-scope-tree' class='ztree'></div>\n" +
+        "                        <div :id='domScopeId' class='ztree'></div>\n" +
         "                    </div>\n" +
         "                </div>\n" +
         "            </div>\n" +
@@ -94,28 +94,30 @@ Vue.component("vue-custom-participate-scope", {
         initGroupTree: function (scopes) {
             var $this = this;
             var setting = $this.getTreeSetting();
-            $this.customParticipateScopeTreeObj = $.fn.zTree.init($("#custom-participate-scope-tree"), setting, $this.currWfwGroups);
+            $this.customParticipateScopeTreeObj = $.fn.zTree.init($("#" + $this.domScopeId), setting, $this.currWfwGroups);
             // 获取所有父节点
             for(var i = 0; i < scopes.length; i++) {
                 var item = scopes[i];
                 $this.customParticipateScopeTreeObj.checkNode($this.customParticipateScopeTreeObj.getNodeByParam("virtualId", item.virtualId, null), true, !item.leaf);
             }
         },
+        initTreeNode: function (scopes) {
+
+        },
         showWindow: function (groups, scopes, groupType) {
             var $this = this;
             $this.currWfwGroups = groups;
             $this.currGroupType = groupType || 'wfw';
             $this.initWfwGroups();
-            if(!$this.customParticipateScopeTreeObj){
-                $this.initGroupTree(scopes);
-            }
+            $this.initGroupTree(scopes);
+
             $this.show = true;
         },
         cancelCallback: function () {
             var $this = this;
             if ($this.customParticipateScopeTreeObj) {
-                $this.customParticipateScopeTreeObj.destroy();
-                $this.customParticipateScopeTreeObj = null;
+                $this.customParticipateScopeTreeObj.checkAllNodes(false);
+                // $this.customParticipateScopeTreeObj = null;
             }
             $this.currWfwGroups = [];
             $this.$emit("cancel-callback");
@@ -124,7 +126,7 @@ Vue.component("vue-custom-participate-scope", {
         sureCallback: function () {
             var $this = this;
             $this.show = false;
-            var zTree = $.fn.zTree.getZTreeObj("custom-participate-scope-tree");
+            var zTree = $.fn.zTree.getZTreeObj($this.domScopeId);
             var nodeArr = zTree.getCheckedNodes(true);
             //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
             var scopes = [];

@@ -754,9 +754,9 @@
         <!-- 活动发布范围弹窗 -->
         <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
         <!-- 报名参与范围弹窗 -->
-        <vue-custom-participate-scope ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
+        <vue-custom-participate-scope :dom-scope-id="'sign-up-participate-scope-tree'" ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
         <!-- 通知提醒范围弹窗 -->
-        <vue-custom-participate-scope ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
+        <vue-custom-participate-scope :dom-scope-id="'reminder-scope-tree'" ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
         <!--预览url复制容器-->
         <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
         <!--活动是线下但是没有选择地点的提示-->
@@ -1197,8 +1197,6 @@
                         }
                     });
                     // 报名
-                    debugger
-
                     $($this.sign.signUps).each(function (i) {
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
                         $this.initSignUpScope(i, this);
