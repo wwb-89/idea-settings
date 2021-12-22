@@ -454,7 +454,7 @@
                                         <div class="join-box">
                                             <div :class="{'autoRange': (!signUpMap[item.id].enableWfwParticipateScope)}">
                                                 <el-radio-group v-model="signUpMap[item.id].wfwOrgScope" @change="wfwOrgScopeChange($event, item.id)" >
-                                                    <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList">{{scope.label}}</el-radio>
+                                                    <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList" :key="'wfw-scope-' + sidx">{{scope.label}}</el-radio>
                                                 </el-radio-group>
                                             </div>
                                             <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
@@ -471,7 +471,7 @@
                                         <div class="join-box">
                                             <div :class="{'autoRange': (!signUpMap[item.id].enableContactsParticipateScope)}">
                                                 <el-radio-group v-model="signUpMap[item.id].contactScope" @change="contactScopeChange($event, item.id)">
-                                                    <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList">{{scope.label}}</el-radio>
+                                                    <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList" :key="'contacts-scope-' + sidx">{{scope.label}}</el-radio>
                                                 </el-radio-group>
                                             </div>
                                             <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
@@ -575,7 +575,7 @@
                                         </div>
                                         <div class="form-item" v-if="signUpConditionMap[it.id].enable && signUpConditionMap[it.id].allowSignedUp && signUpConditionMap[it.id].configOnActivity">
                                             <el-form label-position='left' label-width="72px" class="select-form" onsubmit="return false">
-                                                <el-form-item :label="detail.fieldName" v-for="(detail, dIndex) in signUpConditionMap[it.id].activityConditionDetails">
+                                                <el-form-item :label="detail.fieldName" v-for="(detail, dIndex) in signUpConditionMap[it.id].activityConditionDetails" :key="'activity-condition-detail-' + dIndex">
                                                     <el-select v-model="detail.condition" placeholder="请选择">
                                                         <el-option v-for="(ce, ceIdx) in conditionEnums"
                                                                    :key="ceIdx"
