@@ -9,5 +9,6 @@ CREATE TABLE `t_activity_push_reminder` (
     `receive_scope` text COMMENT '推送提醒接收范围',
     `content` varchar(255) DEFAULT NULL COMMENT '通知内容',
     `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb
+    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
