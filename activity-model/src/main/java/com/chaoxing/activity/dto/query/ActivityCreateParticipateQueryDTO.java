@@ -50,10 +50,6 @@ public class ActivityCreateParticipateQueryDTO {
     /** 用户id */
     private Integer uid;
 
-    // 非参数传递
-    /** 市场id */
-    private Integer marketId;
-
     public void init() {
         List<String> defaultOrderFields = Lists.newArrayList("start_time", "end_time");
         if (getFid() == null) {

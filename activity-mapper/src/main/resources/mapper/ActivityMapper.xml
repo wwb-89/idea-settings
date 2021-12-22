@@ -1103,48 +1103,47 @@
             <include refid="Base_Column_List"></include>
         FROM
             t_activity t
-        <if test="params.marketId != null">
-            INNER JOIN t_activity_market t2 ON t2.activity_id = t.id AND t2.market_id = #{params.marketId}
-        </if>
-        INNER JOIN
-        <!--fid 必须有，在业务层判断，无则报错-->
-            t_activity_scope t1 ON t.id = t1.activity_id AND (t.create_fid = #{params.fid} or t1.fid = #{params.fid})
+            LEFT JOIN t_activity_scope t1 ON t.id = t1.activity_id
         WHERE
-        <!--状态-->
-        t.is_archived = #{params.archived}
-        <choose>
-            <when test="params.status != null">
-                AND t.`status` = #{params.status}
-            </when>
-            <otherwise>
-                AND t.`status` IN ( 1, 2, 3, 4 )
-            </otherwise>
-        </choose>
-        <!--搜索关键字-->
-        <if test="params.sw != null and params.sw != ''">
+            t.activity_flag = #{params.flag}
             AND (
-                t.`name` LIKE CONCAT('%', #{params.sw}, '%')
-                OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                t.create_fid = #{params.fid} OR t1.fid = #{params.fid}
             )
-        </if>
-        <!--时间-->
-        <choose>
-            <when test="params.startTime != null and params.startTime != '' and params.endTime != null and params.endTime != ''">
-                AND ((t.start_time between #{params.startTime} and #{params.endTime}) or (t.end_time between #{params.startTime} and #{params.endTime}))
-            </when>
-            <otherwise>
-                <choose>
-                    <when test="params.startTime != null and params.startTime != ''">
-                        AND t.end_time &gt;= #{params.startTime}
-                    </when>
-                    <otherwise>
-                        <if test="params.endTime != null and params.endTime != ''">
-                            AND t.start_time &lt;= #{params.endTime}
-                        </if>
-                    </otherwise>
-                </choose>
-            </otherwise>
-        </choose>
+            <!--状态-->
+            AND t.is_archived = #{params.archived}
+            <choose>
+                <when test="params.status != null">
+                    AND t.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    AND t.`status` IN ( 1, 2, 3, 4 )
+                </otherwise>
+            </choose>
+            <!--搜索关键字-->
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                    t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                    OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                )
+            </if>
+            <!--时间-->
+            <choose>
+                <when test="params.startTime != null and params.startTime != '' and params.endTime != null and params.endTime != ''">
+                    AND ((t.start_time BETWEEN #{params.startTime} AND #{params.endTime}) OR (t.end_time between #{params.startTime} AND #{params.endTime}))
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="params.startTime != null and params.startTime != ''">
+                            AND t.end_time &gt;= #{params.startTime}
+                        </when>
+                        <otherwise>
+                            <if test="params.endTime != null and params.endTime != ''">
+                                AND t.start_time &lt;= #{params.endTime}
+                            </if>
+                        </otherwise>
+                    </choose>
+                </otherwise>
+            </choose>
         GROUP BY
             t.id
         ORDER BY
