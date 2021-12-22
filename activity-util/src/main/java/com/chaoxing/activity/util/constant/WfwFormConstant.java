@@ -19,4 +19,9 @@ public class WfwFormConstant {
     /** key */
     public static final String KEY = "fCkw1Jq&oAHxYKmwsK";
 
+    /** 创建相关sign */
+    public static final String CREATE_SIGN = "deptManager_hdcp";
+    /** 创建相关key */
+    public static final String CREATE_KEY = "SObtv7P3d$UVuBkTjg";
+
 }

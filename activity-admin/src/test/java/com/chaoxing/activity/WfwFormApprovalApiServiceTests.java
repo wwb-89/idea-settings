@@ -1,7 +1,7 @@
 package com.chaoxing.activity;
 
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
-import com.chaoxing.activity.service.manager.WfwFormApprovalApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApprovalApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

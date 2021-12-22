@@ -9,7 +9,7 @@ import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
-import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.SchoolYearSemesterUtils;

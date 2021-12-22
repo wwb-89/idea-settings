@@ -8,7 +8,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwContacterDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
-import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;

@@ -1,7 +1,7 @@
 package com.chaoxing.activity.api.controller;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class WfwFormApiController {
 
 	@Resource
-	private WfwFormCreateApiService formCreateApiService;
+	private WfwFormApiService wfwFormApiService;
 
 	/**为报名克隆万能表单
 	 * @Description
@@ -36,7 +36,7 @@ public class WfwFormApiController {
 	 */
 	@RequestMapping("clone/by-sign-up")
 	public RestRespDTO cloneSignUpWfwForm(@RequestParam Integer originFid, Integer formId, @RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer tplComponentId) {
-		return RestRespDTO.success(formCreateApiService.cloneSignUpWfwForm(originFid, formId, fid, uid, tplComponentId));
+		return RestRespDTO.success(wfwFormApiService.cloneSignUpWfwForm(originFid, formId, fid, uid, tplComponentId));
 	}
 
 

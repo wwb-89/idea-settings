@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
-import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.FormUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
@@ -32,10 +31,7 @@ import java.util.stream.Collectors;
 public class WfwFormApiController {
 
 	@Resource
-	private WfwFormApiService formApiService;
-
-	@Resource
-	private WfwFormCreateApiService formCreateApiService;
+	private WfwFormApiService wfwFormApiService;
 
 	/**查询微服务表单的字段列表
 	 * @Description 
@@ -47,7 +43,7 @@ public class WfwFormApiController {
 	*/
 	@RequestMapping("{formId}/field")
 	public RestRespDTO listWfwFormField(@PathVariable Integer formId, @RequestParam Integer fid) {
-		List<FormStructureDTO> formFields = formApiService.getFormStructure(formId, fid);
+		List<FormStructureDTO> formFields = wfwFormApiService.getFormStructure(formId, fid);
 		List<WfwFormFieldVO> result = formFields.stream().map(v -> {
 			WfwFormFieldVO fieldItem = WfwFormFieldVO.buildFromWfwFormFieldDTO(v);
 			JSONObject optionBindInfo = v.getOptionBindInfo();
@@ -55,10 +51,10 @@ public class WfwFormApiController {
 			if (optionBindInfo != null) {
 				Integer fieldId = optionBindInfo.getInteger("bindFieldId");
 				Integer bindFormId = optionBindInfo.getInteger("bindFormId");
-				FormStructureDTO relatedStructure = formApiService.getFormStructure(bindFormId, fid).stream().filter(u -> Objects.equals(u.getId(), fieldId)).findFirst().orElse(null);
+				FormStructureDTO relatedStructure = wfwFormApiService.getFormStructure(bindFormId, fid).stream().filter(u -> Objects.equals(u.getId(), fieldId)).findFirst().orElse(null);
 				if (relatedStructure != null) {
 					List<String> options = Lists.newArrayList();
-					List<FormDataDTO> relatedRecords = formApiService.listFormRecord(bindFormId, fid);
+					List<FormDataDTO> relatedRecords = wfwFormApiService.listFormRecord(bindFormId, fid);
 					String fieldAlias = relatedStructure.getAlias();
 					for (FormDataDTO formDatum : relatedRecords) {
 						String formValue = FormUtils.getValue(formDatum, fieldAlias);
@@ -84,7 +80,7 @@ public class WfwFormApiController {
 	*/
 	@RequestMapping("build/edit-url")
 	public RestRespDTO getWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId, Integer formId) {
-		return RestRespDTO.success(formCreateApiService.buildEditFormUrl(fid, formId, uid, wfwFormTemplateId));
+		return RestRespDTO.success(wfwFormApiService.buildEditFormUrl(fid, formId, uid, wfwFormTemplateId));
 	}
 
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
@@ -98,7 +94,7 @@ public class WfwFormApiController {
 	 */
 	@RequestMapping("create/from/wfw-form-template")
 	public RestRespDTO createWfwFormWithEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId) {
-		return RestRespDTO.success(formCreateApiService.createWfwForm(fid, uid, wfwFormTemplateId));
+		return RestRespDTO.success(wfwFormApiService.createWfwForm(fid, uid, wfwFormTemplateId));
 	}
 
 	/**获取表单管理地址
@@ -112,7 +108,7 @@ public class WfwFormApiController {
 	*/
 	@RequestMapping("build/manage-url")
 	public RestRespDTO getWfwFormManageUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer formId) {
-		return RestRespDTO.success(formCreateApiService.getFormAdminUrl(formId, fid, uid));
+		return RestRespDTO.success(wfwFormApiService.getFormAdminUrl(formId, fid, uid));
 	}
 
 

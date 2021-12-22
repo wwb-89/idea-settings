@@ -5,7 +5,7 @@ import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
-import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -24,13 +24,13 @@ import java.util.List;
 public class WfwFormCreateApiServiceTests {
 
     @Resource
-    private WfwFormCreateApiService wfwFormCreateApiService;
+    private WfwFormApiService wfwFormApiService;
     @Resource
     private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
 
     @Test
     public void getCreateUrl() {
-        String url = wfwFormCreateApiService.buildEditFormUrl(117211, 25418810, null, 1);
+        String url = wfwFormApiService.buildEditFormUrl(117211, 25418810, null, 1);
         System.out.println(url);
     }
 
@@ -39,7 +39,7 @@ public class WfwFormCreateApiServiceTests {
         Integer formId = 132105;
         Integer fid = 117211;
         Integer uid = 25418810;
-        String adminUrl = wfwFormCreateApiService.getFormAdminUrl(formId, fid, uid);
+        String adminUrl = wfwFormApiService.getFormAdminUrl(formId, fid, uid);
         System.out.println(adminUrl);
     }
 
@@ -55,7 +55,7 @@ public class WfwFormCreateApiServiceTests {
                 .uid(uid)
                 .fid(fid)
                 .build();
-        WfwFormCreateResultDTO wfwFormCreateResult = wfwFormCreateApiService.create(wfwFormCreateParam);
+        WfwFormCreateResultDTO wfwFormCreateResult = wfwFormApiService.create(wfwFormCreateParam);
         System.out.println(JSON.toJSONString(wfwFormCreateResult));
     }
 

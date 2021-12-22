@@ -31,7 +31,6 @@ import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
-import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -102,8 +101,6 @@ public class WfwFormSyncActivityQueueService {
     private SignUpFillInfoTypeService signUpFillInfoTypeService;
     @Resource
     private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
-    @Resource
-    private WfwFormCreateApiService wfwFormCreateApiService;
 
     @Resource
     private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
@@ -281,7 +278,7 @@ public class WfwFormSyncActivityQueueService {
                 .uid(operateUser.getUid())
                 .fid(operateUser.getFid())
                 .build();
-        return wfwFormCreateApiService.create(wfwFormCreateParam);
+        return wfwFormApiService.create(wfwFormCreateParam);
     }
 
     /**封装报名信息

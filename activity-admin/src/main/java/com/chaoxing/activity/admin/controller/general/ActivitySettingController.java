@@ -19,7 +19,7 @@ import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
-import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
