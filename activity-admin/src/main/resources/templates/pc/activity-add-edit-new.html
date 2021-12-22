@@ -335,6 +335,20 @@
                                 </div>
                             </div>
                         </div>
+                        <!--推送提醒-->
+                        <div class="form-item align-start" v-else-if="item.code == 'push_reminder'">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box column">
+                                <div class="set-box">
+                                    <el-switch v-model="activity.openPushReminder" class="examine-switch"></el-switch>
+                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                </div>
+                                <div class="set-box configurationForm" v-show="activity.openPushReminder" @click="toPushReminderConfig">
+                                    <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                    <span class="tips set-information">编辑提醒内容</span>
+                                </div>
+                            </div>
+                        </div>
                         <!--证书设置-->
                         <div class="form-item align-start" v-else-if="item.code == 'certificate'">
                             <label class="label">{{item.name}}</label>
@@ -739,29 +753,56 @@
         <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
         <!-- 活动发布范围弹窗 -->
         <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
+        <!-- 报名参与范围弹窗 -->
+        <vue-custom-participate-scope :dom-scope-id="'sign-up-participate-scope-tree'" ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
+        <!-- 通知提醒范围弹窗 -->
+        <vue-custom-participate-scope :dom-scope-id="'reminder-scope-tree'" ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
         <!--预览url复制容器-->
         <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
         <!--活动是线下但是没有选择地点的提示-->
         <vue-confirm ref="offlineEmptyAddressWindow" :message="'未填写位置信息，展示页面中的地图位置可能不准确'" :cancel="'取消'" :sure="'继续保存'" @callback="ignoreOfflineEmptyAddress"></vue-confirm>
         <!--重新选择门户模版-->
         <vue-confirm ref="reSelectWebTemplateWindow" :message="'重新选择展示页面可能会导致部分数据丢失'" :cancel="'取消'" :sure="'继续'" @callback="sureReSelectWebTemplate"></vue-confirm>
-        <!-- 报名参与范围弹窗 -->
-        <div class="dailog-box1" v-show="signUpParticipateWindowShow">
-            <div class="dailog">
+        <!-- 编辑提醒内容弹窗 -->
+        <div class="dialog-box5" v-if="remindContentShow">
+            <div class="dailog dialog-wrap edit-remind">
                 <div class="header">
-                    <span>请选择</span>
-                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="cancelSignUpParticipateScope" class="close">
+                    <span class="color333">编辑提醒内容</span>
+                    <img src="/static/pc/assets/images/close.png" class="close" @click="remindContentShow = false">
                 </div>
-                <div class="body">
-                    <div class="tree">
-                        <div class="tree-box">
-                            <div id="sign-up-participate-scope-tree" class="ztree"></div>
+                <div class="dialog-content">
+                    <form action="">
+                        <div class="form-items">
+                            <label class="label">接收人</label>
+                            <div class="items receive-box">
+                                <!-- 点击添加弹窗和参与范围弹窗一样 -->
+                                <div class="add-receive" @click="toAddPushRemindScope"><img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" alt=""></div>
+                                <ul class="add-box" style="height: 28px">
+                                    <li v-for="(scope, scopeIndex) of activityPushReminder.receiveScopes" :key="'receiver-scope-' + scopeIndex">
+                                        <span>{{scope.externalName}}</span>
+                                        <i class="del-btn" @click=""></i>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
+                        <div class="form-items">
+                            <label class="label">发送时间</label>
+                            <div class="items">
+                                <span class="tips-txt">活动发布时</span>
+                            </div>
+                        </div>
+                        <div class="form-items">
+                            <label class="label">内容</label>
+                            <el-input class="resize-none" type="textarea" :autosize="{ minRows: 5, maxRows: 5}"
+                                      placeholder="请输入内容" v-model="activityPushReminder.content" maxlength="500" show-word-limit>
+                            </el-input>
+                        </div>
+                    </form>
                 </div>
                 <div class="footer">
-                    <div class="normal-btn cancle" @click="cancelSignUpParticipateScope">取消</div>
-                    <div class="normal-btn after-sure" @click="sureSignUpParticipateScope">确定</div>
+                    <div class="btn btn-border" @click="remindContentShow = false">取消</div>
+                    <!-- 当前弹窗值不为空时加上 btn-normal 类-->
+                    <div class="btn" :class="canConfirmReminder ? 'btn-normal' : 'btn-forbid'" @click="confirmReminderDialog">完成</div>
                 </div>
             </div>
         </div>
@@ -793,6 +834,7 @@
     <script src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
     <script src="/static/pc/assets/component/sign-map.js" th:src="@{/pc/assets/component/sign-map.js}"></script>
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
+    <script src="/static/pc/assets/component/vue-custom-participate-scope.js" th:src="@{/pc/assets/component/vue-custom-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-parent.js" th:src="@{/pc/assets/lib/set-iframe-height-parent.js}"></script>
@@ -877,8 +919,9 @@
                 signUpParticipateWindowShow: false,
                 wfwGroups: [[${wfwGroups}]],
                 contactGroups: [[${contactGroups}]],
-                currWfwGroups: [],
-                signUpParticipateScopeTreeObj: null,
+                activityPushReminder: null,
+                remindContentShow: false,
+
                 // 活动标示
                 activityFlag: [[${activityFlag}]],
                 // 当前操作的对象
@@ -1035,6 +1078,7 @@
                         openWork: false,
                         openReading: false,
                         openClazzInteraction: false,
+                        openPushReminder: false,
                         originType: "",
                         origin: "",
                         templateId: $this.templateId,
@@ -1083,6 +1127,7 @@
                     });
                     $this.$set($this.activity, "tagNames", tagNames);
                 }
+                $this.initActivityPushReminder();
                 $this.newCertificate();
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
                 $($this.activityTypes).each(function (i) {
@@ -1160,18 +1205,20 @@
                         }
                         if (($this.isClone || !activityApp.isEmpty(this.id)) && signUpTplComponentIds.indexOf(this.originId) != -1) {
                             if (this.wfwParticipateScopes) {
+                                var wfwVirtualNodeMap = $this.getVirtualNodeMap($this.wfwGroups);
                                 $(this.wfwParticipateScopes).each(function () {
-                                    if (this.leaf && $this.virtualNodeMap[this.externalId]) {
-                                        this.virtualId = $this.virtualNodeMap[this.externalId].virtualId;
+                                    if (this.leaf && wfwVirtualNodeMap[this.externalId]) {
+                                        this.virtualId = wfwVirtualNodeMap[this.externalId].virtualId;
                                     } else {
                                         this.virtualId = this.externalId;
                                     }
                                 });
                             }
                             if (this.contactsParticipateScopes) {
+                                var contactsVirtualNodeMap = $this.getVirtualNodeMap($this.contactGroups);
                                 $(this.contactsParticipateScopes).each(function () {
-                                    if (this.leaf && $this.virtualNodeMap[this.externalId]) {
-                                        this.virtualId = $this.virtualNodeMap[this.externalId].virtualId;
+                                    if (this.leaf && contactsVirtualNodeMap[this.externalId]) {
+                                        this.virtualId = contactsVirtualNodeMap[this.externalId].virtualId;
                                     } else {
                                         this.virtualId = this.externalId;
                                     }
@@ -1236,7 +1283,6 @@
                 }
                 $this.initUploader();
                 $this.handleImg();
-                $this.initWfwGroups();
                 $this.swiperInit()
                 setTimeout(function(){
                     window.onscroll = function () {
@@ -1250,16 +1296,10 @@
                 },1000);
             },
             computed: {
-                // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
-                virtualNodeMap: function () {
+                canConfirmReminder: function () {
                     var $this = this;
-                    var nodeMap = {};
-                    $($this.currWfwGroups).each(function () {
-                        if (this.id !== this.virtualId) {
-                            nodeMap[this.id] = this;
-                        }
-                    });
-                    return nodeMap;
+                    var reminder = $this.activityPushReminder;
+                    return reminder && !activityApp.isEmpty(reminder.content) && reminder.receiveScopes && reminder.receiveScopes.length > 0;
                 }
             },
             watch: {
@@ -1324,6 +1364,17 @@
                         });
                     }
                 },
+                // 获取虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
+                getVirtualNodeMap: function (groups) {
+                    var $this = this;
+                    var nodeMap = {};
+                    $(groups).each(function () {
+                        if (this.id !== this.virtualId) {
+                            nodeMap[this.id] = this;
+                        }
+                    });
+                    return nodeMap;
+                },
                 initSignUpScope: function(i, signUp) {
                     var $this = this;
                     if (signUp.enableContactsParticipateScope) {
@@ -1352,29 +1403,6 @@
                         conditionFields.push(this.fieldName);
                     })
                     return '在' + name + '中，匹配' + conditionFields.join(',') + '的条件可进行报名';
-                },
-                initWfwGroups: function () {
-                    var $this = this;
-                    var nodeSoncountMap = {}
-                    $($this.currWfwGroups).each(function () {
-                        var _this = this;
-                        _this.chkDisabled = false;
-                        var actualSoncount = 0;
-                        $($this.currWfwGroups).each(function () {
-                            if (_this.id !== this.id && _this.id === this.gid) {
-                                actualSoncount++;
-                            }
-                        });
-                        nodeSoncountMap[_this.id] = actualSoncount;
-                    });
-
-                    $($this.currWfwGroups).each(function () {
-                        // 若一个非叶子节点无自身的虚拟叶子节点，则该节点不可选中
-                        var nonLeaf = this.soncount && this.soncount !== 0;
-                        if ((nonLeaf && !$this.virtualNodeMap[this.id]) || (this.id === this.virtualId && this.soncount !== nodeSoncountMap[this.id])) {
-                            this.chkDisabled = true;
-                        }
-                    });
                 },
                 endNotAllowCancelChange: function (signUpTplComponentId) {
                     var $this = this;
@@ -2117,102 +2145,29 @@
                     var $this = this;
                     $this.operateSignUpOriginId = signUpTplComponentId;
                     $this.currGroupType = templateComponent.code == 'wfw_participation_scope' ? 'wfw' : 'contacts';
-                    $this.currWfwGroups = templateComponent.code == 'wfw_participation_scope' ? $this.wfwGroups : $this.contactGroups;
-                    $this.initWfwGroups();
-                    $this.signUpParticipateWindowShow = true;
-                    if(!$this.signUpParticipateScopeTreeObj){
-                        $this.initGroupTree();
-                    }
-                },
-                initGroupTree: function () {
-                    var $this = this;
-                    $($this.currWfwGroups).each(function () {
-                        this.isParent = this.soncount > 0;
-                    })
-                    var setting = {
-                        check: {
-                            enable: true
-                        },
-                        data: {
-                            simpleData: {
-                                enable: true,
-                                idKey: "virtualId",
-                                pIdKey: "gid",
-                            },
-                            key: {
-                                name: "groupname"
-                            },
-                            keep: {
-                                parent: true
-                            }
-                        },
-                        callback: {}
-                    };
-                    $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.currWfwGroups);
-
+                    var groups = templateComponent.code == 'wfw_participation_scope' ? $this.wfwGroups : $this.contactGroups;
                     var signUp = $this.signUpMap[$this.operateSignUpOriginId];
-
-                    var signUpParticipateScopes = (signUp && ($this.currGroupType == 'wfw' ? signUp.wfwParticipateScopes : signUp.contactsParticipateScopes)) || [];
-
-                    // 获取所有父节点
-                    for(var i = 0; i < signUpParticipateScopes.length; i++) {
-                        var item = signUpParticipateScopes[i];
-                        $this.signUpParticipateScopeTreeObj.checkNode($this.signUpParticipateScopeTreeObj.getNodeByParam("virtualId", item.virtualId, null), true, !item.leaf);
-                    }
-
-                },
-                cancelSignUpParticipateScope: function () {
-                    var $this = this;
-                    if ($this.signUpParticipateScopeTreeObj) {
-                        $this.signUpParticipateScopeTreeObj.destroy();
-                        $this.signUpParticipateScopeTreeObj = null;
-                    }
-                    $this.currWfwGroups = [];
-                    $this.currGroupType = 'wfw';
-                    $this.signUpParticipateWindowShow = false
+                    var scopes = (signUp && ($this.currGroupType == 'wfw' ? signUp.wfwParticipateScopes : signUp.contactsParticipateScopes)) || [];
+                    $this.$refs.signUpParticipateScopeWindow.showWindow(groups, scopes, $this.currGroupType)
                 },
                 // 确认选择报名参与范围
-                sureSignUpParticipateScope: function () {
+                sureSignUpParticipateScope: function (scopes) {
                     var $this = this;
-                    var zTree = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
-                    var nodeArr = zTree.getCheckedNodes(true);
-                    //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
-                    var scopes = [];
-                    var pNodes = [];
-                    var pNodeMap = {};
-                    var cNodes = [];
-                    $(nodeArr).each(function () {
-                        // 半选状态
-                        var half = this.getCheckStatus().half;
-                        // 只记录全选的
-                        if (!half) {
-                            var node = { externalId: this.id, virtualId: this.virtualId, externalPid: this.gid, externalName: this.groupname, leaf: !this.isParent };
-                            // 如果是非叶子结点节点
-                            if (this.isParent) {
-                                pNodes.push(node);
-                                pNodeMap[node.virtualId] = node;
-                            } else {
-                                cNodes.push(node);
-                            }
-                        }
-                    });
-                    $(cNodes).each(function () {
-                        if (!this.externalPid || !pNodeMap[this.externalPid]) {
-                            pNodes.push(this);
-                            pNodeMap[this.virtualId] = this;
-                        }
-                    });
-                    $(pNodes).each(function () {
-                        if (!this.externalPid || !pNodeMap[this.externalPid]) {
-                            scopes.push($.extend({}, this, {groupType: $this.currGroupType}));
-                        }
-                    });
                     if ($this.currGroupType == 'contacts') {
                         $this.$set($this.signUpMap[$this.operateSignUpOriginId], "contactsParticipateScopes", scopes);
                     } else {
                         $this.$set($this.signUpMap[$this.operateSignUpOriginId], "wfwParticipateScopes", scopes);
                     }
-                    $this.cancelSignUpParticipateScope();
+                },
+                sureReminderReceiverScope: function (scopes) {
+                    var $this = this;
+                    $this.$set($this.activityPushReminder, "receiveScopes", scopes);
+                },
+                confirmReminderDialog: function () {
+                    var $this = this;
+                    $this.remindContentShow = false;
+                    // 将数据拷贝
+                    $this.activity.activityPushReminder = $.extend({}, $this.activityPushReminder);
                 },
                 deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex) {
                     var $this = this;
@@ -2278,6 +2233,15 @@
                     var $this = this;
                     var url = activityApp.getReadingBookManageUrl($this.activity.readingId, $this.activity.readingModuleId, $this.xueyaDomain);
                     window.open(url);
+                },
+                toPushReminderConfig: function () {
+                    var $this = this;
+                    $this.remindContentShow = true
+                    $this.activityPushReminder = $.extend({}, $this.activity.activityPushReminder);
+                },
+                toAddPushRemindScope: function () {
+                    var $this = this;
+                    $this.$refs.reminderParticipateScopeWindow.showWindow($this.contactGroups, $this.activityPushReminder.receiveScopes, 'contacts');
                 },
                 // 签到列表管理页
                 toSignInList: function () {
@@ -2386,6 +2350,28 @@
                     } else if (type == 'decimal') {
                         $this.activityComponentValueMap[tplComponentId].value = parseFloat(value);
                     }
+                },
+                initActivityPushReminder: function () {
+                    var $this = this;
+                    if (!$this.activity.activityPushReminder) {
+                        $this.activity.activityPushReminder = {
+                            receiveScope: '',
+                            receiveScopes: [],
+                            content: ''
+                        };
+                    }
+                    if ($this.activity.activityPushReminder.receiveScopes) {
+                        var contactsVirtualNodeMap = $this.getVirtualNodeMap($this.contactGroups);
+                        $($this.activity.activityPushReminder.receiveScopes).each(function () {
+                            if (this.leaf && contactsVirtualNodeMap[this.externalId]) {
+                                this.virtualId = contactsVirtualNodeMap[this.externalId].virtualId;
+                            } else {
+                                this.virtualId = this.externalId;
+                            }
+                        });
+                    }
+                    $this.activityPushReminder = $.extend({}, $this.activity.activityPushReminder);
+
                 },
                 // 创建证书
                 newCertificate: function () {
