@@ -67,7 +67,8 @@ public class ActivityEngineController {
         ActivityEngineDTO templateInfo = activityEngineQueryService.findEngineTemplateInfo(templateId, marketId);
         model.addAttribute("templateInfo", templateInfo);
         model.addAttribute("wfwForms", wfwForms);
-        model.addAttribute("wfwFormTemplateList", signUpWfwFormTemplateService.listMarket(marketId));
+        model.addAttribute("wfwFormTemplates", signUpWfwFormTemplateService.listNormal());
+        model.addAttribute("wfwFormApprovalTemplates", signUpWfwFormTemplateService.listApproval());
         model.addAttribute("conditionEnums", ConditionDTO.listWithoutNoLimit());
         return "pc/engine/index";
     }

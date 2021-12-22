@@ -3,7 +3,6 @@ package com.chaoxing.activity.service.activity.engine;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.chaoxing.activity.mapper.SignUpWfwFormTemplateMapper;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class SignUpWfwFormTemplateService {
     @Resource
     private SignUpWfwFormTemplateMapper signUpWfwFormTemplateMapper;
 
-    private static final String NOMARL_TEMPLATE_CODE = "normal";
+    private static final String NORMAL_TEMPLATE_CODE = "normal";
 
     /**根据code获取系统模板
      * @Description
@@ -60,7 +59,7 @@ public class SignUpWfwFormTemplateService {
     public SignUpWfwFormTemplate getByIdOrDefaultNormal(Integer wfwFormTemplateId) {
         SignUpWfwFormTemplate signUpWfwFormTemplate = getById(wfwFormTemplateId);
         if (signUpWfwFormTemplate == null) {
-            signUpWfwFormTemplate = getSystemTemplateByCode(NOMARL_TEMPLATE_CODE);
+            signUpWfwFormTemplate = getSystemTemplateByCode(NORMAL_TEMPLATE_CODE);
         }
         return signUpWfwFormTemplate;
     }
@@ -79,37 +78,34 @@ public class SignUpWfwFormTemplateService {
         return signUpWfwFormTemplateMapper.selectById(wfwFormTemplateId);
     }
 
-    /**获取系统报名万能表单模版
+    /**查询万能表单模版
      * @Description 
      * @author wwb
-     * @Date 2021-11-18 17:51:16
+     * @Date 2021-12-22 16:02:54
      * @param 
      * @return java.util.List<com.chaoxing.activity.model.SignUpWfwFormTemplate>
     */
-    public List<SignUpWfwFormTemplate> listSystem() {
+    public List<SignUpWfwFormTemplate> listNormal() {
         return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
                 .eq(SignUpWfwFormTemplate::getSystem, true)
+                .eq(SignUpWfwFormTemplate::getType, SignUpWfwFormTemplate.TypeEnum.NORMAL.getValue())
                 .eq(SignUpWfwFormTemplate::getDeleted, false)
         );
     }
 
-    /**查询市场可用的报名万能表单模版
+    /**查询审批模版
      * @Description 
      * @author wwb
-     * @Date 2021-11-18 18:02:10
-     * @param marketId
+     * @Date 2021-12-22 16:03:05
+     * @param 
      * @return java.util.List<com.chaoxing.activity.model.SignUpWfwFormTemplate>
     */
-    public List<SignUpWfwFormTemplate> listMarket(Integer marketId) {
-        List<SignUpWfwFormTemplate> result = Lists.newArrayList();
-        List<SignUpWfwFormTemplate> systemSignUpWfwFormTemplates = listSystem();
-        result.addAll(systemSignUpWfwFormTemplates);
-        List<SignUpWfwFormTemplate> marketSignUpWfwFormTemplates = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
-                .eq(SignUpWfwFormTemplate::getMarketId, marketId)
+    public List<SignUpWfwFormTemplate> listApproval() {
+        return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+                .eq(SignUpWfwFormTemplate::getSystem, true)
+                .eq(SignUpWfwFormTemplate::getType, SignUpWfwFormTemplate.TypeEnum.APPROVAL.getValue())
                 .eq(SignUpWfwFormTemplate::getDeleted, false)
         );
-        result.addAll(marketSignUpWfwFormTemplates);
-        return result;
     }
 
 }

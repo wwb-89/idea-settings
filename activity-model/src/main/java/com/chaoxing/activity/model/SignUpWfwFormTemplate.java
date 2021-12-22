@@ -29,6 +29,8 @@ public class SignUpWfwFormTemplate {
     private Integer id;
     /** 名称; column: name*/
     private String name;
+    /** 类型; column: type*/
+    private String type;
     /** 编码; column: code*/
     private String code;
     /** sign; column: sign*/

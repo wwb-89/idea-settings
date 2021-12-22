@@ -43,20 +43,4 @@ public class WfwFormCreateApiServiceTests {
         System.out.println(adminUrl);
     }
 
-    @Test
-    public void create() {
-        Integer uid = 25418810;
-        Integer fid = 117211;
-        List<SignUpWfwFormTemplate> signUpWfwFormTemplates = signUpWfwFormTemplateService.listSystem();
-        SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplates.get(0);
-        WfwFormCreateParamDTO wfwFormCreateParam = WfwFormCreateParamDTO.builder()
-                .formId(signUpWfwFormTemplate.getFormId())
-                .originalFid(signUpWfwFormTemplate.getFid())
-                .uid(uid)
-                .fid(fid)
-                .build();
-        WfwFormCreateResultDTO wfwFormCreateResult = wfwFormApiService.create(wfwFormCreateParam);
-        System.out.println(JSON.toJSONString(wfwFormCreateResult));
-    }
-
 }

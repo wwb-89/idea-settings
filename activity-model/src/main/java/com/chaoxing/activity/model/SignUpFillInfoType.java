@@ -36,6 +36,8 @@ public class SignUpFillInfoType {
     private String type;
     /** 报名万能表单模板id; column: wfw_form_template_id*/
     private Integer wfwFormTemplateId;
+    /** 审批表单模板id; column: wfw_form_approval_template_id*/
+    private Integer wfwFormApprovalTemplateId;
 
     public SignUpFillInfoType cloneToNewTemplateComponentId(Integer templateComponentId) {
         return SignUpFillInfoType.builder()
@@ -56,8 +58,8 @@ public class SignUpFillInfoType {
         FORM("普通采集表单", "form"),
         WFW_FORM("万能表单", "wfw_form");
 
-        private String name;
-        private String value;
+        private final String name;
+        private final String value;
 
         TypeEnum(String name, String value) {
             this.name = name;
