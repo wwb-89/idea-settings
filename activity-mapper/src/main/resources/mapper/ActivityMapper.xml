@@ -581,6 +581,20 @@
             t.start_time DESC
     </select>
 
+    <select id="listMarketCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            <!--状态-->
+            t.market_id = #{marketId}
+            AND t.`status` IN ( 2, 3, 4 )
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 ),
+            t.start_time DESC
+    </select>
+
     <!--查询用户创建的-->
     <select id="pageUserCreated" resultMap="BaseResultMap">
         SELECT

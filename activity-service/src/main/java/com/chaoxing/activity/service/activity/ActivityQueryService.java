@@ -332,6 +332,19 @@ public class ActivityQueryService {
 		return page;
 	}
 
+	/**查询市场创建的（参与）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-22 18:12:47
+	 * @param page
+	 * @param marketId
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> listMarketCreated(Page<Activity> page, Integer marketId) {
+		page = activityMapper.listMarketCreated(page, marketId);
+		return page;
+	}
+
 	/**计算查询的时间范围
 	 * @Description
 	 * @author wwb
