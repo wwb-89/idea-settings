@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -243,7 +244,13 @@ public class MarketHandleService {
 		Optional.ofNullable(activityFlagEnum).orElseThrow(() -> new BusinessException("未知的flag"));
 		Market market = marketQueryService.getWfwFormMarketIdByFlag(fid, formId, activityFlagEnum.getValue());
 		if (market == null) {
-			// 创建一个活动市场
+			// 同一个机构只有"normal"才能创建多个，其它的只能创建一个相同flag的活动市场
+			if (!Objects.equals(Activity.ActivityFlagEnum.NORMAL, activityFlagEnum)) {
+				Integer existFlagMarketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
+				if (existFlagMarketId != null) {
+					return existFlagMarketId;
+				}
+			}
 			market = ApplicationContextHolder.getBean(MarketHandleService.class).add(MarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue(), Market.OriginTypeEnum.WFW_FORM, String.valueOf(formId)), activityFlagEnum, loginUser.buildOperateUserDTO());
 		}
 		return market.getId();
