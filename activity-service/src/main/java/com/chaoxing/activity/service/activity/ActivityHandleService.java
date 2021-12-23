@@ -148,7 +148,7 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityPushReminderService activityPushReminderService;
 
-	/**
+	/**新增活动
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-09-03 18:27:01
@@ -163,6 +163,16 @@ public class ActivityHandleService {
 		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser, isClone);
 	}
 
+	/**新增活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-22 20:17:33
+	 * @param activityCreateParamDto
+	 * @param signCreateParamDto
+	 * @param wfwRegionalArchitectureDtos
+	 * @param loginUser
+	 * @return java.lang.Integer
+	*/
 	@Transactional(rollbackFor = Exception.class)
 	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser, false);

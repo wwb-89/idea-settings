@@ -248,8 +248,6 @@ public class FormUtils {
 	 * @return com.chaoxing.activity.dto.TimeScopeDTO
 	 */
 	public static TimeScopeDTO getTimeScope(FormDataDTO formData, String fieldAlias) {
-		LocalDateTime startTime;
-		LocalDateTime endTime;
 		List<FormDataItemDTO> formDatas = formData.getFormData();
 		List<String> activityTimes = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(formDatas)) {
@@ -272,16 +270,11 @@ public class FormUtils {
 		}
 		String startTimeStr = activityTimes.get(0);
 		String endTimeStr = activityTimes.get(1);
-		if (StringUtils.isBlank(startTimeStr)) {
-			startTime = null;
-		} else {
-			startTime = getTime(startTimeStr);
+		if (StringUtils.isBlank(startTimeStr) || StringUtils.isBlank(endTimeStr)) {
+			return null;
 		}
-		if (StringUtils.isBlank(endTimeStr)) {
-			endTime = null;
-		} else {
-			endTime = getTime(endTimeStr);
-		}
+		LocalDateTime startTime = getTime(startTimeStr);
+		LocalDateTime endTime = getTime(endTimeStr);
 		return TimeScopeDTO.builder()
 				.startTime(startTime)
 				.endTime(endTime)

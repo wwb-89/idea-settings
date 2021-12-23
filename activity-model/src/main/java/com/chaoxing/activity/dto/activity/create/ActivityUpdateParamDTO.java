@@ -321,18 +321,15 @@ public class ActivityUpdateParamDTO {
 		// 开始时间、结束时间
 		TimeScopeDTO activityTimeScope = FormUtils.getTimeScope(formData, "activity_time");
 		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(FormUtils.getTimeScope(formData, "activity_time_scope"));
-		if (activityTimeScope.getStartTime() == null || activityTimeScope.getEndTime() == null) {
+		if (activityTimeScope == null) {
 			LocalDateTime now = LocalDateTime.now();
-			if (activityTimeScope.getStartTime() == null) {
-				String activityStartTimeStr = FormUtils.getValue(formData, "activity_start_time");
-				LocalDateTime startTime = StringUtils.isBlank(activityStartTimeStr) ? now : FormUtils.getTime(activityStartTimeStr);
-				setStartTimeStamp(DateUtils.date2Timestamp(startTime));
-			}
-			if (activityTimeScope.getEndTime() == null) {
-				String activityEndTimeStr = FormUtils.getValue(formData, "activity_end_time");
-				LocalDateTime endTime = StringUtils.isBlank(activityEndTimeStr) ? now.plusMonths(1) : FormUtils.getTime(activityEndTimeStr);
-				setEndTimeStamp(DateUtils.date2Timestamp(endTime));
-			}
+			String activityStartTimeStr = FormUtils.getValue(formData, "activity_start_time");
+			LocalDateTime startTime = StringUtils.isBlank(activityStartTimeStr) ? now : FormUtils.getTime(activityStartTimeStr);
+			setStartTimeStamp(DateUtils.date2Timestamp(startTime));
+
+			String activityEndTimeStr = FormUtils.getValue(formData, "activity_end_time");
+			LocalDateTime endTime = StringUtils.isBlank(activityEndTimeStr) ? startTime.plusMonths(1) : FormUtils.getTime(activityEndTimeStr);
+			setEndTimeStamp(DateUtils.date2Timestamp(endTime));
 		} else {
 			setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
 			setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
