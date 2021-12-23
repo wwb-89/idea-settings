@@ -44,6 +44,7 @@ public class SignUpFillInfoType {
                 .templateComponentId(templateComponentId)
                 .type(getType())
                 .wfwFormTemplateId(getWfwFormTemplateId())
+                .wfwFormApprovalTemplateId(getWfwFormApprovalTemplateId())
                 .build();
     }
 
@@ -56,7 +57,8 @@ public class SignUpFillInfoType {
 
         /** 普通表单 */
         FORM("普通采集表单", "form"),
-        WFW_FORM("万能表单", "wfw_form");
+        WFW_FORM("万能表单", "wfw_form"),
+        APPROVAL("审批", "approval");
 
         private final String name;
         private final String value;
