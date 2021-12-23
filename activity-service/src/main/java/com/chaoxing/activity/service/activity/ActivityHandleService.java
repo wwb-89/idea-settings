@@ -376,8 +376,10 @@ public class ActivityHandleService {
 		String activityEditLockKey = getActivityEditLockKey(activityId);
 		return distributedLock.lock(activityEditLockKey, () -> {
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
-			if (activity.getOpenPushReminder()) {
-				activityPushReminderService.addOrUpdate(activityUpdateParamDto.getActivityPushReminder());
+			ActivityPushReminder activityPushReminder = activityUpdateParamDto.getActivityPushReminder();
+			if (activity.getOpenPushReminder() && activityPushReminder != null) {
+				activityPushReminder.setActivityId(activity.getId());
+				activityPushReminderService.addOrUpdate(activityPushReminder);
 			}
 			activity.updatePerfectFromExistActivity(existActivity);
 			// 添加小组
