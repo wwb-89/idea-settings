@@ -917,7 +917,8 @@
                         return { fid: this.fid, originIdentify: '', fieldName: '', allowSignedUp: false, configOnActivity: false, templateConditionDetails: [] }
                     },
                     getInitSignUpFillInfoType: function () {
-                        return { type: 'form', wfwFormTemplateId: '' }
+                        var $this = this;
+                        return { type: 'wfw_form', wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: $this.wfwFormApprovalTemplates[0].id}
                     },
 
                     // 内部属性的判断补充初始化
@@ -1057,7 +1058,7 @@
                     // 新增报名组件
                     addSignUpComponentAssociate: function () {
                         var $this = this;
-                        var signUpId = $this.addEditItem.id, signUpComponentId = $this.addEditItem.componentId
+                        var signUpId = $this.addEditItem.id, signUpComponentId = $this.addEditItem.componentId;
                         var basicCompts = [], advanceCompts = [], tplComponentChildren = [], childIdx = 1;
                         // 拷贝一份子组件出来
                         $($.extend(true, [], $this.pidChildrenMap[signUpComponentId])).each(function () {
@@ -1639,11 +1640,11 @@
                     // 调整右下角加号位置
                     fixRightEndBtnStyle: function () {
                         /* 右下角加号的位置 */
-                        var right = $('.w-900px.info-box').offset().left + 50
+                        var right = $('.w-900px.info-box').offset().left + 50;
                         $('#add-circle').css('right', right)
                         $(window).resize(function () {
-                            var right = $('.w-900px.info-box').offset().left + 50
-                            $('#add-circle').css('right', right)
+                            var right = $('.w-900px.info-box').offset().left + 50;
+                            $('#add-circle').css('right', right);
                         })
                     },
                     handleJqthumb: function () {
@@ -1660,7 +1661,7 @@
                     },
                     addConditionDetail: function () {
                         var $this = this;
-                        var tplComponentId = typeof $this.addEditItem.id == 'number' ? $this.addEditItem.id : ''
+                        var tplComponentId = typeof $this.addEditItem.id == 'number' ? $this.addEditItem.id : '';
                         $this.innerAddEditItem.templateConditionDetails.push({
                             templateComponentId: tplComponentId,
                             fieldName: '',

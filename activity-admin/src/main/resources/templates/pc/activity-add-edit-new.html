@@ -527,12 +527,12 @@
                                                 <span class="tips set-information">配置表单</span>
                                             </div>
                                             <!--万能表单-->
-                                            <div v-if="signUpMap[item.id].formType == 'wfw_form' && signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(item.id)">
+                                            <div v-else-if="signUpMap[item.id].formType == 'wfw_form' && signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(item.id)">
                                                 <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
                                                 <span class="tips set-information">配置表单</span>
                                             </div>
                                             <!--审批-->
-                                            <div v-if="signUpMap[item.id].formType == 'approval' && signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toApprovalConfig(item.id)">
+                                            <div v-else-if="signUpMap[item.id].formType == 'approval' && signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toApprovalConfig(item.id)">
                                                 <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
                                                 <span class="tips set-information">配置审批</span>
                                             </div>
@@ -1882,7 +1882,6 @@
                                 // 给没有开启报名填报信息的报名设置万能表单
                                 if (activityApp.isEmpty(signUp.fillInfoFormId)) {
                                     var wfwFormInfo = $this.signUpFillInfoDefaultWfwFormMap[originId];
-                                    signUp.formType = "wfw_form";
                                     $this.$set($this.signUpMap[originId], "formType", "wfw_form");
                                     $this.$set($this.signUpMap[originId], "openAddr", wfwFormInfo.openAddr);
                                     $this.$set($this.signUpMap[originId], "pcUrl", wfwFormInfo.pcUrl);
