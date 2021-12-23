@@ -229,8 +229,35 @@ public class ActivityMhAppController {
 		// 查询机构下的活动列表
 		Page<Activity> page = new Page(pageNum, pageSize);
 		page = activityQueryService.listOrgParticipatedOrCreated(page, createFid);
+		return packageRecommendActivity(page);
+	}
+
+	/**推荐市场下的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-22 18:16:07
+	 * @param activity
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	private RestRespDTO marketRecommendActivity(Activity activity, String data) {
+		JSONObject jsonObject = JSON.parseObject(data);
+		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
+		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(RECOMMEND_ACTIVITY_PAGE_SIZE);
+		// 查询机构下的活动列表
+		Page<Activity> page = new Page(pageNum, pageSize);
+		Integer marketId = activity.getMarketId();
+		if (marketId != null) {
+			page = activityQueryService.listMarketCreated(page, marketId);
+		} else {
+			page = activityQueryService.listOrgParticipatedOrCreated(page, activity.getCreateFid());
+		}
+		return packageRecommendActivity(page);
+	}
+
+	private RestRespDTO packageRecommendActivity(Page<Activity> page) {
 		JSONObject result = new JSONObject();
-		result.put("curPage", pageNum);
+		result.put("curPage", page.getCurrent());
 		result.put("totalPages", page.getPages());
 		result.put("totalRecords", page.getTotal());
 		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, null, (record) -> {
@@ -276,6 +303,22 @@ public class ActivityMhAppController {
 		// 根据websiteId查询活动
 		Activity activity = activityQueryService.getByWebsiteId(websiteId);
 		return recommendActivity(activity, data);
+	}
+
+	/**市场活动推荐
+	 * @Description 根据活动查询市场id，推荐的活动需要是在该活动市场下的
+	 * @author wwb
+	 * @Date 2021-12-22 18:08:41
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("market/activity/recommend")
+	public RestRespDTO marketRecommendActivity(@RequestBody String data) {
+		JSONObject jsonObject = JSON.parseObject(data);
+		Integer websiteId = jsonObject.getInteger("websiteId");
+		// 根据websiteId查询活动
+		Activity activity = activityQueryService.getByWebsiteId(websiteId);
+		return marketRecommendActivity(activity, data);
 	}
 
 	/**推荐活动

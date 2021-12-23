@@ -102,6 +102,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> listOrgParticipatedOrCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
 
+	/**查询市场创建的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-22 18:11:02
+	 * @param page
+	 * @param marketId
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	Page<Activity> listMarketCreated(@Param("page") Page<?> page, @Param("marketId") Integer marketId);
+
 	/**
 	 * 分页查询用户创建的
 	 *
