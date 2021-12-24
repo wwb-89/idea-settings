@@ -352,6 +352,7 @@ public class ActivityCreateParamDTO {
 		this.openReading = Optional.ofNullable(openReading).orElse(false);
 		this.openGroup = Optional.ofNullable(openGroup).orElse(false);
 		this.openClazzInteraction = Optional.ofNullable(openClazzInteraction).orElse(false);
+		this.openPushReminder = Optional.ofNullable(openPushReminder).orElse(false);
 	}
 
 	/**从表单数据中获取需要创建的活动
