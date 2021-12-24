@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.TemplateCustomAppConfigMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TemplateCustomAppConfig">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="icon" jdbcType="VARCHAR" property="icon" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="is_show_after_sign_up" jdbcType="BIT" property="showAfterSignUp" />
+        <result column="is_open_blank" jdbcType="BIT" property="openBlank" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.template_component_id, t.type, t.title, t.icon, t.url, t.is_show_after_sign_up, t.is_open_blank,
+        t.is_deleted, t.sequence, t.create_time, t.update_time
+    </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_template_custom_app_config (template_component_id, type, title, icon, url, is_show_after_sign_up, is_open_blank, sequnce)
+        VALUES
+        <foreach collection="dataList" item="item" open="" close="" separator=",">
+            (
+                #{item.templateComponentId},
+                #{item.type},
+                #{item.title},
+                #{item.icon},
+                #{item.url},
+                #{item.showAfterSignUp},
+                #{item.openBlank},
+                #{item.sequence}
+            )
+        </foreach>
+    </insert>
+</mapper>
