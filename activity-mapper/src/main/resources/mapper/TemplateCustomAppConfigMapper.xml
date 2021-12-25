@@ -16,7 +16,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_component_id, t.type, t.title, t.icon, t.url, t.is_show_after_sign_up, t.is_open_blank,
+        t.id, t.template_component_id, t.type, t.title, t.icon_id, t.url, t.is_show_after_sign_up, t.is_open_blank,
         t.is_deleted, t.sequence, t.create_time, t.update_time
     </sql>
 
