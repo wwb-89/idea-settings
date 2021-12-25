@@ -148,6 +148,8 @@ public class ActivityUpdateParamDTO {
 	private Integer certificateTemplateId;
 	/** 是否开启推送提醒 */
 	private Boolean openPushReminder;
+	/** 是否开启自定义应用配置 */
+	private Boolean openCustomAppConfig;
 
 	private ActivityPushReminder activityPushReminder;
 	/**构建活动
@@ -199,6 +201,7 @@ public class ActivityUpdateParamDTO {
 				.courseId(getCourseId())
 				.certificateTemplateId(getCertificateTemplateId())
 				.openPushReminder(getOpenPushReminder())
+				.openCustomAppConfig(getOpenCustomAppConfig())
 				.build();
 	}
 
@@ -280,6 +283,7 @@ public class ActivityUpdateParamDTO {
 				.courseId(activity.getCourseId())
 				.certificateTemplateId(activity.getCertificateTemplateId())
 				.openPushReminder(activity.getOpenPushReminder())
+				.openCustomAppConfig(activity.getOpenCustomAppConfig())
 				.build();
 	}
 

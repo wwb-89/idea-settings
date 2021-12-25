@@ -16,6 +16,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
+import com.chaoxing.activity.service.activity.engine.TemplateCustomAppConfigService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
@@ -95,6 +96,8 @@ public class ActivityManageController {
 	private MarketSignupConfigService marketSignupConfigService;
 	@Resource
 	private TagQueryService tagQueryService;
+	@Resource
+	private TemplateCustomAppConfigService templateCustomAppConfigService;
 
 	/**活动管理主页
 	 * @Description 
@@ -137,11 +140,17 @@ public class ActivityManageController {
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("webDomain", DomainConstant.WEB);
+		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		List<ClazzInteractionDTO.ClazzInteractionMenu> clazzInteractionMenus = Lists.newArrayList();
 		if (activity.getOpenClazzInteraction()) {
 			clazzInteractionMenus = ClazzInteractionDTO.listClazzInteractionMenus(activity, operateUid, loginUser.getFid());
 		}
+		List<TemplateCustomAppConfig> customAppConfigs = Lists.newArrayList();
+		if (activity.getOpenCustomAppConfig()) {
+			customAppConfigs = templateCustomAppConfigService.listByTemplateId(activity.getTemplateId());
+		}
 		model.addAttribute("clazzInteractionMenus", clazzInteractionMenus);
+		model.addAttribute("customAppConfigs", customAppConfigs);
 
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";

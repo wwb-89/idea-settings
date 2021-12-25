@@ -157,6 +157,8 @@ public class ActivityCreateParamDTO {
 	private Integer certificateTemplateId;
 	/** 是否开启推送提醒 */
 	private Boolean openPushReminder;
+	/** 是否开启自定义应用配置 */
+	private Boolean openCustomAppConfig;
 
 	private ActivityPushReminder activityPushReminder;
 
@@ -219,6 +221,7 @@ public class ActivityCreateParamDTO {
 				.courseId(getCourseId())
 				.certificateTemplateId(getCertificateTemplateId())
 				.openPushReminder(getOpenPushReminder())
+				.openCustomAppConfig(getOpenCustomAppConfig())
 				.build();
 	}
 
@@ -297,6 +300,7 @@ public class ActivityCreateParamDTO {
 				.courseId(activity.getCourseId())
 				.certificateTemplateId(activity.getCertificateTemplateId())
 				.openPushReminder(activity.getOpenPushReminder())
+				.openCustomAppConfig(activity.getOpenCustomAppConfig())
 				.build();
 	}
 
@@ -353,6 +357,7 @@ public class ActivityCreateParamDTO {
 		this.openGroup = Optional.ofNullable(openGroup).orElse(false);
 		this.openClazzInteraction = Optional.ofNullable(openClazzInteraction).orElse(false);
 		this.openPushReminder = Optional.ofNullable(openPushReminder).orElse(false);
+		this.openCustomAppConfig = Optional.ofNullable(openCustomAppConfig).orElse(false);
 	}
 
 	/**从表单数据中获取需要创建的活动

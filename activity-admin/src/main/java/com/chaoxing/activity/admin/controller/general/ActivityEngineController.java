@@ -4,11 +4,13 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.service.activity.IconQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,6 +41,8 @@ public class ActivityEngineController {
     private TemplateQueryService templateQueryService;
     @Resource
     private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+    @Resource
+    private IconQueryService iconQueryService;
 
     @LoginRequired
     @RequestMapping("{templateId}")
@@ -61,6 +65,7 @@ public class ActivityEngineController {
 
     private String index(Model model, Integer marketId, Integer templateId, Integer fid) {
         List<WfwFormVO> wfwForms = formApiService.listOrgForm(fid);
+        model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
         model.addAttribute("fid", fid);
         model.addAttribute("marketId", marketId);
         model.addAttribute("templateId", templateId);
@@ -69,6 +74,7 @@ public class ActivityEngineController {
         model.addAttribute("wfwForms", wfwForms);
         model.addAttribute("wfwFormTemplateList", signUpWfwFormTemplateService.listMarket(marketId));
         model.addAttribute("conditionEnums", ConditionDTO.listWithoutNoLimit());
+        model.addAttribute("icons", iconQueryService.list());
         return "pc/engine/index";
     }
 }

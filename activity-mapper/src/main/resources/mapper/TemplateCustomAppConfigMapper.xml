@@ -6,7 +6,7 @@
         <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="type" jdbcType="VARCHAR" property="type" />
         <result column="title" jdbcType="VARCHAR" property="title" />
-        <result column="icon" jdbcType="VARCHAR" property="icon" />
+        <result column="icon_id" jdbcType="VARCHAR" property="iconId" />
         <result column="url" jdbcType="VARCHAR" property="url" />
         <result column="is_show_after_sign_up" jdbcType="BIT" property="showAfterSignUp" />
         <result column="is_open_blank" jdbcType="BIT" property="openBlank" />
@@ -21,14 +21,14 @@
     </sql>
 
     <insert id="batchAdd">
-        INSERT INTO t_template_custom_app_config (template_component_id, type, title, icon, url, is_show_after_sign_up, is_open_blank, sequnce)
+        INSERT INTO t_template_custom_app_config (template_component_id, type, title, icon_id, url, is_show_after_sign_up, is_open_blank, sequence)
         VALUES
         <foreach collection="dataList" item="item" open="" close="" separator=",">
             (
                 #{item.templateComponentId},
                 #{item.type},
                 #{item.title},
-                #{item.icon},
+                #{item.iconId},
                 #{item.url},
                 #{item.showAfterSignUp},
                 #{item.openBlank},
@@ -36,4 +36,12 @@
             )
         </foreach>
     </insert>
+    <select id="listCustomAppConfigWithCloudId" resultType="com.chaoxing.activity.model.TemplateCustomAppConfig">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t1.default_icon_cloud_id, t1.active_icon_cloud_id
+        FROM t_template_custom_app_config t
+        LEFT JOIN t_icon t1 ON t.icon_id = t1.id
+        WHERE t.template_component_id = #{templateComponentId} AND t.is_deleted = 0
+    </select>
 </mapper>

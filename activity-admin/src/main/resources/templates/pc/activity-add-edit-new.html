@@ -349,6 +349,16 @@
                                 </div>
                             </div>
                         </div>
+                        <!--自定义应用配置-->
+                        <div class="form-item align-start" v-else-if="item.code == 'custom_application'">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box column">
+                                <div class="set-box">
+                                    <el-switch v-model="activity.openCustomAppConfig" class="examine-switch"></el-switch>
+                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                </div>
+                            </div>
+                        </div>
                         <!--证书设置-->
                         <div class="form-item align-start" v-else-if="item.code == 'certificate'">
                             <label class="label">{{item.name}}</label>
@@ -1079,6 +1089,7 @@
                         openReading: false,
                         openClazzInteraction: false,
                         openPushReminder: false,
+                        openCustomAppConfig: false,
                         originType: "",
                         origin: "",
                         templateId: $this.templateId,

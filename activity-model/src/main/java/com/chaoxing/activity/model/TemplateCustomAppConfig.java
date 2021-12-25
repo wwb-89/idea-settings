@@ -21,7 +21,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "TemplateCustomAppConfig")
+@TableName(value = "t_template_custom_app_config")
 public class TemplateCustomAppConfig {
 
     /** 主键id */
@@ -33,8 +33,8 @@ public class TemplateCustomAppConfig {
     private String type;
     /** 链接标题; column: title */
     private String title;
-    /** 图标; column: icon */
-    private String icon;
+    /** 图标id; column: icon_id */
+    private String iconId;
     /** 链接; column: url */
     private String url;
     /** 是否在报名后显示，仅对前台链接生效; column: is_show_after_sign_up */
@@ -44,7 +44,7 @@ public class TemplateCustomAppConfig {
     @TableField(value = "is_open_blank")
     private Boolean openBlank;
     /** 是否删除; column: is_deleted */
-    @TableField(value = "is_open_blank")
+    @TableField(value = "is_deleted")
     private Boolean deleted;
     /** 顺序; column: sequence */
     private Integer sequence;
@@ -52,6 +52,11 @@ public class TemplateCustomAppConfig {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    @TableField(exist = false)
+    private String defaultIconCloudId;
+    @TableField(exist = false)
+    private String activeIconCloudId;
 
     @Getter
     public enum UrlTypeEnum {

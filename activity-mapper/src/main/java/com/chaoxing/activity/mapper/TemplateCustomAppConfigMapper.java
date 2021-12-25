@@ -24,4 +24,13 @@ public interface TemplateCustomAppConfigMapper extends BaseMapper<TemplateCustom
      * @return
      */
     void batchAdd(List<TemplateCustomAppConfig> dataList);
+
+    /**查询自定义应用配置模板组件的自定义应用配置列表（含有图标）
+     * @Description 
+     * @author huxiaolong
+     * @Date 2021-12-25 14:45:51
+     * @param templateComponentId
+     * @return 
+     */
+    List<TemplateCustomAppConfig> listCustomAppConfigWithCloudId(Integer templateComponentId);
 }

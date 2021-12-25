@@ -10,6 +10,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
+import com.chaoxing.activity.service.activity.engine.TemplateCustomAppConfigService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -45,6 +46,8 @@ public class TemplateComponentService {
     private ComponentQueryService componentQueryService;
     @Resource
     private WfwFormApiService wfwFormApiService;
+    @Resource
+    private TemplateCustomAppConfigService templateCustomAppConfigService;
 
 
     /**根据模版id查询模版组件关联
@@ -168,6 +171,9 @@ public class TemplateComponentService {
             } else if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
                 // 报名填报信息的模板组件id为报名的模板组件id
                 sufiTplComponentIds.add(v.getPid());
+            } else if (Objects.equals(Component.SystemComponentCodeEnum.CUSTOM_APPLICATION.getValue(), v.getCode())) {
+                // 查询自定义应用列表
+                v.setCustomAppConfigs(templateCustomAppConfigService.listByTemplateComponentId(v.getId()));
             }
         });
         Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listWithTemplateDetailsByTplComponentIds(sucTplComponentIds).stream()
@@ -316,14 +322,14 @@ public class TemplateComponentService {
         templateComponents.forEach(v -> v.setTemplateId(templateId));
         templateComponentMapper.batchAdd(templateComponents);
         templateComponents.forEach(v -> {
-            handleSignUpConditionFillInfoType(v);
+            handleInnerAttrItem(v);
             if (CollectionUtils.isNotEmpty(v.getChildren())) {
                 v.getChildren().forEach(v1 -> {
                     v1.setPid(v.getId());
                     v1.setTemplateId(templateId);
                 });
                 templateComponentMapper.batchAdd(v.getChildren());
-                v.getChildren().forEach(v1 -> handleSignUpConditionFillInfoType(v1));
+                v.getChildren().forEach(this::handleInnerAttrItem);
             }
         });
     }
@@ -353,10 +359,13 @@ public class TemplateComponentService {
                     signUpFillInfoTypeService.updateById(signUpFillInfoType);
                 }
             }
+            if (CollectionUtils.isNotEmpty(v.getCustomAppConfigs()) || CollectionUtils.isNotEmpty(v.getRemoveCustomAppConfigIds())) {
+                templateCustomAppConfigService.handleTemplateCustomAppConfigs(v.getId(), v.getRemoveCustomAppConfigIds(), v.getCustomAppConfigs());
+            }
         });
     }
 
-    /**
+    /**处理模板组件关联的内置其他对象属性
      * @Description
      * @author huxiaolong
      * @Date 2021-08-17 14:58:58
@@ -364,7 +373,7 @@ public class TemplateComponentService {
      * @return void
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleSignUpConditionFillInfoType (TemplateComponent templateComponent) {
+    public void handleInnerAttrItem(TemplateComponent templateComponent) {
         if (templateComponent.getSignUpCondition() != null) {
             templateComponent.getSignUpCondition().setTemplateComponentId(templateComponent.getId());
             signUpConditionService.add(templateComponent.getSignUpCondition());
@@ -373,6 +382,10 @@ public class TemplateComponentService {
             // 报名填报信息的模板组件id为报名的模板组件id
             templateComponent.getSignUpFillInfoType().setTemplateComponentId(templateComponent.getPid());
             signUpFillInfoTypeService.add(templateComponent.getSignUpFillInfoType());
+        }
+        // 若自定义应用配置列表不为空或者待删除的自定义应用ids不为空，则该组件为自定义应用配置
+        if (CollectionUtils.isNotEmpty(templateComponent.getCustomAppConfigs()) || CollectionUtils.isNotEmpty(templateComponent.getRemoveCustomAppConfigIds())) {
+            templateCustomAppConfigService.handleTemplateCustomAppConfigs(templateComponent.getId(), templateComponent.getRemoveCustomAppConfigIds(), templateComponent.getCustomAppConfigs());
         }
     }
 
