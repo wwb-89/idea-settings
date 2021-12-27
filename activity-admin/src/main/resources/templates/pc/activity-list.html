@@ -210,7 +210,21 @@
                                 <span>{{scope.row[item.code] | timestampFormat}}</span>
                             </template>
                         </el-table-column>
-                        <!--自定义组件-->
+                        <!--标签-->
+                        <el-table-column
+                                v-else-if="item.code === 'tags'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row[item.code]}}</span>
+                            </template>
+                        </el-table-column>
+                        <!--自定义组件 start-->
                         <el-table-column
                                 v-else-if="item.originComponentId && !item.tableFieldDetailId"
                                 :fixed="item.defaultTop"
@@ -220,9 +234,10 @@
                                 :sortable="item.sortable"
                         >
                             <template slot-scope="scope">
-                                <span>{{scope.row.componentIdValueMap[item.originComponentId] || '-'}}</span>
+                                <span>{{scope.row.componentIdValueMap[item.originComponentId] || ''}}</span>
                             </template>
                         </el-table-column>
+                        <!--自定义组件 end-->
                         <el-table-column
                                 v-else
                                 :prop="item.code"

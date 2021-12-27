@@ -50,6 +50,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
@@ -474,6 +475,9 @@ public class ActivityQueryService {
 				activityComponentValueMap.get(activityId).add(v);
 			});
 		}
+		// 活动标签
+		List<ActivityTagNameDTO> activityTagNames = tagQueryService.listActivityTagNameByActivityIds(activityIds);
+		Map<Integer, List<String>> activityIdTagNames = activityTagNames.stream().collect(Collectors.groupingBy(ActivityTagNameDTO::getActivityId, Collectors.mapping(ActivityTagNameDTO::getTagName, Collectors.toList())));
 		for (Activity activity : activities) {
 			// 活动报名签到状态数据
 			SignStatDTO signStatItem = Optional.ofNullable(activity.getSignId()).map(signIdSignStatMap::get).orElse(null);
@@ -487,6 +491,10 @@ public class ActivityQueryService {
 			activity.setRateScore(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getRateScore).orElse(new BigDecimal(0)));
 			activity.setQualifiedNum(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getQualifiedNum).orElse(0));
 			activity.setActivityComponentValues(Optional.ofNullable(activityComponentValueMap.get(activity.getId())).orElse(Lists.newArrayList()));
+			// 标签
+			List<String> tagNames = activityIdTagNames.getOrDefault(activity.getId(), Lists.newArrayList());
+			activity.setTags(String.join(CommonConstant.LINK_CHAR, tagNames));
+
 		}
 	}
 	/** 查询并设置活动已报名人数
