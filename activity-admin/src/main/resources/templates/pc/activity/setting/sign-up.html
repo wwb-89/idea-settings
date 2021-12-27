@@ -1101,10 +1101,15 @@
                     formFillSwitchChange: function (checked, component, signUpTplComponentId) {
                         // 企业报名必须开启
                         var $this = this;
-                        var parenrComponent = $this.templateComponentMap[component.pid];
-                        if ("company_sign_up" == parenrComponent.code && !checked) {
-                            app.showMsg(parenrComponent.name + "必须开启" + component.name);
-                            $this.$set($this.signUpMap[component.pid], "fillInfo", true);
+                        var parentComponent = $this.templateComponentMap[component.pid];
+                        if (!checked) {
+                            if ("company_sign_up" == parentComponent.code) {
+                                app.showMsg(parentComponent.name + "必须开启" + component.name);
+                                $this.$set($this.signUpMap[component.pid], "fillInfo", true);
+                            } else if ($this.signUpMap[signUpTplComponentId].formType == "approval") {
+                                app.showMsg("审批必须开启" + component.name);
+                                $this.$set($this.signUpMap[component.pid], "fillInfo", true);
+                            }
                         }
                     },
                     wfwOrgScopeChange: function(value, tplComponentId) {
