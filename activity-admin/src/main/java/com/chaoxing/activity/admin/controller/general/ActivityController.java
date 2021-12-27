@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.query.QueryFilterDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
@@ -122,6 +123,9 @@ public class ActivityController {
 		model.addAttribute("webDomain", DomainConstant.WEB);
 		model.addAttribute("adminDomain", DomainConstant.ADMIN);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
+		// 自定义组件筛选map 组件id:筛选列表
+		Map<Integer, List<QueryFilterDTO>> customFilterMap = templateQueryService.getTemplateCustomQueryFilterMappingByMarketId(marketId);
+		model.addAttribute("customFilterMap", customFilterMap);
 		return "pc/activity-list";
 	}
 

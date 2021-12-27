@@ -1,17 +1,23 @@
 package com.chaoxing.activity.service.activity.template;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.chaoxing.activity.dto.query.QueryFilterDTO;
+import com.chaoxing.activity.mapper.ComponentFieldMapper;
 import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ComponentField;
 import com.chaoxing.activity.model.Template;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**模版查询服务服务
  * @author wwb
@@ -27,6 +33,8 @@ public class TemplateQueryService {
 
 	@Resource
 	private TemplateMapper templateMapper;
+	@Resource
+	private ComponentFieldMapper componentFieldMapper;
 
 	/**根据id查询
 	 * @Description 
@@ -121,4 +129,34 @@ public class TemplateQueryService {
 				.eq(Template::getMarketId, marketId));
 		return Optional.ofNullable(marketTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
+
+	/**获取模版自定义组件的查询过滤对象列表
+	 * @Description
+	 * 查询组件类型为选择的
+	 * @author wwb
+	 * @Date 2021-12-27 17:07:36
+	 * @param templateId
+	 * @return java.util.Map<java.lang.Integer,java.util.List<com.chaoxing.activity.dto.query.QueryFilterDTO>>
+	*/
+	public Map<Integer, List<QueryFilterDTO>> getTemplateCustomQueryFilterMapping(Integer templateId) {
+		List<ComponentField> componentFields = componentFieldMapper.listByTemplateId(templateId);
+		return componentFields.stream().collect(Collectors.groupingBy(ComponentField::getComponentId, Collectors.mapping(v -> QueryFilterDTO.builder().text(v.getFieldName()).value(v.getFieldName()).build(), Collectors.toList())));
+	}
+
+	/**根据活动市场id获取模版自定义组件的查询过滤对象列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-27 17:26:49
+	 * @param marketId
+	 * @return java.util.Map<java.lang.Integer,java.util.List<com.chaoxing.activity.dto.query.QueryFilterDTO>>
+	*/
+	public Map<Integer, List<QueryFilterDTO>> getTemplateCustomQueryFilterMappingByMarketId(Integer marketId) {
+		Template marketFirstTemplate = getMarketFirstTemplate(marketId);
+		if (marketFirstTemplate == null) {
+			return Maps.newHashMap();
+		}
+		List<ComponentField> componentFields = componentFieldMapper.listByTemplateId(marketFirstTemplate.getId());
+		return componentFields.stream().collect(Collectors.groupingBy(ComponentField::getComponentId, Collectors.mapping(v -> QueryFilterDTO.builder().text(v.getFieldName()).value(v.getFieldName()).build(), Collectors.toList())));
+	}
+
 }

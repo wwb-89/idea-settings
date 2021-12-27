@@ -225,6 +225,24 @@
                             </template>
                         </el-table-column>
                         <!--自定义组件 start-->
+                        <!--支持筛选-->
+                        <el-table-column
+                                v-else-if="item.originComponentId && !item.tableFieldDetailId && customComponentMap[item.originComponentId].type == 'radio' && customComponentMap[item.originComponentId].dataOrigin == 'custom'"
+                                class-name="th-dropdwon-radio"
+                                :fixed="item.defaultTop"
+                                :column-key="'' + item.originComponentId"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :filters="customFilterMap[item.originComponentId]"
+                                :filter-multiple="false"
+                                filter-placement="bottom"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.componentIdValueMap[item.originComponentId] || ''}}</span>
+                            </template>
+                        </el-table-column>
+                        <!--不支持筛选-->
                         <el-table-column
                                 v-else-if="item.originComponentId && !item.tableFieldDetailId"
                                 :fixed="item.defaultTop"
@@ -314,7 +332,7 @@
                 marketId: [[${marketId}]],
                 filterStatus: [],
                 filterClassifies: [],
-                selectedFilterStatusName: "全部",
+                customFilterMap: [[${customFilterMap}]],
                 sw: "",
                 // 严格模式 只查询自己创建的
                 strict: [[${strict}]],
@@ -331,7 +349,9 @@
                     strict: [[${strict}]],
                     sw: "",
                     orderFieldId: null,
-                    orderType: 'DESC'
+                    orderType: 'DESC',
+                    // 自定义过滤 组件id:值
+                    customFilterMap: {}
                 },
                 loaded: false,
                 // 总记录数
@@ -361,6 +381,7 @@
                 marketTableFields: [[${marketTableFields}]],
                 // 自定义组件列表
                 customTplComponents: [[${customTplComponents}]],
+                customComponentMap: {},
                 // 配置项数据
                 configTableFieldDetails: [],
                 // 表格显示的字段列表
@@ -372,6 +393,11 @@
                 var $this = this;
                 // 解决跨域
                 document.domain = $this.mainDomain;
+                $($this.customTplComponents).each(function () {
+                    if (this.componentId) {
+                        $this.customComponentMap[this.componentId] = this;
+                    }
+                });
                 $this.filterStatus = [
                     {text: "未发布", value: "1"},
                     {text: "未开始", value: "2"},
@@ -529,6 +555,9 @@
                     } else if (key == 'activityClassifyId') {
                         value = filterItem[key][0];
                         $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
+                    } else {
+                        value = filterItem[key][0];
+                        $this.queryParams.customFilterMap[key] = value;
                     }
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
@@ -850,19 +879,13 @@
                             }
                         });
                     } else {
-                        var customComponentMap = {};
-                        $($this.customTplComponents).each(function () {
-                            if (this.componentId) {
-                                customComponentMap[this.componentId] = this;
-                            }
-                        });
                         $($this.marketTableFields).each(function () {
                             var _this = this;
                             var tableFieldDetailId = _this.tableFieldDetailId;
                             var originComponentId = _this.originComponentId;
                             // 自定义组件字段处理
                             if (activityApp.isEmpty(tableFieldDetailId) && originComponentId) {
-                                var name = customComponentMap[originComponentId].name;
+                                var name = $this.customComponentMap[originComponentId].name;
                                 var tableFieldDetail = $.extend({}, _this, {
                                     align: "center",
                                     allowTop: true,

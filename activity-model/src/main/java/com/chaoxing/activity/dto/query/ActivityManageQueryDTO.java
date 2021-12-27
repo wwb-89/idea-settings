@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**活动管理查询对象
  * @author wwb
@@ -54,4 +55,7 @@ public class ActivityManageQueryDTO {
 	private String code;
 	/** 导出时的用户id */
 	private Integer exportUid;
+	/** 自定义字段的筛选 */
+	private Map<Integer, String> customFilterMap;
+
 }
