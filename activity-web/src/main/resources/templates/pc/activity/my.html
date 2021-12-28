@@ -72,6 +72,9 @@
                                     <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)">取消报名</a>
                                     <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)">撤销申请</a>
                                 </template>
+                                <template v-else-if="currentTab.code == 'collected'">
+                                    <a class="cancel" href="javascript:" @click="cancelCollect(index, $event)">取消收藏</a>
+                                </template>
                                 <template v-else-if="currentTab.code == 'managing'">
                                     <a class="edit" href="javascript:" @click="toDelete(index, $event)">删除</a>
                                 </template>
@@ -169,6 +172,9 @@
                 } else {
                     if ($this.showTab('signedUp')) {
                         $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
+                    }
+                    if ($this.showTab('collected')) {
+                        $this.tabList.push({name: '收藏', code: 'collected', url: ctx + '/api/activity/collected'});
                     }
                     if ($this.showTab('managing')) {
                         $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
