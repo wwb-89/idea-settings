@@ -367,7 +367,12 @@
                     } else {
                         url += "?";
                     }
-                    $("#content")[0].src = url + "time=" + new Date().getTime();
+                    url += "time=" + new Date().getTime();
+                    if (appConfig && appConfig.openBlank) {
+                        window.open(url);
+                        return;
+                    }
+                    $("#content")[0].src = url;
                     $("#content")[0].onload = function() {
                         $this.resizePageHeight();
                     };

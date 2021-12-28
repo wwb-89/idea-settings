@@ -19,6 +19,11 @@
         t.id, t.template_component_id, t.type, t.title, t.icon_id, t.url, t.is_show_after_sign_up, t.is_open_blank,
         t.is_deleted, t.sequence, t.create_time, t.update_time
     </sql>
+    <sql id="Base_Column_ALIAS_List">
+        t.id as id, t.template_component_id as templateComponentId, t.type as type, t.title as title, t.icon_id as iconId,
+        t.url as url, t.is_show_after_sign_up as showAfterSignUp, t.is_open_blank as openBlank, t.is_deleted as deleted,
+        t.sequence as `sequence`, t.create_time as createTime, t.update_time as updateTime
+    </sql>
 
     <insert id="batchAdd">
         INSERT INTO t_template_custom_app_config (template_component_id, type, title, icon_id, url, is_show_after_sign_up, is_open_blank, sequence)
@@ -38,8 +43,8 @@
     </insert>
     <select id="listCustomAppConfigWithCloudId" resultType="com.chaoxing.activity.model.TemplateCustomAppConfig">
         SELECT
-            <include refid="Base_Column_List"></include>,
-            t1.code, t1.default_icon_cloud_id, t1.active_icon_cloud_id
+            <include refid="Base_Column_ALIAS_List"></include>,
+            t1.code as code, t1.default_icon_cloud_id as defaultIconCloudId, t1.active_icon_cloud_id as activeIconCloudId
         FROM t_template_custom_app_config t
         LEFT JOIN t_icon t1 ON t.icon_id = t1.id
         WHERE t.template_component_id = #{templateComponentId} AND t.is_deleted = 0
