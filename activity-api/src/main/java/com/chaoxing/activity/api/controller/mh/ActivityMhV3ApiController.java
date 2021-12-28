@@ -508,6 +508,11 @@ public class ActivityMhV3ApiController {
         if (existSignUpInfo) {
             result.add(buildBtnField(signUpKeyword + "信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
         }
+        // 阅读测评
+        Boolean openReading = Optional.ofNullable(activity.getOpenReading()).orElse(false);
+        if (openReading && activity.getReadingId() != null) {
+            result.add(buildBtnField(signUpKeyword + "阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), activityQueryService.getReadingTestUrl(activity), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
+        }
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
         return result;

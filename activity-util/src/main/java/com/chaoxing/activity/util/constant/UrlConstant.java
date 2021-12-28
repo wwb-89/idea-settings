@@ -27,6 +27,8 @@ public class UrlConstant {
 	public static final String ACTIVITY_RATING_URL = DomainConstant.WEB + "/activity/%d/rating";
 	/** 门户报名ajax接口地址 */
 	public static final String MH_AJAX_SIGN_UP = DomainConstant.API + "/mh/v3/sign-up";
+	/** 阅读测评的地址 */
+	public static final String READING_TEST_URL = DomainConstant.XUEYA + "/school-base/school-reading/%d/%d/book-list";
 
 
 	/** 双选会 */
