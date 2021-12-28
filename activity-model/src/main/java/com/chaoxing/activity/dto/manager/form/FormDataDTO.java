@@ -113,6 +113,14 @@ public class FormDataDTO {
 		return null;
 	}
 
+	public Boolean getBooleanValue(String alias) {
+		String value = FormUtils.getValue(this, alias);
+		if (StringUtils.isNotBlank(value)) {
+			return Boolean.parseBoolean(value);
+		}
+		return false;
+	}
+
 	public LocalDateTime getTimeAliasValue(String alias) {
 		return FormUtils.getTime(this, alias);
 	}

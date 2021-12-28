@@ -68,9 +68,9 @@
 		</div>
 		<div class="card-list">
 			<ul>
-				<li v-for="(item, index) of activities" :key="'item-' + index">
+				<li v-for="(item, index) of activities" :key="'item-' + index" style="cursor: pointer;" @click="detail(index)">
 					<div class="inner">
-						<div class="img-box" style="cursor: pointer;" @click="detail(index)">
+						<div class="img-box">
 							<div class="tips-box">
 								<!--报名状态-->
 								<p style="margin-right: .25rem" :class="{'tips': true, 'color5': (item.status == 2), 'color1': (item.status == 3), 'color3': (item.status == 4)}">{{item.status | activityStatusInstructions}}</p>
