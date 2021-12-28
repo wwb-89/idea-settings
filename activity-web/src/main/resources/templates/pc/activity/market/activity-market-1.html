@@ -70,14 +70,14 @@
 			<ul>
 				<li v-for="(item, index) of activities" :key="'item-' + index">
 					<div class="inner">
-						<div class="img-box">
+						<div class="img-box" style="cursor: pointer;" @click="detail(index)">
 							<div class="tips-box">
 								<!--报名状态-->
 								<p style="margin-right: .25rem" :class="{'tips': true, 'color5': (item.status == 2), 'color1': (item.status == 3), 'color3': (item.status == 4)}">{{item.status | activityStatusInstructions}}</p>
 								<p v-if="item.hasSignUp && signUpAble && item.signUpStatus == 2 && item.status == 2" class="tips sign color6">{{signUpKeyword}}中</p>
 							</div>
 							<p class="num" v-if="item.openSignUp"><i class="icon-user"></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
-							<div class="js-crop-img" @click="detail(index)">
+							<div class="js-crop-img">
 								<img :src="item | getCloudImgUrl(cloudDomain)">
 							</div>
 						</div>
