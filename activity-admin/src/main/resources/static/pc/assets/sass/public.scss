@@ -1,4 +1,5 @@
 @charset "UTF-8";
+
 * {
   margin: 0;
   padding: 0;
@@ -138,8 +139,7 @@ a:visited {
   display: -webkit-box;
   overflow: hidden;
   white-space: normal !important;
-  -o-text-overflow: ellipsis;
-     text-overflow: ellipsis;
+  text-overflow: ellipsis;
   word-wrap: break-word;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
@@ -226,35 +226,27 @@ a:visited {
 .msgDialog.layui-layer {
   border-radius: 1.0625rem;
 }
-
 input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   color: #CCCCCC;
-  font-weight: 100;
-}
+  font-weight: 100; }
 
 input:-moz-placeholder, textarea:-moz-placeholder {
   color: #CCCCCC;
-  font-weight: 100;
-}
+  font-weight: 100; }
 
 input::-moz-placeholder, textarea::-moz-placeholder {
   color: #CCCCCC;
-  font-weight: 100;
-}
+  font-weight: 100; }
 
 input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   color: #CCCCCC;
-  font-weight: 100;
+  font-weight: 100; }
+  .overHidden1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
 }
-
-.overHidden1 {
-  overflow: hidden;
-  -o-text-overflow: ellipsis;
-     text-overflow: ellipsis;
-  white-space: nowrap;
-  word-break: break-all;
-}
-
 .overHidden2 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -266,12 +258,11 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 [v-cloak] {
   display: none;
 }
-
 /* 公共按钮 */
 .border-btn {
   -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
   height: 30px;
   line-height: 30px;
   padding: 0 13px;
@@ -292,11 +283,10 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 .border-btn.disable {
   opacity: 0.3;
 }
-
 .normal-btn-blue {
   -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
   height: 30px;
   line-height: 30px;
   padding: 0 14px;
@@ -323,11 +313,9 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   opacity: 0.8;
 }
 
-.normal-btn-w80 {
+.normal-btn-w80{
   width: 80px;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   height: 30px;
   line-height: 30px;
   border-radius: 15px;
@@ -341,19 +329,15 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   vertical-align: top;
   text-align: center;
 }
-
-.normal-btn-w80:hover {
+.normal-btn-w80:hover{
   opacity: 0.8;
 }
-
 /* 公共toast */
-.toast {
+.toast{
   position: absolute;
   left: 50%;
   top: 35%;
-  -webkit-transform: translateX(-50%);
-      -ms-transform: translateX(-50%);
-          transform: translateX(-50%);
+  transform: translateX(-50%);
   padding: 9px 20px;
   background: rgba(0, 0, 0, 0.7);
   border-radius: 4px;
@@ -362,131 +346,110 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   text-align: center;
   color: #FFFFFF;
 }
-
 /* el重写 */
-.el-radio {
+.el-radio{
   margin-right: 24px;
   font-weight: normal;
 }
-
-.el-radio:last-child {
+.el-radio:last-child{
   margin-right: 0;
 }
-
 .el-radio__input.is-checked .el-radio__inner {
   border-color: #0084FF;
   background: #0084FF;
 }
-
-.el-radio .el-radio__label {
+.el-radio .el-radio__label{
   color: #333333 !important;
 }
-
 .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
   background-color: #0084FF;
   border-color: #0084FF;
 }
-
-.el-switch.is-checked .el-switch__core {
+.el-switch.is-checked .el-switch__core{
   border-color: #0084FF;
   background-color: #0084FF;
 }
-
 .marginRight24 {
   margin-right: 24px;
 }
-
-.html {
+.html{
   background: #FFFFFF;
 }
-
 .layui-layer-shade {
-  background: rgba(255, 255, 255, 0.5) !important;
+  background: rgba(255, 255, 255,0.5)!important;
 }
-
-.normal-dialog .el-dialog {
-  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
-          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
-  border-radius: 8px;
-}
-
-.normal-dialog .el-dialog__header {
-  padding: 16px 28px;
-  font-weight: 600;
-  font-size: 18px;
-  line-height: 25px;
-  border-bottom: 1px solid #E9E9E9;
-}
-
-.normal-dialog .el-dialog__title {
-  color: #333333;
-}
-
-.normal-dialog .el-dialog__body {
-  padding: 16px 32px;
-}
-
-.normal-dialog .el-dialog__footer {
-  padding: 14px 0;
-  border-top: 1px solid #E9E9E9;
-}
-
-.normal-dialog .el-dialog__footer .el-button {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  -o-box-sizing: border-box;
-  -khtml-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 0 13px;
-}
-
-.normal-dialog .el-select, .normal-dialog .el-input {
-  margin-right: 12px;
-}
-
-.normal-dialog .form-item {
-  margin-bottom: 16px;
-}
-
-.normal-dialog .form-item .el-input__inner {
-  color: #333333;
-}
-
-.normal-dialog .form-item .delete-icon-style {
-  display: inline-block;
-  font-size: 16px;
-  color: #CCCCCC;
-  line-height: 32px;
-  cursor: pointer;
-}
-
-.normal-dialog .form-item .plus-circle {
-  color: #0084FF;
-  font-size: 14px;
-  line-height: 20px;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.normal-dialog .form-item .plus-circle i {
-  font-size: 16px;
-  line-height: 20px;
-  margin-right: 4px;
-}
-
-.normal-dialog .form-item:last-of-type {
-  margin-bottom: 0;
-}
-
-.normal-dialog .set-form .form-item {
-  font-size: 0;
-}
-
-.normal-dialog .set-form .width120px {
-  width: 120px;
-}
-
-.normal-dialog .set-form .width100px {
-  width: 100px;
+//公共弹窗
+.normal-dialog {
+  .el-dialog {
+    box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+  }
+  .el-dialog__header {
+    padding: 16px 28px;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25px;
+    border-bottom:1px solid #E9E9E9;
+  }
+  .el-dialog__title {
+    color: #333333;
+  }
+  .el-dialog__body {
+    padding: 16px 32px;
+  }
+  .el-dialog__footer {
+    padding: 14px 0;
+    border-top:1px solid #E9E9E9;
+    .el-button {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -ms-box-sizing: border-box;
+      -o-box-sizing: border-box;
+      -khtml-box-sizing: border-box;
+      box-sizing: border-box;
+      padding: 0 13px;
+    }
+  }
+  .el-select,.el-input {
+    margin-right: 12px;
+  }
+  .form-item {
+    margin-bottom: 16px;
+    .el-input__inner {
+      color: #333333;
+    }
+    .delete-icon-style {
+      display: inline-block;
+      font-size: 16px;
+      color: #CCCCCC;
+      line-height: 32px;
+      cursor: pointer;
+    }
+    .plus-circle {
+      color: #0084FF;
+      font-size: 14px;
+      line-height: 20px;
+      display: inline-block;
+      cursor: pointer;
+      i{
+        font-size: 16px;
+        line-height: 20px;
+        margin-right: 4px;
+      }
+    }
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+  .set-form {
+    .form-item {
+      font-size: 0;
+    }
+    .width120px {
+      width: 120px;
+    }
+    .width100px {
+      width: 100px;
+    }
+  }
 }
