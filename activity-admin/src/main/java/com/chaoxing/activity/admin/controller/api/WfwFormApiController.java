@@ -68,7 +68,6 @@ public class WfwFormApiController {
 		return RestRespDTO.success(result);
 	}
 
-
 	/**获取构建表单创建地址
 	* @Description
 	* @author huxiaolong
@@ -83,6 +82,22 @@ public class WfwFormApiController {
 		return RestRespDTO.success(wfwFormApiService.buildEditFormUrl(fid, formId, uid, wfwFormTemplateId));
 	}
 
+	/**获取创建审批的url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-23 15:28:19
+	 * @param fid
+	 * @param uid
+	 * @param wfwFormTemplateId
+	 * @param formId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("approval/build/edit-url")
+	public RestRespDTO getApprovalWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId, Integer formId) {
+		String url = wfwFormApiService.buildApprovalEditFormUrl(fid, formId, uid, wfwFormTemplateId);
+		return RestRespDTO.success(url);
+	}
+
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
 	 * @Description
 	 * @author huxiaolong
@@ -92,6 +107,7 @@ public class WfwFormApiController {
 	 * @param wfwFormTemplateId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
+	@Deprecated
 	@RequestMapping("create/from/wfw-form-template")
 	public RestRespDTO createWfwFormWithEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId) {
 		return RestRespDTO.success(wfwFormApiService.createWfwForm(fid, uid, wfwFormTemplateId));

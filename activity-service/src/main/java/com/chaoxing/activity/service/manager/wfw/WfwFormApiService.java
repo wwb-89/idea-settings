@@ -486,7 +486,33 @@ public class WfwFormApiService {
 		return buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplate);
 	}
 
+	/**构建审批表单编辑地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-23 15:29:42
+	 * @param fid
+	 * @param formId
+	 * @param uid
+	 * @param wfwFormTemplateId
+	 * @return java.lang.String
+	*/
+	public String buildApprovalEditFormUrl(Integer fid, Integer formId, Integer uid, Integer wfwFormTemplateId) {
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
+		if (wfwFormTemplate == null) {
+			wfwFormTemplate = SignUpWfwFormTemplate.builder().sign(WfwFormConstant.CREATE_SIGN).key(WfwFormConstant.CREATE_KEY).build();
+		}
+		return buildApprovalCreateEditFormUrl(fid, formId, uid, wfwFormTemplate);
+	}
+
 	private String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
+		return buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplate, SignUpWfwFormTemplate.TypeEnum.NORMAL);
+	}
+
+	private String buildApprovalCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
+		return buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplate, SignUpWfwFormTemplate.TypeEnum.APPROVAL);
+	}
+
+	private String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate, SignUpWfwFormTemplate.TypeEnum type) {
 		if (wfwFormTemplate == null) {
 			throw new BusinessException("机构: " + fid + "报名万能表单模板不存在!");
 		}
@@ -499,8 +525,7 @@ public class WfwFormApiService {
 		LocalDateTime now = LocalDateTime.now();
 		params.put("datetime", now.format(DATE_TIME_FORMATTER));
 		params.put("sign", wfwFormTemplate.getSign());
-		params.put("isCopy", 0);
-		params.put("formType", 2);
+		params.put("formType", Objects.equals(SignUpWfwFormTemplate.TypeEnum.NORMAL, type) ? 2 : 1);
 		String enc = getEnc(params, wfwFormTemplate.getKey());
 		params.put("enc", enc);
 		// 封装url

@@ -78,18 +78,20 @@
 								<p v-if="item.hasSignUp && item.signUpStatus == 2 && item.status == 2" class="tips sign color6">{{signUpKeyword}}中</p>
 							</div>
 							<p class="num" v-if="item.openSignUp"><i class="icon-user"></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
+							<div class="type-box">
+								<span class="type-item" v-if="index < 2" v-for="(tagName, index) of item.tagNames" :key="'tag-name-' + index" :title="tagName">{{tagName}}</span>
+								<span class="type-item" v-if="item.tagNames.length > 2" :title="groupTagNames(item.tagNames, 2)">+{{item.tagNames.length - 2}}</span>
+							</div>
 							<div class="js-crop-img" style="height: 100%;" @click="detail(index)">
 								<img :src="item | getCloudImgUrl(cloudDomain)">
 							</div>
 						</div>
 						<div class="card-info">
-							<h2 class="title overHidden1" @click="detail(index)"><span class="info-top" v-show="item.top">置顶</span>{{item.name}}</h2>
-							<p class="time overHidden1">{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
-							<div class="type-box">
-								<span class="type-item" v-for="(tagName, index) of item.tagNames" :key="'tag-name-' + index">{{tagName}}</span>
+							<div class="height80">
+								<h2 class="title overHidden1" @click="detail(index)"><span class="info-top" v-show="item.top">置顶</span>{{item.name}}</h2>
+								<p class="time overHidden1">{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
 							</div>
-							<p class="address overHidden1">{{item.organisers}}</p>
-							<p class="address overHidden1"  v-show="item.address">{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
+							<p class="address overHidden1">{{item.organisers}}<span v-show="item.address || item.detailAddress" :title="item.address + item.detailAddress"><i v-show="item.organisers">·</i>{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</span></p>
 						</div>
 					</div>
 				</li>
@@ -384,7 +386,12 @@
 							htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>'
 						}
 					});
-				}
+				},
+                groupTagNames: function (tagNames, startIndex) {
+                    var cloneTagNames = $.extend([], tagNames);
+                    cloneTagNames.splice(0, startIndex);
+                    return cloneTagNames.join("、");
+                }
 			}
 		})
 	</script>

@@ -676,19 +676,19 @@
                     <el-form ref="form"  label-width="72px">
                         <el-input v-model="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
                         <el-input v-model="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
-                        <el-form-item label="类型" class="marginBottom20">
-                            <el-select v-model="innerAddEditItem.type" placeholder="请选择关联表单">
-                                <el-option v-for="item in wfwFormTypes"
-                                           :key="item.value"
-                                           :label="item.label"
-                                           :value="item.value"
+                        <el-form-item label="表单模板" class="marginBottom20">
+                            <el-select v-model="innerAddEditItem.wfwFormTemplateId" placeholder="请选择关联表单">
+                                <el-option v-for="item in wfwFormTemplates"
+                                           :key="item.id"
+                                           :label="item.name"
+                                           :value="item.id"
                                 >
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="模板" class="marginBottom20" v-show="innerAddEditItem.type == 'wfw_form'">
-                            <el-select v-model="innerAddEditItem.wfwFormTemplateId" placeholder="请选择关联表单">
-                                <el-option v-for="item in wfwFormTemplateList"
+                        <el-form-item label="审批模板" class="marginBottom20">
+                            <el-select v-model="innerAddEditItem.wfwFormApprovalTemplateId" placeholder="请选择关联审批">
+                                <el-option v-for="item in wfwFormApprovalTemplates"
                                            :key="item.id"
                                            :label="item.name"
                                            :value="item.id"
@@ -840,7 +840,8 @@
                     wfwFormTypes: [
                         {label: "万能表单", value: "wfw_form"}
                     ],
-                    wfwFormTemplateList: [[${wfwFormTemplateList}]],
+                    wfwFormTemplates: [[${wfwFormTemplates}]],
+                    wfwFormApprovalTemplates: [[${wfwFormApprovalTemplates}]],
                     // 源模板id
                     originTemplateId: null,
                     template: {},
@@ -1033,7 +1034,8 @@
                         return { fid: this.fid, originIdentify: '', fieldName: '', allowSignedUp: false, configOnActivity: false, templateConditionDetails: [] }
                     },
                     getInitSignUpFillInfoType: function () {
-                        return { type: 'form', wfwFormTemplateId: '' }
+                        var $this = this;
+                        return { type: 'wfw_form', wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: $this.wfwFormApprovalTemplates[0].id}
                     },
                     getInitTemplateAppConfig: function () {
                         return { showAfterSignUp: true, openBlank: true, frontendConfigs: [], backendConfigs: [], removeCustomAppConfigIds: [] }
@@ -1177,7 +1179,7 @@
                     // 新增报名组件
                     addSignUpComponentAssociate: function () {
                         var $this = this;
-                        var signUpId = $this.addEditItem.id, signUpComponentId = $this.addEditItem.componentId
+                        var signUpId = $this.addEditItem.id, signUpComponentId = $this.addEditItem.componentId;
                         var basicCompts = [], advanceCompts = [], tplComponentChildren = [], childIdx = 1;
                         // 拷贝一份子组件出来
                         $($.extend(true, [], $this.pidChildrenMap[signUpComponentId])).each(function () {
@@ -1909,11 +1911,11 @@
                     // 调整右下角加号位置
                     fixRightEndBtnStyle: function () {
                         /* 右下角加号的位置 */
-                        var right = $('.w-900px.info-box').offset().left + 50
+                        var right = $('.w-900px.info-box').offset().left + 50;
                         $('#add-circle').css('right', right)
                         $(window).resize(function () {
-                            var right = $('.w-900px.info-box').offset().left + 50
-                            $('#add-circle').css('right', right)
+                            var right = $('.w-900px.info-box').offset().left + 50;
+                            $('#add-circle').css('right', right);
                         })
                     },
                     handleJqthumb: function () {
@@ -1930,7 +1932,7 @@
                     },
                     addConditionDetail: function () {
                         var $this = this;
-                        var tplComponentId = typeof $this.addEditItem.id == 'number' ? $this.addEditItem.id : ''
+                        var tplComponentId = typeof $this.addEditItem.id == 'number' ? $this.addEditItem.id : '';
                         $this.innerAddEditItem.templateConditionDetails.push({
                             templateComponentId: tplComponentId,
                             fieldName: '',

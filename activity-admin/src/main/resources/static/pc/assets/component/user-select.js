@@ -45,7 +45,10 @@ Vue.component("vue-user-select", {
 								"    <div class='catalog-photo'>" +
 								"        <img :src=\"photoDomain + '/p/' + user.puid + '_80'\">" +
 								"    </div>" +
-								"    <div class='catalog-title' @click='chooseDepartmentUser(index)'>{{user.name}}</div>" +
+								"    <div class='catalog-title' @click='chooseDepartmentUser(index)'>" +
+								"		<p class='name'>{{user.name}}</p>" +
+								"		<p class='job overHidden1'>{{user.dept}}</p>" +
+								"	</div>" +
 								"    <el-checkbox class='right-check' v-model='user.checked' @change='checkDepartmentUser(index)'></el-checkbox>" +
 								"</div>" +
 		/*搜索用户列表*/
@@ -53,7 +56,10 @@ Vue.component("vue-user-select", {
 								"    <div class='catalog-photo'>" +
 								"        <img :src=\"photoDomain + '/p/' + user.puid + '_80'\">" +
 								"    </div>" +
-								"    <div class='catalog-title'>{{user.name}}</div>" +
+								"    <div class='catalog-title'>" +
+								"		<p class='name'>{{user.name}}</p>" +
+								"		<p class='job overHidden1'>{{user.dept}}</p>" +
+									"</div>" +
 								"    <el-checkbox class='right-check' v-model='user.checked' @change='checkSearchUser(index)'></el-checkbox>" +
 								"</div>" +
 				"                <div class='empty-content' v-show=\"((dataType == 'user' && departmentUsersLoaded && departmentUsers.length < 1) && !searching) || (searching && searchLoaded && searchUsers.length < 1)\">" +

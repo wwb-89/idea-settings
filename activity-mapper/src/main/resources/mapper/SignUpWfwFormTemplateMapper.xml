@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.SignUpWfwFormTemplate">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
         <result column="code" jdbcType="VARCHAR" property="code" />
         <result column="sign" jdbcType="VARCHAR" property="sign" />
         <result column="key" jdbcType="VARCHAR" property="key" />
@@ -16,7 +17,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.code, t.sign, t.key, t.form_id, t.fid, t.market_id, t.is_system, t.is_deleted,
+        t.id, t.name, t.type, t.code, t.sign, t.key, t.form_id, t.fid, t.market_id, t.is_system, t.is_deleted,
         t.create_time, t.update_time
     </sql>
 </mapper>

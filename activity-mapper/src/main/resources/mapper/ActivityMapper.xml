@@ -442,6 +442,13 @@
                 INNER JOIN t_activity_market t1 ON t1.activity_id = t.id
             </if>
             LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
+            <if test="params.customFilterMap != null">
+                <foreach collection="params.customFilterMap" index="key" item="value" open="" close="" separator="">
+                    <if test="value != null and value != ''">
+                        INNER JOIN t_activity_component_value t${key} ON t${key}.component_id = #{key} AND t${key}.activity_id = t.id AND t${key}.`value` = #{value}
+                    </if>
+                </foreach>
+            </if>
         WHERE
         <choose>
             <when test="params.marketId != null">

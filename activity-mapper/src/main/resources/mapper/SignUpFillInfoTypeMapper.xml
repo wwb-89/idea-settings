@@ -6,16 +6,17 @@
         <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="type" jdbcType="VARCHAR" property="type" />
         <result column="wfw_form_template_id" jdbcType="INTEGER" property="wfwFormTemplateId" />
+        <result column="wfw_form_approval_template_id" jdbcType="INTEGER" property="wfwFormApprovalTemplateId" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_component_id, t.type, t.wfw_form_template_id
+        t.id, t.template_component_id, t.type, t.wfw_form_template_id, t.wfw_form_approval_template_id
     </sql>
 
     <insert id="batchAdd">
-        INSERT INTO t_sign_up_fill_info_type ( template_component_id, `type`, wfw_form_template_id )
+        INSERT INTO t_sign_up_fill_info_type ( template_component_id, `type`, wfw_form_template_id, wfw_form_approval_template_id )
         VALUES
             <foreach collection="signUpFillInfoTypes" index="key" item="value" open="" close="" separator=",">
-                ( #{value.templateComponentId}, #{value.type}, #{value.wfwFormTemplateId} )
+                ( #{value.templateComponentId}, #{value.type}, #{value.wfwFormTemplateId}, #{value.wfwFormApprovalTemplateId} )
             </foreach>
     </insert>
 

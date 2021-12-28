@@ -196,3 +196,11 @@ CREATE TABLE `t_activity_push_reminder` (
     `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2021-12-22 审批表单
+ALTER TABLE t_sign_up_wfw_form_template ADD type VARCHAR(50) DEFAULT 'normal' COMMENT '类型';
+ALTER TABLE t_sign_up_fill_info_type ADD wfw_form_approval_template_id INT(11) COMMENT '万能表单审批模版id';
+-- 所有报名填报信息的审批表单模版都使用通用的
+UPDATE t_sign_up_fill_info_type t SET t.wfw_form_approval_template_id = 7 WHERE ISNULL(t.wfw_form_approval_template_id);
+INSERT INTO `activity_engine`.`t_table_field_detail`(`id`, `table_field_id`, `name`, `code`, `is_default_checked`, `is_allow_uncheck`, `is_default_top`, `is_allow_top`, `is_sortable`, `min_width`, `align`, `sequence`, `is_deleted`, `create_time`, `update_time`) VALUES (59, 4, '标签', 'tags', 0, 1, 0, 0, 0, 120, 'left', 180, 0, '2021-12-27 15:59:12', '2021-12-27 15:59:25');
+

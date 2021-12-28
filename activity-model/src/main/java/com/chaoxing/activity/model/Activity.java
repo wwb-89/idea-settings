@@ -108,8 +108,6 @@ public class Activity {
     private String createAreaCode;
     /** 创建机构名; column: create_org_name*/
     private String createOrgName;
-    /** 标签。以逗号分隔; column: tags */
-    private String tags;
     /** 是否开启评价; column: is_open_rating */
     @TableField(value = "is_open_rating")
     private Boolean openRating;
@@ -236,6 +234,9 @@ public class Activity {
     private List<String> tagNames;
     @TableField(exist = false)
     private List<ActivityComponentValue> activityComponentValues;
+    /** 标签 */
+    @TableField(exist = false)
+    private String tags;
 
     @Getter
     public enum OriginTypeEnum {

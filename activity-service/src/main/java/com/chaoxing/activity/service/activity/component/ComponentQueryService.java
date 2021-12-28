@@ -9,7 +9,6 @@ import com.chaoxing.activity.model.ComponentField;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,7 +32,7 @@ public class ComponentQueryService {
 
 	@Resource
 	private ComponentMapper componentMapper;
-	@Autowired
+	@Resource
 	private ComponentFieldMapper componentFieldMapper;
 
 	/**根据code查询系统组件
@@ -157,4 +156,5 @@ public class ComponentQueryService {
 		});
 		return components;
 	}
+
 }

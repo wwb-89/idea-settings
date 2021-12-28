@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 报名万能表单模版表
@@ -31,6 +29,8 @@ public class SignUpWfwFormTemplate {
     private Integer id;
     /** 名称; column: name*/
     private String name;
+    /** 类型; column: type*/
+    private String type;
     /** 编码; column: code*/
     private String code;
     /** sign; column: sign*/
@@ -54,5 +54,32 @@ public class SignUpWfwFormTemplate {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    @Getter
+    public enum TypeEnum {
+
+        /** 标准的 */
+        NORMAL("标准的", "normal"),
+        APPROVAL("审批", "approval");
+
+        private final String name;
+        private final String value;
+
+        TypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static TypeEnum fromValue(String value) {
+            TypeEnum[] values = TypeEnum.values();
+            for (TypeEnum typeEnum : values) {
+                if (Objects.equals(typeEnum.getValue(), value)) {
+                    return typeEnum;
+                }
+            }
+            return null;
+        }
+
+    }
 
 }
