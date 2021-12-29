@@ -406,35 +406,35 @@ public class ActivityMhV3ApiController {
                 if (openedStudengSignUp) {
                     // 必须要报名
                     if (userSignParticipationStat.getSignedUp()) {
-                        result.add(buildBtnField("进入会场", "", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                        result.add(buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                     }
                 } else {
-                    result.add(buildBtnField("进入会场", "", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                    result.add(buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
             }
             if (userSignParticipationStat.getSignedUp()) {
                 // 已报名
                 if (CollectionUtils.isNotEmpty(signInIds)) {
-                    result.add(buildBtnField("去签到", "", userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                    result.add(buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
                 existSignUpInfo = true;
             } else{
                 signedUp = false;
                 if (userSignParticipationStat.getSignUpAudit()) {
                     // 审核中
-                    result.add(buildBtnField(signUpKeyword +"审核中", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField(signUpKeyword +"审核中", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     existSignUpInfo = true;
                 } else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
                     // 活动和报名都结束的情况显示活动已结束
-                    result.add(buildBtnField("活动已结束", "", "", "0", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+                    result.add(buildBtnField("活动已结束", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
                 } else if (userSignParticipationStat.getSignUpEnded()) {
-                    result.add(buildBtnField(signUpKeyword + "已结束", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField(signUpKeyword + "已结束", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getSignUpNotStart()) {
-                    result.add(buildBtnField(signUpKeyword + "未开始", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField(signUpKeyword + "未开始", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-                    result.add(buildBtnField("不在参与范围内", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField("不在参与范围内", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getNoPlaces()) {
-                    result.add(buildBtnField("名额已满", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField("名额已满", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else {
                     String showName = signUpKeyword + "参加";
                     List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
@@ -447,20 +447,20 @@ public class ActivityMhV3ApiController {
                         }
                         if (!signUps.get(0).getFillInfo() && uid != null) {
                             setSignUpBtn = Boolean.TRUE;
-                            result.add(buildBtnField(showName, "", UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                            result.add(buildBtnField(showName, cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                         }
                     }
                     if (!setSignUpBtn) {
-                        result.add(buildBtnField(showName, "", userSignParticipationStat.getSignUpUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                        result.add(buildBtnField(showName, cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), userSignParticipationStat.getSignUpUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     }
                 }
             }
         }else {
             if (activityFlagValidateService.isDualSelect(activity)) {
-                result.add(buildBtnField("进入会场", "", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                result.add(buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
             if (CollectionUtils.isNotEmpty(signInIds)) {
-                result.add(buildBtnField("去签到", "", userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                result.add(buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
         }
         if (openWork && workId != null) {
@@ -493,7 +493,7 @@ public class ActivityMhV3ApiController {
         Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
         String groupBbsid = activity.getGroupBbsid();
         if (openGroup && StringUtils.isNotBlank(groupBbsid) && signedUp) {
-            result.add(buildBtnField("讨论小组", "", UrlConstant.getGroupUrl(groupBbsid), "1", false, MhBtnSequenceEnum.GROUP.getSequence()));
+            result.add(buildBtnField("讨论小组", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.getGroupUrl(groupBbsid), "1", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员
         if (isManager) {

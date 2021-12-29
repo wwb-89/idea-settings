@@ -104,7 +104,9 @@ public enum MhAppIconEnum {
         /** 评价icon */
         RATING("rating", "7fdfbea39df1f9779b04c956b584012e"),
         /** 评分icon */
-        RATING_SCORE("rating_score", "6a8c415821313ceed15381f10042f6d5");
+        RATING_SCORE("rating_score", "6a8c415821313ceed15381f10042f6d5"),
+        /** 签到 */
+        SIGN_IN("sign_in", "fa4e1e4e86526f5a9e4033bcc34de566");
 
         private final String name;
         private final String value;
