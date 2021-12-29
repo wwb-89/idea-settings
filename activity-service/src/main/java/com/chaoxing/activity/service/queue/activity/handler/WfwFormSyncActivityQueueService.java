@@ -174,6 +174,11 @@ public class WfwFormSyncActivityQueueService {
             log.error("未查询到fid:{}, formId:{}, formUserId:{} 的表单记录", fid, formId, formUserId);
             return null;
         }
+        // 判断标识 activity_abort（boolean类型）为true则不创建
+        Boolean activityAbort = formUserRecord.getBooleanValue("activity_abort");
+        if (activityAbort) {
+            return null;
+        }
         // 判断活动是否存在，若存在，回写表单数据，并则返回；若不存在，则不进行活动创建
         Activity activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
         if (activity != null) {

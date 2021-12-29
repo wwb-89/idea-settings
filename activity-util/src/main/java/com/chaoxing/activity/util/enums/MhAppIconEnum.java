@@ -91,6 +91,8 @@ public enum MhAppIconEnum {
         MY_WORK("my_work", "54eb45f8017e868f59447dee034994a6"),
         /** 全部作品icon */
         ALL_WORK("all_work", "57687912bf5be5c78fc744ece4347ae3"),
+        /** 阅读测评icon */
+        READING_TEST("reading_test", "a9503abf09bc06ed398b0232a584a43b"),
         /** 报名信息icon */
         SIGN_UP_INFO("sign_up_info", "f3c03ffc5605069be2a2b4eb88c0dc1c"),
         /** 报名详情icon */

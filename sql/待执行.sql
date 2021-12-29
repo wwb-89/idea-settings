@@ -1,3 +1,5 @@
+-- 恢复报名即将开始和报名即将结束通知模板
+UPDATE t_system_notice_template SET is_deleted = 0 WHERE id IN (4, 5);
 -- 增加自定义应用配置组件
 INSERT INTO `t_component` (`id`, `pid`, `name`, `code`, `is_required`, `introduction`, `is_system`, `is_multi`, `type`, `data_origin`, `origin_identify`, `field_flag`, `template_id`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (51, 0, '自定义应用', 'custom_application', 0, '', 1, 0, NULL, NULL, NULL, NULL, NULL, '2021-12-23 15:14:20', 172649568, '2021-12-23 15:14:20', 172649568);
 

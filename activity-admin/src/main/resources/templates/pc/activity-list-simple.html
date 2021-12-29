@@ -241,10 +241,8 @@
                             }
                             activity.operations.push($this.operations.details);
                             if (manager || isCurrentOrgCreated) {
-                                if (manager) {
-                                    activity.operations.push($this.operations.edit);
-                                    activity.operations.push($this.operations.delete);
-                                }
+                                activity.operations.push($this.operations.edit);
+                                activity.operations.push($this.operations.delete);
                             }
                         });
                     }

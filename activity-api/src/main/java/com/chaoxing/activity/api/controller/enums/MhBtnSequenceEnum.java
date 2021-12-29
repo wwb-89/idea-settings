@@ -18,10 +18,11 @@ public enum MhBtnSequenceEnum {
     SIGN_UP("报名相关", 2),
     SIGN_IN("签到相关", 3),
     WORK("作品征集相关", 4),
-    GROUP("小组相关", 5),
-    RATING("评价", 6),
-    MANAGE("管理", 7),
-    SIGN_UP_INFO("报名信息", 8);
+    READING_TEST("阅读测评", 5),
+    GROUP("小组相关", 6),
+    RATING("评价", 7),
+    MANAGE("管理", 8),
+    SIGN_UP_INFO("报名信息", 9);
 
     private final String name;
     private final Integer sequence;

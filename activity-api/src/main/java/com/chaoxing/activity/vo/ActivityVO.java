@@ -51,8 +51,12 @@ public class ActivityVO {
     private Integer clazzId;
     /** 活动创建者uid */
     private Integer createUid;
+    /** 活动创建者 */
+    private String createUsername;
     /** 活动创建机构fid */
     private Integer createFid;
+    /** 活动创建机构 */
+    private String createOrgName;
 
     /** 活动简介 */
     private String introduction;
@@ -91,7 +95,9 @@ public class ActivityVO {
                 .courseId(activity.getCourseId())
                 .clazzId(activity.getClazzId())
                 .createUid(activity.getCreateUid())
+                .createUsername(activity.getCreateUserName())
                 .createFid(activity.getCreateFid())
+                .createOrgName(activity.getCreateOrgName())
                 .build();
     }
 }

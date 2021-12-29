@@ -107,7 +107,7 @@ public class ErdosActivityInfoApiController {
             String flag = getFlag(availableFlags);
             mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                     .key("阅读测评")
-                    .value(getReadingTestUrl(activity))
+                    .value(activityQueryService.getReadingTestUrl(activity))
                     .flag(flag)
                     .build());
             Integer intFlag = Integer.parseInt(flag);
@@ -206,11 +206,6 @@ public class ErdosActivityInfoApiController {
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
         return result;
-    }
-
-
-    private String getReadingTestUrl(Activity activity) {
-        return DomainConstant.XUEYA + "/school-base/school-reading/" + activity.getReadingId() + "/" + activity.getReadingModuleId() + "/book-list";
     }
 
     private String getFlag(List<Integer> availableFlags) {

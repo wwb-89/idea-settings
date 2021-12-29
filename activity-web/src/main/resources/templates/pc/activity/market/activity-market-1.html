@@ -68,7 +68,7 @@
 		</div>
 		<div class="card-list">
 			<ul>
-				<li v-for="(item, index) of activities" :key="'item-' + index">
+				<li v-for="(item, index) of activities" :key="'item-' + index" style="cursor: pointer;" @click="detail(index)">
 					<div class="inner">
 						<div class="img-box">
 							<div class="tips-box">
@@ -77,7 +77,7 @@
 								<p v-if="item.hasSignUp && signUpAble && item.signUpStatus == 2 && item.status == 2" class="tips sign color6">{{signUpKeyword}}中</p>
 							</div>
 							<p class="num" v-if="item.openSignUp"><i class="icon-user"></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
-							<div class="js-crop-img" @click="detail(index)">
+							<div class="js-crop-img">
 								<img :src="item | getCloudImgUrl(cloudDomain)">
 							</div>
 						</div>

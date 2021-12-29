@@ -50,10 +50,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.constant.CommonConstant;
-import com.chaoxing.activity.util.constant.DateFormatConstant;
-import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
-import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.constant.*;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -834,6 +831,17 @@ public class ActivityQueryService {
 	 */
 	public String getActivityRatingUrl(Integer activityId) {
 		return String.format(UrlConstant.ACTIVITY_RATING_URL, activityId);
+	}
+
+	/**阅读测评的地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-28 15:18:08
+	 * @param activity
+	 * @return java.lang.String
+	*/
+	public String getReadingTestUrl(Activity activity) {
+		return String.format(UrlConstant.READING_TEST_URL, activity.getReadingId(), activity.getReadingModuleId());
 	}
 
 	/**查询所有的活动

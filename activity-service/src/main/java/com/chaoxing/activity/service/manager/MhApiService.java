@@ -199,7 +199,7 @@ public class MhApiService {
 	*/
 	public String getEvaluationUrl(Integer formUserId, Integer formId, String url) {
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		params.add("shopId", 5);
+		params.add("shopId", 6);
 		params.add("goodsId", formId);
 		params.add("goodsRowId", formUserId);
 		params.add("resourceType", 0);

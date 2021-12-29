@@ -179,26 +179,11 @@ public class ActivityApiController {
 	@RequestMapping("list/erdos/participate")
 	public RestRespDTO erdosParticipateActivities(HttpServletRequest request, String data) {
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		List<Integer> fids = new ArrayList<>();
-		if (StringUtils.isNotBlank(activityQuery.getFlag())) {
-			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(",")));
-		}
 		// 获取区域机构
-		Integer topFid = activityQuery.getTopFid();
-		if (topFid == null) {
+		if (activityQuery.getTopFid() == null) {
 			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-			topFid = loginUser.getFid();
+			activityQuery.setTopFid(loginUser.getFid());
 		}
-
-		List<WfwAreaDTO> wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
-			fids.addAll(subFids);
-		} else {
-			fids.add(topFid);
-		}
-		activityQuery.setFids(fids);
-
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.pageErdosParticipate(page, activityQuery);
 		List<Activity> result = Lists.newArrayList();

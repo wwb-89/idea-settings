@@ -41,7 +41,7 @@
             <div class="tabContent">
                 <div class="card-list card-list1">
                     <ul>
-                        <li v-for="(activity, index) of activities" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)">
+                        <li v-for="(activity, index) of activities" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" @click="activityDetail(index)">
                             <div class="inner">
                                 <div class="img-box">
                                     <p v-if="currentTab.code == 'signedUp'" :class="calSignedUpClass(activity)">{{activity | calSignedUpStatusDescription}}</p>
@@ -52,7 +52,7 @@
                                 </div>
                                 <div class="card-info">
                                     <div class="title-box">
-                                        <h2 v-if="currentTab.code == 'signedUp'" class="title overHidden1 fl" @click="activityDetail(index)">{{activity.name}}</h2>
+                                        <h2 v-if="currentTab.code == 'signedUp'" class="title overHidden1 fl">{{activity.name}}</h2>
                                         <h2 v-else class="title overHidden1 fl" @click="activityManageIndex(index)">{{activity.name}}</h2>
                                         <label style="margin-left: 8px;" v-if="currentTab.code == 'signedUp' && activity.managAble">管理</label>
                                         <div class="clear"></div>
@@ -71,6 +71,9 @@
                                 <template v-if="currentTab.code == 'signedUp'">
                                     <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)">取消报名</a>
                                     <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)">撤销申请</a>
+                                </template>
+                                <template v-else-if="currentTab.code == 'collected'">
+                                    <a class="cancel" href="javascript:" @click="cancelCollect(index, $event)">取消收藏</a>
                                 </template>
                                 <template v-else-if="currentTab.code == 'managing'">
                                     <a class="edit" href="javascript:" @click="toDelete(index, $event)">删除</a>
@@ -169,6 +172,9 @@
                 } else {
                     if ($this.showTab('signedUp')) {
                         $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
+                    }
+                    if ($this.showTab('collected')) {
+                        $this.tabList.push({name: '收藏', code: 'collected', url: ctx + '/api/activity/collected'});
                     }
                     if ($this.showTab('managing')) {
                         $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
@@ -285,8 +291,9 @@
                 },
 
                 // 取消报名
-                cancelSignUp: function (index) {
+                cancelSignUp: function (index, e) {
                     var $this = this;
+                    e.stopPropagation();
                     $this.operateIndex = index;
                     $this.$refs.cancelSignUp.show = true;
                 },
@@ -317,8 +324,9 @@
                     });
                 },
                 // 撤销申请
-                revocationSignUp: function (index) {
+                revocationSignUp: function (index, e) {
                     var $this = this;
+                    e.stopPropagation();
                     $this.operateIndex = index;
                     $this.$refs.revocationSignUp.show = true;
                 },
@@ -437,6 +445,7 @@
                 // 删除
                 toDelete: function (index, e) {
                     var $this = this;
+                    e.stopPropagation();
                     $this.operateIndex = index;
                     $this.$refs.deleteWindow.show = true;
                 },

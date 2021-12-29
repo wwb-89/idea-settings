@@ -508,6 +508,16 @@ public class ActivityMhV3ApiController {
         if (existSignUpInfo) {
             result.add(buildBtnField(signUpKeyword + "信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
         }
+        // 阅读测评
+        Boolean openReading = Optional.ofNullable(activity.getOpenReading()).orElse(false);
+        if (openReading && activity.getReadingId() != null) {
+            result.add(buildBtnField(signUpKeyword + "阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), activityQueryService.getReadingTestUrl(activity), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
+        }
+        // 班级互动
+        Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
+        if (openClazzInteraction) {
+            result.add(buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activity.getId(), "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+        }
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
         return result;
