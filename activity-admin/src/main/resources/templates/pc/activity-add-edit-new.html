@@ -2088,6 +2088,7 @@
                     if ($this.isEmbedded) {
                         window.history.back();
                     } else {
+                        window.opener.postMessage(activityApp.getJsonStr({}), "*");
                         window.close();
                     }
                 },
