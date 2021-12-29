@@ -162,6 +162,10 @@
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
+                                <template v-else-if="item.code == 'custom_application'">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">{{item.introduction}}</p>
+                                </template>
                                 <!-- 简介：introduction -->
                                 <template v-else-if="item.code == 'introduction'">
                                     <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
@@ -702,6 +706,107 @@
                 </div>
             </div>
         </div>
+        <!--自定义应用-->
+        <div class="dialog-mask selectLinkPop" v-show="customAppConfigDialog">
+            <div class="dailog">
+                <div class="header">
+                    <span>{{dialogTitle}}</span>
+                    <i class="close" @click="initEditData"></i>
+                </div>
+                <div class="body">
+                    <div class="form">
+                        <el-input v-model="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+<!--                        <div class="content-tip fs13 color999 marginBottom20">-->
+<!--                            <span>在活动里访问链接时，或自动追加参数，点击 </span><a href="#" target="_blank" class="color-blue">查看参数</a>-->
+<!--                        </div>-->
+                        <div class="content-switch-box marginBottom20">
+                            <div class="switch-title">
+                                <span class="color333 fs14">前台链接</span>
+                                <div class="switch-box fr">
+                                    <label class="label color666">报名后显示</label>
+                                    <el-switch class="switch" v-model="innerAddEditItem.showAfterSignUp"></el-switch>
+                                </div>
+                            </div>
+                            <div class="link-lists link-lists1">
+                                <div class="link-list marginBottom16" v-for="(frontendItem ,ftIndex) in innerAddEditItem.frontendConfigs" :key="'frontend-link-' + ftIndex">
+                                    <div class="left-box">
+                                        <div class="line1 marginBottom16">
+                                            <div class="icon-img" @click="openIconDialog('frontend', ftIndex)"><img :src="cloudDomain + '/star3/origin/' + frontendItem.defaultIconCloudId" alt=""></div>
+                                            <el-input v-model="frontendItem.title" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                                        </div>
+                                        <div class="line2">
+                                            <el-input v-model="frontendItem.url" type="text" placeholder="链接"></el-input>
+                                        </div>
+                                    </div>
+                                    <div class="delete-btn-icon icon-minus-circle fs16" @click="removeAppConfig('frontend', ftIndex)"></div>
+                                </div>
+                                <a href="javascript:;" class="fs14 color-blue" @click="addAppConfig('frontend')">
+                                    <i class="icon-plus-circle"></i>
+                                    <span>添加</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="content-switch-box">
+                            <div class="switch-title">
+                                <span class="color333 fs14">后台连接</span>
+                                <div class="switch-box fr">
+                                    <label class="label color666">新页面打开</label>
+                                    <el-switch class="switch" v-model="innerAddEditItem.openBlank"></el-switch>
+                                </div>
+                            </div>
+                            <div class="link-lists link-lists2">
+                                <div class="link-list marginBottom16" v-for="(backendItem ,beIndex) in innerAddEditItem.backendConfigs" :key="'backend-link-' + beIndex">
+                                    <div class="left-box">
+                                        <div class="line1 marginBottom16">
+                                            <div class="icon-img" @click="openIconDialog('backend', beIndex)"><img :src="cloudDomain + '/star3/origin/' + backendItem.defaultIconCloudId" alt=""></div>
+                                            <el-input v-model="backendItem.title" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                                        </div>
+                                        <div class="line2">
+                                            <el-input v-model="backendItem.url" type="text" placeholder="链接"></el-input>
+                                        </div>
+                                    </div>
+                                    <div class="delete-btn-icon icon-minus-circle fs16" @click="removeAppConfig('backend', beIndex)"></div>
+                                </div>
+                                <a href="javascript:;" class="fs14 color-blue" @click="addAppConfig('backend')">
+                                    <i class="icon-plus-circle"></i>
+                                    <span>添加</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="initEditData">取消</div>
+                        <div class="normal-btn" @click="confirmCustomAppConfig">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--选择图标-->
+        <div class="dialog-mask selectIconPop" v-show="iconSelectDialog">
+            <div class="dailog">
+                <div class="header">
+                    <span>选择图标</span>
+                    <i class="close" @click="iconSelectDialog = false"></i>
+                </div>
+                <div class="body">
+                    <ul class="icon-lists">
+                        <li :class="{'icon-list': true, 'active': (currAppConfig.iconId == item.id) }" v-for="(item, index) in icons" :key="'icon-' + index" @click="chooseIcon(index)">
+                            <img :src="cloudDomain + '/star3/origin/' + item.defaultIconCloudId" alt="">
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="closeIconDialog">取消</div>
+                        <div class="normal-btn" @click="confirmIconChoose">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div th:replace="pc/include/common_js :: common_js(~{::script})">
         <script src="/static/pc/assets/lib/jquery.min.js" th:src="@{/pc/assets/lib/jquery.min.js}"></script>
@@ -720,10 +825,16 @@
             vm = new Vue({
                 el: '#field-setting',
                 data: {
+                    cloudDomain: [[${cloudDomain}]],
                     fid: [[${fid}]],
                     marketId: [[${marketId}]],
                     currTemplateId: [[${templateId}]],
                     templateInfo: [[${templateInfo}]],
+                    icons: [[${icons}]],
+                    iconMap: {},
+                    // 当前编辑的应用配置，主要用于图标编辑时的临时存储
+                    appConfigOperateIndex: null,
+                    currAppConfig: {},
                     wfwForms: [],
                     wfwFormFields: [],
                     wfwFormTypes: [
@@ -766,6 +877,8 @@
                     chooseDialog: false, //  选择组件弹窗开关
                     signUpConditionDialog: false, //  报名条件弹窗开关
                     fillInfoDialog: false,  // 报名信息填写弹窗开关
+                    customAppConfigDialog: false, // 自定义应用弹窗开关
+                    iconSelectDialog: false, // 图标选择弹窗开关
                     defaultTextComponent: {
                         pid: 0,
                         name: '',
@@ -808,6 +921,10 @@
                     $([[${wfwForms}]]).each(function () {
                         this.id = this.id.toString();
                         $this.wfwForms.push(this);
+                    });
+                    $this.iconMap = {};
+                    $($this.icons).each(function () {
+                        $this.iconMap[this.id] = this;
                     });
                     $this.initData();
                 },
@@ -920,7 +1037,9 @@
                         var $this = this;
                         return { type: 'wfw_form', wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: $this.wfwFormApprovalTemplates[0].id}
                     },
-
+                    getInitTemplateAppConfig: function () {
+                        return { showAfterSignUp: true, openBlank: true, frontendConfigs: [], backendConfigs: [], removeCustomAppConfigIds: [] }
+                    },
                     // 内部属性的判断补充初始化
                     innerAttrSupplement: function (templateComponent) {
                         var $this = this;
@@ -988,6 +1107,8 @@
                             $this.fillInfoDialog = true;
                             $this.addEditItem = $this.createNewTemplateComponent(item);
                             $this.innerAddEditItem = $this.getInitSignUpFillInfoType();
+                        } else if (item.code == 'custom_application') {
+                            $this.openCustomAppConfigDialog(item);
                         } else {
                             var newTemplateComponent = $this.createNewTemplateComponent(item);
                             if (item.pid == 0) {
@@ -1152,6 +1273,8 @@
                         var $this = this;
                         if (item.type == 'radio' || item.type == 'checkbox') {
                             $this.openChooseEditDialog(item, index);
+                        } else if(item.code == 'custom_application') {
+                            $this.openCustomAppConfigDialog(item, index);
                         } else {
                             $this.openTextDialog(item, index);
                         }
@@ -1189,6 +1312,44 @@
                         }
                         $this.currEditIndex = index;
                         $this.innerCurrEditIndex = idx;
+                    },
+                    // 打开自定义应用配置弹框
+                    openCustomAppConfigDialog: function (item, index) {
+                        var $this = this;
+                        $this.setDialogTitle(item, "自定义应用");
+                        $this.addFieldDialog = false;
+                        $this.customAppConfigDialog = true;
+                        // 新增时，创建新的模板组件，初始化创建临时的自定义应用配置
+                        if ($this.isAddComponent) {
+                            $this.addEditItem = $this.createNewTemplateComponent(item);
+                            $this.innerAddEditItem = $this.getInitTemplateAppConfig();
+                            return;
+                        }
+                        // 编辑
+                        $this.currEditIndex = index;
+                        $this.addEditItem = $.extend({}, item);
+                        // 分离appConfigs，重新组装 innerEditItem
+                        var customAppConfigs = $this.addEditItem.customAppConfigs || [];
+                        $this.innerAddEditItem = $this.getInitTemplateAppConfig();
+                        for (var i = 0; i < customAppConfigs.length; i++) {
+                            var it = customAppConfigs[i];
+                            var iconId = it.iconId;
+                            if (it.iconId) {
+                                iconId = parseInt(iconId);
+                                it.defaultIconCloudId = $this.iconMap[iconId].defaultIconCloudId;
+                            }
+                            if (it.type == 'frontend') {
+                                $this.innerAddEditItem.frontendConfigs.push(it);
+                            } else if (it.type == 'backend') {
+                                $this.innerAddEditItem.backendConfigs.push(it);
+                            }
+                        }
+                        if ($this.innerAddEditItem.frontendConfigs.length > 0) {
+                            $this.innerAddEditItem.showAfterSignUp = $this.innerAddEditItem.frontendConfigs[0].showAfterSignUp;
+                        }
+                        if ($this.innerAddEditItem.backendConfigs.length > 0) {
+                            $this.innerAddEditItem.openBlank = $this.innerAddEditItem.backendConfigs[0].openBlank;
+                        }
                     },
                     confirmEditText: function () {
                         var $this = this;
@@ -1261,6 +1422,113 @@
                             app.showMsg("已添加");
                         } else {
                             $this.templateComponents[$this.currEditIndex].children[$this.innerCurrEditIndex] = $.extend({}, $this.addEditItem);
+                        }
+                        $this.initEditData();
+                    },
+                    // 根据type 添加自定义应用配置项
+                    addAppConfig: function (type) {
+                        var $this = this;
+                        var defaultIcon = $this.icons.length > 0 ? $this.icons[0] : {};
+                        var appConfig = {
+                            type: type,
+                            title: '',
+                            iconId: defaultIcon.id,
+                            defaultIconCloudId: defaultIcon.defaultIconCloudId,
+                            url: ''
+                        };
+                        if (type == 'frontend') {
+                            $this.innerAddEditItem.frontendConfigs.push(appConfig);
+                        } else if (type == 'backend') {
+                            $this.innerAddEditItem.backendConfigs.push(appConfig);
+                        }
+                    },
+                    // 根据type 和 index， 移除自定义配置项
+                    removeAppConfig: function (type, index) {
+                        var $this = this;
+                        var removeItem = {};
+                        if (type == 'frontend') {
+                            removeItem = $this.innerAddEditItem.frontendConfigs.splice(index, 1);
+                        } else if (type == 'backend') {
+                            removeItem = $this.innerAddEditItem.backendConfigs.splice(index, 1);
+                        }
+                        if (removeItem.id) {
+                            $this.innerAddEditItem.removeCustomAppConfigIds.push(removeItem.id);
+                        }
+                    },
+                    // 打开图标选择弹窗
+                    openIconDialog: function (type, index) {
+                        var $this = this;
+                        var currAppConfig = {};
+                        if (type == 'frontend') {
+                            currAppConfig = $this.innerAddEditItem.frontendConfigs[index];
+                        } else if (type == 'backend') {
+                            currAppConfig = $this.innerAddEditItem.backendConfigs[index];
+                        }
+                        $this.appConfigOperateIndex = index;
+                        $this.currAppConfig = $.extend({}, currAppConfig);
+                        $this.iconSelectDialog = true;
+                    },
+                    // 选择图标
+                    chooseIcon: function (index) {
+                        var $this = this;
+                        $this.currAppConfig.iconId = $this.icons[index].id;
+                        $this.currAppConfig.defaultIconCloudId = $this.icons[index].defaultIconCloudId;
+                    },
+                    // 关闭图标选择弹窗
+                    closeIconDialog: function () {
+                        var $this = this;
+                        $this.currAppConfig = {};
+                        $this.appConfigOperateIndex = null;
+                        $this.iconSelectDialog = false
+                    },
+                    // 确认图标选择
+                    confirmIconChoose: function () {
+                        var $this = this;
+                        var type = $this.currAppConfig.type;
+                        var appConfig = $.extend({}, $this.currAppConfig);
+                        if (type == 'frontend') {
+                            $this.innerAddEditItem.frontendConfigs[$this.appConfigOperateIndex] = appConfig;
+                        } else {
+                            $this.innerAddEditItem.backendConfigs[$this.appConfigOperateIndex] = appConfig;
+                        }
+                        $this.closeIconDialog();
+                    },
+                    // 确定自定义应用配置
+                    confirmCustomAppConfig: function () {
+                        var $this = this;
+                        var customAppConfigs = [];
+                        var { showAfterSignUp, openBlank, frontendConfigs, backendConfigs } = $this.innerAddEditItem;
+                        if (frontendConfigs.length > 0) {
+                            for (var i = 0; i < frontendConfigs.length; i++) {
+                                var it = frontendConfigs[i];
+                                if (activityApp.isEmpty(it.title) || activityApp.isEmpty(it.url)) {
+                                    app.showMsg("应用配置标题和链接不能为空");
+                                    return;
+                                }
+                                it.showAfterSignUp = showAfterSignUp;
+                                it.sequence = i;
+                                customAppConfigs.push(it);
+                            }
+                        }
+                        if (backendConfigs.length > 0) {
+                            for (var j = 0; j < backendConfigs.length; j++) {
+                                var bit = backendConfigs[j];
+                                if (activityApp.isEmpty(bit.title) || activityApp.isEmpty(bit.url)) {
+                                    app.showMsg("应用配置标题和链接不能为空");
+                                    return;
+                                }
+                                bit.openBlank = openBlank;
+                                bit.sequence = j;
+                                customAppConfigs.push(bit);
+                            }
+                        }
+                        $this.addEditItem.customAppConfigs = customAppConfigs;
+                        if ($this.isAddComponent) {
+                            $this.templateComponents.push($this.addEditItem);
+                            $this.setBasicComptChecked($this.fieldIndex)
+                            app.showMsg("已添加");
+                        } else {
+                            $this.templateComponents[$this.currEditIndex] = $.extend({}, $this.addEditItem);;
                         }
                         $this.initEditData();
                     },
@@ -1396,6 +1664,7 @@
                         $this.chooseDialog = false;
                         $this.signUpConditionDialog = false;
                         $this.fillInfoDialog = false;
+                        $this.customAppConfigDialog = false
                         $this.dialogTitle = "";
                         $this.currEditIndex = null;
                         $this.fieldIndex = null;
@@ -1577,7 +1846,9 @@
                                 dataOrigin: _this.dataOrigin,
                                 originIdentify: _this.originIdentify,
                                 fieldFlag: _this.fieldFlag,
-                                children: newChildren
+                                children: newChildren,
+                                customAppConfigs: _this.customAppConfigs,
+                                removeCustomAppConfigIds: _this.removeCustomAppConfigIds
                             });
                         });
                         return {

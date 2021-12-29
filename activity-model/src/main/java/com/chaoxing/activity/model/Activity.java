@@ -173,6 +173,9 @@ public class Activity {
     /** 是否开启推送提醒 */
     @TableField(value = "is_open_push_reminder")
     private Boolean openPushReminder;
+    /** 是否开启自定义应用配置 */
+    @TableField(value = "is_open_custom_app_config")
+    private Boolean openCustomAppConfig;
 
     // 附加
     /** 开始时间字符串 */

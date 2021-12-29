@@ -161,7 +161,8 @@ public class Component {
         SIGN_UP_FILL_INFO("报名填报信息", "sign_up_fill_info"),
         COMPANY_SIGN_UP("企业报名", "company_sign_up"),
         SIGN_UP("报名", "sign_up"),
-        SIGN_IN_OUT("签到", "sign_in_out");
+        SIGN_IN_OUT("签到", "sign_in_out"),
+        CUSTOM_APPLICATION("自定义应用", "custom_application");
 
         private final String name;
         private final String value;

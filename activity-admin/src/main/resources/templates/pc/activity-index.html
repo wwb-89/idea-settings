@@ -92,6 +92,14 @@
                     <span>{{menus.stat.name}}</span>
                 </div>
             </div>
+            <div class="entry menu-item" v-if="customAppConfigs" v-show="activity.openCustomAppConfig">
+                <!--自定义应用列表-->
+                <div v-for="(appConfig, acIndex) in customAppConfigs" :key="'custom-app-config-' + acIndex" :class="{'item': true, 'active': menus[appConfig.code].selected}" @click="toCustomApp(acIndex)" v-if="menuShow(appConfig.code)">
+                    <img :src="menus[appConfig.code].activeIconUrl" v-if="menus[appConfig.code].selected">
+                    <img :src="menus[appConfig.code].defaultIconUrl" v-else>
+                    <span>{{menus[appConfig.code].name}}</span>
+                </div>
+            </div>
             <div class="statistics menu-item" v-if="menuShow('setting')">
                 <!--设置-->
                 <div :class="{'item': true, 'active': menus.setting.selected}" th:if="${isCreator}" @click="toSetting">
@@ -129,11 +137,13 @@
             data: {
                 mainDomain: [[${mainDomain}]],
                 signWebDomain: [[${signWebDomain}]],
+                cloudDomain: [[${cloudDomain}]],
                 activity: [[${activity}]],
                 loginUser: [[${session._login_user_}]],
                 signActivityManageIndex: [[${signActivityManageIndex}]],
                 activityMenus: [[${activityMenus}]],
                 clazzInteractionMenus: [[${clazzInteractionMenus}]],
+                customAppConfigs: [[${customAppConfigs}]],
                 menus: {
                     // 报名签到
                     sign_up: {
@@ -229,6 +239,17 @@
                         $this.resizePageHeight();
                     };
                     var firstMenuKey = Object.keys($this.menus)[0];
+                    // 自定义应用配置判断
+                    var firstShowAppMenu = false, firstAppIndex;
+                    if ($this.customAppConfigs && $this.customAppConfigs.length > 0) {
+                        for (var i = 0; i < $this.customAppConfigs.length; i++) {
+                            var appConfig = $this.customAppConfigs[i];
+                            if (firstMenuKey == appConfig.code) {
+                                firstShowAppMenu = true
+                                firstAppIndex = i;
+                            }
+                        }
+                    }
                     switch (firstMenuKey) {
                         case 'sign_up':
                             if ($this.signActivityManageIndex.signUpExist) {
@@ -268,6 +289,9 @@
                             $this.toReviewManagement();
                             break;
                         default:
+                            if (firstShowAppMenu) {
+                                $this.toCustomApp(firstAppIndex);
+                            }
                             break;
                     }
                 })
@@ -275,19 +299,30 @@
             methods: {
                 additionalMenus: function () {
                     var $this = this;
-                    if (!$this.activity.openClazzInteraction) {
-                        return;
+                    if ($this.activity.openClazzInteraction) {
+                        $($this.clazzInteractionMenus).each(function () {
+                            $this.activityMenus.push(this.code);
+                            $this.menus[this.code] = {
+                                name: this.name,
+                                defaultIconUrl: ctx + "/pc/assets/images/" + this.defaultIcon + ".png",
+                                activeIconUrl: ctx + "/pc/assets/images/" + this.activeIcon + ".png",
+                                url: this.url,
+                                selected: false
+                            }
+                        });
                     }
-                    $($this.clazzInteractionMenus).each(function () {
-                        $this.activityMenus.push(this.code);
-                        $this.menus[this.code] = {
-                            name: this.name,
-                            defaultIconUrl: ctx + "/pc/assets/images/" + this.defaultIcon + ".png",
-                            activeIconUrl: ctx + "/pc/assets/images/" + this.activeIcon + ".png",
-                            url: this.url,
-                            selected: false
-                        }
-                    });
+                    if ($this.activity.openCustomAppConfig) {
+                        $($this.customAppConfigs).each(function () {
+                            $this.activityMenus.push(this.code);
+                            $this.menus[this.code] = {
+                                name: this.title,
+                                defaultIconUrl: $this.cloudDomain + '/star3/origin/' + this.defaultIconCloudId,
+                                activeIconUrl: $this.cloudDomain + '/star3/origin/' + this.activeIconCloudId,
+                                url: this.url + "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid,
+                                selected: false
+                            }
+                        });
+                    }
                 },
                 menuShow: function (menu) {
                     // 目前固定notice和setting存在
@@ -325,25 +360,35 @@
                     $("#content")[0].style.height = maxHeight + "px";
                     $("#content").contents().find("body").height(maxHeight);
                 },
-                loadUrl: function (url) {
+                loadUrl: function (url, appConfig) {
                     var $this = this;
                     if (url.indexOf("?") != -1) {
                         url += "&";
                     } else {
                         url += "?";
                     }
-                    $("#content")[0].src = url + "time=" + new Date().getTime();
+                    url += "time=" + new Date().getTime();
+                    if (appConfig && appConfig.openBlank) {
+                        window.open(url);
+                        return;
+                    }
+                    $("#content")[0].src = url;
                     $("#content")[0].onload = function() {
                         $this.resizePageHeight();
                     };
                 },
-                selectMenu: function (menuKey) {
+                selectMenu: function (menuKey, appConfigIndex) {
                     var $this = this;
+                    var appConfig;
+                    if (!menuKey && !activityApp.isEmpty(appConfigIndex)) {
+                        appConfig = $this.customAppConfigs[appConfigIndex];
+                        menuKey = appConfig.code;
+                    }
                     for (var key in $this.menus) {
                         $this.$set($this.menus[key], "selected", false);
                     }
                     $this.$set($this.menus[menuKey], "selected", true);
-                    $this.loadUrl($this.menus[menuKey].url);
+                    $this.loadUrl($this.menus[menuKey].url, appConfig);
                 },
                 // 报名名单
                 toSignUpList: function () {
@@ -395,6 +440,11 @@
                 toStat: function () {
                     var $this = this;
                     $this.selectMenu("stat");
+                },
+                //
+                toCustomApp: function (appConfigIndex) {
+                    var $this = this;
+                    $this.selectMenu(null, appConfigIndex)
                 },
                 // 去编辑活动
                 toEdit: function () {

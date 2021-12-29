@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.TemplateCustomAppConfigMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TemplateCustomAppConfig">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="icon_id" jdbcType="VARCHAR" property="iconId" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="is_show_after_sign_up" jdbcType="BIT" property="showAfterSignUp" />
+        <result column="is_open_blank" jdbcType="BIT" property="openBlank" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.template_component_id, t.type, t.title, t.icon_id, t.url, t.is_show_after_sign_up, t.is_open_blank,
+        t.is_deleted, t.sequence, t.create_time, t.update_time
+    </sql>
+    <sql id="Base_Column_ALIAS_List">
+        t.id as id, t.template_component_id as templateComponentId, t.type as type, t.title as title, t.icon_id as iconId,
+        t.url as url, t.is_show_after_sign_up as showAfterSignUp, t.is_open_blank as openBlank, t.is_deleted as deleted,
+        t.sequence as `sequence`, t.create_time as createTime, t.update_time as updateTime
+    </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_template_custom_app_config (template_component_id, type, title, icon_id, url, is_show_after_sign_up, is_open_blank, sequence)
+        VALUES
+        <foreach collection="dataList" item="item" open="" close="" separator=",">
+            (
+                #{item.templateComponentId},
+                #{item.type},
+                #{item.title},
+                #{item.iconId},
+                #{item.url},
+                #{item.showAfterSignUp},
+                #{item.openBlank},
+                #{item.sequence}
+            )
+        </foreach>
+    </insert>
+    <select id="listCustomAppConfigWithCloudId" resultType="com.chaoxing.activity.model.TemplateCustomAppConfig">
+        SELECT
+            <include refid="Base_Column_ALIAS_List"></include>,
+            t1.code as code, t1.default_icon_cloud_id as defaultIconCloudId, t1.active_icon_cloud_id as activeIconCloudId
+        FROM t_template_custom_app_config t
+        LEFT JOIN t_icon t1 ON t.icon_id = t1.id
+        WHERE t.template_component_id = #{templateComponentId} AND t.is_deleted = 0
+    </select>
+</mapper>

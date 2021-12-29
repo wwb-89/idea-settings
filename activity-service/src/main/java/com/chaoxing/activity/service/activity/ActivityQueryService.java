@@ -263,6 +263,19 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 */
 	public Page<Activity> pageErdosParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
+		List<Integer> fids = new ArrayList<>();
+		Integer topFid = activityQuery.getTopFid();
+		if (StringUtils.isNotBlank(activityQuery.getFlag())) {
+			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(",")));
+		}
+		List<WfwAreaDTO> wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
+			fids.addAll(subFids);
+		} else {
+			fids.add(topFid);
+		}
+		activityQuery.setFids(fids);
 		return activityMapper.pageErdosParticipate(page, activityQuery);
 	}
 
