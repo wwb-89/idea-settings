@@ -261,7 +261,8 @@
                             </div>
                         </div>
                     </div>
-                    <template v-else-if="it.code == 'sign_up_cancel_signed_up'">
+                    <!--取消报名设置-->
+                    <template v-else-if="it.code == 'sign_up_cancel_signed_up' && signUpMap[item.id].formType != 'approval'">
                         <div class="form-item">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                             <div class="input-box">
