@@ -264,6 +264,9 @@ public class ActivityQueryService {
 	 */
 	public Page<Activity> pageErdosParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		List<Integer> fids = new ArrayList<>();
+		if (Objects.equals(activityQuery.getLevelType(), "class") && activityQuery.getUserClassId() == null) {
+			return page;
+		}
 		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(activityQuery.getFlag())) {
 			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(",")));
