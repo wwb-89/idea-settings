@@ -396,8 +396,10 @@
         FROM
         (
              <if test="params.levelType == null || params.levelType == ''">
-                 <include refid="erdosClazzSql"></include>
-                 UNION
+                <if test="params.userClassId != null">
+                    <include refid="erdosClazzSql"></include>
+                    UNION
+                </if>
                  <include refid="erdosRegionSql"></include>
              </if>
             <if test="params.levelType == 'class'">
