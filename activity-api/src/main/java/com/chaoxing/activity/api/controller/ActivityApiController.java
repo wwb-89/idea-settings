@@ -12,7 +12,6 @@ import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
-import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
@@ -40,7 +39,6 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
-import com.chaoxing.activity.service.queue.activity.WfwFormSyncActivityQueue;
 import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
@@ -58,7 +56,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -114,8 +111,6 @@ public class ActivityApiController {
 	private ActivityHandleService activityHandleService;
 	@Resource
 	private PassportApiService passportApiService;
-	@Resource
-	private WfwFormSyncActivityQueue wfwFormSyncActivityQueue;
 	@Resource
 	private ActivityCreateService activityCreateService;
 	@Resource
@@ -562,19 +557,6 @@ public class ActivityApiController {
 		} else {
 			activityHandleService.cancelReleaseOrgActivity(activityId, fid, operateUser);
 		}
-		return RestRespDTO.success();
-	}
-
-	/** 万能表单数据新增/修改/删除后同步修改活动
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-26 16:46:53
-	* @param activityFormSyncParam
-	* @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@RequestMapping("sync/from/wfw-form")
-	public RestRespDTO activitySyncOperate(@Valid ActivityCreateFromFormParamDTO activityFormSyncParam) {
-		wfwFormSyncActivityQueue.push(activityFormSyncParam);
 		return RestRespDTO.success();
 	}
 

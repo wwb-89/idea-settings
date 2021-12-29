@@ -24,6 +24,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("form/activity")
+@Deprecated
 public class FormActivityApiController {
 
     @Resource
