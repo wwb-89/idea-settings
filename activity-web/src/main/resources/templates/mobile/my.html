@@ -31,6 +31,7 @@
 	<div class="tab" id="road-tab">
 		<ul>
 			<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)">报名</li>
+			<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)">收藏</li>
 			<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)">管理</li>
 		</ul>
 		<div class="clear"></div>
@@ -61,6 +62,36 @@
 					<div class="handel numTotal1">
 						<a class="cancel" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)"><span>取消<br>报名</span></a>
 						<a class="cancel" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)"><span>撤销<br>申请</span></a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!--收藏的-->
+	<div class="tabContent" v-show="activeTabIndex == 1">
+		<div class="card-list">
+			<ul v-infinite-scroll="loadCollected" infinite-scroll-disabled="collectedLoading" infinite-scroll-distance="10">
+				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
+					<div class="inner">
+						<div class="img-box border">
+							<div class="tips-box">
+								<p :class="calCollectedClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
+							</div>
+							<div class="js-crop-img">
+								<img :src="activity | getCloudImgUrl(cloudDomain)">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden2">{{activity.name}}</h2>
+							<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
+							<div class="type-box">
+								<span class="type-item" v-for="(tagName, index) of activity.tagNames" :key="'tag-' + index">{{tagName}}</span>
+							</div>
+							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+						</div>
+					</div>
+					<div class="handel numTotal1">
+						<a class="cancel1" @click="cancelCollect(index, $event)"><span>取消<br>收藏</span></a>
 					</div>
 				</li>
 			</ul>
@@ -97,13 +128,13 @@
 		</div>
 	</div>
 	<!-- 无数据 -->
-	<div class="noContent" v-show="(signedUpLoaded && signedUps.length < 1 && activeTabIndex == 0) || (managingLoaded && managings.length < 1 && activeTabIndex == 2)">
+	<div class="noContent" v-show="(signedUpLoaded && signedUps.length < 1 && activeTabIndex == 0) || (collectedLoaded && collecteds.length < 1 && activeTabIndex == 1) || (managingLoaded && managings.length < 1 && activeTabIndex == 2)">
 		<p>暂无内容</p>
 	</div>
 	<!--加载中-->
-	<div class="loading" v-show="signedUpLoading || managingLoading"><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
+	<div class="loading" v-show="signedUpLoading || collectedLoading || managingLoading"><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
 	<!--没有更多-->
-	<div class="noMore" v-show="(signedUpNoMore && signedUps.length > 0 &&  activeTabIndex == 0) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)"><span>没有更多</span></div>
+	<div class="noMore" v-show="(signedUpNoMore && signedUps.length > 0 &&  activeTabIndex == 0) || (collectedNoMore && collecteds.length > 0 && activeTabIndex == 1) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)"><span>没有更多</span></div>
 </div>
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
 	<script src="/static/mobile/assets/lib/vue-infinite-scroll.js" th:src="@{/mobile/assets/lib/vue-infinite-scroll.js}"></script>
@@ -127,6 +158,7 @@
                     cloudDomain: [[${cloudDomain}]],
 					activeTabIndex: 0,
 					signedUps: [],
+					collecteds: [],
 					managings: [],
 
 					sw: "",
@@ -141,6 +173,17 @@
 						loadWaitAudit: true
 					},
 					signedUpLoaded: false,
+
+					collectedLoading: false,
+					collectedNoMore: false,
+					collectedLock: false,
+					collectedQueryParams: {
+						pageNum: 1,
+						pageSize: 10,
+						sw: ""
+					},
+					collectedLoaded: false,
+
 					managingLoading: false,
 					managingNoMore: false,
 					managingLock: false,
@@ -181,7 +224,8 @@
 						}
 						return scrollTop;
 					}
-
+					$this.loadCollected();
+					$this.collectedLock = true;
 					$this.loadManaging();
 					$this.managingLock = true;
 				},
@@ -191,6 +235,16 @@
 						if (1 != userSignUpStatus) {
 							return "tips color4";
 						}
+						var status = activity.status;
+						if (3 == status) {
+							return "tips color1";
+						}else if (4 == status) {
+							return "tips color3";
+						} else {
+							return "tips color2";
+						}
+					},
+					calCollectedClass: function (activity) {
 						var status = activity.status;
 						if (3 == status) {
 							return "tips color1";
@@ -214,10 +268,14 @@
 						var $this = this;
 						$this.activeTabIndex = index;
 						$this.signedUpLock = true;
+						$this.collectedLock = true;
 						$this.managingLock = true;
 						if (index == 0) {
 							$("html,body").animate({scrollTop: $this.signedUps.length > 0 ? 0 : 10}, 0);
 							$this.signedUpLock = false;
+						} else if (index == 1) {
+							$("html,body").animate({scrollTop: $this.collecteds.length > 0 ? 0 : 10}, 0);
+							$this.collectedLock = false;
 						} else {
 							$("html,body").animate({scrollTop: $this.managings.length > 0 ? 0 : 10}, 0);
 							$this.managingLock = false;
@@ -304,6 +362,46 @@
 						}, function () {
 							$this.signedUpLoading = false;
 							app.showMsg("加载已报名的活动失败");
+						});
+					},
+					resetCollected: function () {
+						var $this = this;
+						$this.collectedQueryParams.pageNum = 1;
+						$this.collectedLoaded = false;
+						$this.collecteds = [];
+					},
+					loadCollected: function () {
+						var $this = this;
+						if ($this.collectedNoMore || $this.collectedLock) {
+							return;
+						}
+						$this.collectedLoading = true;
+						var url = ctx + "/api/activity/collected";
+						app.ajaxPost(url, $this.collectedQueryParams, function (data) {
+							$this.collectedLoading = false;
+							if (data.success) {
+								$this.collectedLoaded = true;
+								$this.collecteds.pushArray(data.data.records);
+								$this.$nextTick(function () {
+									cropImgFun("body");
+								});
+								if (data.data.records.length > 0) {
+									$this.collectedQueryParams.pageNum++;
+								}
+								if (data.data.records.length < $this.collectedQueryParams.pageSize) {
+									// 没有更多数据
+									$this.collectedNoMore = true;
+								}
+							} else {
+								var errorMessage = data.message;
+								if (activityApp.isEmpty(errorMessage)) {
+									errorMessage = "加载管理的的活动失败";
+								}
+								app.showMsg(errorMessage);
+							}
+						}, function () {
+							$this.collectedLoading = false;
+							app.showMsg("加载管理的活动失败");
 						});
 					},
 					resetManaging: function () {
@@ -393,6 +491,24 @@
 						}, function () {
 						});
 					},
+					// 取消收藏
+					cancelCollect: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.collecteds[index];
+						var url = ctx + "/api/activity/" + activity.id + "/cancel-collect";
+						$this.restSlide();
+						app.ajaxPostLoading(url, {}, function () {
+							// 删除这条数据
+							var collecteds = $this.collecteds;
+							collecteds.splice(index, 1);
+							$this.collecteds = collecteds;
+							$this.$nextTick(function () {
+								cropImgFun("body");
+							});
+						}, function () {
+						}, "取消收藏");
+					},
 					// 发布
 					release: function (index, e) {
 						e.stopPropagation();
@@ -448,6 +564,12 @@
 					signedupDetail: function (index) {
 						var $this = this;
 						var activity = $this.signedUps[index];
+						$this.detail(activity);
+					},
+					// 收藏的活动详情
+					collectedDetail: function (index) {
+						var $this = this;
+						var activity = $this.collecteds[index];
 						$this.detail(activity);
 					},
 					// 管理的活动详情
