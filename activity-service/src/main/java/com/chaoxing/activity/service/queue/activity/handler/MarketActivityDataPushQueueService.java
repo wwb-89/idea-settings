@@ -130,9 +130,11 @@ public class MarketActivityDataPushQueueService {
         switch (status) {
             case DELETED:
                 // 删除
-                marketActivityDataPushRecordService.delete(activityDataPushRecord.getId());
-                if (formUserId != null) {
-                    wfwFormApiService.deleteFormRecord(formUserId, formId);
+                if (activityDataPushRecord != null) {
+                    marketActivityDataPushRecordService.delete(activityDataPushRecord.getId());
+                    if (formUserId != null) {
+                        wfwFormApiService.deleteFormRecord(formUserId, formId);
+                    }
                 }
                 break;
             default:

@@ -1,8 +1,5 @@
 package com.chaoxing.activity.service.volunteer;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
 import com.chaoxing.activity.dto.manager.form.FormAdvanceSearchFilterConditionDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
@@ -10,7 +7,7 @@ import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
-import com.chaoxing.activity.util.FormUtils;
+import com.chaoxing.activity.util.WfwFormUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -102,7 +99,7 @@ public class VolunteerService {
 
         for (FormStructureDTO fs: formStructures) {
             if (Objects.equals("type", fs.getAlias())) {
-                serviceTypeList = FormUtils.getOptionsFormStructure(fs);
+                serviceTypeList = WfwFormUtils.getOptionsFormStructure(fs);
                 break;
             }
         }

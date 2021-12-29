@@ -15,7 +15,7 @@ import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
-import com.chaoxing.activity.util.FormUtils;
+import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.util.enums.ConditionEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -355,7 +355,7 @@ public class SignUpConditionService {
 	private boolean whetherCanSignUp(ActivitySignUpCondition detail, List<FormStructureDTO> formStructure, List<FormDataDTO> userFormData) {
 		String fieldAlias = FormStructureDTO.getFieldAliasByLabel(formStructure, detail.getFieldName());
 		for (FormDataDTO formDatum : userFormData) {
-			String formValue = FormUtils.getValue(formDatum, fieldAlias);
+			String formValue = WfwFormUtils.getValue(formDatum, fieldAlias);
 			if (compareDetailValue(detail.getCondition(), detail.getValue(), formValue)) {
 				return true;
 			}

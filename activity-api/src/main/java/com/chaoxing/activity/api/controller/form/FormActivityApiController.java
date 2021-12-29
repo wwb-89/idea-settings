@@ -2,8 +2,8 @@ package com.chaoxing.activity.api.controller.form;
 
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateActivity;
-import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueue;
+import com.chaoxing.activity.dto.manager.wfwform.WfwApprovalActivityCreateDTO;
+import com.chaoxing.activity.service.queue.activity.WfwApprovalActivityCreateQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class FormActivityApiController {
 
     @Resource
-    private FormActivityCreateQueue formActivityCreateQueueService;
+    private WfwApprovalActivityCreateQueue formActivityCreateQueueService;
 
     /**创建活动
      * @Description 通过活动申报来创建活动
@@ -44,7 +44,7 @@ public class FormActivityApiController {
      */
     @RequestMapping("create")
     public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, @RequestParam(value = "indexID") Integer formUserId, String flag, Integer marketId, Integer templateId) {
-        WfwFormCreateActivity formCreateActivity = WfwFormCreateActivity.builder()
+        WfwApprovalActivityCreateDTO formCreateActivity = WfwApprovalActivityCreateDTO.builder()
                 .fid(deptId)
                 .formId(formId)
                 .formUserId(formUserId)

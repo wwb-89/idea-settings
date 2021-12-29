@@ -1,8 +1,7 @@
 package com.chaoxing.activity.vo.manager;
 
-import com.alibaba.fastjson.JSONArray;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
-import com.chaoxing.activity.util.FormUtils;
+import com.chaoxing.activity.util.WfwFormUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +36,7 @@ public class WfwFormFieldVO {
 		return WfwFormFieldVO.builder()
 				.name(formField.getLabel())
 				.compt(formField.getCompt())
-				.options(FormUtils.getOptionsFormStructure(formField))
+				.options(WfwFormUtils.getOptionsFormStructure(formField))
 				.build();
 	}
 

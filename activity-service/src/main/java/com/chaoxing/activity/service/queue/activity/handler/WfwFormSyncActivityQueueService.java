@@ -37,9 +37,9 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
-import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.WfwFormAliasConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -191,7 +191,7 @@ public class WfwFormSyncActivityQueueService {
         Integer marketId = marketHandleService.getOrCreateWfwFormMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), formId, loginUser);
         Template template = templateQueryService.getMarketFirstTemplate(marketId);
         // 活动分类
-        String activityClassifyName = FormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_CLASSIFY);
+        String activityClassifyName = WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_CLASSIFY);
         Classify classify = classifyHandleService.getOrAddMarketClassify(marketId, activityClassifyName);
         // 封装活动创建信息数据
         ActivityCreateParamDTO activityCreateParam = ActivityCreateParamDTO.buildFromFormData(formUserRecord, classify.getId(), orgName);
@@ -220,7 +220,7 @@ public class WfwFormSyncActivityQueueService {
         if (signUpCreateParam != null) {
             WfwFormCreateResultDTO wfwFormCreateResult = createWfwFormId(templateId, operateUser);
             if (wfwFormCreateResult != null) {
-                String openFillInfo = FormUtils.getValue(formUserRecord, WfwFormAliasConstant.OPEN_FILL_INFO);
+                String openFillInfo = WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.OPEN_FILL_INFO);
                 signUpCreateParam.setFillInfo(Objects.equals("是", openFillInfo));
                 signUpCreateParam.setFormType(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
                 signUpCreateParam.setFillInfoFormId(wfwFormCreateResult.getFormId());
@@ -238,7 +238,7 @@ public class WfwFormSyncActivityQueueService {
         // 新增活动
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
-        String releaseStatus = FormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS);
+        String releaseStatus = WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS);
         // 发布状态值不存在或不为未发布，发布活动
         if (!Objects.equals(releaseStatus, "未发布")) {
             // 立即发布
@@ -295,7 +295,7 @@ public class WfwFormSyncActivityQueueService {
     * @return com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO
     */
     private SignUpCreateParamDTO packageSignUp(FormDataDTO formUserRecord, Integer templateId, Integer fid) {
-        String openSignUp = FormUtils.getValue(formUserRecord, "open_sign_up");
+        String openSignUp = WfwFormUtils.getValue(formUserRecord, "open_sign_up");
         Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
         SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
         signUpCreateParam.setOriginId(originId);
@@ -304,37 +304,37 @@ public class WfwFormSyncActivityQueueService {
         }
         if (Objects.equals(openSignUp, "是")) {
             // 报名时间
-            TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
+            TimeScopeDTO signUpTimeScope = WfwFormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
             if (signUpTimeScope.getStartTime() == null || signUpTimeScope.getEndTime() == null) {
                 LocalDateTime now = LocalDateTime.now();
                 if (signUpTimeScope.getStartTime() == null) {
-                    String signUpStartTimeStr = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "sign_up_start_time");
-                    LocalDateTime startTime = StringUtils.isBlank(signUpStartTimeStr) ? now : FormUtils.getTime(signUpStartTimeStr);
+                    String signUpStartTimeStr = WfwFormUtils.getValue(formUserRecord, "sign_up_start_time");
+                    LocalDateTime startTime = StringUtils.isBlank(signUpStartTimeStr) ? now : WfwFormUtils.getTime(signUpStartTimeStr);
                     signUpCreateParam.setStartTime(DateUtils.date2Timestamp(startTime));
                 }
                 if (signUpTimeScope.getEndTime() == null) {
-                    String signUpEndTimeStr = com.chaoxing.activity.util.FormUtils.getValue(formUserRecord, "sign_up_end_time");
-                    LocalDateTime endTime = StringUtils.isBlank(signUpEndTimeStr) ? now.plusMonths(1) : FormUtils.getTime(signUpEndTimeStr);
+                    String signUpEndTimeStr = WfwFormUtils.getValue(formUserRecord, "sign_up_end_time");
+                    LocalDateTime endTime = StringUtils.isBlank(signUpEndTimeStr) ? now.plusMonths(1) : WfwFormUtils.getTime(signUpEndTimeStr);
                     signUpCreateParam.setEndTime(DateUtils.date2Timestamp(endTime));
                 }
             } else {
                 signUpCreateParam.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
                 signUpCreateParam.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
             }
-            String signUpPersonLimit = FormUtils.getValue(formUserRecord, "sign_up_person_limit");
+            String signUpPersonLimit = WfwFormUtils.getValue(formUserRecord, "sign_up_person_limit");
             boolean personLimit = StringUtils.isNotBlank(signUpPersonLimit);
             signUpCreateParam.setLimitPerson(personLimit);
             if (personLimit) {
                 signUpCreateParam.setPersonLimit(Integer.valueOf(signUpPersonLimit));
             }
-            String signUpReview = FormUtils.getValue(formUserRecord, "sign_up_review");
+            String signUpReview = WfwFormUtils.getValue(formUserRecord, "sign_up_review");
             if (StringUtils.isNotBlank(signUpReview)) {
                 signUpCreateParam.setOpenAudit(Objects.equals(signUpReview, "是"));
             }
             // 通讯录参与范围
             FormDataItemDTO contactPublishAreas = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "contacts_participation_scope")).findFirst().orElse(null);
             if (contactPublishAreas != null) {
-                List<Integer> departmentIds = FormUtils.listDepartment(formUserRecord, "contacts_participation_scope")
+                List<Integer> departmentIds = WfwFormUtils.listDepartment(formUserRecord, "contacts_participation_scope")
                         .stream().map(DepartmentDTO::getId).collect(Collectors.toList());
                 List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid)
                         .stream()
@@ -408,7 +408,7 @@ public class WfwFormSyncActivityQueueService {
         Activity activity = activityQueryService.getById(activityId);
         activityUpdateParam = activityUpdateParam.buildFromActivity(activity);
         // 活动分类
-        String activityClassifyName = FormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_CLASSIFY);
+        String activityClassifyName = WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_CLASSIFY);
         Classify classify = classifyHandleService.getOrAddMarketClassify(activity.getMarketId(), activityClassifyName);
         Integer classifyId = Optional.ofNullable(classify).map(Classify::getId).orElse(null);
         activityUpdateParam.fillFromFormData(formUserRecord, classifyId);
@@ -500,7 +500,7 @@ public class WfwFormSyncActivityQueueService {
             return;
         }
         // 判断活动是否存在，若不存在，则不更新发布状态
-        Integer activityId = Optional.ofNullable(FormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_ID)).filter(StringUtils::isNotBlank).map(Integer::valueOf).orElse(null);
+        Integer activityId = Optional.ofNullable(WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_ID)).filter(StringUtils::isNotBlank).map(Integer::valueOf).orElse(null);
         Activity activity;
         if (activityId == null) {
             activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
