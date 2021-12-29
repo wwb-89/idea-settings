@@ -5,7 +5,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
-import com.chaoxing.activity.util.FormUtils;
+import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import com.google.common.collect.Lists;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,7 +57,7 @@ public class WfwFormApiController {
 					List<FormDataDTO> relatedRecords = wfwFormApiService.listFormRecord(bindFormId, fid);
 					String fieldAlias = relatedStructure.getAlias();
 					for (FormDataDTO formDatum : relatedRecords) {
-						String formValue = FormUtils.getValue(formDatum, fieldAlias);
+						String formValue = WfwFormUtils.getValue(formDatum, fieldAlias);
 						options.add(formValue);
 					}
 					fieldItem.setOptions(options);

@@ -5,10 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
+/**审批活动创建
  * @author wwb
  * @version ver 1.0
- * @className WfwFormCreateActivity
+ * @className WfwApprovalActivityCreateDTO
  * @description
  * @blame wwb
  * @date 2021-05-11 16:20:05
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WfwFormCreateActivity {
+public class WfwApprovalActivityCreateDTO {
 
     /** 创建机构id */
     private Integer fid;

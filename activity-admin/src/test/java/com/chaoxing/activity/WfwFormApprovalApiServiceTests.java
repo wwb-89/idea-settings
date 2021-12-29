@@ -1,7 +1,7 @@
 package com.chaoxing.activity;
 
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
-import com.chaoxing.activity.service.manager.wfw.WfwFormApprovalApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwApprovalApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class WfwFormApprovalApiServiceTests {
 
 	@Resource
-	private WfwFormApprovalApiService wfwFormApprovalApiService;
+	private WfwApprovalApiService wfwFormApprovalApiService;
 
 	@Test
 	public void listFormData() {

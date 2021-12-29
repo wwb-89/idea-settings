@@ -8,25 +8,24 @@ import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.form.*;
 import com.google.common.collect.Lists;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**表单工具类
  * @author wwb
  * @version ver 1.0
- * @className FormUtils
+ * @className WfwFormUtils
  * @description
  * @blame wwb
  * @date 2021-03-11 15:09:05
  */
-public class FormUtils {
+public class WfwFormUtils {
 
 	/** value的key */
 	public static final String VAL_KEY = "val";
@@ -54,8 +53,25 @@ public class FormUtils {
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 	);
 
-	private FormUtils() {
+	private WfwFormUtils() {
 
+	}
+
+	/**获取参数加密串
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-12-13 14:57:02
+	 * @param paramMap
+	 * @param key
+	 * @return java.lang.String
+	 */
+	public static String getEnc(TreeMap<String, Object> paramMap, String key) {
+		StringBuilder enc = new StringBuilder();
+		for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+			enc.append("[").append(entry.getKey()).append("=")
+					.append(entry.getValue()).append("]");
+		}
+		return DigestUtils.md5Hex(enc + "[" + key + "]");
 	}
 
 	/**表单是否存在某个字段
@@ -175,7 +191,7 @@ public class FormUtils {
 		LocalDate result = null;
 		String value = getValue(formData, alias);
 		if (StringUtils.isNotBlank(value)) {
-			for (DateTimeFormatter dateTimeFormatter : FormUtils.FORM_DATE_TIME_FORMATTERS) {
+			for (DateTimeFormatter dateTimeFormatter : WfwFormUtils.FORM_DATE_TIME_FORMATTERS) {
 				try {
 					result = LocalDate.parse(value, dateTimeFormatter);
 				} catch (Exception e) {
@@ -197,7 +213,7 @@ public class FormUtils {
 		LocalDateTime result = null;
 		String value = getValue(formDataDto, alias);
 		if (StringUtils.isNotBlank(value)) {
-			for (DateTimeFormatter dateTimeFormatter : FormUtils.FORM_DATE_TIME_FORMATTERS) {
+			for (DateTimeFormatter dateTimeFormatter : WfwFormUtils.FORM_DATE_TIME_FORMATTERS) {
 				try {
 					result = LocalDateTime.parse(value, dateTimeFormatter);
 				} catch (Exception e) {
@@ -210,7 +226,7 @@ public class FormUtils {
 	public static LocalDateTime getTime(String value) {
 		LocalDateTime result = null;
 		if (StringUtils.isNotBlank(value)) {
-			for (DateTimeFormatter dateTimeFormatter : FormUtils.FORM_DATE_TIME_FORMATTERS) {
+			for (DateTimeFormatter dateTimeFormatter : WfwFormUtils.FORM_DATE_TIME_FORMATTERS) {
 				try {
 					result = LocalDateTime.parse(value, dateTimeFormatter);
 				} catch (Exception e) {
@@ -264,9 +280,7 @@ public class FormUtils {
 			}
 		}
 		if (CollectionUtils.isEmpty(activityTimes)) {
-			// 添加开始结束时间
-			activityTimes.add("");
-			activityTimes.add("");
+			return null;
 		}
 		String startTimeStr = activityTimes.get(0);
 		String endTimeStr = activityTimes.get(1);
@@ -330,4 +344,62 @@ public class FormUtils {
 		}
 		return options;
 	}
+
+	public static List<String> listValue(FormDataDTO formData, String fieldAlias) {
+		List<String> values = Lists.newArrayList();
+		List<JSONObject> jsonObjects = listJsonValue(formData, fieldAlias);
+		if (CollectionUtils.isNotEmpty(jsonObjects)) {
+			for (JSONObject jsonObject : jsonObjects) {
+				String value = jsonObject.getString(VAL_KEY);
+				if (StringUtils.isNotBlank(value)) {
+					value = value.trim();
+					if (!values.contains(value)) {
+						values.add(value);
+					}
+				}
+			}
+		}
+		return values;
+	}
+
+	private static List<JSONObject> listJsonValue(FormDataDTO formData, String fieldAlias) {
+		List<FormDataItemDTO> items = formData.getFormData();
+		if (CollectionUtils.isNotEmpty(items)) {
+			for (FormDataItemDTO item : items) {
+				String alias = item.getAlias();
+				if (Objects.equals(fieldAlias, alias)) {
+					return item.getValues();
+				}
+			}
+		}
+		return null;
+	}
+
+	/**获取部门列表信息
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-08-31 14:25:47
+	 * @param formDataDto
+	 * @param alias
+	 * @return java.util.List<com.chaoxing.activity.dto.DepartmentDTO>
+	 */
+	public static List<DepartmentDTO> listDepartment(FormDataDTO formDataDto, String alias) {
+		List<DepartmentDTO> departments = Lists.newArrayList();
+		List<JSONObject> jsonValues = listJsonValue(formDataDto, alias);
+		if (CollectionUtils.isNotEmpty(jsonValues)) {
+			for (JSONObject jsonValue : jsonValues) {
+				if (jsonValue != null) {
+					String departmentIdStr = jsonValue.getString(DEPARTMENT_ID_KEY);
+					if (StringUtils.isNotBlank(departmentIdStr)) {
+						departments.add(DepartmentDTO.builder()
+								.id(Integer.parseInt(departmentIdStr))
+								.name(jsonValue.getString(DEPARTMENT_NAME_KEY))
+								.build());
+					}
+				}
+			}
+		}
+		return departments;
+	}
+
 }

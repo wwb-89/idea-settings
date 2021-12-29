@@ -1,7 +1,6 @@
 package com.chaoxing.activity;
 
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.manager.wfw.WfwFormApprovalApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwApprovalApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,7 +18,7 @@ import javax.annotation.Resource;
 public class FormApprovalApiServiceTests {
 
     @Resource
-    private WfwFormApprovalApiService formApprovalApiService;
+    private WfwApprovalApiService formApprovalApiService;
 
     @Test
     public void getFormData() {
@@ -34,15 +33,6 @@ public class FormApprovalApiServiceTests {
         Integer fid = 139378;
         Integer formId = 17251;
         formApprovalApiService.listFormRecord(fid, formId);
-    }
-
-    @Test
-    public void createActivity() {
-        Integer fid = 139378;
-        Integer formId = 17251;
-        Integer formUserId = 1959060;
-        Integer templateId = null;
-        formApprovalApiService.createActivity(fid, formId, formUserId, null, Activity.ActivityFlagEnum.NORMAL.getValue(), templateId);
     }
 
 }

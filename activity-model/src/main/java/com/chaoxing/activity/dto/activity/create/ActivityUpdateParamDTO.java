@@ -9,7 +9,7 @@ import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityPushReminder;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.FormUtils;
+import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -315,24 +315,24 @@ public class ActivityUpdateParamDTO {
 
 	public void fillFromFormData(FormDataDTO formData, Integer classifyId) {
 		// 活动名称
-		String activityName = FormUtils.getValue(formData, "activity_name");
+		String activityName = WfwFormUtils.getValue(formData, "activity_name");
 		setName(activityName);
 		// 封面
-		String coverCloudId = FormUtils.getCloudId(formData, "cover");
+		String coverCloudId = WfwFormUtils.getCloudId(formData, "cover");
 		if (StringUtils.isNotBlank(coverCloudId)) {
 			setCoverCloudId(coverCloudId);
 		}
 		// 开始时间、结束时间
-		TimeScopeDTO activityTimeScope = FormUtils.getTimeScope(formData, "activity_time");
-		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(FormUtils.getTimeScope(formData, "activity_time_scope"));
+		TimeScopeDTO activityTimeScope = WfwFormUtils.getTimeScope(formData, "activity_time");
+		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(WfwFormUtils.getTimeScope(formData, "activity_time_scope"));
 		if (activityTimeScope == null) {
 			LocalDateTime now = LocalDateTime.now();
-			String activityStartTimeStr = FormUtils.getValue(formData, "activity_start_time");
-			LocalDateTime startTime = StringUtils.isBlank(activityStartTimeStr) ? now : FormUtils.getTime(activityStartTimeStr);
+			String activityStartTimeStr = WfwFormUtils.getValue(formData, "activity_start_time");
+			LocalDateTime startTime = StringUtils.isBlank(activityStartTimeStr) ? now : WfwFormUtils.getTime(activityStartTimeStr);
 			setStartTimeStamp(DateUtils.date2Timestamp(startTime));
 
-			String activityEndTimeStr = FormUtils.getValue(formData, "activity_end_time");
-			LocalDateTime endTime = StringUtils.isBlank(activityEndTimeStr) ? startTime.plusMonths(1) : FormUtils.getTime(activityEndTimeStr);
+			String activityEndTimeStr = WfwFormUtils.getValue(formData, "activity_end_time");
+			LocalDateTime endTime = StringUtils.isBlank(activityEndTimeStr) ? startTime.plusMonths(1) : WfwFormUtils.getTime(activityEndTimeStr);
 			setEndTimeStamp(DateUtils.date2Timestamp(endTime));
 		} else {
 			setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
@@ -341,25 +341,25 @@ public class ActivityUpdateParamDTO {
 		// 活动分类
 		setActivityClassifyId(classifyId);
 		// 积分
-		String integralStr = FormUtils.getValue(formData, "integral_value");
+		String integralStr = WfwFormUtils.getValue(formData, "integral_value");
 		if (StringUtils.isNotBlank(integralStr)) {
 			setIntegral(BigDecimal.valueOf(Double.parseDouble(integralStr)));
 		}
 		// 主办方
-		String organisers = FormUtils.getValue(formData, "organisers");
+		String organisers = WfwFormUtils.getValue(formData, "organisers");
 		organisers = StringUtils.isBlank(organisers) ? getOrganisers() : organisers;
 		if (StringUtils.isNotBlank(organisers)) {
 			setOrganisers(organisers);
 		}
 		// 活动类型
-		String activityType = FormUtils.getValue(formData, "activity_type");
+		String activityType = WfwFormUtils.getValue(formData, "activity_type");
 		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
 
-		AddressDTO addressDto = FormUtils.getAddress(formData, "activity_address");
-		addressDto = Optional.ofNullable(addressDto).orElse(FormUtils.getAddress(formData, "location"));
-		String detailAddress = FormUtils.getValue(formData, "activity_detail_address");
+		AddressDTO addressDto = WfwFormUtils.getAddress(formData, "activity_address");
+		addressDto = Optional.ofNullable(addressDto).orElse(WfwFormUtils.getAddress(formData, "location"));
+		String detailAddress = WfwFormUtils.getValue(formData, "activity_detail_address");
 		detailAddress = Optional.ofNullable(detailAddress).orElse("");
-		String address = FormUtils.getValue(formData, "activity_address");
+		String address = WfwFormUtils.getValue(formData, "activity_address");
 		BigDecimal lng = null;
 		BigDecimal lat = null;
 		if (addressDto != null) {
@@ -381,27 +381,27 @@ public class ActivityUpdateParamDTO {
 		setDimension(lat);
 
 		// 简介
-		String introduction = FormUtils.getValue(formData, "introduction");
+		String introduction = WfwFormUtils.getValue(formData, "introduction");
 		introduction = Optional.ofNullable(introduction).orElse("");
 		setIntroduction(introduction);
 		// 是否开启评价
-		String openRating = FormUtils.getValue(formData, "is_open_rating");
+		String openRating = WfwFormUtils.getValue(formData, "is_open_rating");
 		setOpenRating(Objects.equals("是", openRating));
 		// 是否开启作品征集
-		String openWork = FormUtils.getValue(formData, "is_open_work");
+		String openWork = WfwFormUtils.getValue(formData, "is_open_work");
 		setOpenWork(Objects.equals("是", openWork));
 		// 学分
-		String credit = FormUtils.getValue(formData, "credit");
+		String credit = WfwFormUtils.getValue(formData, "credit");
 		if (StringUtils.isNotBlank(credit)) {
 			setCredit(new BigDecimal(credit));
 		}
 		// 学时
-		String period = FormUtils.getValue(formData, "period");
+		String period = WfwFormUtils.getValue(formData, "period");
 		if (StringUtils.isNotBlank(period)) {
 			setPeriod(new BigDecimal(period));
 		}
 		// 最大参与时长
-		String timeLengthUpperLimitStr = FormUtils.getValue(formData, "time_length_upper_limit");
+		String timeLengthUpperLimitStr = WfwFormUtils.getValue(formData, "time_length_upper_limit");
 		if (StringUtils.isNotBlank(timeLengthUpperLimitStr)) {
 			BigDecimal timeLengthUpperLimit = BigDecimal.valueOf(Double.parseDouble(timeLengthUpperLimitStr));
 			setTimeLengthUpperLimit(timeLengthUpperLimit);

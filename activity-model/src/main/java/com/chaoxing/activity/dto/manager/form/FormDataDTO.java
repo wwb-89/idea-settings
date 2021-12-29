@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.chaoxing.activity.dto.DepartmentDTO;
-import com.chaoxing.activity.util.FormUtils;
+import com.chaoxing.activity.util.WfwFormUtils;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -102,11 +102,11 @@ public class FormDataDTO {
 	}
 
 	public String getStringValue(String alias) {
-		return FormUtils.getValue(this, alias);
+		return WfwFormUtils.getValue(this, alias);
 	}
 
 	public Integer getIntegerValue(String alias) {
-		String value = FormUtils.getValue(this, alias);
+		String value = WfwFormUtils.getValue(this, alias);
 		if (StringUtils.isNotBlank(value)) {
 			return Integer.parseInt(value);
 		}
@@ -114,7 +114,7 @@ public class FormDataDTO {
 	}
 
 	public Boolean getBooleanValue(String alias) {
-		String value = FormUtils.getValue(this, alias);
+		String value = WfwFormUtils.getValue(this, alias);
 		if (StringUtils.isNotBlank(value)) {
 			return Boolean.parseBoolean(value);
 		}
@@ -122,24 +122,24 @@ public class FormDataDTO {
 	}
 
 	public LocalDateTime getTimeAliasValue(String alias) {
-		return FormUtils.getTime(this, alias);
+		return WfwFormUtils.getTime(this, alias);
 	}
 
 	public Long getLongValue(String alias) {
-		String value = FormUtils.getValue(this, alias);
+		String value = WfwFormUtils.getValue(this, alias);
 		return StringUtils.isNotBlank(value) ? Long.parseLong(value) : 0L;
 	}
 
 	public FormUserDTO getUserAliasValue(String alias) {
-		return FormUtils.getUser(this, alias);
+		return WfwFormUtils.getUser(this, alias);
 	}
 
 	public DepartmentDTO getDepartmentAliasValue(String alias) {
-		return FormUtils.getDepartment(this, alias);
+		return WfwFormUtils.getDepartment(this, alias);
 	}
 
 	public FormImageDTO getImage(String alias) {
-		return FormUtils.getImage(this, alias);
+		return WfwFormUtils.getImage(this, alias);
 	}
 
 	public String getValueByAlias(String aliasName) {
