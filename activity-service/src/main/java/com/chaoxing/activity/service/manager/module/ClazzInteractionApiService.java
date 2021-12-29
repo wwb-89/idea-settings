@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.util.Objects;
 
-/**
+/**班级互动api服务
  * @description:
  * @author: huxiaolong
  * @date: 2021/12/2 5:30 下午
@@ -29,6 +29,10 @@ public class ClazzInteractionApiService {
 
     /** 活动班级互动创建推送地址 */
     private static final String COURSE_PUSH_URL = DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/course/push";
+    /** 用户加入互动班级 */
+    private static final String CLASS_ADD_USER_URL = DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/api/join-class?activityId=%d&uid=%d";
+    /** 用户移除互动班级 */
+    private static final String CLASS_REMOVE_USER_URL = DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/api/exit-class?activityId=%d&uid=%d";
 
     @Resource
     private RestTemplate restTemplate;
@@ -69,5 +73,44 @@ public class ClazzInteractionApiService {
         }
     }
 
+    /**班级添加用户
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-29 18:16:06
+     * @param uid
+     * @param activityId
+     * @return void
+    */
+    public void classAddUser(Integer uid, Integer activityId) {
+        String url = String.format(CLASS_ADD_USER_URL, activityId, uid);
+        String result = restTemplate.getForObject(url, String.class);
+        JSONObject jsonObject = JSON.parseObject(result);
+        Integer code = jsonObject.getInteger("code");
+        if (!Objects.equals(code, 1)) {
+            String message = jsonObject.getString("message");
+            log.error("根据uid:{}, 活动id:{} 将用户加入班级error:{}", uid, activityId, message);
+            throw new BusinessException(message);
+        }
+    }
+
+    /**班级移除用户
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-29 18:17:21
+     * @param uid
+     * @param activityId
+     * @return void
+    */
+    public void classRemoveUser(Integer uid, Integer activityId) {
+        String url = String.format(CLASS_REMOVE_USER_URL, activityId, uid);
+        String result = restTemplate.getForObject(url, String.class);
+        JSONObject jsonObject = JSON.parseObject(result);
+        Integer code = jsonObject.getInteger("code");
+        if (!Objects.equals(code, 1)) {
+            String message = jsonObject.getString("message");
+            log.error("根据uid:{}, 活动id:{} 将用户移除班级error:{}", uid, activityId, message);
+            throw new BusinessException(message);
+        }
+    }
 
 }

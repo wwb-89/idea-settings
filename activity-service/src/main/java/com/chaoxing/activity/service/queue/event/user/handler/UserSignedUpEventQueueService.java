@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
 import com.chaoxing.activity.service.queue.IntegralPushQueue;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueue;
+import com.chaoxing.activity.service.queue.activity.ClazzInteractionAddUserQueue;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueue;
 import com.chaoxing.activity.service.queue.user.UserSignStatSummaryQueue;
 import com.chaoxing.activity.util.DateUtils;
@@ -57,6 +58,8 @@ public class UserSignedUpEventQueueService {
     private SystemNoticeTemplateService systemNoticeTemplateService;
     @Resource
     private MarketNoticeTemplateService marketNoticeTemplateService;
+    @Resource
+    private ClazzInteractionAddUserQueue clazzInteractionAddUserQueue;
 
     /** 活动时间格式化 */
     private static final DateTimeFormatter ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
@@ -80,6 +83,11 @@ public class UserSignedUpEventQueueService {
         activityStatSummaryQueue.push(activityId);
         // 用户汇总表的报名签到统计信息需要更新
         userSignStatSummaryQueue.push(new UserSignStatSummaryQueue.QueueParamDTO(uid, activityId));
+        // 如果班级互动需要通知将用户加入班级
+        Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
+        if (openClazzInteraction) {
+            clazzInteractionAddUserQueue.push(new ClazzInteractionAddUserQueue.QueueParamDTO(uid, activityId));
+        }
         // 记录用户行为
         UserActionRecordQueue.QueueParamDTO queueParam = new UserActionRecordQueue.QueueParamDTO(uid, activityId, UserActionTypeEnum.SIGN_UP, UserActionEnum.SIGNED_UP, String.valueOf(eventOrigin.getSignUpId()), DateUtils.timestamp2Date(eventOrigin.getTimestamp()));
         userActionRecordQueue.push(queueParam);
