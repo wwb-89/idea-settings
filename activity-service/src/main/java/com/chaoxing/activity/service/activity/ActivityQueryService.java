@@ -241,20 +241,6 @@ public class ActivityQueryService {
 		return page;
 	}
 
-	/**枫叶查询机构能参与的活动（机构在参与范围内）
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-10-09 16:36:38
-	 * @param page
-	 * @param activityQuery
-	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	 */
-	public Page<Activity> listOrgParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
-		calDateScope(activityQuery);
-		page = activityMapper.pageOrgParticipate(page, activityQuery);
-		return page;
-	}
-
 	/**鄂尔多斯可参与活动查询
 	 * @Description
 	 * @author huxiaolong

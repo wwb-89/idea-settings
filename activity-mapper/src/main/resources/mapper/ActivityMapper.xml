@@ -166,15 +166,16 @@
                     <choose>
                         <when test="params.minTimeStr != null and params.minTimeStr != '' and params.maxTimeStr != null and params.maxTimeStr != ''">
                             <!--都不为空-->
-                            AND t.start_time BETWEEN #{params.minTimeStr} AND #{params.maxTimeStr}
+                            AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
+                            AND t.end_time >= #{params.minTimeStr}
                         </when>
                         <otherwise>
                             <choose>
                                 <when test="params.minTimeStr != null and params.minTimeStr != ''">
-                                    AND t.start_time >= #{params.minTimeStr}
+                                    AND #{params.minTimeStr} BETWEEN t.start_time AND t.end_time
                                 </when>
                                 <otherwise>
-                                    AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
+                                    AND #{params.maxTimeStr} BETWEEN t.start_time AND t.end_time
                                 </otherwise>
                             </choose>
                         </otherwise>
@@ -274,15 +275,16 @@
                 <choose>
                     <when test="params.minTimeStr != null and params.minTimeStr != '' and params.maxTimeStr != null and params.maxTimeStr != ''">
                         <!--都不为空-->
-                        AND t.start_time BETWEEN #{params.minTimeStr} AND #{params.maxTimeStr}
+                        AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
+                        AND t.end_time >= #{params.minTimeStr}
                     </when>
                     <otherwise>
                         <choose>
                             <when test="params.minTimeStr != null and params.minTimeStr != ''">
-                                AND t.start_time >= #{params.minTimeStr}
+                                AND #{params.minTimeStr} BETWEEN t.start_time AND t.end_time
                             </when>
                             <otherwise>
-                                AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
+                                AND #{params.maxTimeStr} BETWEEN t.start_time AND t.end_time
                             </otherwise>
                         </choose>
                     </otherwise>
@@ -999,116 +1001,6 @@
             t.id DESC
     </select>
 
-    <select id="pageOrgParticipate" resultMap="BaseResultMap">
-        SELECT
-            <choose>
-                <when test="params.marketId != null">
-                    <include refid="Base_Market_Column_List"></include>,
-                    t4.is_released,
-                    t4.status,
-                    t4.is_top top
-                </when>
-                <otherwise>
-                    <include refid="Base_Column_List"></include>
-                </otherwise>
-            </choose>
-            ,t3.name activityClassifyName
-        FROM
-            t_activity t
-            <if test="params.marketId == null">
-                INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
-                <if test="params.topFid != null">
-                    AND t1.fid = #{params.topFid}
-                </if>
-            </if>
-            <!--类型-->
-            LEFT JOIN t_classify t3 ON t.activity_classify_id = t3.id
-            <if test="params.marketId != null">
-                INNER JOIN t_activity_market t4 ON t4.activity_id = t.id
-            </if>
-        WHERE
-            <!--状态-->
-            <choose>
-                <when test="params.status != null">
-                    t.`status` = #{params.status}
-                </when>
-                <otherwise>
-                    <choose>
-                        <when test="params.statusList != null and params.statusList.size() != 0">
-                            t.`status` IN
-                            <foreach collection="params.statusList" index="key" item="value" open="(" close=")" separator=",">
-                                #{value}
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            t.`status` IN ( 2, 3, 4 )
-                        </otherwise>
-                    </choose>
-                </otherwise>
-            </choose>
-            <choose>
-                <when test="params.marketId != null">
-                    AND t.market_id = #{params.marketId}
-                </when>
-                <otherwise>
-                    <if test="params.flag != null and params.flag != ''">
-                        AND t.activity_flag = #{params.flag}
-                    </if>
-                </otherwise>
-            </choose>
-            <!--时间-->
-            <if test="(params.minTimeStr != null and params.minTimeStr != '') or (params.maxTimeStr != null and params.maxTimeStr != '')">
-                <choose>
-                    <when test="params.minTimeStr != null and params.minTimeStr != '' and params.maxTimeStr != null and params.maxTimeStr != ''">
-                        <!--都不为空-->
-                        AND t.start_time BETWEEN minTimeStr AND minTimeStr
-                    </when>
-                    <otherwise>
-                        <choose>
-                            <when test="params.minTimeStr != null and params.minTimeStr != ''">
-                                AND t.start_time >= #{params.minTimeStr}
-                            </when>
-                            <otherwise>
-                                AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
-                            </otherwise>
-                        </choose>
-                    </otherwise>
-                </choose>
-            </if>
-            <!--分类-->
-            <choose>
-                <when test="params.activityClassifyId != null">
-                    AND t3.id = #{params.activityClassifyId}
-                </when>
-                <otherwise>
-                    <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
-                        AND t3.name = #{params.activityClassifyName}
-                    </if>
-                </otherwise>
-            </choose>
-            <if test="params.activityType != null and params.activityType != ''">
-                AND t.activity_type = #{params.activityType}
-            </if>
-            <if test="params.sw != null and params.sw != ''">
-                AND (
-                t.`name` LIKE CONCAT('%', #{params.sw}, '%')
-                OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
-                )
-            </if>
-        GROUP BY
-            t.id
-        ORDER BY
-            <trim suffixOverrides=",">
-                <if test="params.marketId != null">
-                    t4.is_top DESC,
-                </if>
-                FIELD( t.`status`, 2, 3, 4 ),
-                <if test="params.marketId == null and params.topFid != null">
-                    t1.fid <![CDATA[<>]]> #{params.topFid},
-                </if>
-                t.start_time DESC
-            </trim>
-    </select>
     <select id="createParticipateActivityPage" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
