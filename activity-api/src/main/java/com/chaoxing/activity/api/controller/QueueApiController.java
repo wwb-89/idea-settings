@@ -12,12 +12,16 @@ import com.chaoxing.activity.service.queue.user.OrgUserDataPushQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -254,6 +258,40 @@ public class QueueApiController {
 			}
 		}
 
+		return RestRespDTO.success();
+	}
+
+	/**初始化指定活动的开始结束时间任务队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-30 20:05:27
+	 * @param idStrs
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@PostMapping("init/activity_start_end/specified")
+	public RestRespDTO initSpecifiedActivityStartEndTimeEvent(String idStrs) {
+		if (StringUtils.isNotBlank(idStrs)) {
+			List<Integer> ids = new ArrayList(Arrays.asList(idStrs.split(",")));
+			List<Activity> activities = activityQueryService.listByIds(ids);
+			if (CollectionUtils.isNotEmpty(activities)) {
+				Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
+				for (Activity activity : activities) {
+					ActivityStartTimeReachEventOrigin startEventOrigin = ActivityStartTimeReachEventOrigin.builder()
+							.activityId(activity.getId())
+							.startTime(activity.getStartTime())
+							.timestamp(timestamp)
+							.build();
+					activityStartTimeReachEventQueue.push(startEventOrigin);
+
+					ActivityEndTimeReachEventOrigin endEventOrigin = ActivityEndTimeReachEventOrigin.builder()
+							.activityId(activity.getId())
+							.endTime(activity.getEndTime())
+							.timestamp(timestamp)
+							.build();
+					activityEndTimeReachEventQueue.push(endEventOrigin);
+				}
+			}
+		}
 		return RestRespDTO.success();
 	}
 
