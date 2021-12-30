@@ -16,7 +16,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
-import com.chaoxing.activity.service.activity.engine.TemplateCustomAppConfigService;
+import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
@@ -97,7 +97,7 @@ public class ActivityManageController {
 	@Resource
 	private TagQueryService tagQueryService;
 	@Resource
-	private TemplateCustomAppConfigService templateCustomAppConfigService;
+	private CustomAppConfigQueryService customAppConfigQueryService;
 
 	/**活动管理主页
 	 * @Description 
@@ -145,9 +145,10 @@ public class ActivityManageController {
 		if (activity.getOpenClazzInteraction()) {
 			clazzInteractionMenus = ClazzInteractionDTO.listClazzInteractionMenus(activity, operateUid, loginUser.getFid());
 		}
-		List<TemplateCustomAppConfig> customAppConfigs = Lists.newArrayList();
-		if (activity.getOpenCustomAppConfig()) {
-			customAppConfigs = templateCustomAppConfigService.listByTemplateId(activity.getTemplateId());
+		List<CustomAppConfig> customAppConfigs = Lists.newArrayList();
+		List<Integer> enableCustomAppTplComponentIds = customAppConfigQueryService.listEnabledActivityCustomAppTplComponentId(activityId);
+		if (CollectionUtils.isNotEmpty(enableCustomAppTplComponentIds)) {
+			customAppConfigs = customAppConfigQueryService.listByTplComponentIds(enableCustomAppTplComponentIds);
 		}
 		model.addAttribute("clazzInteractionMenus", clazzInteractionMenus);
 		model.addAttribute("customAppConfigs", customAppConfigs);
@@ -296,6 +297,10 @@ public class ActivityManageController {
 		// 活动标签
 		List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(activityFid));
 		model.addAttribute("tags", tags);
+
+		// 启用的自定义应用列表
+		List<Integer> enableCustomAppTplComponentIds = customAppConfigQueryService.listEnabledActivityCustomAppTplComponentId(activityId);
+		model.addAttribute("customAppEnableTplComponentIds", enableCustomAppTplComponentIds);
 
 		model.addAttribute("workDomain", DomainConstant.WORK);
 		model.addAttribute("xueyaDomain", DomainConstant.XUEYA);

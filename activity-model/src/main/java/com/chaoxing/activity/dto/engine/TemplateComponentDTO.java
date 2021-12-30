@@ -3,7 +3,7 @@ package com.chaoxing.activity.dto.engine;
 import com.chaoxing.activity.model.ComponentField;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.model.SignUpFillInfoType;
-import com.chaoxing.activity.model.TemplateCustomAppConfig;
+import com.chaoxing.activity.model.CustomAppConfig;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,9 +67,7 @@ public class TemplateComponentDTO {
     /** 报名信息提报配置 */
     private SignUpFillInfoType signUpFillInfoType;
     /** 自定义应用配置列表 */
-    private List<TemplateCustomAppConfig> customAppConfigs;
-    /** 被删除的自定义应用配置ids */
-    private List<Integer> removeCustomAppConfigIds;
+    private List<CustomAppConfig> customAppConfigs;
 
     private Integer originId;
 

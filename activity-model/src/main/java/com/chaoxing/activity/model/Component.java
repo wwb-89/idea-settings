@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -70,6 +71,12 @@ public class Component {
     private List<ComponentField> componentFields;
     @TableField(exist = false)
     private List<String> fieldValues;
+    /** 自定义应用配置列表 */
+    @TableField(exist = false)
+    private List<CustomAppConfig> customAppConfigs;
+    /** 被删除的自定义应用配置ids */
+    @TableField(exist = false)
+    private List<Integer> removeCustomAppConfigIds;
 
     /**获取自定义组件类型
     * @Description 
@@ -90,7 +97,8 @@ public class Component {
         INT("整数", "int"),
         DECIMAL("小数", "decimal"),
         RADIO("单选", "radio"),
-        CHECKBOX("多选", "checkbox");
+        CHECKBOX("多选", "checkbox"),
+        CUSTOM_APP("自定义应用", "custom_app");
 
         private final String name;
         private final String value;
@@ -142,7 +150,7 @@ public class Component {
     }
 
     public boolean isSystemComponent() {
-        return getSystem();
+        return Optional.ofNullable(getSystem()).orElse(false);
     }
 
     /** 系统组件枚举
@@ -161,8 +169,7 @@ public class Component {
         SIGN_UP_FILL_INFO("报名填报信息", "sign_up_fill_info"),
         COMPANY_SIGN_UP("企业报名", "company_sign_up"),
         SIGN_UP("报名", "sign_up"),
-        SIGN_IN_OUT("签到", "sign_in_out"),
-        CUSTOM_APPLICATION("自定义应用", "custom_application");
+        SIGN_IN_OUT("签到", "sign_in_out");
 
         private final String name;
         private final String value;

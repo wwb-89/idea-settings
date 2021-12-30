@@ -137,6 +137,8 @@ public class ActivityCreateParamDTO {
 	private List<Integer> sucTemplateComponentIds;
 	/** 报名条件配置列表 */
 	private List<SignUpCondition> signUpConditions;
+	/** 自定义应用启用模板组件id列表 */
+	private List<Integer> customAppEnableTplComponentIds;
 	/** 操作用户 */
 	private LoginUserDTO loginUser;
 	/** 创建人uid */
@@ -157,8 +159,6 @@ public class ActivityCreateParamDTO {
 	private Integer certificateTemplateId;
 	/** 是否开启推送提醒 */
 	private Boolean openPushReminder;
-	/** 是否开启自定义应用配置 */
-	private Boolean openCustomAppConfig;
 
 	private ActivityPushReminder activityPushReminder;
 
@@ -221,7 +221,6 @@ public class ActivityCreateParamDTO {
 				.courseId(getCourseId())
 				.certificateTemplateId(getCertificateTemplateId())
 				.openPushReminder(getOpenPushReminder())
-				.openCustomAppConfig(getOpenCustomAppConfig())
 				.build();
 	}
 
@@ -294,13 +293,13 @@ public class ActivityCreateParamDTO {
 				.createFid(activity.getCreateFid())
 				.sucTemplateComponentIds(Lists.newArrayList())
 				.signUpConditions(Lists.newArrayList())
+				.customAppEnableTplComponentIds(Lists.newArrayList())
 				.activityComponentValues(Lists.newArrayList())
 				.openClazzInteraction(activity.getOpenClazzInteraction())
 				.clazzId(activity.getClazzId())
 				.courseId(activity.getCourseId())
 				.certificateTemplateId(activity.getCertificateTemplateId())
 				.openPushReminder(activity.getOpenPushReminder())
-				.openCustomAppConfig(activity.getOpenCustomAppConfig())
 				.build();
 	}
 
@@ -357,7 +356,6 @@ public class ActivityCreateParamDTO {
 		this.openGroup = Optional.ofNullable(openGroup).orElse(false);
 		this.openClazzInteraction = Optional.ofNullable(openClazzInteraction).orElse(false);
 		this.openPushReminder = Optional.ofNullable(openPushReminder).orElse(false);
-		this.openCustomAppConfig = Optional.ofNullable(openCustomAppConfig).orElse(false);
 	}
 
 	/**从表单数据中获取需要创建的活动

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 /**
  * 模板自定义应用配置表
- * @className: TemplateCustomAppConfig, table_name: t_template_custom_app_config
+ * @className: CustomAppConfig, table_name: t_custom_app_config
  * @Description:
  * @author: mybatis generator
  * @date: 2021-12-23 11:33:22
@@ -21,14 +21,16 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_template_custom_app_config")
-public class TemplateCustomAppConfig {
+@TableName(value = "t_custom_app_config")
+public class CustomAppConfig {
 
     /** 主键id */
     @TableId(type = IdType.AUTO)
     private Integer id;
     /** 自定义应用模板组件id; column: template_component_id */
     private Integer templateComponentId;
+    /** 自定义组件id; column: component_id */
+    private Integer componentId;
     /** 链接类型，frontend：前端，backend：后端; column: type */
     private String type;
     /** 链接标题; column: title */

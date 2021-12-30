@@ -32,6 +32,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
+import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
@@ -135,6 +136,8 @@ public class ActivityQueryService {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityPushReminderService activityPushReminderService;
+	@Resource
+	private CustomAppConfigQueryService customAppConfigQueryService;
 
 	/**查询参与的活动
 	 * @Description
@@ -1545,6 +1548,9 @@ public class ActivityQueryService {
 		// 启用的报名条件
 		List<Integer> enableSucTplComponentIds = signUpConditionService.listActivityEnabledTemplateComponentId(originActivityId);
 		activityCreateParam.setSucTemplateComponentIds(enableSucTplComponentIds);
+		// 启用的自定义应用模板组件id列表
+		List<Integer> enableCustomAppTplComponentIds = customAppConfigQueryService.listEnabledActivityCustomAppTplComponentId(originActivityId);
+		activityCreateParam.setCustomAppEnableTplComponentIds(enableCustomAppTplComponentIds);
 		// 启用的报名条件列表
 		List<SignUpCondition> signUpConditions = signUpConditionService.listEditActivityConditions(originActivityId, originActivity.getTemplateId());
 		activityCreateParam.setSignUpConditions(signUpConditions);

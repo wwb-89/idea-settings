@@ -6,14 +6,19 @@ import com.chaoxing.activity.mapper.ComponentFieldMapper;
 import com.chaoxing.activity.mapper.ComponentMapper;
 import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.ComponentField;
+import com.chaoxing.activity.model.CustomAppConfig;
+import com.chaoxing.activity.service.activity.engine.CustomAppConfigHandleService;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author huxiaolong
@@ -30,6 +35,8 @@ public class ComponentHandleService {
     private ComponentMapper componentMapper;
     @Autowired
     private ComponentFieldMapper componentFieldMapper;
+    @Resource
+    private CustomAppConfigHandleService customAppConfigHandleService;
 
 
     /**新增自定义组件
@@ -45,16 +52,21 @@ public class ComponentHandleService {
         component.setCreateUid(uid);
         component.setUpdateUid(uid);
         componentMapper.insert(component);
+        Integer componentId = component.getId();
         List<ComponentField> componentFields = component.getComponentFields();
-        component = componentMapper.selectById(component.getId());
         if (CollectionUtils.isNotEmpty(componentFields)) {
             for (ComponentField field : componentFields) {
                 field.setCreateUid(uid);
                 field.setUpdateUid(uid);
-                field.setComponentId(component.getId());
+                field.setComponentId(componentId);
             }
             componentFieldMapper.batchAdd(componentFields);
             component.setComponentFields(componentFields);
+        }
+        List<CustomAppConfig> customAppConfigs = component.getCustomAppConfigs();
+        if (CollectionUtils.isNotEmpty(customAppConfigs)) {
+            customAppConfigs.forEach(v -> v.setComponentId(componentId));
+            customAppConfigHandleService.add(customAppConfigs);
         }
         return component;
     }
@@ -91,6 +103,12 @@ public class ComponentHandleService {
                 v.setComponentId(component.getId());
             });
             componentFieldMapper.batchAdd(component.getComponentFields());
+        }
+        List<Integer> removeCustomAppConfigIds = component.getRemoveCustomAppConfigIds();
+        List<CustomAppConfig> customAppConfigs = Optional.ofNullable(component.getCustomAppConfigs()).orElse(Lists.newArrayList());
+        if (CollectionUtils.isNotEmpty(removeCustomAppConfigIds) || CollectionUtils.isNotEmpty(customAppConfigs)) {
+            customAppConfigs.forEach(v -> v.setComponentId(component.getId()));
+            customAppConfigHandleService.updateComponentCustomAppConfigs(component.getRemoveCustomAppConfigIds(), customAppConfigs);
         }
         return component;
     }

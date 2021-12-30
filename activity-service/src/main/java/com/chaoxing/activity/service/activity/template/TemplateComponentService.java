@@ -8,9 +8,9 @@ import com.chaoxing.activity.mapper.ComponentFieldMapper;
 import com.chaoxing.activity.mapper.TemplateComponentMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
+import com.chaoxing.activity.service.activity.engine.CustomAppConfigHandleService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
-import com.chaoxing.activity.service.activity.engine.TemplateCustomAppConfigService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -47,7 +47,7 @@ public class TemplateComponentService {
     @Resource
     private WfwFormApiService wfwFormApiService;
     @Resource
-    private TemplateCustomAppConfigService templateCustomAppConfigService;
+    private CustomAppConfigHandleService customAppConfigHandleService;
 
 
     /**根据模版id查询模版组件关联
@@ -171,9 +171,6 @@ public class TemplateComponentService {
             } else if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
                 // 报名填报信息的模板组件id为报名的模板组件id
                 sufiTplComponentIds.add(v.getPid());
-            } else if (Objects.equals(Component.SystemComponentCodeEnum.CUSTOM_APPLICATION.getValue(), v.getCode())) {
-                // 查询自定义应用列表
-                v.setCustomAppConfigs(templateCustomAppConfigService.listByTemplateComponentId(v.getId()));
             }
         });
         Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listWithTemplateDetailsByTplComponentIds(sucTplComponentIds).stream()
@@ -359,9 +356,6 @@ public class TemplateComponentService {
                     signUpFillInfoTypeService.updateById(signUpFillInfoType);
                 }
             }
-            if (CollectionUtils.isNotEmpty(v.getCustomAppConfigs()) || CollectionUtils.isNotEmpty(v.getRemoveCustomAppConfigIds())) {
-                templateCustomAppConfigService.handleTemplateCustomAppConfigs(v.getId(), v.getRemoveCustomAppConfigIds(), v.getCustomAppConfigs());
-            }
         });
     }
 
@@ -383,9 +377,9 @@ public class TemplateComponentService {
             templateComponent.getSignUpFillInfoType().setTemplateComponentId(templateComponent.getPid());
             signUpFillInfoTypeService.add(templateComponent.getSignUpFillInfoType());
         }
-        // 若自定义应用配置列表不为空或者待删除的自定义应用ids不为空，则该组件为自定义应用配置
-        if (CollectionUtils.isNotEmpty(templateComponent.getCustomAppConfigs()) || CollectionUtils.isNotEmpty(templateComponent.getRemoveCustomAppConfigIds())) {
-            templateCustomAppConfigService.handleTemplateCustomAppConfigs(templateComponent.getId(), templateComponent.getRemoveCustomAppConfigIds(), templateComponent.getCustomAppConfigs());
+        if (Objects.equals(templateComponent.getType(), Component.TypeEnum.CUSTOM_APP.getValue())) {
+            // 更新自定义应用配置中缺失的templateComponentId
+            customAppConfigHandleService.updateAppConfigTplComponentId(templateComponent);
         }
     }
 
