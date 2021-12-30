@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.queue.activity.handler;
 import com.chaoxing.activity.dto.*;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
+import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
@@ -312,7 +313,11 @@ public class WfwApprovalActivityCreateQueueService {
     }
 
     public TimeScopeDTO resolveSignUpTime(FormDataDTO formData) {
-        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formData, "sign_up_time");
+        return resolveSignUpTime(formData.getFormData());
+    }
+
+    public TimeScopeDTO resolveSignUpTime(List<FormDataItemDTO> formDataItems) {
+        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formDataItems, "sign_up_time");
         LocalDateTime startTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getStartTime).orElse(LocalDateTime.now());
         LocalDateTime endTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getEndTime).orElse(startTime.plusMonths(1));
         return TimeScopeDTO.builder()
@@ -322,8 +327,12 @@ public class WfwApprovalActivityCreateQueueService {
     }
 
     public TimeScopeDTO resolveSignInTime(FormDataDTO formData, LocalDateTime activityStartTime) {
+        return resolveSignInTime(formData.getFormData(), activityStartTime);
+    }
+
+    public TimeScopeDTO resolveSignInTime(List<FormDataItemDTO> formDataItems, LocalDateTime activityStartTime) {
         activityStartTime = Optional.ofNullable(activityStartTime).orElse(LocalDateTime.now());
-        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formData, "sign_in_time");
+        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formDataItems, "sign_in_time");
         LocalDateTime startTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getStartTime).orElse(activityStartTime.minusHours(1));
         LocalDateTime endTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getEndTime).orElse(null);
         return TimeScopeDTO.builder()
@@ -333,8 +342,12 @@ public class WfwApprovalActivityCreateQueueService {
     }
 
     public TimeScopeDTO resolveSignOutTime(FormDataDTO formData, LocalDateTime activityStartTime) {
+        return resolveSignOutTime(formData.getFormData(), activityStartTime);
+    }
+
+    public TimeScopeDTO resolveSignOutTime(List<FormDataItemDTO> formDataItems, LocalDateTime activityStartTime) {
         activityStartTime = Optional.ofNullable(activityStartTime).orElse(LocalDateTime.now());
-        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formData, "sign_out_time");
+        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formDataItems, "sign_out_time");
         LocalDateTime startTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getStartTime).orElse(activityStartTime);
         LocalDateTime endTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getEndTime).orElse(null);
         return TimeScopeDTO.builder()

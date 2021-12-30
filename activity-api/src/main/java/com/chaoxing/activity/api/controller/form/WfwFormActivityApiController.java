@@ -6,7 +6,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
-import com.chaoxing.activity.dto.manager.form.FormDataDTO;
+import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.service.queue.activity.WfwFormSyncActivityQueue;
 import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 /**万能表单活动服务
  * @author wwb
@@ -52,14 +53,14 @@ public class WfwFormActivityApiController {
     public JSONObject addValidate(Integer formId, Integer uid, Integer fid, String op, String formData) {
         boolean addAble = true;
         String message = "成功";
-        FormDataDTO formDataDto = JSON.parseObject(formData, FormDataDTO.class);
-        TimeScopeDTO activityTimeScope = ActivityCreateParamDTO.resolveActivityTime(formDataDto);
+        List<FormDataItemDTO> formDataItems = JSON.parseArray(formData, FormDataItemDTO.class);
+        TimeScopeDTO activityTimeScope = ActivityCreateParamDTO.resolveActivityTime(formDataItems);
         if (activityTimeScope.getEndTime().compareTo(activityTimeScope.getStartTime()) <= 0) {
             addAble = false;
             message = "活动结束时间必须大于开始时间";
         }
         // 报名时间
-        TimeScopeDTO signUpTimeScope = wfwFormSyncActivityQueueService.resolveSignUpTime(formDataDto);
+        TimeScopeDTO signUpTimeScope = wfwFormSyncActivityQueueService.resolveSignUpTime(formDataItems);
         if (signUpTimeScope.getEndTime().compareTo(signUpTimeScope.getStartTime()) <= 0) {
             addAble = false;
             message = "报名结束时间必须大于开始时间";
