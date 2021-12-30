@@ -54,23 +54,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityCollectionHandleService activityCollectionHandleService;
 	@Resource
-	private SignApiService signApiService;
-	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
-
-	/**加载预告的活动列表
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2020-11-25 15:58:40
-	 * @param request
-	 * @param data
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	 */
-	@Deprecated
-	@RequestMapping("list/forecast/activities")
-	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
-		return RestRespDTO.success(Lists.newArrayList());
-	}
 
 	/**分页查询可参与的活动列表
 	 * keepOldRule时，沿用旧的规则查询已发布、进行中、已结束的活动
