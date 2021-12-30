@@ -201,7 +201,9 @@ public class ActivityMhDataCenterApiController {
         Map<Integer, SignStatDTO> signStatMap = signApiService.statSignSignUps(signIds).stream().collect(Collectors.toMap(SignStatDTO::getId, v -> v, (v1, v2) -> v2));
         Map<Integer, List<ActivityComponentValueDTO>> activityComponentValuesMap = activityComponentValueService.listActivityComponentValues(activityTemplateMap);
 
-        Map<Integer, String> introductionMap = activityQueryService.listDetailByActivityIds(activityIds).stream().collect(Collectors.toMap(ActivityDetail::getActivityId, v -> HtmlUtil.cleanHtmlTag(v.getIntroduction()), (v1, v2) -> v2));
+        Map<Integer, String> introductionMap = activityQueryService.listDetailByActivityIds(activityIds)
+                .stream()
+                .collect(Collectors.toMap(ActivityDetail::getActivityId, v -> HtmlUtil.cleanHtmlTag(v.getIntroduction()).replaceAll(HtmlUtil.NBSP, " "), (v1, v2) -> v2));
 
         for (Activity record : activities) {
             Map<String, String> fieldCodeNameMap = activityQueryService.getFieldCodeNameRelation(record);

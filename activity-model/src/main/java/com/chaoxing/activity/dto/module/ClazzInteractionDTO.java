@@ -73,7 +73,7 @@ public class ClazzInteractionDTO {
         // 评审管理
         String xiamenTrainingApiDomain = DomainConstant.XIAMEN_TRAINING_PLATFORM_API.replaceAll("http(|s)://", "");
         String reviewManagementUrl = "//" + xiamenTrainingApiDomain + "/review/list?activityId=" + activity.getId();
-        menus.add(ClazzInteractionMenu.buildMenu("评审管理", "review_management", reviewManagementUrl, "icon-review-management-default", "icon-review-management-active"));
+        menus.add(ClazzInteractionMenu.buildMenu("评审", "review_management", reviewManagementUrl, "icon-review-management-default", "icon-review-management-active"));
         return menus;
     }
 }

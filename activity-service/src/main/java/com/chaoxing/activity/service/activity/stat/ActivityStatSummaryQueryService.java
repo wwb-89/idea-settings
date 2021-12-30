@@ -138,7 +138,8 @@ public class ActivityStatSummaryQueryService {
             v.setActivityStartEndTime(DateUtils.activityTimeScope(v.getStartTime(), v.getEndTime()));
             if (StringUtils.isNotBlank(v.getIntroduction())) {
                 // 去除introduction中的标签
-                v.setIntroduction(HtmlUtil.cleanHtmlTag(v.getIntroduction()));
+                String cleanTagHtml = HtmlUtil.cleanHtmlTag(v.getIntroduction()).replaceAll(HtmlUtil.NBSP, " ");
+                v.setIntroduction(cleanTagHtml);
             }
             if (v.getSignId() != null) {
                 signIds.add(v.getSignId());

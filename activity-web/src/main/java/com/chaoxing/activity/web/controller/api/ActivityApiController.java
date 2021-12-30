@@ -84,28 +84,10 @@ public class ActivityApiController {
 	 */
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, String data) {
-		List<Activity> result = Lists.newArrayList();
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		// 暂存查询条件中原始的活动状态statusList，防止预告查询中变更了statusList
-		List<Integer> originStatusList = activityQuery.getStatusList();
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		// 额外的预告总数
-		int additionalTotal = 0;
-		boolean needLoadForecast = Optional.ofNullable(activityQuery.getNeedLoadForecast()).orElse(false);
-		// 仅当重新加载数据，且状态查询条件不为空时，才加载预告活动列表
-		if (needLoadForecast && activityQuery.getStatus() == null) {
-			result = listForecastActivity(activityQuery, loginUser);
-			additionalTotal = result.size();
-		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
-		// 还原statusList
-		activityQuery.setStatusList(originStatusList);
 		page = pageActivities(page, activityQuery, loginUser);
-		List<Activity> records = Optional.ofNullable(page.getRecords()).orElse(Lists.newArrayList());
-
-		result.addAll(records);
-		page.setRecords(result);
-		page.setTotal(page.getTotal() + additionalTotal);
 		return RestRespDTO.success(page);
 	}
 

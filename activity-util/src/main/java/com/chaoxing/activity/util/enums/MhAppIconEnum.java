@@ -17,7 +17,7 @@ public enum MhAppIconEnum {
     public enum ONE {
 
         /** 默认图标(万能)，在没有给定图标的时候，均给这个图标占位 */
-        DEFAULT_ICON("default_icon", "beef95c1bc95d2e37a40f75901e8f8c3"),
+        DEFAULT_ICON("default_icon", "4aaac8d14e5fa5f2e627ab982e9e14c8"),
         /** 收藏 */
         COLLECTED("collected", "265c36f8e17688c48bcea1290ae5b272"),
         /** 浏览 */
@@ -27,7 +27,7 @@ public enum MhAppIconEnum {
         /** 活动时间 */
         ACTIVITY_TIME("activity_time", "2d330219d4529b16dcd898a558b117b6"),
         /** 报名时间 */
-        SIGN_TIME_TIME("sign_up_time", "6b2136aef7541d5050ae0e686e4f0d50"),
+        SIGN_TIME_TIME("sign_up_time", "d3d1c02f6b00c9e16181d9791863ddf5"),
         /** 统计-彩色 */
         STATISTICS_COLOR("statistics-color", "26352e7dcdbbd10b695dbcc015c19ba2"),
         /** 海报 */
@@ -35,17 +35,18 @@ public enum MhAppIconEnum {
         /** 已报名用户 */
         SIGNED_UP_USER("signed-up-user", "8b2229560d8df09a5c216b2ad38de9f3"),
         /** 积分 */
-        INTEGRAL("integral", "40e0f4fd3b2e4b322985e3f4da09da3e"),
+        INTEGRAL("integral", "edfda53f3a95ce2fc616655266f9072e"),
         /** 时间-透明 */
         TIME_TRANSPARENT("time-transparent", "339f5085fb968439dd0baaaa3a026aa9"),
         /** 活动地点 */
-        LOCATION("location", "02b3b2e1949e3d630ff20a18d0e4e6f0"),
+        LOCATION("location", "b83a0ade3a470a7e94cadb94ab230491"),
         /** 主办方 */
-        ORGANISER("organiser", "67789e4dbe79f1440c1591a0fbfa5676"),
+        ORGANISER("organiser", "0c8caee495a7e1b4fb6ebddedb705445"),
         /** 报名数 */
         SIGNED_UP_NUM("signed-up-num", "4ccd8f1195ca7712ac806ac441d14991"),
         /** 评价 */
-        RATING("rating", "eeebd9cfe583f476c7250a2d1a69d99e"),
+        RATING_1("rating_1", "0c3dbf1ae772af825c12c45ab32f7791"),
+        RATING_2("rating_2", "94dc65252f38202b9fc92cc50f5cbd74"),
         /** 管理 */
         MANAGE_TRANSPARENT("manage-transparent", "d83b11e4e2cebe4a25b0552bf8653a40");
 
@@ -102,7 +103,7 @@ public enum MhAppIconEnum {
         /** 更多icon */
         MORE("MORE", "6af1a60c5935677f11679afd3d444d19"),
         /** 评价icon */
-        RATING("rating", "7fdfbea39df1f9779b04c956b584012e"),
+        RATING("rating", "0c3dbf1ae772af825c12c45ab32f7791"),
         /** 评分icon */
         RATING_SCORE("rating_score", "6a8c415821313ceed15381f10042f6d5");
 

@@ -213,7 +213,6 @@
 					var $this = this;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.queryParams.needLoadForecast = true;
 				},
 				//改变选中状态
 				changeActivityClassifySelected: function(index){
@@ -279,7 +278,6 @@
 						activityClassifyName: "",
 						date: "",
 						status: "",
-						statusList: [3, 4],
                         areaCode: $this.areaCode,
 						activityType: "",
 						topFid: [[${topFid}]],
@@ -287,8 +285,7 @@
 						scope: [[${scope}]],
 						flag: [[${flag}]],
                         // 是否只查询能报名的，如果是则不分页
-                        signUpAble: $this.signUpAble,
-						needLoadForecast: true
+                        signUpAble: $this.signUpAble
 					};
 					$this.activities = [];
 				},
@@ -301,7 +298,6 @@
 					app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
 						if (data.success) {
                             $this.loaded = true;
-							$this.queryParams.needLoadForecast = false;
                             $this.queryParams.pageNum++;
 							var activities = $this.activities;
 							$this.total = data.data.total;

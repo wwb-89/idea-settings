@@ -294,7 +294,6 @@
                             activityClassifyName: "",
                             dateScope: "",
                             status: "",
-                            statusList: [3, 4],
                             activityType: "",
                             areaCode: $this.defaultSelectedAreaCode,
                             topFid: [[${topFid}]],
@@ -302,8 +301,7 @@
                             scope: [[${scope}]],
                             flag: [[${flag}]],
                             // 是否只查询能报名的，如果是则不分页
-                            signUpAble: [[${signUpAble}]],
-                            needLoadForecast: true
+                            signUpAble: [[${signUpAble}]]
                         };
                     },
                     initMescroll: function () {
@@ -338,7 +336,6 @@
                         app.ajaxPost(url, params, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
-                                $this.queryParams.needLoadForecast = false;
                                 $this.mescroll.endByPage(data.data.size, $this.signUpAble ? data.data.records.length : data.data.pages);
                                 $this.activities.pushArray(data.data.records);
                                 $this.$nextTick(function () {
@@ -447,7 +444,6 @@
                         });
                         $this.activities = [];
                         $this.queryParams.pageNum = 1;
-                        $this.queryParams.needLoadForecast = true;
                         $this.mescroll.setPageNum(2);
                     },
                     queryParams2Condition: function () {

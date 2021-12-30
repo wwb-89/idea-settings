@@ -203,7 +203,7 @@ public class ActivityMhV3ApiController {
             } else {
                 ratingContent = "0人；0分";
             }
-            buildFieldWithUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING.getValue()), fieldCodeNameMap.getOrDefault("activity_rating", "评价"), ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
+            buildFieldWithUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING_1.getValue()), fieldCodeNameMap.getOrDefault("activity_rating", "评价"), ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
         }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
@@ -269,7 +269,7 @@ public class ActivityMhV3ApiController {
             MhGeneralAppResultDataDTO mhGeneralAppResultData = MhGeneralAppResultDataDTO.buildDefault();
             mhGeneralAppResultData.setOrsUrl("");
             String introductionHtml = StringUtils.isNotBlank(activityDetail.getIntroduction()) ? activityDetail.getIntroduction() : EMPTY_INTRODUCTION_TEXT;
-            String introductionText = HtmlUtil.cleanHtmlTag(introductionHtml);
+            String introductionText = HtmlUtil.cleanHtmlTag(introductionHtml).replaceAll(HtmlUtil.NBSP, " ");
             String firstImg = filterFirstImgFromHtmlStr(introductionHtml);
 
             mhGeneralAppResultData.setContent(introductionHtml);

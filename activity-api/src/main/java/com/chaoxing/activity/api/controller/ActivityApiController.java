@@ -761,7 +761,8 @@ public class ActivityApiController {
 		activityVO.setTimeScope(timescope);
 		ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
 		if (activityDetail != null && StringUtils.isNotBlank(activityDetail.getIntroduction())) {
-			activityVO.setIntroduction(HtmlUtil.cleanHtmlTag(activityDetail.getIntroduction()));
+			String cleanTagHtml = HtmlUtil.cleanHtmlTag(activityDetail.getIntroduction()).replaceAll(HtmlUtil.NBSP, " ");
+			activityVO.setIntroduction(cleanTagHtml);
 		}
 		return RestRespDTO.success(activityVO);
 	}
