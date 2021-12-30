@@ -379,21 +379,9 @@ public class ActivityCreateParamDTO {
 			activityCreateParamDto.setCoverCloudId(coverCloudId);
 		}
 		// 开始时间、结束时间
-		TimeScopeDTO activityTimeScope = WfwFormUtils.getTimeScope(formData, "activity_time");
-		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(WfwFormUtils.getTimeScope(formData, "activity_time_scope"));
-		if (activityTimeScope == null) {
-			LocalDateTime now = LocalDateTime.now();
-			String activityStartTimeStr = WfwFormUtils.getValue(formData, "activity_start_time");
-			LocalDateTime startTime = StringUtils.isBlank(activityStartTimeStr) ? now : WfwFormUtils.getTime(activityStartTimeStr);
-			activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(startTime));
-
-			String activityEndTimeStr = WfwFormUtils.getValue(formData, "activity_end_time");
-			LocalDateTime endTime = StringUtils.isBlank(activityEndTimeStr) ? startTime.plusMonths(1) : WfwFormUtils.getTime(activityEndTimeStr);
-			activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(endTime));
-		} else {
-			activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
-			activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
-		}
+		TimeScopeDTO activityTimeScope = resolveActivityTime(formData);
+		activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
+		activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
 		// 活动分类
 		activityCreateParamDto.setActivityClassifyId(classifyId);
 		// 积分
@@ -416,12 +404,10 @@ public class ActivityCreateParamDTO {
 		String detailAddress = WfwFormUtils.getValue(formData, "activity_detail_address");
 		detailAddress = Optional.ofNullable(detailAddress).orElse("");
 		String address = WfwFormUtils.getValue(formData, "activity_address");
-		BigDecimal lng = null;
-		BigDecimal lat = null;
+		BigDecimal lng = Optional.ofNullable(addressDto).map(AddressDTO::getLng).orElse(null);
+		BigDecimal lat = Optional.ofNullable(addressDto).map(AddressDTO::getLat).orElse(null);
 		if (addressDto != null) {
 			address = addressDto.getAddress();
-			lng = addressDto.getLng();
-			lat = addressDto.getLat();
 		}
 		if (activityTypeEnum == null) {
 			if (StringUtils.isNotBlank(address)) {
@@ -471,6 +457,25 @@ public class ActivityCreateParamDTO {
 		activityCreateParamDto.setOrigin(String.valueOf(formData.getFormId()));
 		activityCreateParamDto.setOriginFormUserId(formData.getFormUserId());
 		return activityCreateParamDto;
+	}
+
+	public static TimeScopeDTO resolveActivityTime(FormDataDTO formData) {
+		TimeScopeDTO activityTimeScope = WfwFormUtils.getTimeScope(formData, "activity_time");
+		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(WfwFormUtils.getTimeScope(formData, "activity_time_scope"));
+		LocalDateTime startTime = Optional.ofNullable(activityTimeScope).map(TimeScopeDTO::getStartTime).orElse(null);
+		LocalDateTime endTime = Optional.ofNullable(activityTimeScope).map(TimeScopeDTO::getEndTime).orElse(null);
+		if (activityTimeScope == null) {
+			LocalDateTime now = LocalDateTime.now();
+			String activityStartTimeStr = WfwFormUtils.getValue(formData, "activity_start_time");
+			startTime = StringUtils.isBlank(activityStartTimeStr) ? now : WfwFormUtils.getTime(activityStartTimeStr);
+
+			String activityEndTimeStr = WfwFormUtils.getValue(formData, "activity_end_time");
+			endTime = StringUtils.isBlank(activityEndTimeStr) ? startTime.plusMonths(1) : WfwFormUtils.getTime(activityEndTimeStr);
+		}
+		return TimeScopeDTO.builder()
+				.startTime(startTime)
+				.endTime(endTime)
+				.build();
 	}
 
 	public void setAdditionalAttrs(Integer webTemplateId, Integer marketId, Integer templateId, String flag) {
