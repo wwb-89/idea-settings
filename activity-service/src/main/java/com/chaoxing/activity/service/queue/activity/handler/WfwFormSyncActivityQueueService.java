@@ -1,6 +1,5 @@
 package com.chaoxing.activity.service.queue.activity.handler;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
@@ -10,7 +9,6 @@ import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
-import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
@@ -304,23 +302,10 @@ public class WfwFormSyncActivityQueueService {
         }
         if (Objects.equals(openSignUp, "是")) {
             // 报名时间
-            TimeScopeDTO signUpTimeScope = WfwFormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
-            if (signUpTimeScope.getStartTime() == null || signUpTimeScope.getEndTime() == null) {
-                LocalDateTime now = LocalDateTime.now();
-                if (signUpTimeScope.getStartTime() == null) {
-                    String signUpStartTimeStr = WfwFormUtils.getValue(formUserRecord, "sign_up_start_time");
-                    LocalDateTime startTime = StringUtils.isBlank(signUpStartTimeStr) ? now : WfwFormUtils.getTime(signUpStartTimeStr);
-                    signUpCreateParam.setStartTime(DateUtils.date2Timestamp(startTime));
-                }
-                if (signUpTimeScope.getEndTime() == null) {
-                    String signUpEndTimeStr = WfwFormUtils.getValue(formUserRecord, "sign_up_end_time");
-                    LocalDateTime endTime = StringUtils.isBlank(signUpEndTimeStr) ? now.plusMonths(1) : WfwFormUtils.getTime(signUpEndTimeStr);
-                    signUpCreateParam.setEndTime(DateUtils.date2Timestamp(endTime));
-                }
-            } else {
-                signUpCreateParam.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
-                signUpCreateParam.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
-            }
+            TimeScopeDTO signUpTimeScope = resolveSignUpTime(formUserRecord);
+            signUpCreateParam.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
+            signUpCreateParam.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
+
             String signUpPersonLimit = WfwFormUtils.getValue(formUserRecord, "sign_up_person_limit");
             boolean personLimit = StringUtils.isNotBlank(signUpPersonLimit);
             signUpCreateParam.setLimitPerson(personLimit);
@@ -350,6 +335,34 @@ public class WfwFormSyncActivityQueueService {
             }
         }
         return signUpCreateParam;
+    }
+
+    /**解析报名时间
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-30 10:17:53
+     * @param formUserRecord
+     * @return com.chaoxing.activity.dto.TimeScopeDTO
+    */
+    public TimeScopeDTO resolveSignUpTime(FormDataDTO formUserRecord) {
+        TimeScopeDTO signUpTimeScope = WfwFormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
+        LocalDateTime startTime = Optional.ofNullable(signUpTimeScope).map(TimeScopeDTO::getStartTime).orElse(null);
+        LocalDateTime endTime = Optional.ofNullable(signUpTimeScope).map(TimeScopeDTO::getEndTime).orElse(null);
+        if (startTime == null || endTime == null) {
+            LocalDateTime now = LocalDateTime.now();
+            if (signUpTimeScope.getStartTime() == null) {
+                String signUpStartTimeStr = WfwFormUtils.getValue(formUserRecord, "sign_up_start_time");
+                startTime = StringUtils.isBlank(signUpStartTimeStr) ? now : WfwFormUtils.getTime(signUpStartTimeStr);
+            }
+            if (signUpTimeScope.getEndTime() == null) {
+                String signUpEndTimeStr = WfwFormUtils.getValue(formUserRecord, "sign_up_end_time");
+                endTime = StringUtils.isBlank(signUpEndTimeStr) ? now.plusMonths(1) : WfwFormUtils.getTime(signUpEndTimeStr);
+            }
+        }
+        return TimeScopeDTO.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
     }
 
     /**表单记录更新，同步更新活动
@@ -525,32 +538,13 @@ public class WfwFormSyncActivityQueueService {
         } else {
             activityHandleService.cancelReleaseMarketActivity(activityId, marketId, operateUser);
         }
-        String data = packageReleaseStatus(fid, formId, released);
-        wfwFormApiService.updateForm(formId, formUserId, data);
+        // 通知更新活动
+        wfwFormActivityDataUpdateQueue.push(WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
+                .activityId(activityId)
+                .fid(fid)
+                .formId(formId)
+                .formUserId(formUserId)
+                .build());
     }
 
-    private String packageReleaseStatus(Integer fid, Integer formId, Boolean released) {
-        List<FormStructureDTO> formFieldInfos = wfwFormApiService.getFormStructure(formId, fid);
-        JSONArray result = new JSONArray();
-        for (FormStructureDTO formInfo : formFieldInfos) {
-            String alias = formInfo.getAlias();
-            JSONObject item = new JSONObject();
-            item.put("id", formInfo.getId());
-            item.put("compt", formInfo.getCompt());
-            item.put("comptId", formInfo.getId());
-            item.put("alias", alias);
-            JSONArray data = new JSONArray();
-            if (Objects.equals(alias, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS)) {
-                data.add(released ? "已发布" : "未发布");
-                item.put("val", data);
-                result.add(item);
-                break;
-            }
-        }
-        if (result.isEmpty()) {
-            // 没有配置任何别名则放过
-            return null;
-        }
-        return result.toJSONString();
-    }
 }

@@ -116,8 +116,6 @@ public class ActivityApiController {
 	@Resource
 	private MarketHandleService marketHandleService;
 	@Resource
-	private WfwFormSyncActivityQueueService activityFormSyncService;
-	@Resource
 	private MarketNoticeTemplateService marketNoticeTemplateService;
 	@Resource
 	private SystemNoticeTemplateService systemNoticeTemplateService;
@@ -630,25 +628,6 @@ public class ActivityApiController {
 	@RequestMapping("wfw-app/delete")
 	public RestRespDTO marketAppDelete(@RequestParam("wfwAppId") Integer wfwAppId) {
 		marketHandleService.deleteByWfwAppId(wfwAppId);
-		return RestRespDTO.success();
-	}
-
-	/**通用表单配置发布状态更新接口
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-11-13 01:12:47
-	 * @param fid
-	 * @param formId
-	 * @param uid
-	 * @param formUserId
-	 * @param marketId
-	 * @param flag
-	 * @param released
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	 */
-	@RequestMapping("update/release-status/from/wfw-form")
-	public RestRespDTO updateReleaseStatusFromWfwForm(Integer fid, Integer formId, Integer uid, Integer formUserId, Integer marketId, String flag, boolean released) {
-		activityFormSyncService.syncUpdateReleaseStatus(fid, formId, uid, formUserId, marketId, flag, released);
 		return RestRespDTO.success();
 	}
 

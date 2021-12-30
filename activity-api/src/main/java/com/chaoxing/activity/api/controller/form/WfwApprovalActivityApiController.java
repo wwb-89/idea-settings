@@ -3,10 +3,12 @@ package com.chaoxing.activity.api.controller.form;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwApprovalActivityCreateDTO;
 import com.chaoxing.activity.service.queue.activity.WfwApprovalActivityCreateQueue;
+import com.chaoxing.activity.service.queue.activity.handler.WfwApprovalActivityCreateQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +31,8 @@ public class WfwApprovalActivityApiController {
 
     @Resource
     private WfwApprovalActivityCreateQueue wfwApprovalActivityCreateQueue;
+    @Resource
+    private WfwApprovalActivityCreateQueueService wfwApprovalActivityCreateQueueService;
 
     /**审批（申报）创建活动
      * @Description 
@@ -72,10 +76,29 @@ public class WfwApprovalActivityApiController {
         boolean addAble = true;
         String message = "成功";
         FormDataDTO formDataDto = JSON.parseObject(formData, FormDataDTO.class);
-        ActivityCreateParamDTO activity = ActivityCreateParamDTO.buildFromFormData(formDataDto, null, "");
-        if (activity.getEndTimeStamp().compareTo(activity.getStartTimeStamp()) <= 0) {
+        // 活动时间
+        TimeScopeDTO activityTimeScope = ActivityCreateParamDTO.resolveActivityTime(formDataDto);
+        if (activityTimeScope.getEndTime().compareTo(activityTimeScope.getStartTime()) <= 0) {
             addAble = false;
             message = "活动结束时间必须大于开始时间";
+        }
+        // 报名时间
+        TimeScopeDTO signUpTimeScope = wfwApprovalActivityCreateQueueService.resolveSignUpTime(formDataDto);
+        if (signUpTimeScope != null && signUpTimeScope.getEndTime().compareTo(signUpTimeScope.getStartTime()) <= 0) {
+            addAble = false;
+            message = "报名结束时间必须大于开始时间";
+        }
+        // 签到时间
+        TimeScopeDTO signInTimeScope = wfwApprovalActivityCreateQueueService.resolveSignInTime(formDataDto, null);
+        if (signInTimeScope != null && signInTimeScope.getEndTime() != null && signInTimeScope.getEndTime().compareTo(signInTimeScope.getStartTime()) <= 0) {
+            addAble = false;
+            message = "签到结束时间必须大于开始时间";
+        }
+        // 签退时间
+        TimeScopeDTO signOutTimeScope = wfwApprovalActivityCreateQueueService.resolveSignOutTime(formDataDto, null);
+        if (signOutTimeScope != null && signOutTimeScope.getEndTime() != null && signOutTimeScope.getEndTime().compareTo(signOutTimeScope.getStartTime()) <= 0) {
+            addAble = false;
+            message = "签退结束时间必须大于开始时间";
         }
         JSONObject result = new JSONObject();
         result.put("result", addAble ? "YES" : "NO");

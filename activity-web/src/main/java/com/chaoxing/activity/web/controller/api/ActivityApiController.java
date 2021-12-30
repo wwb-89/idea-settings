@@ -12,7 +12,6 @@ import com.chaoxing.activity.model.GroupRegionFilter;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
-import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -31,7 +30,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**活动api服务
@@ -54,23 +55,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityCollectionHandleService activityCollectionHandleService;
 	@Resource
-	private SignApiService signApiService;
-	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
-
-	/**加载预告的活动列表
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2020-11-25 15:58:40
-	 * @param request
-	 * @param data
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	 */
-	@Deprecated
-	@RequestMapping("list/forecast/activities")
-	public RestRespDTO listForecastActivities(HttpServletRequest request, String data) {
-		return RestRespDTO.success(Lists.newArrayList());
-	}
 
 	/**分页查询可参与的活动列表
 	 * keepOldRule时，沿用旧的规则查询已发布、进行中、已结束的活动

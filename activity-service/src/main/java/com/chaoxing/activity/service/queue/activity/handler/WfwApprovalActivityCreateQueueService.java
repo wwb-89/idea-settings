@@ -178,6 +178,7 @@ public class WfwApprovalActivityCreateQueueService {
      * @Date 2021-06-11 17:49:43
      * @param formData
      * @param uid
+     * @param fid
      * @param activityStartTime
      * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
      */
@@ -193,11 +194,11 @@ public class WfwApprovalActivityCreateQueueService {
             signUp.setOpenAudit(Objects.equals(YES, signUpOpenAudit));
             String signUpOnSite = WfwFormUtils.getValue(formData, "on_site_sign_up");
             signUp.setOnSiteSignUp(Objects.equals(YES, signUpOnSite));
-            TimeScopeDTO signUpTimeScope = WfwFormUtils.getTimeScope(formData, "sign_up_time");
-            LocalDateTime startTime = Optional.ofNullable(signUpTimeScope).map(TimeScopeDTO::getStartTime).orElse(LocalDateTime.now());
-            LocalDateTime endTime = Optional.ofNullable(signUpTimeScope).map(TimeScopeDTO::getEndTime).orElse(startTime.plusMonths(1));
-            signUp.setStartTime(DateUtils.date2Timestamp(startTime));
-            signUp.setEndTime(DateUtils.date2Timestamp(endTime));
+            // 报名时间
+            TimeScopeDTO signUpTimeScope = resolveSignUpTime(formData);
+            signUp.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
+            signUp.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
+
             String signUpEndAllowCancel = WfwFormUtils.getValue(formData, "sign_up_end_allow_cancel");
             signUp.setEndAllowCancel(Objects.equals(YES, signUpEndAllowCancel));
             String signUpPublicList = WfwFormUtils.getValue(formData, "sign_up_public_list");
@@ -230,7 +231,6 @@ public class WfwApprovalActivityCreateQueueService {
                 signUp.setFillInfo(true);
                 signUp.setFillInfoFormId(formId);
             }
-
         } else {
             signUp.setDeleted(true);
         }
@@ -243,11 +243,10 @@ public class WfwApprovalActivityCreateQueueService {
             signIn.setDeleted(false);
             String signInPublicList = WfwFormUtils.getValue(formData, "sign_in_public_list");
             signIn.setPublicList(Objects.equals(YES, signInPublicList));
-            TimeScopeDTO signInTimeScope = WfwFormUtils.getTimeScope(formData, "sign_in_time");
-            LocalDateTime signInStartTime = Optional.ofNullable(signInTimeScope).map(TimeScopeDTO::getStartTime).orElse(activityStartTime.minusHours(1));
-            LocalDateTime signInEndTime = Optional.ofNullable(signInTimeScope).map(TimeScopeDTO::getEndTime).orElse(null);
-            signIn.setStartTime(DateUtils.date2Timestamp(signInStartTime));
-            signIn.setEndTime(DateUtils.date2Timestamp(signInEndTime));
+            // 签到时间
+            TimeScopeDTO signInTimeScope = resolveSignInTime(formData, activityStartTime);
+            signIn.setStartTime(DateUtils.date2Timestamp(signInTimeScope.getStartTime()));
+            signIn.setEndTime(DateUtils.date2Timestamp(signInTimeScope.getEndTime()));
             String signInWay = WfwFormUtils.getValue(formData, "sign_in_way");
             // 获取的签到形式选项有：普通签到、参与者扫码、管理者扫码
             SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromName(signInWay);
@@ -282,11 +281,9 @@ public class WfwApprovalActivityCreateQueueService {
             signOut.setDeleted(false);
             String signOutPublicList = WfwFormUtils.getValue(formData, "sign_out_public_list");
             signOut.setPublicList(Objects.equals(YES, signOutPublicList));
-            TimeScopeDTO signOutTimeScope = WfwFormUtils.getTimeScope(formData, "sign_out_time");
-            LocalDateTime signOutStartTime = Optional.ofNullable(signOutTimeScope).map(TimeScopeDTO::getStartTime).orElse(activityStartTime);
-            LocalDateTime signOutEndTime = Optional.ofNullable(signOutTimeScope).map(TimeScopeDTO::getEndTime).orElse(null);
-            signOut.setStartTime(DateUtils.date2Timestamp(signOutStartTime));
-            signOut.setEndTime(DateUtils.date2Timestamp(signOutEndTime));
+            TimeScopeDTO signOutTimeScope = resolveSignOutTime(formData, activityStartTime);
+            signOut.setStartTime(DateUtils.date2Timestamp(signOutTimeScope.getStartTime()));
+            signOut.setEndTime(DateUtils.date2Timestamp(signOutTimeScope.getEndTime()));
             String signOutWay = WfwFormUtils.getValue(formData, "sign_out_way");
             SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromName(signOutWay);
             if (way != null) {
@@ -312,6 +309,38 @@ public class WfwApprovalActivityCreateQueueService {
             signOut.setDeleted(true);
         }
         return signCreateParam;
+    }
+
+    public TimeScopeDTO resolveSignUpTime(FormDataDTO formData) {
+        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formData, "sign_up_time");
+        LocalDateTime startTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getStartTime).orElse(LocalDateTime.now());
+        LocalDateTime endTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getEndTime).orElse(startTime.plusMonths(1));
+        return TimeScopeDTO.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
+    }
+
+    public TimeScopeDTO resolveSignInTime(FormDataDTO formData, LocalDateTime activityStartTime) {
+        activityStartTime = Optional.ofNullable(activityStartTime).orElse(LocalDateTime.now());
+        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formData, "sign_in_time");
+        LocalDateTime startTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getStartTime).orElse(activityStartTime.minusHours(1));
+        LocalDateTime endTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getEndTime).orElse(null);
+        return TimeScopeDTO.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
+    }
+
+    public TimeScopeDTO resolveSignOutTime(FormDataDTO formData, LocalDateTime activityStartTime) {
+        activityStartTime = Optional.ofNullable(activityStartTime).orElse(LocalDateTime.now());
+        TimeScopeDTO timeScope = WfwFormUtils.getTimeScope(formData, "sign_out_time");
+        LocalDateTime startTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getStartTime).orElse(activityStartTime);
+        LocalDateTime endTime = Optional.ofNullable(timeScope).map(TimeScopeDTO::getEndTime).orElse(null);
+        return TimeScopeDTO.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
     }
 
 }
