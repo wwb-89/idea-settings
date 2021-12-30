@@ -30,8 +30,9 @@ public interface CustomAppConfigMapper extends BaseMapper<CustomAppConfig> {
      * @Description 
      * @author huxiaolong
      * @Date 2021-12-25 14:45:51
+     * @param type
      * @param templateComponentIds
-     * @return 
+     * @return
      */
-    List<CustomAppConfig> listCustomAppConfigWithCloudId(@Param("templateComponentIds") List<Integer> templateComponentIds);
+    List<CustomAppConfig> listCustomAppConfigWithCloudId(@Param("type") String type, @Param("templateComponentIds") List<Integer> templateComponentIds);
 }

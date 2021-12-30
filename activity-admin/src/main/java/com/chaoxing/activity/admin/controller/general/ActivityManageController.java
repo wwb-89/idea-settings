@@ -148,7 +148,7 @@ public class ActivityManageController {
 		List<CustomAppConfig> customAppConfigs = Lists.newArrayList();
 		List<Integer> enableCustomAppTplComponentIds = customAppConfigQueryService.listEnabledActivityCustomAppTplComponentId(activityId);
 		if (CollectionUtils.isNotEmpty(enableCustomAppTplComponentIds)) {
-			customAppConfigs = customAppConfigQueryService.listByTplComponentIds(enableCustomAppTplComponentIds);
+			customAppConfigs = customAppConfigQueryService.listBackendAppConfigs(enableCustomAppTplComponentIds);
 		}
 		model.addAttribute("clazzInteractionMenus", clazzInteractionMenus);
 		model.addAttribute("customAppConfigs", customAppConfigs);

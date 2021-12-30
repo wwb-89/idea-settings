@@ -92,7 +92,7 @@
                     <span>{{menus.stat.name}}</span>
                 </div>
             </div>
-            <div class="entry menu-item" v-if="customAppConfigs" v-show="activity.openCustomAppConfig">
+            <div class="entry menu-item" v-if="customAppConfigs">
                 <!--自定义应用列表-->
                 <div v-for="(appConfig, acIndex) in customAppConfigs" :key="'custom-app-config-' + acIndex" :class="{'item': true, 'active': menus[appConfig.code].selected}" @click="toCustomApp(acIndex)" v-if="menuShow(appConfig.code)">
                     <img :src="menus[appConfig.code].activeIconUrl" v-if="menus[appConfig.code].selected">
@@ -311,18 +311,16 @@
                             }
                         });
                     }
-                    if ($this.activity.openCustomAppConfig) {
-                        $($this.customAppConfigs).each(function () {
-                            $this.activityMenus.push(this.code);
-                            $this.menus[this.code] = {
-                                name: this.title,
-                                defaultIconUrl: $this.cloudDomain + '/star3/origin/' + this.defaultIconCloudId,
-                                activeIconUrl: $this.cloudDomain + '/star3/origin/' + this.activeIconCloudId,
-                                url: this.url + "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid,
-                                selected: false
-                            }
-                        });
-                    }
+                    $($this.customAppConfigs).each(function () {
+                        $this.activityMenus.push(this.code);
+                        $this.menus[this.code] = {
+                            name: this.title,
+                            defaultIconUrl: $this.cloudDomain + '/star3/origin/' + this.defaultIconCloudId,
+                            activeIconUrl: $this.cloudDomain + '/star3/origin/' + this.activeIconCloudId,
+                            url: this.url + "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid,
+                            selected: false
+                        }
+                    });
                 },
                 menuShow: function (menu) {
                     // 目前固定notice和setting存在
