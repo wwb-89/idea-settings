@@ -65,6 +65,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -367,41 +368,69 @@ public class ActivityQueryService {
 	 * @return void
 	 */
 	private void calDateScope(ActivityQueryDTO activityQuery) {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String dateScope = activityQuery.getDateScope();
-		dateScope = Optional.ofNullable(dateScope).orElse("");
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String dateScope = Optional.ofNullable(activityQuery.getDateScope()).orElse("");
 		ActivityQueryDateScopeEnum activityQueryDateEnum = ActivityQueryDateScopeEnum.fromValue(dateScope);
-		LocalDate now = LocalDate.now();
-		String minDateStr;
-		String maxDateStr;
+		LocalDate today = LocalDate.now();
+		String minTimeStr;
+		String maxTimeStr;
 		switch (activityQueryDateEnum) {
 			case ALL:
-				minDateStr = "";
-				maxDateStr = "";
+				minTimeStr = "";
+				maxTimeStr = "";
 				break;
 			case NEARLY_A_MONTH:
-				minDateStr = now.plusMonths(-1).format(dateTimeFormatter);
-				maxDateStr = "";
+				minTimeStr = today.atTime(0, 0, 0).plusMonths(-1).format(dateTimeFormatter);
+				maxTimeStr = "";
 				break;
 			case NEARLY_THREE_MONTH:
-				minDateStr = now.plusMonths(-3).format(dateTimeFormatter);
-				maxDateStr = "";
+				minTimeStr = today.atTime(0, 0, 0).plusMonths(-3).format(dateTimeFormatter);
+				maxTimeStr = "";
 				break;
 			case NEARLY_SIX_MONTH:
-				minDateStr = now.plusMonths(-6).format(dateTimeFormatter);
-				maxDateStr = "";
+				minTimeStr = today.atTime(0, 0, 0).plusMonths(-6).format(dateTimeFormatter);
+				maxTimeStr = "";
 				break;
 			case NEARLY_A_YEAR:
-				minDateStr = now.plusYears(-1).format(dateTimeFormatter);
-				maxDateStr = "";
+				minTimeStr = today.atTime(0, 0, 0).plusYears(-1).format(dateTimeFormatter);
+				maxTimeStr = "";
+				break;
+			case TODAY:
+				minTimeStr = today.atTime(0, 0, 0).format(dateTimeFormatter);
+				maxTimeStr = today.atTime(23, 59, 59).format(dateTimeFormatter);
+				break;
+			case TOMORROW:
+				minTimeStr = today.atTime(0, 0, 0).plusDays(1).format(dateTimeFormatter);
+				maxTimeStr = today.atTime(23, 59, 59).plusDays(1).format(dateTimeFormatter);
+				break;
+			case WEEKEND:
+				// 周末
+				minTimeStr = today.with(DayOfWeek.SATURDAY).atTime(0, 0, 0).format(dateTimeFormatter);
+				maxTimeStr = today.with(DayOfWeek.SUNDAY).atTime(23, 59, 59).format(dateTimeFormatter);
+				break;
+			case NEARLY_A_WEEK:
+				minTimeStr = today.atTime(0,0,0).format(dateTimeFormatter);
+				maxTimeStr = today.atTime(23,59,59).plusWeeks(1).format(dateTimeFormatter);
+				break;
+			case SPECIFIED:
+				String date = activityQuery.getDate();
+				if (StringUtils.isNotBlank(date)) {
+					LocalDate specifiedDate = LocalDate.parse(date, dateFormatter);
+					minTimeStr = specifiedDate.atTime(0, 0, 0).format(dateTimeFormatter);
+					maxTimeStr = specifiedDate.atTime(23, 59, 59).format(dateTimeFormatter);
+				} else {
+					minTimeStr = "";
+					maxTimeStr = "";
+				}
 				break;
 			default:
 				// 更早
-				minDateStr = "";
-				maxDateStr = now.plusYears(-1).format(dateTimeFormatter);
+				minTimeStr = "";
+				maxTimeStr = today.atTime(0, 0, 0).plusYears(-1).format(dateTimeFormatter);
 		}
-		activityQuery.setMinDateStr(minDateStr);
-		activityQuery.setMaxDateStr(maxDateStr);
+		activityQuery.setMinTimeStr(minTimeStr);
+		activityQuery.setMaxTimeStr(maxTimeStr);
 	}
 
 	/**查询活动类型列表

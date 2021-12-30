@@ -51,6 +51,30 @@
 				</div>
 				<div class="clear"></div>
 			</div>
+			<div class="item" v-show="showFilter('time')">
+				<label>时间</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected, 'date-li': (item.value == 'specified')}" v-for="(item, index) of activityQueryDates" @click="changeActivityTimeSelected(index)">
+							{{item.value == 'specified' ? queryParams.date ? queryParams.date : "选择日期" : item.name}}
+							<template v-if="item.value == 'specified'">
+								<el-date-picker
+										class="select-time"
+										v-model="queryParams.date"
+										size="mini"
+										prefix-icon="false"
+										type="date"
+										placeholder="选择日期"
+										format="yyyy-MM-dd"
+										value-format="yyyy-MM-dd"
+										@change="selectChange">
+								</el-date-picker>
+							</template>
+						</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
 			<div class="item" v-show="showFilter('region') && regions.length > 0">
 				<label>地区</label>
 				<div class="option-list">
@@ -136,7 +160,9 @@
 				mescroll: null,
                 // 是否查询能报名的活动
                 signUpAble: [[${signUpAble}]],
-				showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]])
+				showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]]),
+
+                value:''
 			},
 			created: function () {
 				var $this = this;
@@ -229,9 +255,13 @@
 					$($this.activityQueryDates).each(function (i) {
 						$this.$set($this.activityQueryDates[i], "selected", i == index);
 					});
-					$this.queryParams.date = $this.activityQueryDates[index].value;
-					$this.resetDataAndParams();
-					$this.reloadMescoll();
+                    var value = $this.activityQueryDates[index].value;
+                    if (value != 'specified') {
+                        $this.queryParams.dateScope = value;
+                        $this.$set($this.queryParams, "date", "");
+                        $this.resetDataAndParams();
+                        $this.reloadMescoll();
+                    }
 				},
 				changeActivityRegionsSelected: function(index){
 					var $this = this;
@@ -387,6 +417,14 @@
                     var cloneTagNames = $.extend([], tagNames);
                     cloneTagNames.splice(0, startIndex);
                     return cloneTagNames.join("、");
+                },
+                selectChange: function (){
+                    var $this = this;
+                    $('.option-list .date-li').siblings().removeClass('active');
+                    $('.option-list .date-li').addClass('active');
+                    $this.queryParams.dateScope = "specified";
+                    $this.resetDataAndParams();
+                    $this.reloadMescoll();
                 }
 			}
 		})
