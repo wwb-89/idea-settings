@@ -511,7 +511,7 @@ public class ActivityMhV3ApiController {
         // 阅读测评
         Boolean openReading = Optional.ofNullable(activity.getOpenReading()).orElse(false);
         if (openReading && activity.getReadingId() != null) {
-            result.add(buildBtnField(signUpKeyword + "阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), activityQueryService.getReadingTestUrl(activity), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
+            result.add(buildBtnField("阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), activityQueryService.getReadingTestUrl(activity), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
         }
         // 班级互动
         Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
