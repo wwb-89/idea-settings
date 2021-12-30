@@ -7,7 +7,6 @@ import com.chaoxing.activity.model.CertificateIssue;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
-import com.chaoxing.activity.util.constant.DomainConstant;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,11 +51,11 @@ public class UserCertificateIssueEventQueueService {
     }
 
     private String generateNoticeTitle(Activity activity) {
-        return "活动证书通知 " + activity.getName();
+        return "证书通知：" + activity.getName();
     }
 
     private String generateNoticeContent(Activity activity) {
-        return "您好，您在\"" + activity.getName() + "\"中获得证书，点击以下连接或在报名详情中查看";
+        return "您在\"" + activity.getName() + "\"中获得证书，点击以下链接或在报名详情中查看";
     }
 
 }
