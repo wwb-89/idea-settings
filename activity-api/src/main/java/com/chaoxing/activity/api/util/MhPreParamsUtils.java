@@ -16,6 +16,9 @@ import java.util.List;
  */
 public class MhPreParamsUtils {
 
+    /** 参数多值分割 */
+    private static final String PARAMS_MULTI_VALUE_SEPARATOR = ",";
+
     private MhPreParamsUtils() {
 
     }
@@ -50,7 +53,7 @@ public class MhPreParamsUtils {
     public static List<String> resolveStringV(String v) {
         List<String> values = Lists.newArrayList();
         if (StringUtils.isNotBlank(v)) {
-            String[] split = v.split(",");
+            String[] split = v.split(PARAMS_MULTI_VALUE_SEPARATOR);
             values = Lists.newArrayList(split);
         }
         return values;
@@ -59,7 +62,7 @@ public class MhPreParamsUtils {
     public static List<Integer> resolveIntegerV(String v) {
         List<Integer> values = Lists.newArrayList();
         if (StringUtils.isNotBlank(v)) {
-            String[] split = v.split(",");
+            String[] split = v.split(PARAMS_MULTI_VALUE_SEPARATOR);
             for (int i = 0; i < split.length; i++) {
                 values.add(Integer.parseInt(split[i]));
             }

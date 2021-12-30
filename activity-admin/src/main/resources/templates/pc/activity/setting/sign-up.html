@@ -243,15 +243,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-item" v-else-if="it.code == 'sign_up_review'">
-                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                        <div class="input-box">
-                            <div class="set-box">
-                                <el-switch v-model="signUpMap[item.id].openAudit"></el-switch>
-                                <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
-                            </div>
-                        </div>
-                    </div>
                     <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                         <div class="input-box">
