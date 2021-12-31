@@ -603,43 +603,22 @@
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                     </div>
-                                    <template v-else-if="it.code == 'sign_up_condition'">
-                                        <div class="form-item">
-                                            <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                                            <div class="input-box">
+                                    <div class="form-item align-start" v-else-if="it.code == 'sign_up_condition'">
+                                        <label class="label" style="line-height: 20px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                                        <div class="input-box column">
+                                            <div class="set-box">
                                                 <el-switch v-model="signUpConditionMap[it.id].enable"></el-switch>
                                                 <el-tooltip class="item-tips fl" effect="dark" disabled :content="signUpConditionTips(it.name, it.id)" placement="top">
                                                     <el-button>报名条件</el-button>
                                                 </el-tooltip>
                                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                             </div>
+                                            <div v-if="signUpConditionMap[it.id].enable && signUpConditionMap[it.id].allowSignedUp && signUpConditionMap[it.id].configOnActivity" class="set-box configurationForm" @click="toConfigSignUpDetails(it.id)">
+                                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                                <span class="tips set-information">配置明细</span>
+                                            </div>
                                         </div>
-                                        <div class="form-item" v-if="signUpConditionMap[it.id].enable && signUpConditionMap[it.id].allowSignedUp && signUpConditionMap[it.id].configOnActivity">
-                                            <el-form label-position='left' label-width="72px" class="select-form" onsubmit="return false">
-                                                <el-form-item :label="detail.fieldName" v-for="(detail, dIndex) in signUpConditionMap[it.id].activityConditionDetails" :key="'activity-condition-detail-' + dIndex">
-                                                    <el-select v-model="detail.condition" placeholder="请选择">
-                                                        <el-option v-for="(ce, ceIdx) in conditionEnums"
-                                                                   :key="ceIdx"
-                                                                   :label="ce.name"
-                                                                   :value="ce.value"
-                                                        >
-                                                        </el-option>
-                                                    </el-select>
-                                                    <template v-if="detail.condition && detail.condition != 'empty' && detail.condition != 'un_empty'">
-                                                        <el-select v-if="detail.compt == 'selectbox' || detail.compt == 'selectmultibox'" v-model="detail.value" placeholder="请选择" style="width: 152px">
-                                                            <el-option  v-for="(it, index) in detail.options"
-                                                                        :key="index"
-                                                                        :label="it"
-                                                                        :value="it"
-                                                            >
-                                                            </el-option>
-                                                        </el-select>
-                                                        <el-input v-else v-model="detail.value" placeholder="请输入" style="width: 152px"></el-input>
-                                                    </template>
-                                                </el-form-item>
-                                            </el-form>
-                                        </div>
-                                    </template>
+                                    </div>
                                     <div class="form-item" v-if="false">
                                         <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                                         <div class="input-box btn-name">
@@ -794,6 +773,8 @@
         <vue-custom-participate-scope :dom-scope-id="'sign-up-participate-scope-tree'" ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
         <!-- 通知提醒范围弹窗 -->
         <vue-custom-participate-scope :dom-scope-id="'reminder-scope-tree'" ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
+        <!--报名条件配置-->
+        <vue-sign-up-condition ref="signUpConfigDialogWindow" @callback="confirmSignUpConditionDetails"></vue-sign-up-condition>
         <!--预览url复制容器-->
         <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
         <!--活动是线下但是没有选择地点的提示-->
@@ -872,6 +853,7 @@
     <script src="/static/pc/assets/component/sign-map.js" th:src="@{/pc/assets/component/sign-map.js}"></script>
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/vue-custom-participate-scope.js" th:src="@{/pc/assets/component/vue-custom-participate-scope.js}"></script>
+    <script src="/static/pc/assets/component/sign-up-condition.js" th:src="@{/pc/assets/component/sign-up-condition.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-parent.js" th:src="@{/pc/assets/lib/set-iframe-height-parent.js}"></script>
@@ -942,6 +924,8 @@
                 sucTplComponentIds: [[${sucTplComponentIds}]],
                 signUpConditions: [[${signUpConditions}]],
                 conditionEnums: [[${conditionEnums}]],
+                // 当前操作的报名条件模板组件id
+                operationSucTplComponentId: '',
                 notAllowCancelTypes: [
                     {value: 'after_sign_up_end', label: '报名结束后'},
                     {value: 'after_activity_start', label: '活动开始后'},
@@ -2153,6 +2137,17 @@
                     $("#template-preview-url-input")[0].select();
                     document.execCommand("copy");
                     app.showMsg("复制成功");
+                },
+                toConfigSignUpDetails: function (signUpConditionTplComponentId) {
+                    var $this = this;
+                    $this.operationSucTplComponentId = signUpConditionTplComponentId;
+                    var { activityConditionDetails } = $this.signUpConditionMap[signUpConditionTplComponentId];
+                    $this.$refs.signUpConfigDialogWindow.showWindow(activityConditionDetails, $this.conditionEnums);
+                },
+                confirmSignUpConditionDetails: function (conditionDetails) {
+                    var $this = this;
+                    var tplComponentId = $this.operationSucTplComponentId;
+                    $this.signUpConditionMap[tplComponentId].activityConditionDetails = conditionDetails;
                 },
                 // 表单
                 toConfigForm: function (tplComponentId) {
