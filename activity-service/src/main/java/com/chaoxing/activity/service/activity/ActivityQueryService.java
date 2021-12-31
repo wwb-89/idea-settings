@@ -1646,7 +1646,7 @@ public class ActivityQueryService {
 		}
 		if (activityReleasePlatformActivityQuery.getEndTimestamp() != null) {
 			LocalDateTime endTime = DateUtils.timestamp2Date(activityReleasePlatformActivityQuery.getEndTimestamp());
-			lambdaQueryWrapper.le(Activity::getEndTime, endTime);
+			lambdaQueryWrapper.le(Activity::getStartTime, endTime);
 		}
 
 		List<Activity> activities = activityMapper.selectList(lambdaQueryWrapper);
