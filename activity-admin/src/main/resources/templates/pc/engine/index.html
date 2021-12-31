@@ -1044,7 +1044,8 @@
                     },
                     getInitSignUpFillInfoType: function () {
                         var $this = this;
-                        return { type: 'wfw_form', wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: $this.wfwFormApprovalTemplates[0].id}
+                        var wfwFormApprovalTemplateId = ($this.wfwFormApprovalTemplates[0] && $this.wfwFormApprovalTemplates[0].id) || ''
+                        return { type: 'wfw_form', wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: wfwFormApprovalTemplateId}
                     },
                     getInitTemplateAppConfig: function () {
                         return { showAfterSignUp: true, openBlank: true, frontendConfigs: [], backendConfigs: [], removeCustomAppConfigIds: [] }
