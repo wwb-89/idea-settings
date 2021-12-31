@@ -281,11 +281,18 @@ public class WfwFormUtils {
 			for (FormDataItemDTO data : formDatas) {
 				String alias = data.getAlias();
 				if (Objects.equals(fieldAlias, alias)) {
-					List<JSONObject> values = data.getValues();
-					if (CollectionUtils.isNotEmpty(values)) {
-						activityTimes.add(values.get(0).getString("val"));
+					List<FormDataItemDTO.FieldDTO> fields = data.getFields();
+					if (CollectionUtils.isNotEmpty(fields)) {
+						activityTimes.add(fields.get(0).getValues().get(0).getString("val"));
+						activityTimes.add(fields.get(1).getValues().get(0).getString("val"));
+						break;
 					} else {
-						activityTimes.add("");
+						List<JSONObject> values = data.getValues();
+						if (CollectionUtils.isNotEmpty(values)) {
+							activityTimes.add(values.get(0).getString("val"));
+						} else {
+							activityTimes.add("");
+						}
 					}
 				}
 			}

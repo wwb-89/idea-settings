@@ -9,13 +9,16 @@ import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.service.queue.activity.WfwFormSyncActivityQueue;
 import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**万能表单活动服务
  * @author wwb
@@ -51,17 +54,22 @@ public class WfwFormActivityApiController {
 
     @RequestMapping("add/validate")
     public JSONObject addValidate(Integer formId, Integer uid, Integer fid, String op, String formData) {
+        log.info("万能表单创建活动提交校验参数:{}", formData);
         boolean addAble = true;
         String message = "成功";
         List<FormDataItemDTO> formDataItems = JSON.parseArray(formData, FormDataItemDTO.class);
         TimeScopeDTO activityTimeScope = ActivityCreateParamDTO.resolveActivityTime(formDataItems);
-        if (activityTimeScope.getEndTime().compareTo(activityTimeScope.getStartTime()) <= 0) {
+        LocalDateTime activityStartTime = Optional.ofNullable(activityTimeScope.getStartTime()).orElseThrow(() -> new BusinessException("活动开始时间不能为空"));
+        LocalDateTime activityEndTime = Optional.ofNullable(activityTimeScope.getEndTime()).orElseThrow(() -> new BusinessException("活动结束时间不能为空"));
+        if (activityEndTime.compareTo(activityStartTime) <= 0) {
             addAble = false;
             message = "活动结束时间必须大于开始时间";
         }
         // 报名时间
         TimeScopeDTO signUpTimeScope = wfwFormSyncActivityQueueService.resolveSignUpTime(formDataItems);
-        if (signUpTimeScope.getEndTime().compareTo(signUpTimeScope.getStartTime()) <= 0) {
+        LocalDateTime signUpStartTime = Optional.ofNullable(signUpTimeScope.getStartTime()).orElseThrow(() -> new BusinessException("报名开始时间不能为空"));
+        LocalDateTime signUpEndTime = Optional.ofNullable(signUpTimeScope.getEndTime()).orElseThrow(() -> new BusinessException("报名结束时间不能为空"));
+        if (signUpEndTime.compareTo(signUpStartTime) <= 0) {
             addAble = false;
             message = "报名结束时间必须大于开始时间";
         }
