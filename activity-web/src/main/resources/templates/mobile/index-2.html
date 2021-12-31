@@ -67,7 +67,7 @@
     <div class="pop" v-show="filterWindowShow">
         <div style="height: 100%;" @click="filterCancel"></div>
         <div class="popInner">
-            <div class="switch-box border-bottom" v-show="loginUser">
+            <div class="switch-box border-bottom" v-show="loginUser && showFilter('my')">
                 <p class="fl">只看我能{{signUpKeyword}}</p>
                 <div class="fr">
                     <el-switch
@@ -123,7 +123,7 @@
             </div>
         </div>
     </div>
-    <div class="floating-window" v-show="!isApp">
+    <div class="floating-window" v-show="!isApp && showFilter('my')">
         <el-popover
                 placement="top-end"
                 popper-class='fixed-pop'
@@ -312,7 +312,7 @@
                                     callback: function () {
                                         $this.loadData();
                                     }, //上拉加载的回调
-                                    htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>',
+                                    htmlNodata: $this.activities && $this.activities.length < 5 ? '' : '<p class="upwarp-nodata">-- 没有更多了 --</p>',
                                     noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据; 避免列表数据过少(比如只有一条数据),显示无更多数据会不好看 这就是为什么无更多数据有时候不显示的原因.
                                 }
                             });
