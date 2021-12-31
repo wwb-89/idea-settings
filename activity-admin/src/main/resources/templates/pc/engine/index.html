@@ -162,7 +162,7 @@
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
-                                <template v-else-if="item.code == 'custom_application'">
+                                <template v-else-if="item.type == 'custom_app'">
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
@@ -434,7 +434,9 @@
                     </div>
                     <template v-for="(item, index) in (componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].advanceCompts) || []">
                         <div class="field-item" :style="index % 2 == 0 ? {'margin-right': '24px'} : {'margin-right': '0px'}" @click="addAdvanceComponentAssociate(item)">
-                            <p class="field overHidden1">{{item.name || ((item.type == 'text' || item.type == 'int' || item.type == 'decimal') ? '自定义输入' : '自定义选择')}}</p>
+                            <p class="field overHidden1">
+                                {{item.name || ((item.type == 'radio' || item.type == 'checkbox') ? '自定义选择' : (item.type == 'custom_app' ? '自定义应用' : '自定义输入')) }}
+                            </p>
                         </div>
                     </template>
                 </div>
@@ -881,14 +883,14 @@
                     iconSelectDialog: false, // 图标选择弹窗开关
                     defaultTextComponent: {
                         pid: 0,
-                        name: '',
+                        name: '自定义输入',
                         required: true,
                         templateId: [[${templateId}]],
                         type: 'text'
                     },
                     defaultChooseComponent: {
                         pid: 0,
-                        name: '',
+                        name: '自定义选择',
                         required: true,
                         templateId: [[${templateId}]],
                         dataOrigin: 'custom',
@@ -900,6 +902,13 @@
                             fieldName: '',
                             sequence: 1
                         }]
+                    },
+                    defaultCustomAppComponent: {
+                        pid: 0,
+                        name: '自定义应用',
+                        required: false,
+                        templateId: [[${templateId}]],
+                        type: 'custom_app',
                     },
                     // uncheckCode
                     nonDefaultCheckedCodes: ["wfw_participation_scope", "sign_up_condition"],
@@ -1004,7 +1013,7 @@
                             item.basicCompts = basicCompts;
                             item.advanceCompts = advanceCompts;
                             if (key == '0') {
-                                item.advanceCompts.push($this.defaultTextComponent, $this.defaultChooseComponent);
+                                item.advanceCompts.push($this.defaultTextComponent, $this.defaultChooseComponent, $this.defaultCustomAppComponent);
                             }
                             $this.componentTypeList.push(item);
                         });
@@ -1107,8 +1116,6 @@
                             $this.fillInfoDialog = true;
                             $this.addEditItem = $this.createNewTemplateComponent(item);
                             $this.innerAddEditItem = $this.getInitSignUpFillInfoType();
-                        } else if (item.code == 'custom_application') {
-                            $this.openCustomAppConfigDialog(item);
                         } else {
                             var newTemplateComponent = $this.createNewTemplateComponent(item);
                             if (item.pid == 0) {
@@ -1127,6 +1134,8 @@
                         $this.isAddComponent = true;
                         if (item.code == 'sign_up' || item.code == 'partition' || item.type == 'text' || item.type == 'int' || item.type == 'decimal') {
                             $this.openTextDialog(item)
+                        } else if (item.type == 'custom_app') {
+                            $this.openCustomAppConfigDialog(item);
                         } else if (item.code == 'sign_up_condition') {
                             $this.setDialogTitle(item, '报名条件')
                             $this.addFieldDialog = false;
@@ -1273,7 +1282,7 @@
                         var $this = this;
                         if (item.type == 'radio' || item.type == 'checkbox') {
                             $this.openChooseEditDialog(item, index);
-                        } else if(item.code == 'custom_application') {
+                        } else if(item.type == 'custom_app') {
                             $this.openCustomAppConfigDialog(item, index);
                         } else {
                             $this.openTextDialog(item, index);
@@ -1321,13 +1330,15 @@
                         $this.customAppConfigDialog = true;
                         // 新增时，创建新的模板组件，初始化创建临时的自定义应用配置
                         if ($this.isAddComponent) {
-                            $this.addEditItem = $this.createNewTemplateComponent(item);
+                            $this.addEditItem = $this.createDefaultTplComponent(item.type);
                             $this.innerAddEditItem = $this.getInitTemplateAppConfig();
                             return;
                         }
                         // 编辑
                         $this.currEditIndex = index;
-                        $this.addEditItem = $.extend({}, item);
+                        var cmp = $.grep($this.components, function (it) { return it.id == item.componentId; })[0];
+                        $this.addEditItem = $.extend({}, { templateComponentId: (item && item.id) || '', componentId: (cmp && cmp.id) || '' }, cmp);
+                        // $this.addEditItem = $.extend({}, item);
                         // 分离appConfigs，重新组装 innerEditItem
                         var customAppConfigs = $this.addEditItem.customAppConfigs || [];
                         $this.innerAddEditItem = $this.getInitTemplateAppConfig();
@@ -1429,7 +1440,10 @@
                     addAppConfig: function (type) {
                         var $this = this;
                         var defaultIcon = $this.icons.length > 0 ? $this.icons[0] : {};
+                        var templateComponentId = typeof $this.addEditItem.templateComponentId == 'number' ? $this.addEditItem.templateComponentId : '';
                         var appConfig = {
+                            componentId: $this.addEditItem.componentId,
+                            templateComponentId: templateComponentId,
                             type: type,
                             title: '',
                             iconId: defaultIcon.id,
@@ -1445,14 +1459,14 @@
                     // 根据type 和 index， 移除自定义配置项
                     removeAppConfig: function (type, index) {
                         var $this = this;
-                        var removeItem = {};
+                        var removeItems = [];
                         if (type == 'frontend') {
-                            removeItem = $this.innerAddEditItem.frontendConfigs.splice(index, 1);
+                            removeItems = $this.innerAddEditItem.frontendConfigs.splice(index, 1);
                         } else if (type == 'backend') {
-                            removeItem = $this.innerAddEditItem.backendConfigs.splice(index, 1);
+                            removeItems = $this.innerAddEditItem.backendConfigs.splice(index, 1);
                         }
-                        if (removeItem.id) {
-                            $this.innerAddEditItem.removeCustomAppConfigIds.push(removeItem.id);
+                        if (removeItems[0] && removeItems[0].id) {
+                            $this.innerAddEditItem.removeCustomAppConfigIds.push(removeItems[0].id);
                         }
                     },
                     // 打开图标选择弹窗
@@ -1497,7 +1511,7 @@
                     confirmCustomAppConfig: function () {
                         var $this = this;
                         var customAppConfigs = [];
-                        var { showAfterSignUp, openBlank, frontendConfigs, backendConfigs } = $this.innerAddEditItem;
+                        var { showAfterSignUp, openBlank, frontendConfigs, backendConfigs, removeCustomAppConfigIds } = $this.innerAddEditItem;
                         if (frontendConfigs.length > 0) {
                             for (var i = 0; i < frontendConfigs.length; i++) {
                                 var it = frontendConfigs[i];
@@ -1523,14 +1537,8 @@
                             }
                         }
                         $this.addEditItem.customAppConfigs = customAppConfigs;
-                        if ($this.isAddComponent) {
-                            $this.templateComponents.push($this.addEditItem);
-                            $this.setBasicComptChecked($this.fieldIndex)
-                            app.showMsg("已添加");
-                        } else {
-                            $this.templateComponents[$this.currEditIndex] = $.extend({}, $this.addEditItem);;
-                        }
-                        $this.initEditData();
+                        $this.addEditItem.removeCustomAppConfigIds = removeCustomAppConfigIds || [];
+                        $this.submitCustomComponent($this.addEditItem)
                     },
                     // 校验报名条件填写内容是否合格
                     validateSignUpCondition: function () {
@@ -1625,6 +1633,16 @@
                         $this.delDialog = false;
                     },
                     createDefaultEditItem: function (type, dataOrigin, initComponentFields) {
+                        var $this = this;
+                        var newTplComponent = $this.createDefaultTplComponent(type, dataOrigin);
+                        newTplComponent.componentFields = !initComponentFields ? null : [{
+                            componentId: '',
+                            fieldName: '',
+                            sequence: 1
+                        }];
+                        return newTplComponent;
+                    },
+                    createDefaultTplComponent: function (type, dataOrigin) {
                         return {
                             pid: 0,
                             name: '',
@@ -1633,12 +1651,7 @@
                             dataOrigin: dataOrigin,
                             originIdentify: '',
                             fieldFlag: '',
-                            type: type,
-                            componentFields: !initComponentFields ? null : [{
-                                componentId: '',
-                                fieldName: '',
-                                sequence: 1
-                            }]
+                            type: type
                         }
                     },
                     addEditItemFields: function () {
@@ -1846,9 +1859,7 @@
                                 dataOrigin: _this.dataOrigin,
                                 originIdentify: _this.originIdentify,
                                 fieldFlag: _this.fieldFlag,
-                                children: newChildren,
-                                customAppConfigs: _this.customAppConfigs,
-                                removeCustomAppConfigIds: _this.removeCustomAppConfigIds
+                                children: newChildren
                             });
                         });
                         return {

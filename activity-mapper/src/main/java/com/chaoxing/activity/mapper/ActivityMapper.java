@@ -65,6 +65,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	Page<Activity> pageErdosParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
+	
+	/**鄂尔多斯门户分页查询
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-30 12:36:28
+	 * @param page
+	 * @param activityQuery
+	 * @return
+	 */
+	Page<Activity> erdosMhDatacenterPage(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
 	/**
 	 * 查询管理的活动
@@ -337,4 +347,5 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @return
 	 */
     List<Activity> listActivityIdsByMarketIdOrFid(@Param("marketId") Integer marketId, @Param("fid") Integer fid);
+
 }

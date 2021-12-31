@@ -25,6 +25,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
+import com.chaoxing.activity.service.activity.engine.CustomAppConfigHandleService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
@@ -147,6 +148,8 @@ public class ActivityHandleService {
 	private ClazzInteractionApiService clazzInteractionApiService;
 	@Resource
 	private ActivityPushReminderService activityPushReminderService;
+	@Resource
+	private CustomAppConfigHandleService customAppConfigHandleService;
 
 	/**新增活动
 	 * @Description
@@ -213,6 +216,8 @@ public class ActivityHandleService {
 		// 保存活动报名的报名条件启用
 		signUpConditionService.saveActivitySignUpConditionEnables(activityId, activityCreateParamDto.getSucTemplateComponentIds());
 		signUpConditionService.saveActivitySignUpConditionsFromConditions(activityId, activityCreateParamDto.getSignUpConditions());
+		// 保存自定义应用启用列表
+		customAppConfigHandleService.saveActivityCustomAppEnables(activityId, activityCreateParamDto.getCustomAppEnableTplComponentIds());
 		// 保存自定义组件值
 		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
 		// 保存门户模板
@@ -412,6 +417,8 @@ public class ActivityHandleService {
 			// 更新
 			signUpConditionService.updateActivitySignUpEnables(activityId, activityUpdateParamDto.getSucTemplateComponentIds());
 			signUpConditionService.updateActivitySignUpConditionsFromConditions(activityId, activityUpdateParamDto.getSignUpConditions());
+			// 保存自定义应用启用列表
+			customAppConfigHandleService.saveActivityCustomAppEnables(activityId, activityUpdateParamDto.getCustomAppEnableTplComponentIds());
 			// 更新自定义组件的值
 			activityComponentValueService.updateActivityComponentValues(activityId, activityUpdateParamDto.getActivityComponentValues());
 			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);

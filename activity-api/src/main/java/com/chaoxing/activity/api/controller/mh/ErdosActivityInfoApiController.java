@@ -1,10 +1,14 @@
 package com.chaoxing.activity.api.controller.mh;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.api.controller.enums.MhBtnSequenceEnum;
+import com.chaoxing.activity.api.util.MhPreParamsUtils;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
@@ -155,6 +159,50 @@ public class ErdosActivityInfoApiController {
         Integer wfwfid = params.getInteger("wfwfid");
         jsonObject.put("results", packageWorkBtns(activity, uid, wfwfid));
         return RestRespDTO.success(jsonObject);
+    }
+
+    @RequestMapping("data-center")
+    public RestRespDTO mhDatacenter(@RequestBody String data) {
+        JSONObject params = JSON.parseObject(data);
+        // wfwfid
+        Integer wfwfid = params.getInteger("wfwfid");
+        Integer pageNum = params.getInteger("page");
+        pageNum = Optional.ofNullable(pageNum).orElse(1);
+        Integer pageSize = params.getInteger("pageSize");
+        pageSize = Optional.ofNullable(pageSize).orElse(12);
+        Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
+        // preParams
+        String preParams = params.getString("preParams");
+        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+        // 搜索内容
+        String sw = urlParams.getString("sw");
+        Integer activityClassifyId = null;
+        String classifies = urlParams.getString("classifies");
+        if (StringUtils.isNotBlank(classifies)) {
+            JSONArray jsonArray = JSON.parseArray(classifies);
+            if (jsonArray.size() > 0) {
+                JSONObject activityClassify = jsonArray.getJSONObject(0);
+                activityClassifyId = activityClassify.getInteger("id");
+            }
+        }
+        // 状态
+        String statusParams = urlParams.getString("status");
+        List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
+        // flag
+        String flag = urlParams.getString("flag");
+        // activityType
+        String activityType = urlParams.getString("activityType");
+        ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
+                .flag(flag)
+                .topFid(wfwfid)
+                .sw(sw)
+                .activityType(activityType)
+                .statusList(statusList)
+                .activityClassifyId(activityClassifyId)
+                .build();
+        Page<Activity> page = new Page(pageNum, pageSize);
+        page = activityQueryService.erdosMhDatacenterPage(page, activityQuery);
+        return RestRespDTO.success(page);
     }
 
     private Activity getActivityByParams(JSONObject params) {

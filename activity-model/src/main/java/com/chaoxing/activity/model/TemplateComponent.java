@@ -79,10 +79,7 @@ public class TemplateComponent {
     private Integer originId;
     /** 自定义应用配置列表 */
     @TableField(exist = false)
-    private List<TemplateCustomAppConfig> customAppConfigs;
-    /** 被删除的自定义应用配置ids */
-    @TableField(exist = false)
-    private List<Integer> removeCustomAppConfigIds;
+    private List<CustomAppConfig> customAppConfigs;
 
     /**将模版组件列表克隆到指定的模版
      * @Description 子组件将封装到父组件的children中
@@ -138,7 +135,6 @@ public class TemplateComponent {
                 .signUpFillInfoType(o.getSignUpFillInfoType())
                 .originId(o.getOriginId())
                 .customAppConfigs(o.getCustomAppConfigs())
-                .removeCustomAppConfigIds(o.getRemoveCustomAppConfigIds())
                 .build(), result);
         return result;
     }

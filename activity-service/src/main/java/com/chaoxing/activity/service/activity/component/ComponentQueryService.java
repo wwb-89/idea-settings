@@ -6,6 +6,8 @@ import com.chaoxing.activity.mapper.ComponentFieldMapper;
 import com.chaoxing.activity.mapper.ComponentMapper;
 import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.ComponentField;
+import com.chaoxing.activity.model.CustomAppConfig;
+import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,6 +36,8 @@ public class ComponentQueryService {
 	private ComponentMapper componentMapper;
 	@Resource
 	private ComponentFieldMapper componentFieldMapper;
+	@Resource
+	private CustomAppConfigQueryService customAppConfigQueryService;
 
 	/**根据code查询系统组件
 	 * @Description 
@@ -152,6 +156,11 @@ public class ComponentQueryService {
 						.lambda()
 						.eq(ComponentField::getComponentId, v.getId()));
 				v.setComponentFields(componentFields);
+			}
+			// 自定义应用配置
+			if (Objects.equals(v.getType(), Component.TypeEnum.CUSTOM_APP.getValue())) {
+				List<CustomAppConfig> customAppConfigs = customAppConfigQueryService.listByComponentId(v.getId());
+				v.setCustomAppConfigs(customAppConfigs);
 			}
 		});
 		return components;
