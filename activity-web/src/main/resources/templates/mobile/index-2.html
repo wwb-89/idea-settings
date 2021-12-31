@@ -97,7 +97,7 @@
                 <div class="list-item" v-show="showFilter('time')">
                     <div class="title">时间</div>
                     <ul>
-                        <li :class="{'active': time.selected}" v-for="(time, index) of activityQueryDates" :key="'time-' + index" @click="changeTime(index)">{{time.name}}</li>
+                        <li :class="{'active': time.selected}" v-for="(time, index) of activityQueryDates" :key="'time-' + index" v-if="time.value != 'specified'"  @click="changeTime(index)">{{time.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>

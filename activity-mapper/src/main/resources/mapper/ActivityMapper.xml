@@ -160,19 +160,19 @@
             </choose>
             <!--时间-->
             <choose>
-                <when test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
+                <when test="(params.minTimeStr != null and params.minTimeStr != '') or (params.maxTimeStr != null and params.maxTimeStr != '')">
                     <choose>
-                        <when test="params.minDateStr != null and params.minDateStr != '' and params.maxDateStr != null and params.maxDateStr != ''">
+                        <when test="params.minTimeStr != null and params.minTimeStr != '' and params.maxTimeStr != null and params.maxTimeStr != ''">
                             <!--都不为空-->
-                            AND t.start_time BETWEEN minDateStr AND minDateStr
+                            AND t.start_time BETWEEN #{params.minTimeStr} AND #{params.maxTimeStr}
                         </when>
                         <otherwise>
                             <choose>
-                                <when test="params.minDateStr != null and params.minDateStr != ''">
-                                    AND t.start_time >= #{params.minDateStr}
+                                <when test="params.minTimeStr != null and params.minTimeStr != ''">
+                                    AND t.start_time >= #{params.minTimeStr}
                                 </when>
                                 <otherwise>
-                                    AND t.start_time <![CDATA[<=]]> #{params.maxDateStr}
+                                    AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
                                 </otherwise>
                             </choose>
                         </otherwise>
@@ -268,19 +268,19 @@
                 AND t.activity_flag = #{params.flag}
             </if>
             <!--时间-->
-            <if test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
+            <if test="(params.minTimeStr != null and params.minTimeStr != '') or (params.maxTimeStr != null and params.maxTimeStr != '')">
                 <choose>
-                    <when test="params.minDateStr != null and params.minDateStr != '' and params.maxDateStr != null and params.maxDateStr != ''">
+                    <when test="params.minTimeStr != null and params.minTimeStr != '' and params.maxTimeStr != null and params.maxTimeStr != ''">
                         <!--都不为空-->
-                        AND t.start_time BETWEEN minDateStr AND minDateStr
+                        AND t.start_time BETWEEN #{params.minTimeStr} AND #{params.maxTimeStr}
                     </when>
                     <otherwise>
                         <choose>
-                            <when test="params.minDateStr != null and params.minDateStr != ''">
-                                AND t.start_time >= #{params.minDateStr}
+                            <when test="params.minTimeStr != null and params.minTimeStr != ''">
+                                AND t.start_time >= #{params.minTimeStr}
                             </when>
                             <otherwise>
-                                AND t.start_time <![CDATA[<=]]> #{params.maxDateStr}
+                                AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
                             </otherwise>
                         </choose>
                     </otherwise>
@@ -1099,19 +1099,19 @@
                 </otherwise>
             </choose>
             <!--时间-->
-            <if test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
+            <if test="(params.minTimeStr != null and params.minTimeStr != '') or (params.maxTimeStr != null and params.maxTimeStr != '')">
                 <choose>
-                    <when test="params.minDateStr != null and params.minDateStr != '' and params.maxDateStr != null and params.maxDateStr != ''">
+                    <when test="params.minTimeStr != null and params.minTimeStr != '' and params.maxTimeStr != null and params.maxTimeStr != ''">
                         <!--都不为空-->
-                        AND t.start_time BETWEEN minDateStr AND minDateStr
+                        AND t.start_time BETWEEN minTimeStr AND minTimeStr
                     </when>
                     <otherwise>
                         <choose>
-                            <when test="params.minDateStr != null and params.minDateStr != ''">
-                                AND t.start_time >= #{params.minDateStr}
+                            <when test="params.minTimeStr != null and params.minTimeStr != ''">
+                                AND t.start_time >= #{params.minTimeStr}
                             </when>
                             <otherwise>
-                                AND t.start_time <![CDATA[<=]]> #{params.maxDateStr}
+                                AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
                             </otherwise>
                         </choose>
                     </otherwise>

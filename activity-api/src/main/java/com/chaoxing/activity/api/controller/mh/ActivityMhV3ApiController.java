@@ -4,6 +4,7 @@ import cn.hutool.http.HtmlUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.api.controller.enums.MhBtnSequenceEnum;
+import com.chaoxing.activity.api.util.MhPreParamsUtils;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
@@ -147,8 +148,14 @@ public class ActivityMhV3ApiController {
         JSONObject params = JSON.parseObject(data);
         Integer uid = params.getInteger("uid");
         Integer wfwfid = params.getInteger("wfwfid");
+        // 获取需要排序的按钮名称列表
+        String preParams = params.getString("preParams");
+        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+        // 状态
+        String excludeBtnNamesStr = urlParams.getString("excludeBtnNames");
+        List<String> excludeBtnNames = MhPreParamsUtils.resolveStringV(excludeBtnNamesStr);
 
-        jsonObject.put("results", packageBtns(activity, activity.getSignId(), uid, wfwfid));
+        jsonObject.put("results", packageBtns(activity, activity.getSignId(), uid, wfwfid, excludeBtnNames));
         return RestRespDTO.success(jsonObject);
     }
 
@@ -367,9 +374,10 @@ public class ActivityMhV3ApiController {
      * @param signId
      * @param uid
      * @param wfwfid
+     * @param excludeBtnNames 排除的按钮名称
      * @return java.util.List<com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>
      */
-    private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer signId, Integer uid, Integer wfwfid) {
+    private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer signId, Integer uid, Integer wfwfid, List<String> excludeBtnNames) {
         List<MhGeneralAppResultDataDTO> result = Lists.newArrayList();
         Integer status = activity.getStatus();
         Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
@@ -471,7 +479,7 @@ public class ActivityMhV3ApiController {
                 if (needValidate && !signedUp) {
                     continue;
                 }
-                String buttonIcon = "";
+                String buttonIcon;
                 String btnName = workBtnDto.getButtonName();
                 if (Objects.equals(btnName, "我的作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue());
@@ -520,6 +528,27 @@ public class ActivityMhV3ApiController {
         }
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
+        // 删除排除的按钮
+        if (excludeBtnNames == null) {
+            excludeBtnNames = Lists.newArrayList();
+        }
+        Iterator<MhGeneralAppResultDataDTO> iterator = result.iterator();
+        while (iterator.hasNext()) {
+            MhGeneralAppResultDataDTO next = iterator.next();
+            List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = next.getFields();
+            boolean matchExclude = false;
+            if (CollectionUtils.isNotEmpty(fields)) {
+                for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO field : fields) {
+                    if (excludeBtnNames.contains(field.getValue())) {
+                        matchExclude = true;
+                        break;
+                    }
+                }
+            }
+            if (matchExclude) {
+                iterator.remove();
+            }
+        }
         return result;
     }
 
@@ -543,18 +572,6 @@ public class ActivityMhV3ApiController {
      */
     private String getDualSelectIndexUrl(Activity activity) {
         return String.format(UrlConstant.DUAL_SELECT_INDEX_URL, activity.getId(), activity.getCreateFid());
-    }
-
-
-    /**获取作品征集主页地址
-     * @Description
-     * @author wwb
-     * @Date 2021-04-09 15:30:32
-     * @param workId
-     * @return java.lang.String
-     */
-    private String getWorkIndexUrl(Integer workId) {
-        return String.format(UrlConstant.WORK_INDEX_URL, workId);
     }
 
     private String getSignUpKeyword(Integer marketId) {

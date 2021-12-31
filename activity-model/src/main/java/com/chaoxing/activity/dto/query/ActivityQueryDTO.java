@@ -35,9 +35,9 @@ public class ActivityQueryDTO {
 	private String levelType;
 	/** 用户班级id */
 	private Integer userClassId;
-	/** 时间区间 */
+	/** 时间区间 ActivityQueryDateScopeEnum */
 	private String dateScope;
-	/** 时间 */
+	/** 指定日期 */
 	private String date;
 	/** 状态 */
 	private Integer status;
@@ -45,10 +45,6 @@ public class ActivityQueryDTO {
 	private String flag;
 	/** 状态列表 */
 	private List<Integer> statusList;
-	/** 最小日期 */
-	private String minDateStr;
-	/** 最大日期 */
-	private String maxDateStr;
 	/** 区域码 */
 	private String areaCode;
 	/** 活动类型 */
@@ -69,5 +65,9 @@ public class ActivityQueryDTO {
 	private Integer currentUid;
 	/** 多活动标识 */
 	private List<String> flags;
+	/** 最小时间 */
+	private String minTimeStr;
+	/** 最大时间 */
+	private String maxTimeStr;
 
 }

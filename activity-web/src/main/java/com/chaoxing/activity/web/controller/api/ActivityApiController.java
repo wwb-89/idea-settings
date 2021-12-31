@@ -58,8 +58,6 @@ public class ActivityApiController {
 	private GroupRegionFilterService groupRegionFilterService;
 
 	/**分页查询可参与的活动列表
-	 * keepOldRule时，沿用旧的规则查询已发布、进行中、已结束的活动
-	 * 反之仅查询进行中、已结束的活动
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 09:58:40
@@ -74,20 +72,6 @@ public class ActivityApiController {
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = pageActivities(page, activityQuery, loginUser);
 		return RestRespDTO.success(page);
-	}
-
-	/**加载预告的活动列表
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2020-11-25 15:58:40
-	 * @param activityQuery
-	 * @param loginUser
-	 */
-	private List<Activity> listForecastActivity(ActivityQueryDTO activityQuery, LoginUserDTO loginUser) {
-		activityQuery.setStatusList(Lists.newArrayList(2));
-		Page<Activity> page = new Page<>(1, Integer.MAX_VALUE);
-		page = pageActivities(page, activityQuery, loginUser);
-		return Optional.ofNullable(page.getRecords()).map(Lists::newArrayList).orElse(Lists.newArrayList());
 	}
 
 	/**分页查询可参与的活动列表

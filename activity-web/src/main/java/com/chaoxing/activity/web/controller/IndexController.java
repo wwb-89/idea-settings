@@ -86,7 +86,8 @@ public class IndexController {
 	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, ActivitySquareParamDTO activitySquareParam) {
 		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
-		return handleData(request, model, null, activitySquareParam);
+		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listUniversalDateScope();
+		return handleData(request, model, null, activitySquareParam, activityQueryDates);
 	}
 
 	/**鄂尔多斯活动广场
@@ -153,7 +154,8 @@ public class IndexController {
 	 */
 	@RequestMapping("lib")
 	public String libIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
-		return handleData(request, model, pageId, activitySquareParam);
+		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listZjlibDateScope();
+		return handleData(request, model, pageId, activitySquareParam, activityQueryDates);
 	}
 
 	/**基础教育
@@ -169,7 +171,8 @@ public class IndexController {
 	@RequestMapping("bas")
 	public String basIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
 		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
-		return handleData(request, model, pageId, activitySquareParam);
+		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listUniversalDateScope();
+		return handleData(request, model, pageId, activitySquareParam, activityQueryDates);
 	}
 
 	/**高校
@@ -185,10 +188,11 @@ public class IndexController {
 	@RequestMapping("edu")
 	public String eduIndex(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
 		activitySquareParam.setStyle(Optional.ofNullable(activitySquareParam.getStyle()).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE));
-		return handleData(request, model, pageId, activitySquareParam);
+		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listUniversalDateScope();
+		return handleData(request, model, pageId, activitySquareParam, activityQueryDates);
 	}
 
-	private String handleData(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam) {
+	private String handleData(HttpServletRequest request, Model model, Integer pageId, ActivitySquareParamDTO activitySquareParam, List<ActivityQueryDateDTO> activityQueryDates) {
 		// 参数中传递的fid
 		Integer fid = activitySquareParam.getRealFid();
 		Integer marketId = activitySquareParam.getMarketId();
@@ -236,7 +240,6 @@ public class IndexController {
 			signUpKeyword = StringUtils.isNotBlank(marketSignUpConfig.getSignUpKeyword()) ? marketSignUpConfig.getSignUpKeyword() : signUpKeyword;
 		}
 		model.addAttribute("regions", groupRegionFilters);
-		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
 		model.addAttribute("activityQueryDates", activityQueryDates);
 		model.addAttribute("areaCode", areaCode);
 		model.addAttribute("topFid", fid);
