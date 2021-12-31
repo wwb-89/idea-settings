@@ -167,7 +167,7 @@ public class WfwFormActivityDataUpdateQueueService {
         /** 报名状态是否改变 */
         if (WfwFormUtils.isExistField(formRecord, "sign_up_status")) {
             String signUpStatus = formRecord.getStringValue("sign_up_status");
-            if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus)) {
+            if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus) && StringUtils.isNotBlank(wfwFormActivityWriteBackData.getSignUpStatus())) {
                 log.info("万能表单活动:{} 报名状态改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), signUpStatus, wfwFormActivityWriteBackData.getSignUpStatus());
                 return true;
             }
