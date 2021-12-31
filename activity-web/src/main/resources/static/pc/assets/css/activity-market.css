@@ -405,7 +405,6 @@ body {
 }
 
 .activity-market2 .card-list {
-  overflow: hidden;
   margin-top: 16px;
 }
 
@@ -495,7 +494,8 @@ body {
   max-width: 88px;
   overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
 }
 
 .activity-market2 .card-list ul li .img-box .tips-box {
