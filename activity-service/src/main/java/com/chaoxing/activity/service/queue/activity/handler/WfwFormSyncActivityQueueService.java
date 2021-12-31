@@ -345,17 +345,21 @@ public class WfwFormSyncActivityQueueService {
      * @return com.chaoxing.activity.dto.TimeScopeDTO
     */
     public TimeScopeDTO resolveSignUpTime(FormDataDTO formUserRecord) {
-        TimeScopeDTO signUpTimeScope = WfwFormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
+        return resolveSignUpTime(formUserRecord.getFormData());
+    }
+
+    public TimeScopeDTO resolveSignUpTime(List<FormDataItemDTO> formDataItems) {
+        TimeScopeDTO signUpTimeScope = WfwFormUtils.getTimeScope(formDataItems, "sign_up_time_scope");
         LocalDateTime startTime = Optional.ofNullable(signUpTimeScope).map(TimeScopeDTO::getStartTime).orElse(null);
         LocalDateTime endTime = Optional.ofNullable(signUpTimeScope).map(TimeScopeDTO::getEndTime).orElse(null);
         if (startTime == null || endTime == null) {
             LocalDateTime now = LocalDateTime.now();
             if (signUpTimeScope.getStartTime() == null) {
-                String signUpStartTimeStr = WfwFormUtils.getValue(formUserRecord, "sign_up_start_time");
+                String signUpStartTimeStr = WfwFormUtils.getValue(formDataItems, "sign_up_start_time");
                 startTime = StringUtils.isBlank(signUpStartTimeStr) ? now : WfwFormUtils.getTime(signUpStartTimeStr);
             }
             if (signUpTimeScope.getEndTime() == null) {
-                String signUpEndTimeStr = WfwFormUtils.getValue(formUserRecord, "sign_up_end_time");
+                String signUpEndTimeStr = WfwFormUtils.getValue(formDataItems, "sign_up_end_time");
                 endTime = StringUtils.isBlank(signUpEndTimeStr) ? now.plusMonths(1) : WfwFormUtils.getTime(signUpEndTimeStr);
             }
         }

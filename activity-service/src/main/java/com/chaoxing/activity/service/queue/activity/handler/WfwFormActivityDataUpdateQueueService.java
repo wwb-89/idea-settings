@@ -152,6 +152,7 @@ public class WfwFormActivityDataUpdateQueueService {
         if (WfwFormUtils.isExistField(formRecord, "activity_id")) {
             String activityId = formRecord.getStringValue("activity_id");
             if (!Objects.equals(String.valueOf(wfwFormActivityWriteBackData.getActivityId()), activityId)) {
+                log.info("万能表单活动:{} 活动id改变 {} -> {}", wfwFormActivityWriteBackData.getActivityId(), activityId, wfwFormActivityWriteBackData);
                 return true;
             }
         }
@@ -159,13 +160,15 @@ public class WfwFormActivityDataUpdateQueueService {
         if (WfwFormUtils.isExistField(formRecord, "status")) {
             String status = formRecord.getStringValue("status");
             if (!Objects.equals(wfwFormActivityWriteBackData.getActivityStatus(), status)) {
+                log.info("万能表单活动:{} 活动状态改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), status, wfwFormActivityWriteBackData.getActivityStatus());
                 return true;
             }
         }
         /** 报名状态是否改变 */
         if (WfwFormUtils.isExistField(formRecord, "sign_up_status")) {
             String signUpStatus = formRecord.getStringValue("sign_up_status");
-            if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus)) {
+            if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus) && StringUtils.isNotBlank(wfwFormActivityWriteBackData.getSignUpStatus())) {
+                log.info("万能表单活动:{} 报名状态改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), signUpStatus, wfwFormActivityWriteBackData.getSignUpStatus());
                 return true;
             }
         }
@@ -173,6 +176,7 @@ public class WfwFormActivityDataUpdateQueueService {
         if (WfwFormUtils.isExistField(formRecord, "preview_url")) {
             String previewUrl = formRecord.getStringValue("preview_url");
             if (!Objects.equals(wfwFormActivityWriteBackData.getPreviewUrl(), previewUrl)) {
+                log.info("万能表单活动:{} 浏览地址改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), previewUrl, wfwFormActivityWriteBackData.getPreviewUrl());
                 return true;
             }
         }
@@ -180,6 +184,7 @@ public class WfwFormActivityDataUpdateQueueService {
         if (WfwFormUtils.isExistField(formRecord, "release_status")) {
             String releaseStatus = formRecord.getStringValue("release_status");
             if (!Objects.equals(wfwFormActivityWriteBackData.getActivityReleaseStatus(), releaseStatus)) {
+                log.info("万能表单活动:{} 发布状态改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), releaseStatus, wfwFormActivityWriteBackData.getActivityReleaseStatus());
                 return true;
             }
         }

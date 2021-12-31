@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
+import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityPushReminder;
@@ -458,16 +459,20 @@ public class ActivityCreateParamDTO {
 	}
 
 	public static TimeScopeDTO resolveActivityTime(FormDataDTO formData) {
-		TimeScopeDTO activityTimeScope = WfwFormUtils.getTimeScope(formData, "activity_time");
-		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(WfwFormUtils.getTimeScope(formData, "activity_time_scope"));
+		return resolveActivityTime(formData.getFormData());
+	}
+
+	public static TimeScopeDTO resolveActivityTime(List<FormDataItemDTO> formDataItems) {
+		TimeScopeDTO activityTimeScope = WfwFormUtils.getTimeScope(formDataItems, "activity_time");
+		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(WfwFormUtils.getTimeScope(formDataItems, "activity_time_scope"));
 		LocalDateTime startTime = Optional.ofNullable(activityTimeScope).map(TimeScopeDTO::getStartTime).orElse(null);
 		LocalDateTime endTime = Optional.ofNullable(activityTimeScope).map(TimeScopeDTO::getEndTime).orElse(null);
 		if (activityTimeScope == null) {
 			LocalDateTime now = LocalDateTime.now();
-			String activityStartTimeStr = WfwFormUtils.getValue(formData, "activity_start_time");
+			String activityStartTimeStr = WfwFormUtils.getValue(formDataItems, "activity_start_time");
 			startTime = StringUtils.isBlank(activityStartTimeStr) ? now : WfwFormUtils.getTime(activityStartTimeStr);
 
-			String activityEndTimeStr = WfwFormUtils.getValue(formData, "activity_end_time");
+			String activityEndTimeStr = WfwFormUtils.getValue(formDataItems, "activity_end_time");
 			endTime = StringUtils.isBlank(activityEndTimeStr) ? startTime.plusMonths(1) : WfwFormUtils.getTime(activityEndTimeStr);
 		}
 		return TimeScopeDTO.builder()

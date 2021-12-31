@@ -95,8 +95,12 @@ public class WfwFormUtils {
 	 * @return java.lang.String
 	*/
 	public static String getValue(FormDataDTO formDataDto, String alias) {
+		return getValue(formDataDto.getFormData(), alias);
+	}
+
+	public static String getValue(List<FormDataItemDTO> formDataItems, String alias) {
 		String value = "";
-		JSONObject jsonValue = getJsonValue(formDataDto, alias);
+		JSONObject jsonValue = getJsonValue(formDataItems, alias);
 		if (jsonValue != null) {
 			value = jsonValue.getString(VAL_KEY);
 		}
@@ -165,7 +169,10 @@ public class WfwFormUtils {
 	}
 
 	private static JSONObject getJsonValue(FormDataDTO formData, String alias) {
-		List<FormDataItemDTO> items = formData.getFormData();
+		return getJsonValue(formData.getFormData(), alias);
+	}
+
+	private static JSONObject getJsonValue(List<FormDataItemDTO> items, String alias) {
 		if (CollectionUtils.isNotEmpty(items)) {
 			for (FormDataItemDTO item : items) {
 				if (Objects.equals(item.getAlias(), alias)) {
@@ -265,16 +272,27 @@ public class WfwFormUtils {
 	 */
 	public static TimeScopeDTO getTimeScope(FormDataDTO formData, String fieldAlias) {
 		List<FormDataItemDTO> formDatas = formData.getFormData();
+		return getTimeScope(formDatas, fieldAlias);
+	}
+
+	public static TimeScopeDTO getTimeScope(List<FormDataItemDTO> formDatas, String fieldAlias) {
 		List<String> activityTimes = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(formDatas)) {
 			for (FormDataItemDTO data : formDatas) {
 				String alias = data.getAlias();
 				if (Objects.equals(fieldAlias, alias)) {
-					List<JSONObject> values = data.getValues();
-					if (CollectionUtils.isNotEmpty(values)) {
-						activityTimes.add(values.get(0).getString("val"));
+					List<FormDataItemDTO.FieldDTO> fields = data.getFields();
+					if (CollectionUtils.isNotEmpty(fields)) {
+						activityTimes.add(fields.get(0).getValues().get(0).getString("val"));
+						activityTimes.add(fields.get(1).getValues().get(0).getString("val"));
+						break;
 					} else {
-						activityTimes.add("");
+						List<JSONObject> values = data.getValues();
+						if (CollectionUtils.isNotEmpty(values)) {
+							activityTimes.add(values.get(0).getString("val"));
+						} else {
+							activityTimes.add("");
+						}
 					}
 				}
 			}

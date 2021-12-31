@@ -41,7 +41,19 @@ public class FormDataItemDTO {
 	private String alias;
 	/** 值 */
 	private List<JSONObject> values;
+	/** 时间区间的值（提交检验的时候为该字段） */
+	private List<FieldDTO> fields;
 
+	@Data
+	@Builder
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class FieldDTO {
+
+		private String label;
+		private List<JSONObject> values;
+
+	}
 
 	/**根据别名获取数据
 	 * @Description
