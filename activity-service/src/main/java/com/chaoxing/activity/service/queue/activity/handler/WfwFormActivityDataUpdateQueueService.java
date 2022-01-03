@@ -13,6 +13,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
 import com.chaoxing.activity.util.WfwFormUtils;
+import com.chaoxing.activity.util.constant.WfwFormAliasConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -108,29 +109,29 @@ public class WfwFormActivityDataUpdateQueueService {
             item.put("comptId", formInfo.getId());
             item.put("alias", alias);
             JSONArray data = new JSONArray();
-            if (Objects.equals(alias, "activity_id")) {
+            if (Objects.equals(alias, WfwFormAliasConstant.ACTIVITY_ID)) {
                 data.add(wfwFormActivityWriteBackData.getActivityId());
                 item.put("val", data);
                 result.add(item);
-            } else if (Objects.equals(alias, "status")) {
+            } else if (Objects.equals(alias, WfwFormAliasConstant.ACTIVITY_STATUS)) {
                 data.add(wfwFormActivityWriteBackData.getActivityStatus());
                 item.put("val", data);
                 result.add(item);
-            } else if (Objects.equals(alias, "sign_up_status")) {
+            } else if (Objects.equals(alias, WfwFormAliasConstant.SIGN_UP_STATUS)) {
                 String signUpStatus = wfwFormActivityWriteBackData.getSignUpStatus();
                 if (StringUtils.isNotBlank(signUpStatus)) {
                     data.add(signUpStatus);
                     item.put("val", data);
                     result.add(item);
                 }
-            } else if (Objects.equals(alias, "preview_url")) {
+            } else if (Objects.equals(alias, WfwFormAliasConstant.ACTIVITY_PREVIEW_URL)) {
                 String previewUrl = wfwFormActivityWriteBackData.getPreviewUrl();
                 if (StringUtils.isNotBlank(previewUrl)) {
                     data.add(previewUrl);
                     item.put("val", data);
                     result.add(item);
                 }
-            } else if (Objects.equals("release_status", alias)) {
+            } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS, alias)) {
                 data.add(wfwFormActivityWriteBackData.getActivityReleaseStatus());
                 item.put("val", data);
                 result.add(item);
@@ -149,46 +150,54 @@ public class WfwFormActivityDataUpdateQueueService {
             // 查询表单记录
             FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
             if (formRecord == null) {
-                log.info("根据fid:{}, formId:{}, formUserId:{}, 数据:{} 验证万能表单活动是否需要更新:表单记录不存在", fid,formId, formUserId, JSON.toJSONString(wfwFormActivityWriteBackData) );
+                log.info("根据fid:{}, formId:{}, formUserId:{}, 数据:{} 验证万能表单活动是否需要更新:表单记录不存在", fid, formId, formUserId, JSON.toJSONString(wfwFormActivityWriteBackData));
                 return false;
             }
+            log.info("万能表单数据:{}", JSON.toJSONString(formRecord));
+            Integer localActivityId = wfwFormActivityWriteBackData.getActivityId();
             /** 活动id是否改变 */
-            if (WfwFormUtils.isExistField(formRecord, "activity_id")) {
-                String activityId = formRecord.getStringValue("activity_id");
-                if (!Objects.equals(String.valueOf(wfwFormActivityWriteBackData.getActivityId()), activityId)) {
-                    log.info("万能表单活动:{} 活动id改变 {} -> {}", wfwFormActivityWriteBackData.getActivityId(), activityId, wfwFormActivityWriteBackData);
+            if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_ID)) {
+                String activityId = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_ID);
+                log.info("万能表单活动id:{} 本地活动id:{}", activityId,  localActivityId);
+                if (!Objects.equals(String.valueOf(localActivityId), activityId)) {
+                    log.info("万能表单活动:{} 活动id改变 {} -> {}", localActivityId, activityId, localActivityId);
                     return true;
                 }
             }
             /** 活动状态是否改变 */
-            if (WfwFormUtils.isExistField(formRecord, "status")) {
-                String status = formRecord.getStringValue("status");
-                if (!Objects.equals(wfwFormActivityWriteBackData.getActivityStatus(), status)) {
-                    log.info("万能表单活动:{} 活动状态改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), status, wfwFormActivityWriteBackData.getActivityStatus());
+            if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_STATUS)) {
+                String status = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_STATUS);
+                String localStatus = wfwFormActivityWriteBackData.getActivityStatus();
+                log.info("万能表单活动状态:{} 本地活动状态:{}", status,  localStatus);
+                if (!Objects.equals(localStatus, status)) {
+                    log.info("万能表单活动:{} 活动状态改变 {} -> {}", localActivityId, status, localStatus);
                     return true;
                 }
             }
             /** 报名状态是否改变 */
-            if (WfwFormUtils.isExistField(formRecord, "sign_up_status")) {
-                String signUpStatus = formRecord.getStringValue("sign_up_status");
-                if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus) && StringUtils.isNotBlank(wfwFormActivityWriteBackData.getSignUpStatus())) {
-                    log.info("万能表单活动:{} 报名状态改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), signUpStatus, wfwFormActivityWriteBackData.getSignUpStatus());
+            if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.SIGN_UP_STATUS)) {
+                String signUpStatus = formRecord.getStringValue(WfwFormAliasConstant.SIGN_UP_STATUS);
+                String localSignUpStatus = wfwFormActivityWriteBackData.getSignUpStatus();
+                if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus) && StringUtils.isNotBlank(localSignUpStatus)) {
+                    log.info("万能表单活动:{} 报名状态改变 {} -> {}", localActivityId, signUpStatus, localSignUpStatus);
                     return true;
                 }
             }
             /** 预览地址是否改变 */
-            if (WfwFormUtils.isExistField(formRecord, "preview_url")) {
-                String previewUrl = formRecord.getStringValue("preview_url");
+            if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_PREVIEW_URL)) {
+                String previewUrl = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_PREVIEW_URL);
+                String localPreviewUrl = wfwFormActivityWriteBackData.getPreviewUrl();
                 if (!Objects.equals(wfwFormActivityWriteBackData.getPreviewUrl(), previewUrl)) {
-                    log.info("万能表单活动:{} 浏览地址改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), previewUrl, wfwFormActivityWriteBackData.getPreviewUrl());
+                    log.info("万能表单活动:{} 浏览地址改变 {} -> {}", localActivityId, previewUrl, localPreviewUrl);
                     return true;
                 }
             }
             /** 发布状态是否改变 */
-            if (WfwFormUtils.isExistField(formRecord, "release_status")) {
-                String releaseStatus = formRecord.getStringValue("release_status");
+            if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS)) {
+                String releaseStatus = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS);
+                String localReleaseStatus = wfwFormActivityWriteBackData.getActivityReleaseStatus();
                 if (!Objects.equals(wfwFormActivityWriteBackData.getActivityReleaseStatus(), releaseStatus)) {
-                    log.info("万能表单活动:{} 发布状态改变 {} -> {}}", wfwFormActivityWriteBackData.getActivityId(), releaseStatus, wfwFormActivityWriteBackData.getActivityReleaseStatus());
+                    log.info("万能表单活动:{} 发布状态改变 {} -> {}", localActivityId, releaseStatus, localReleaseStatus);
                     return true;
                 }
             }

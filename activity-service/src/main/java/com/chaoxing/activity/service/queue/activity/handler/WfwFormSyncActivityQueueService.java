@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.queue.activity.handler;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
@@ -172,6 +173,7 @@ public class WfwFormSyncActivityQueueService {
             log.error("未查询到fid:{}, formId:{}, formUserId:{} 的表单记录", fid, formId, formUserId);
             return null;
         }
+        log.info("根据万能表单数据:{} 创建活动", JSON.toJSONString(formUserRecord));
         // 判断标识 activity_abort（boolean类型）为true则不创建
         Boolean activityAbort = formUserRecord.getBooleanValue("activity_abort");
         if (activityAbort) {
@@ -382,6 +384,7 @@ public class WfwFormSyncActivityQueueService {
             log.error("表单数据推送根据参数fid:{}, formId:{}, formUserId:{} 获取表单记录为空", fid, formId, formUserId);
             return;
         }
+        log.info("根据万能表单数据:{} 更新活动", JSON.toJSONString(formUserRecord));
         Activity activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
         if (activity == null) {
             // 查找表单记录中的活动id
