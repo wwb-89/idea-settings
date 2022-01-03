@@ -356,11 +356,11 @@ public class WfwFormSyncActivityQueueService {
         LocalDateTime endTime = Optional.ofNullable(signUpTimeScope).map(TimeScopeDTO::getEndTime).orElse(null);
         if (startTime == null || endTime == null) {
             LocalDateTime now = LocalDateTime.now();
-            if (signUpTimeScope.getStartTime() == null) {
+            if (startTime == null) {
                 String signUpStartTimeStr = WfwFormUtils.getValue(formDataItems, "sign_up_start_time");
                 startTime = StringUtils.isBlank(signUpStartTimeStr) ? now : WfwFormUtils.getTime(signUpStartTimeStr);
             }
-            if (signUpTimeScope.getEndTime() == null) {
+            if (endTime == null) {
                 String signUpEndTimeStr = WfwFormUtils.getValue(formDataItems, "sign_up_end_time");
                 endTime = StringUtils.isBlank(signUpEndTimeStr) ? now.plusMonths(1) : WfwFormUtils.getTime(signUpEndTimeStr);
             }
