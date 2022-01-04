@@ -1532,6 +1532,15 @@
                                     app.showMsg("应用配置标题和链接不能为空");
                                     return;
                                 }
+                                var pattern = /^(https?:\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
+                                if (!pattern.test(bit.url)) {
+                                    app.showMsg("后台应用配置地址不规范");
+                                    return;
+                                }
+                                if (bit.url.indexOf("https") == -1) {
+                                    app.showMsg("后台应用配置地址必须为http");
+                                    return;
+                                }
                                 bit.openBlank = openBlank;
                                 bit.sequence = j;
                                 customAppConfigs.push(bit);
