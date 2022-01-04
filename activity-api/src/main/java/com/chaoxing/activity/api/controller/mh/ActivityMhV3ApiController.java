@@ -425,6 +425,11 @@ public class ActivityMhV3ApiController {
                 if (CollectionUtils.isNotEmpty(signInIds)) {
                     result.add(buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
+                // 班级互动
+                Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
+                if (openClazzInteraction) {
+                    result.add(buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activity.getId(), "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+                }
                 existSignUpInfo = true;
             } else{
                 signedUp = false;
