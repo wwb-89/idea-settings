@@ -13,13 +13,11 @@ import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityDetail;
-import com.chaoxing.activity.model.ActivityRating;
-import com.chaoxing.activity.model.MarketSignUpConfig;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
+import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
@@ -79,6 +77,8 @@ public class ActivityMhV3ApiController {
     private ActivityCollectionQueryService activityCollectionQueryService;
     @Resource
     private MarketSignupConfigService marketSignupConfigService;
+    @Resource
+    private CustomAppConfigQueryService customAppConfigQueryService;
 
     private static final String EMPTY_INTRODUCTION_TEXT = "<span style=\"color: rgb(165, 165, 165);\">暂无介绍</span>";
 
@@ -525,6 +525,19 @@ public class ActivityMhV3ApiController {
         Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
         if (openClazzInteraction) {
             result.add(buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activity.getId(), "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+        }
+        // 查询自定义配置列表中的前端按钮地址
+        List<CustomAppConfig> frontendAppConfigs = customAppConfigQueryService.listFrontendAppConfigsByActivity(activity.getId());
+        for (CustomAppConfig config : frontendAppConfigs) {
+            boolean showAfterSignUp = Optional.ofNullable(config.getShowAfterSignUp()).orElse(false);
+            String iconCloudUrl = StringUtils.isBlank(config.getDefaultIconCloudId()) ? "" : cloudApiService.buildImageUrl(config.getDefaultIconCloudId());
+            if (showAfterSignUp) {
+                if (existSignUp && signedUp) {
+                    result.add(buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
+                }
+            } else {
+                result.add(buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
+            }
         }
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));

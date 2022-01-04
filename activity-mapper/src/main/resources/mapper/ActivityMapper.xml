@@ -454,8 +454,8 @@
 
                 </otherwise>
             </choose>
-            <if test="params.activityFlag != null and params.activityFlag != ''">
-                AND t.activity_flag = #{params.activityFlag}
+            <if test="params.flag != null and params.flag != ''">
+                AND t.activity_flag = #{params.flag}
             </if>
             <if test="params.sw != null and params.sw != ''">
                 AND (

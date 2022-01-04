@@ -73,14 +73,35 @@ public class CustomAppConfigQueryService {
         return customAppConfigMapper.listCustomAppConfigWithCloudId(type, customAppTplComponentIds);
     }
 
-    /**查询后台应用配置列表
+    /**根据活动id查询后台应用配置列表
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-04 15:40:06
+     * @param activityId
+     * @return 
+     */
+    public List<CustomAppConfig> listBackendAppConfigsByActivity(Integer activityId) {
+        List<Integer> enableCustomAppTplComponentIds = listEnabledActivityCustomAppTplComponentId(activityId);
+        if (CollectionUtils.isEmpty(enableCustomAppTplComponentIds)) {
+            return Lists.newArrayList();
+        }
+        return list(CustomAppConfig.UrlTypeEnum.BACKEND.getValue(), enableCustomAppTplComponentIds);
+
+    }
+
+    /**根据活动id查询前台应用配置列表
      * @Description
      * @author huxiaolong
-     * @Date 2021-12-30 20:16:30
-     * @param customAppTplComponentIds
+     * @Date 2022-01-04 15:40:06
+     * @param activityId
      * @return
      */
-    public List<CustomAppConfig> listBackendAppConfigs(List<Integer> customAppTplComponentIds) {
-        return list(CustomAppConfig.UrlTypeEnum.BACKEND.getValue(), customAppTplComponentIds);
+    public List<CustomAppConfig> listFrontendAppConfigsByActivity(Integer activityId) {
+        List<Integer> enableCustomAppTplComponentIds = listEnabledActivityCustomAppTplComponentId(activityId);
+        if (CollectionUtils.isEmpty(enableCustomAppTplComponentIds)) {
+            return Lists.newArrayList();
+        }
+        return list(CustomAppConfig.UrlTypeEnum.FRONTEND.getValue(), enableCustomAppTplComponentIds);
+
     }
 }

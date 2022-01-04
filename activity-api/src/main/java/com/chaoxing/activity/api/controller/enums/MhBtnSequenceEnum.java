@@ -22,7 +22,8 @@ public enum MhBtnSequenceEnum {
     GROUP("小组相关", 6),
     RATING("评价", 7),
     MANAGE("管理", 8),
-    SIGN_UP_INFO("报名信息", 9);
+    SIGN_UP_INFO("报名信息", 9),
+    CUSTOM_APP("自定义相关", 10);
 
     private final String name;
     private final Integer sequence;

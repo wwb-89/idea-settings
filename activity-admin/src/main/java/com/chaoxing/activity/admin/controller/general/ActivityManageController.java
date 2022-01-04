@@ -145,11 +145,7 @@ public class ActivityManageController {
 		if (activity.getOpenClazzInteraction()) {
 			clazzInteractionMenus = ClazzInteractionDTO.listClazzInteractionMenus(activity, operateUid, loginUser.getFid());
 		}
-		List<CustomAppConfig> customAppConfigs = Lists.newArrayList();
-		List<Integer> enableCustomAppTplComponentIds = customAppConfigQueryService.listEnabledActivityCustomAppTplComponentId(activityId);
-		if (CollectionUtils.isNotEmpty(enableCustomAppTplComponentIds)) {
-			customAppConfigs = customAppConfigQueryService.listBackendAppConfigs(enableCustomAppTplComponentIds);
-		}
+		List<CustomAppConfig> customAppConfigs = customAppConfigQueryService.listBackendAppConfigsByActivity(activityId);
 		model.addAttribute("clazzInteractionMenus", clazzInteractionMenus);
 		model.addAttribute("customAppConfigs", customAppConfigs);
 
