@@ -62,7 +62,7 @@ public class CommonConstant {
 	/** 表单审批同意 */
 	public static final Integer FORM_APPROVAL_AGREE_VALUE = 2;
 	/** 表单创建活动选择的门户模版id */
-	public static final Integer DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID = 16;
+	public static final Integer DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID = 45;
 
 	// 活动相关
 	/** 活动考核配置签到默认分值 */
