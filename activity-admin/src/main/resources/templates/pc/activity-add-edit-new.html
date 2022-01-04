@@ -2286,7 +2286,11 @@
                 addWork: function () {
                     var $this = this;
                     var url = ctx + "/api/work/new";
-                    app.ajaxPostWithLoading(url, {}, function (data) {
+                    var params = {
+                        uid: $this.activity.createUid,
+                        fid: $this.activity.createFid
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             $this.activity.workId = data.data;
                         } else {

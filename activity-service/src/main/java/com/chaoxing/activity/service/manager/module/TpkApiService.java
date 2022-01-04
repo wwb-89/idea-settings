@@ -41,12 +41,11 @@ public class TpkApiService {
 	 * @author wwb
 	 * @Date 2020-11-12 14:51:13
 	 * @param name
-	 * @param loginUser
+	 * @param uid
+	 * @param fid
 	 * @return java.lang.Integer
 	*/
-	public Integer create(String name, LoginUserDTO loginUser) {
-		Integer uid = loginUser.getUid();
-		Integer fid = loginUser.getFid();
+	public Integer create(String name, Integer uid, Integer fid) {
 		String url = String.format(CREATE_URL, name, uid, fid);
 		String result = restTemplate.postForObject(url, null, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);

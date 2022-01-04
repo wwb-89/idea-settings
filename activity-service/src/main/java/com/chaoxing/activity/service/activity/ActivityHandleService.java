@@ -729,7 +729,7 @@ public class ActivityHandleService {
 		}
 		Integer activityId = activity.getId();
 		// 创建模块
-		createModuleByWebTemplateId(activityId, newWebTemplateId, loginUser);
+		createModuleByWebTemplateId(activity, newWebTemplateId);
 		// 克隆
 		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, newWebTemplateId, loginUser);
 		MhCloneResultDTO mhCloneResult = mhApiService.cloneTemplate(mhCloneParam);
@@ -761,10 +761,10 @@ public class ActivityHandleService {
 	 * @Date 2020-11-23 20:36:17
 	 * @param activityId
 	 * @param webTemplateId
-	 * @param loginUser
 	 * @return void
 	 */
-	private void createModuleByWebTemplateId(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+	private void createModuleByWebTemplateId(Activity activity, Integer webTemplateId) {
+		Integer activityId = activity.getId();
 		// 先删除活动的模块
 		activityModuleService.deleteByActivityId(activityId);
 		// 根据网页模板找到需要创建的模块id
@@ -781,7 +781,7 @@ public class ActivityHandleService {
 				// 调用相应的接口创建模块，并将模块与活动关联保存起来
 				Integer sequence = 1;
 				for (WebTemplateAppData webTemplateAppData : webTemplateAppDataList) {
-					ActivityModule activityModule = createModule(activityId, appId, webTemplateAppData, loginUser);
+					ActivityModule activityModule = createModule(activity, appId, webTemplateAppData);
 					activityModule.setSequence(sequence++);
 					activityModules.add(activityModule);
 				}
@@ -796,13 +796,12 @@ public class ActivityHandleService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-24 10:33:47
-	 * @param activityId
+	 * @param activity
 	 * @param templateAppId
 	 * @param webTemplateAppData
-	 * @param loginUser
 	 * @return com.chaoxing.activity.model.ActivityModule
 	 */
-	private ActivityModule createModule(Integer activityId, Integer templateAppId, WebTemplateAppData webTemplateAppData, LoginUserDTO loginUser) {
+	private ActivityModule createModule(Activity activity, Integer templateAppId, WebTemplateAppData webTemplateAppData) {
 		ActivityModule activityModule = null;
 		// 模块类型
 		String type = webTemplateAppData.getType();
@@ -810,16 +809,16 @@ public class ActivityHandleService {
 		String appName = webTemplateAppData.getName();
 		switch (moduleType) {
 			case TPK:
-				activityModule = activityModuleService.generateTpkModule(activityId, templateAppId, appName, loginUser);
+				activityModule = activityModuleService.generateTpkModule(activity, templateAppId, appName);
 				break;
 			case STAR:
-				activityModule = activityModuleService.generateStarModule(activityId, templateAppId, appName, loginUser);
+				activityModule = activityModuleService.generateStarModule(activity, templateAppId, appName);
 				break;
 			case WORK:
-				activityModule = activityModuleService.generateWorkModule(activityId, templateAppId, appName, loginUser);
+				activityModule = activityModuleService.generateWorkModule(activity, templateAppId, appName);
 				break;
 			case PUNCH:
-				activityModule = activityModuleService.generatePunchModule(activityId, templateAppId, appName, loginUser);
+				activityModule = activityModuleService.generatePunchModule(activity, templateAppId, appName);
 				break;
 			default:
 

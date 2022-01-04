@@ -54,7 +54,6 @@ public class WfwFormActivityDataUpdateQueueService {
         Integer formId = queueParam.getFormId();
         Integer formUserId = queueParam.getFormUserId();
         String data = packagePushUpdateData(buildWriteBackData(activity), formUserId, formId, fid);
-        int i = 1 / 0;
         wfwFormApiService.updateForm(formId, formUserId, data);
     }
 

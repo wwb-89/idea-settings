@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 /**作品征集
  * @author wwb
@@ -31,13 +32,19 @@ public class WorkApiController {
      * @author wwb
      * @Date 2021-08-05 16:46:04
      * @param request
+     * @param uid 如果活动不为空应该是活动的创建者id
+     * @param fid 如果活动不为空应该是活动的创建者fid
      * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @LoginRequired
     @RequestMapping("new")
-    public RestRespDTO create(HttpServletRequest request) {
-        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        Integer workId = workApiService.createDefault(loginUser.getUid(), loginUser.getFid());
+    public RestRespDTO create(HttpServletRequest request, Integer uid, Integer fid) {
+        if (uid == null) {
+            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+            uid = Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null);
+            fid = Optional.ofNullable(loginUser).map(LoginUserDTO::getFid).orElse(null);
+        }
+        Integer workId = workApiService.createDefault(uid, fid);
         return RestRespDTO.success(workId);
     }
 
