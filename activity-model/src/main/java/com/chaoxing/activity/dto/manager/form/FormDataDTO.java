@@ -115,10 +115,7 @@ public class FormDataDTO {
 
 	public Boolean getBooleanValue(String alias) {
 		String value = WfwFormUtils.getValue(this, alias);
-		if (StringUtils.isNotBlank(value)) {
-			return Boolean.parseBoolean(value);
-		}
-		return false;
+		return Objects.equals("true", value);
 	}
 
 	public LocalDateTime getTimeAliasValue(String alias) {
