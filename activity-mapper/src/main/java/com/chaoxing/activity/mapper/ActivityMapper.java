@@ -324,8 +324,6 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 
 	/**
 	 * 鄂尔多斯定制的机构创建的作品征集id列表
-	 *
-	 * @param createdFid
 	 * @param participateFid
 	 * @param activityFlag
 	 * @param activityClassifyId 活动分类id
@@ -334,7 +332,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @author wwb
 	 * @Date 2021-09-07 20:49:01
 	 */
-	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("createdFid") Integer createdFid, @Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag, @Param("activityClassifyId") Integer activityClassifyId);
+	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag, @Param("activityClassifyId") Integer activityClassifyId);
 
 	/**统计机构或市场下活动数量
 	 *

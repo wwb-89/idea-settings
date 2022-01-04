@@ -83,7 +83,15 @@ public class WfwFormUtils {
 	 * @return boolean
 	*/
 	public static boolean isExistField(FormDataDTO formDataDto, String alias) {
-		return getJsonValue(formDataDto, alias) != null;
+		List<FormDataItemDTO> items = formDataDto.getFormData();
+		if (CollectionUtils.isNotEmpty(items)) {
+			for (FormDataItemDTO item : items) {
+				if (Objects.equals(item.getAlias(), alias)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**从表单数据中获取值

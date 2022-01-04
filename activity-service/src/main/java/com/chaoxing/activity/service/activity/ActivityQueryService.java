@@ -1382,7 +1382,7 @@ public class ActivityQueryService {
 			default:
 				queryActivityFlag = "";
 		}
-		return activityMapper.listErdosCustomOrgCreatedWorkId(fid, activity.getCreateFid(), queryActivityFlag, activity.getActivityClassifyId());
+		return activityMapper.listErdosCustomOrgCreatedWorkId(activity.getCreateFid(), queryActivityFlag, activity.getActivityClassifyId());
 	}
 
 	/**
