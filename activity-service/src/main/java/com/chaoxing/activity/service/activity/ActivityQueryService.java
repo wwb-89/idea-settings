@@ -741,7 +741,9 @@ public class ActivityQueryService {
 			result = activitiesConvert2ActivitySignedUp(waitAuditPage.getRecords(), userSignUpStatuses, uid);
 			additionalTotal = result.size();
 		}
-		page = activityMapper.pageSignedUpActivities(page, successSignIds, null, marketIds);
+		if (CollectionUtils.isNotEmpty(successSignIds)) {
+			page = activityMapper.pageSignedUpActivities(page, successSignIds, null, marketIds);
+		}
 		List<ActivitySignedUpDTO> records = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatuses, uid);
 		result.addAll(records);
 
