@@ -53,6 +53,8 @@ public class SignUpCondition {
     private List<TemplateSignUpCondition> templateConditionDetails;
     @TableField(exist = false)
     private List<ActivitySignUpCondition> activityConditionDetails;
+    @TableField(exist = false)
+    private List<Integer> deleteDetailIds;
 
     public SignUpCondition cloneToNewTemplateComponentId(Integer templateComponentId) {
         return SignUpCondition.builder()
