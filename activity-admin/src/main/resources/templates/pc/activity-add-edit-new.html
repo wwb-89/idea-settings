@@ -2188,6 +2188,14 @@
                     var signUp = $this.signUpMap[signUpTplComponentId];
                     var url = ctx + "/api/wfw-form/build/edit-url";
                     var formId = signUp.fillInfoFormId || '';
+                    if (activityApp.isEmpty(formId)) {
+                        var form = $this.signUpFillInfoDefaultWfwFormMap[signUpTplComponentId];
+                        $this.$set($this.signUpMap[signUpTplComponentId], "openAddr", form.openAddr);
+                        $this.$set($this.signUpMap[signUpTplComponentId], "pcUrl", form.pcUrl);
+                        $this.$set($this.signUpMap[signUpTplComponentId], "wechatUrl", form.wechatUrl);
+                        formId = form.fillInfoFormId;
+                        $this.$set($this.signUpMap[signUpTplComponentId], "fillInfoFormId", formId);
+                    }
                     var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
                     var params = {
                         fid: $this.fid,
