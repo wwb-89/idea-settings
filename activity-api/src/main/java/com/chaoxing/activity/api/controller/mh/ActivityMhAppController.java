@@ -14,13 +14,11 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.UrlUtils;
-import com.chaoxing.activity.util.constant.CommonConstant;
-import com.chaoxing.activity.util.constant.DateFormatConstant;
-import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
-import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.constant.*;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -65,6 +64,8 @@ public class ActivityMhAppController {
 	private SignApiService signApiService;
 	@Resource
 	private WfwAreaApiService wfwAreaApiService;
+	@Resource
+	private MhApiService mhApiService;
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -571,6 +572,27 @@ public class ActivityMhAppController {
 			introduction = Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse("");
 		}
 		return RestRespDTO.success(introduction);
+	}
+
+	/**评价的地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-05 15:15:41
+	 * @param request
+	 * @param websiteId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("evaluation/url")
+	public RestRespDTO evaluation(HttpServletRequest request, @RequestParam Integer websiteId) {
+		String redirectUrl = "";
+		String url = request.getHeader(HttpRequestHeaderConstant.REFERER);
+		Activity activity = activityQueryService.getByWebsiteId(websiteId);
+		String origin = Optional.ofNullable(activity).map(Activity::getOrigin).orElse(null);
+		Integer originFormUserId = Optional.ofNullable(activity).map(Activity::getOriginFormUserId).orElse(null);
+		if (StringUtils.isNotBlank(origin) && originFormUserId != null) {
+			redirectUrl = mhApiService.getEvaluationUrl(originFormUserId, Integer.parseInt(origin), url);
+		}
+		return RestRespDTO.success(redirectUrl);
 	}
 
 }

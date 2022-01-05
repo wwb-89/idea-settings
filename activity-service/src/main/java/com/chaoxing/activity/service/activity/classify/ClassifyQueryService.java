@@ -8,7 +8,6 @@ import com.chaoxing.activity.mapper.OrgClassifyMapper;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.MarketClassify;
 import com.chaoxing.activity.model.OrgClassify;
-import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.google.common.collect.Lists;
@@ -42,8 +41,6 @@ public class ClassifyQueryService {
 
 	@Resource
 	private ClassifyHandleService classifyHandleService;
-	@Resource
-	private ActivityFlagCodeService activityFlagCodeService;
 	@Resource
 	private WfwAreaApiService wfwAreaApiService;
 	@Resource
