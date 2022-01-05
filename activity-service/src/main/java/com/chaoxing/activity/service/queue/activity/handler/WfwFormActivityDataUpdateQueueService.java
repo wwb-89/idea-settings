@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
+import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.util.constant.WfwFormAliasConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -125,8 +126,10 @@ public class WfwFormActivityDataUpdateQueueService {
                     result.add(item);
                 }
             } else if (Objects.equals(alias, WfwFormAliasConstant.ACTIVITY_PREVIEW_URL)) {
+                // 预览地址需要删除域名
                 String previewUrl = wfwFormActivityWriteBackData.getPreviewUrl();
                 if (StringUtils.isNotBlank(previewUrl)) {
+                    previewUrl = UrlUtils.clearDomain(previewUrl);
                     data.add(previewUrl);
                     item.put("val", data);
                     result.add(item);

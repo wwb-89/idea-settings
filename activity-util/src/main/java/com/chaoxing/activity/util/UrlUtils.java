@@ -71,4 +71,22 @@ public class UrlUtils {
         return url;
     }
 
+    /**清除地址的域名
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-05 17:29:28
+     * @param url
+     * @return java.lang.String
+    */
+    public static String clearDomain(String url) {
+        if (StringUtils.isBlank(url)) {
+            return url;
+        }
+        Matcher matcher = DOMAIN_PATTERN.matcher(url);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return url;
+    }
+
 }

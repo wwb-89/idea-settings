@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.controller.api;
+package com.chaoxing.activity.admin.controller.api.market;
 
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
