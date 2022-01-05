@@ -1384,7 +1384,9 @@ public class ActivityQueryService {
 			default:
 				queryActivityFlag = "";
 		}
-		return activityMapper.listErdosCustomOrgCreatedWorkId(activity.getCreateFid(), queryActivityFlag, activity.getActivityClassifyId());
+		List<Integer> workIds = activityMapper.listErdosCustomOrgCreatedWorkId(activity.getCreateFid(), queryActivityFlag, activity.getActivityClassifyId());
+		workIds.remove(workId);
+		return workIds;
 	}
 
 	/**
