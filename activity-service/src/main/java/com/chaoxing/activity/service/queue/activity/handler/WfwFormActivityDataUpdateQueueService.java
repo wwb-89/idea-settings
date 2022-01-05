@@ -181,7 +181,7 @@ public class WfwFormActivityDataUpdateQueueService {
             if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.SIGN_UP_STATUS)) {
                 String signUpStatus = formRecord.getStringValue(WfwFormAliasConstant.SIGN_UP_STATUS);
                 String localSignUpStatus = wfwFormActivityWriteBackData.getSignUpStatus();
-                if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus) && StringUtils.isNotBlank(localSignUpStatus)) {
+                if (!Objects.equals(localSignUpStatus, signUpStatus) && StringUtils.isNotBlank(localSignUpStatus)) {
                     log.info("万能表单活动:{} 报名状态改变 {} -> {}", localActivityId, signUpStatus, localSignUpStatus);
                     return true;
                 }
@@ -190,7 +190,10 @@ public class WfwFormActivityDataUpdateQueueService {
             if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_PREVIEW_URL)) {
                 String previewUrl = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_PREVIEW_URL);
                 String localPreviewUrl = wfwFormActivityWriteBackData.getPreviewUrl();
-                if (!Objects.equals(wfwFormActivityWriteBackData.getPreviewUrl(), previewUrl)) {
+                if (StringUtils.isNotBlank(localPreviewUrl)) {
+                    localPreviewUrl = UrlUtils.clearDomain(localPreviewUrl);
+                }
+                if (!Objects.equals(localPreviewUrl, previewUrl)) {
                     log.info("万能表单活动:{} 浏览地址改变 {} -> {}", localActivityId, previewUrl, localPreviewUrl);
                     return true;
                 }
@@ -199,7 +202,7 @@ public class WfwFormActivityDataUpdateQueueService {
             if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS)) {
                 String releaseStatus = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS);
                 String localReleaseStatus = wfwFormActivityWriteBackData.getActivityReleaseStatus();
-                if (!Objects.equals(wfwFormActivityWriteBackData.getActivityReleaseStatus(), releaseStatus)) {
+                if (!Objects.equals(localReleaseStatus, releaseStatus)) {
                     log.info("万能表单活动:{} 发布状态改变 {} -> {}", localActivityId, releaseStatus, localReleaseStatus);
                     return true;
                 }
