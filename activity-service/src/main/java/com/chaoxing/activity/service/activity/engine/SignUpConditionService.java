@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -519,17 +518,21 @@ public class SignUpConditionService {
 			return;
 		}
 		List<ActivitySignUpCondition> waitSaveData = Lists.newArrayList();
-		List<Integer> waitDeleteTplComponentIds = Lists.newArrayList();
 		// 活动创建后，可能报名条件均为启用，但模板明细配置存在，在编辑的时候启用报名条件，此时活动明细配置需要进行新增
-		signUpConditions.forEach(v -> v.getActivityConditionDetails().forEach(u -> {
-			if (u.getId() == null) {
-				u.setActivityId(activityId);
-				u.setTemplateComponentId(v.getTemplateComponentId());
-				waitSaveData.add(u);
-			} else {
-				activitySignUpConditionMapper.updateById(u);
+		signUpConditions.forEach(v -> {
+			if (CollectionUtils.isNotEmpty(v.getDeleteDetailIds())) {
+				activitySignUpConditionMapper.deleteBatchIds(v.getDeleteDetailIds());
 			}
-		}));
+			v.getActivityConditionDetails().forEach(u -> {
+				if (u.getId() == null) {
+					u.setActivityId(activityId);
+					u.setTemplateComponentId(v.getTemplateComponentId());
+					waitSaveData.add(u);
+				} else {
+					activitySignUpConditionMapper.updateById(u);
+				}
+			});
+		});
 		if (CollectionUtils.isEmpty(waitSaveData)) {
 			return;
 		}
@@ -597,22 +600,20 @@ public class SignUpConditionService {
 		// 查询活动的报名条件明细
 		List<ActivitySignUpCondition> activitySignUpConditions = activitySignUpConditionMapper.selectList(new LambdaQueryWrapper<ActivitySignUpCondition>()
 				.eq(ActivitySignUpCondition::getActivityId, activityId));
-		Map<Integer, Map<String, ActivitySignUpCondition>> tplComponentIdNameDetailMap = Maps.newHashMap();
+		Map<Integer, List<ActivitySignUpCondition>> tplComponentIdDetailsMap = Maps.newHashMap();
 		activitySignUpConditions.forEach(v -> {
 			Integer tplComponentId = v.getTemplateComponentId();
-			tplComponentIdNameDetailMap.computeIfAbsent(tplComponentId, k -> Maps.newHashMap());
-			tplComponentIdNameDetailMap.get(tplComponentId).put(v.getFieldName(), v);
+			tplComponentIdDetailsMap.computeIfAbsent(tplComponentId, k -> Lists.newArrayList());
+			tplComponentIdDetailsMap.get(tplComponentId).add(v);
 		});
 		// 活动的报名条件明细覆写到模板的默认报名条件明细
 		result.forEach(v -> {
 			if (v.getAllowSignedUp() && v.getConfigOnActivity() && CollectionUtils.isNotEmpty(v.getActivityConditionDetails())) {
-				Map<String, ActivitySignUpCondition> itemMap = Optional.ofNullable(tplComponentIdNameDetailMap.get(v.getTemplateComponentId())).orElse(Maps.newHashMap());
-				v.getActivityConditionDetails().forEach(u -> {
-					ActivitySignUpCondition detail = itemMap.get(u.getFieldName());
-					if (detail != null) {
-						BeanUtils.copyProperties(detail, u);
-					}
-				});
+				Integer tplComponentId = v.getTemplateComponentId();
+				List<ActivitySignUpCondition> signUpConditionDetails = Optional.ofNullable(tplComponentIdDetailsMap.get(tplComponentId)).orElse(Lists.newArrayList());
+				List<String> fieldNames = v.getActivityConditionDetails().stream().map(ActivitySignUpCondition::getFieldName).collect(Collectors.toList());
+				List<ActivitySignUpCondition> details = signUpConditionDetails.stream().filter(u -> fieldNames.contains(u.getFieldName())).collect(Collectors.toList());
+				v.setActivityConditionDetails(details);
 			}
 		});
 		return result;

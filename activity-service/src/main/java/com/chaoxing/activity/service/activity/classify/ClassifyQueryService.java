@@ -238,5 +238,33 @@ public class ClassifyQueryService {
 		}
 		return classifies.stream().peek(v -> v.setOwner(ownerClassifyIds.contains(v.getId()))).sorted(Comparator.comparing(Classify::getOwner)).collect(Collectors.toList());
 	}
+	
+	/**
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2022-01-05 20:57:50
+	 * @param code
+	 * @param flags
+	 * @return
+	 */
+	public List<Classify> areaUnionClassifies(String code, List<String> flags) {
+		Set<Classify> classifies = new HashSet<>();
+		if (CollectionUtils.isEmpty(flags) || StringUtils.isBlank(code)) {
+			return Lists.newArrayList();
+		}
+		Integer fid = wfwAreaApiService.listByCode(code).stream().filter(v -> Objects.equals(code, v.getCode())).map(WfwAreaDTO::getFid).findFirst().orElse(null);
+		if (fid == null) {
+			return  Lists.newArrayList();
+		}
+		flags.forEach(v -> {
+			Integer areaMarketId = marketQueryService.getMarketIdByFlag(fid, v);
+			if (areaMarketId != null) {
+				classifies.addAll(listMarketClassifies(areaMarketId));
+			}
+		});
+		return Lists.newArrayList(classifies);
+	}
+
+
 
 }

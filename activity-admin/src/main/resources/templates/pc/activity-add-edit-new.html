@@ -913,6 +913,7 @@
                 customAppEnableTplComponentIds: [[${customAppEnableTplComponentIds}]],
                 customAppEnableMap: {},
                 signUpConditionMap: {},
+                formStructureMap: {},   // 报名条件的表单结构map
                 sucTplComponentIds: [[${sucTplComponentIds}]],
                 signUpConditions: [[${signUpConditions}]],
                 conditionEnums: [[${conditionEnums}]],
@@ -1010,7 +1011,7 @@
                 // 表单字段map封装
                 var formFields = [[${formFieldStructures}]] || {}
                 var formIds = Object.keys(formFields);
-                var formStructureMap = {}
+                $this.formStructureMap = {}
                 $(formIds).each(function (i) {
                     var formId = formIds[i];
                     if (formFields[formId]) {
@@ -1018,7 +1019,7 @@
                         $(formFields[formId]).each(function () {
                             fieldNameCompObj[this.name] = this;
                         });
-                        formStructureMap[formId] = fieldNameCompObj;
+                        $this.formStructureMap[formId] = fieldNameCompObj;
                     }
                 });
                 // 报名条件map封装
@@ -1028,7 +1029,7 @@
                     $this.$set(_this, "enable", sucTplComponentIds.includes(_this.templateComponentId));
                     if (_this.activityConditionDetails) {
                         $(_this.activityConditionDetails).each(function () {
-                            var fieldObj = formStructureMap[_this.originIdentify];
+                            var fieldObj = $this.formStructureMap[_this.originIdentify];
                             $this.$set(this, "compt", fieldObj[this.fieldName].compt);
                             $this.$set(this, "options", fieldObj[this.fieldName].options || []);
                         })
@@ -2133,13 +2134,30 @@
                 toConfigSignUpDetails: function (signUpConditionTplComponentId) {
                     var $this = this;
                     $this.operationSucTplComponentId = signUpConditionTplComponentId;
-                    var { activityConditionDetails } = $this.signUpConditionMap[signUpConditionTplComponentId];
-                    $this.$refs.signUpConfigDialogWindow.showWindow(activityConditionDetails, $this.conditionEnums);
+                    var { originIdentify, activityConditionDetails } = $this.signUpConditionMap[signUpConditionTplComponentId];
+                    var fields = [];
+                    if (!activityApp.isEmpty(originIdentify)) {
+                        var fieldNameMap = $this.formStructureMap[originIdentify];
+                        $(activityConditionDetails).each(function () {
+                            var field = fieldNameMap[this.fieldName];
+                            if (!fields.includes(field)) {
+                                fields.push(field);
+                            }
+                        });
+                    }
+                    $this.$refs.signUpConfigDialogWindow.showWindow(fields, activityConditionDetails, $this.conditionEnums);
                 },
-                confirmSignUpConditionDetails: function (conditionDetails) {
+                confirmSignUpConditionDetails: function (conditionDetails, deleteDetailIds) {
                     var $this = this;
                     var tplComponentId = $this.operationSucTplComponentId;
+                    $(conditionDetails).each(function () {
+                        this.activityId = $this.activity.id || ''
+                        this.templateComponentId = tplComponentId;
+                    })
                     $this.signUpConditionMap[tplComponentId].activityConditionDetails = conditionDetails;
+                    var tmpDeleteIds = $this.signUpConditionMap[tplComponentId].deleteDetailIds || [];
+                    tmpDeleteIds.pushArray(deleteDetailIds);
+                    $this.signUpConditionMap[tplComponentId].deleteDetailIds = tmpDeleteIds;
                 },
                 // 表单
                 toConfigForm: function (tplComponentId) {

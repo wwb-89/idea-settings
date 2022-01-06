@@ -9,9 +9,11 @@ import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.mapper.ActivityPushReminderMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityPushReminder;
+import com.chaoxing.activity.model.OrgConfig;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +80,47 @@ public class ActivityPushReminderService {
                     .set(ActivityPushReminder::getContent, waitHandleData.getContent()));
         }
     }
+
+    /**处理来自表单创建活动中添加的推送提醒范围
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-05 14:28:47
+     * @param activityPushReminder
+     * @return
+     */
+    public ActivityPushReminder handleReminderScopesFromWfwForm(Integer fid, ActivityPushReminder activityPushReminder) {
+        if (activityPushReminder == null) {
+            return null;
+        }
+        List<SignUpParticipateScopeDTO> remindScopes = activityPushReminder.getReceiveScopes();
+        if (CollectionUtils.isEmpty(remindScopes)) {
+            return activityPushReminder;
+        }
+        // 查询机构下的通讯录部门列表
+        List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
+        List<Integer> scopeIds = remindScopes.stream().map(SignUpParticipateScopeDTO::getExternalId).collect(Collectors.toList());
+        List<WfwGroupDTO> matchGroups = wfwGroups.stream().filter(v -> scopeIds.contains(Integer.valueOf(v.getId()))).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(matchGroups)) {
+            activityPushReminder.setReceiveScopes(Lists.newArrayList());
+            return activityPushReminder;
+        }
+        List<SignUpParticipateScopeDTO> realScopes = Lists.newArrayList();
+        matchGroups.forEach(v -> {
+            boolean isLeaf = Optional.ofNullable(v.getSoncount()).orElse(0) == 0;
+            Integer pid = Optional.ofNullable(v.getGid()).map(Integer::valueOf).orElse(Integer.valueOf(v.getId()));
+            realScopes.add(SignUpParticipateScopeDTO.builder()
+                    .externalId(Integer.valueOf(v.getId()))
+                    .externalPid(pid)
+                    .externalName(v.getGroupname())
+                    .leaf(isLeaf)
+                    .groupType(OrgConfig.SignUpScopeType.CONTACTS.getValue())
+                    .build());
+        });
+        activityPushReminder.setReceiveScopes(realScopes);
+        activityPushReminder.setReceiveScope(JSON.toJSONString(realScopes));
+        return activityPushReminder;
+    }
+
 
     /**
      * @Description

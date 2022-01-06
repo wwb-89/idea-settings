@@ -15,6 +15,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
+import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
@@ -83,6 +84,8 @@ public class WfwApprovalActivityCreateQueueService {
     private WfwContactApiService wfwContactApiService;
     @Resource
     private SignApiService signApiService;
+    @Resource
+    private ActivityPushReminderService activityPushReminderService;
 
     /**创建活动
      * @Description
@@ -160,6 +163,11 @@ public class WfwApprovalActivityCreateQueueService {
         activity.setOrigin(String.valueOf(formUserId));
         // 补充活动必要信息
         activity.setAdditionalAttrs(webTemplateId, marketId, templateId, flag);
+        // 处理通知的叶子结构
+        if (activity.getOpenPushReminder()) {
+            ActivityPushReminder activityPushReminder = activityPushReminderService.handleReminderScopesFromWfwForm(fid, activity.getActivityPushReminder());
+            activity.setActivityPushReminder(activityPushReminder);
+        }
         // 根据表单数据创建报名签到
         SignCreateParamDTO signCreateParam = buildSignFromApproval(formData, loginUser.getUid(), fid, DateUtils.timestamp2Date(activity.getStartTimeStamp()));
         if (CollectionUtils.isNotEmpty(signCreateParam.getSignUps())) {
