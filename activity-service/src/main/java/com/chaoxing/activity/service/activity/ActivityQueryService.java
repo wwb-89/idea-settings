@@ -1349,11 +1349,11 @@ public class ActivityQueryService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-09-07 20:04:04
-	 * @param fid
+	 * @param superiorFid 上级fid
 	 * @param workId
 	 * @return java.util.List<java.lang.Integer>
 	 */
-	public List<Integer> listOrgJuniorCreatedWorkId(Integer fid, Integer workId) {
+	public List<Integer> listOrgJuniorCreatedWorkId(Integer superiorFid, Integer workId) {
 		Activity activity = getByWorkId(workId);
 		if (activity == null) {
 			return Lists.newArrayList();
@@ -1371,7 +1371,7 @@ public class ActivityQueryService {
 			default:
 				queryActivityFlag = "";
 		}
-		List<Integer> workIds = activityMapper.listErdosCustomOrgCreatedWorkId(fid, queryActivityFlag, activity.getActivityClassifyId());
+		List<Integer> workIds = activityMapper.listErdosCustomOrgCreatedWorkId(superiorFid, activity.getCreateFid(), queryActivityFlag, activity.getActivityClassifyId());
 		workIds.remove(workId);
 		return workIds;
 	}
