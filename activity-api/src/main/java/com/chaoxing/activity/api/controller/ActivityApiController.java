@@ -810,15 +810,14 @@ public class ActivityApiController {
 	 * @author wwb
 	 * @Date 2022-01-06 10:36:33
 	 * @param activityId
-	 * @param webTemplateId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@Deprecated
-	@RequestMapping("{activityId}/web-template/{webTemplateId}/bind")
-	public RestRespDTO reBindWebTemplate(@PathVariable Integer activityId, @PathVariable Integer webTemplateId) {
+	@RequestMapping("{activityId}/web-template/re-bind")
+	public RestRespDTO reBindWebTemplate(@PathVariable Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
 		if (activity != null) {
-			activityHandleService.reBindWebTemplate(activity, webTemplateId);
+			activityHandleService.reBindWebTemplate(activity, activity.getWebTemplateId());
 			String origin = activity.getOrigin();
 			Integer originFormUserId = activity.getOriginFormUserId();
 			if (StringUtils.isNotBlank(origin) && originFormUserId != null) {
