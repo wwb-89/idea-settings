@@ -2513,3 +2513,145 @@ input.btn-name,
   resize: none;
   padding: 5px 11px;
 }
+
+.fixed-select {
+  max-height: 203px;
+  padding-bottom: 36px !important;
+}
+
+.fixed-select .el-scrollbar {
+  position: static;
+}
+
+.fixed-select .el-select-dropdown__list {
+  max-height: 167px;
+}
+
+.fixed-select .el-select-dropdown__list .el-select-dropdown__item {
+  padding: 0 12px;
+}
+
+.fixed-select .el-select-dropdown__list .el-select-dropdown__item.hover, .fixed-select .el-select-dropdown__list .el-select-dropdown__item:hover {
+  background: rgba(0, 132, 255, 0.04);
+}
+
+.fixed-select .no-content-self {
+  height: 203px;
+}
+
+.fixed-select .no-content-self .no-con {
+  color: #999999;
+  font-size: 14px;
+  line-height: 20px;
+  margin: 73px auto 74px;
+  text-align: center;
+}
+
+.fixed-select .setiing-absolute {
+  width: 100%;
+  height: 36px;
+  line-height: 36px;
+  position: absolute;
+  top: 163px;
+  font-size: 14px;
+  color: #0084FF;
+  background: #ffffff;
+  padding: 0 12px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-top: 1px solid #e9e9e9;
+  cursor: pointer;
+}
+
+.fixed-select .setiing-absolute i {
+  margin-right: 4px;
+}
+
+.choose-field {
+  width: 498px;
+}
+
+.choose-field .body {
+  padding: 16px 32px;
+  overflow: auto;
+}
+
+.choose-field .choose-box .sort-item {
+  position: relative;
+  padding-left: 16px;
+  padding-right: 24px;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin-bottom: 24px;
+}
+
+.choose-field .choose-box .sort-item .icon-drag-inner {
+  position: absolute;
+  left: 0;
+  font-size: 16px;
+  color: #CCCCCC;
+  cursor: move;
+}
+
+.choose-field .choose-box .sort-item .icon-drag-inner:hover {
+  color: #82C3FF;
+}
+
+.choose-field .choose-box .sort-item .icon-minus-circle {
+  position: absolute;
+  right: 0;
+  font-size: 16px;
+  color: #CCCCCC;
+  display: none;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.choose-field .choose-box .sort-item .icon-minus-circle:hover {
+  color: #FF666D;
+}
+
+.choose-field .choose-box .sort-item label {
+  width: 44px;
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0 8px;
+}
+
+.choose-field .choose-box .sort-item:hover .icon-minus-circle {
+  display: block;
+}
+
+.choose-field .add-option {
+  margin-left: 68px;
+  color: #0084FF;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.choose-field .add-option i {
+  font-size: 16px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 2px;
+  margin-right: 4px;
+  color: #0084FF;
+}
+
+.choose-field .add-option:hover {
+  opacity: 0.8;
+}

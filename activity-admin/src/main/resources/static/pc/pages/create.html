@@ -63,9 +63,27 @@
             <button type="button" class="create-btn">保存</button>
         </div>
     </div>
+    <!--            下拉框固定底部 在里面-->
     <div class="info box" v-show="!pageShow">
         <form action="">
             <div class="title">基本信息</div>
+            <!--            下拉框固定底部-->
+            <div class="form-item">
+                <label class="label">下拉框固定底部</label>
+                <div class="input-box">
+                    <el-select v-model="value1" placeholder="请选择" popper-class="fixed-select">
+                        <el-option v-for="item in options9" :key="item.value" :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+<!--                        注意这有俩个编辑，一个空的一个有数据的，我已经尽力了，只有这样能实现-->
+                    <div class="setiing-absolute" v-on:click="chooseDialog=true"><i class="icon-setting"></i>编辑</div>
+                    <div slot="empty" class="no-content-self">
+                        <div class="no-con">暂无选项</div>
+                        <div class="setiing-absolute" v-on:click="chooseDialog=true"><i class="icon-setting"></i>编辑</div>
+                    </div>
+                    </el-select>
+                </div>
+            </div>
             <div class="form-item">
                 <label class="label"><img src="../assets/images/required.png" alt=""
                                           class="required-img">名称</label>
@@ -535,6 +553,7 @@
                     <span class="tips">需管理员扫描参与者的二维码进行签到</span>
                 </div>
             </div>
+
         </form>
     </div>
     <!-- 签退设置 -->
@@ -1192,6 +1211,35 @@
     </div>
     <!-- 图片库弹窗 end -->
 
+    <!-- 选择字段弹窗 -->
+    <div class="dailog-box2" v-show="chooseDialog">
+        <div class="dailog choose-field">
+            <div class="header">
+                <span>选择字段</span>
+                <img src="../assets/images/close.png" @click="chooseDialog=false" alt="" class="close">
+            </div>
+            <div class="body">
+                <div class="form">
+                    <div class="choose-box word-drag-inner" id="word-drag-inner">
+                        <div class="sort-item" v-for="(item,index) in option0">
+                            <i class="icon-drag-inner icon-drag"></i>
+                            <label for="" class="label">选项{{index + 1}}</label>
+                            <el-input v-model="item.title" type="text" placeholder="请输入" class="weight318"  maxlength="10" show-word-limit></el-input>
+                            <i class="icon-minus-circle"></i>
+                        </div>
+                    </div>
+                    <div class="add-option" @click="addOption1">
+                        <i class="icon-plus-circle"></i>添加选项
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="chooseDialog=false">取消</div>
+                <div class="normal-btn after-sure">确定</div>
+            </div>
+        </div>
+    </div>
+
     <!--音视频播放-start-->
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
@@ -1260,6 +1308,9 @@
     </div>
     <!--音视频播放-end-->
 
+
+
+
 </div>
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
 <script src="../../assets/js/vue.min.js"></script>
@@ -1273,12 +1324,26 @@
 <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
 <script src="../assets/lib/layer/layer.js"></script>
 <script type="text/javascript" src="../assets/lib/webuploader/webuploader.min.js"></script>
+<script src="../assets/lib/drag/sortTable.js"></script>
 <!--<script src="../assets/lib/set-iframe-height-child-min.js"></script>-->
 <script>
     // vue
     var app = new Vue({
         el: '#app',
         data: {
+            option0:[{
+                title:'',
+            },
+                {
+                    title:'',
+                }],
+            option2:[{
+                title:'',
+            },
+                {
+                    title:'',
+                }],
+            delclick: true,
             name: '',
             btnName:['1','2','3','4','5','6'],
             btnName1: '报名',
@@ -1293,6 +1358,7 @@
             value7: '1',
             value8: '',
             fenlei: '',
+            chooseDialog: false,
             delivery: true,
             delivery1: false,
             delivery2: true,
@@ -1369,6 +1435,34 @@
                 value: "2",
                 label: "时间二"
             }],
+            options9: [{
+                value: "1",
+                label: "选项1"
+            }, {
+                value: "2",
+                label: "选项2"
+            }, {
+                value: "3",
+                label: "选项2"
+            }, {
+                value: "4",
+                label: "选项2"
+            }, {
+                value: "5",
+                label: "选项2"
+            }, {
+                value: "6",
+                label: "选项2"
+            }, {
+                value: "7",
+                label: "选项2"
+            }, {
+                value: "8",
+                label: "选项2"
+            }, {
+                value: "9",
+                label: "选项2222"
+            }],
             address: '', //详细地址
             addrPoint: {
                 lng: 0,
@@ -1404,7 +1498,7 @@
             notice:'',
             checkValue:[],
             pictureShow:false,
-            remindContentPop: true, //编辑提醒内容
+            remindContentPop: false, //编辑提醒内容
             textarea: '您好！活动即将开始，请尽快报名。',
         },
         mounted: function () {
@@ -1415,8 +1509,21 @@
             //文件上传
             this.initUploader()
             this.swiperInit()
+            //字段设置拖动
+            $("#word-drag-inner").sortable({
+                scroll: true,
+                axis: "y",
+                dalay: 300,
+                handle: ".icon-drag-inner",
+                start: function () {
+                    // $("#dragBubble").hide()
+                },
+            });
         },
         methods: {
+            addOption1: function(){
+                this.option1.push({title: ''})
+            },
             swiperInit:function (){
                 var mySwiper = new Swiper('.swiper-container', {
                     slidesPerView: 3,
