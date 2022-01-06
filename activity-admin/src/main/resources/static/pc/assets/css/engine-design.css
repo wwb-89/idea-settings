@@ -274,6 +274,33 @@
   margin-right: 32px;
 }
 
+.dailog .body .switch-box .set-icon {
+  color: #0084FF;
+  font-size: 14px;
+  display: -webkit-inline-box;
+  display: -moz-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.dailog .body .switch-box .set-icon i {
+  font-size: 16px;
+  margin: 0 2px 0 4px;
+  cursor: pointer;
+}
+
+.dailog .body .switch-box .set-icon .icon-info {
+  color: #CCCCCC;
+}
+
+.dailog .body .cursor {
+  cursor: pointer;
+}
+
 .dailog .body .input-box {
   margin-bottom: 16px;
   line-height: 32px;
@@ -292,8 +319,16 @@
   width: 348px;
 }
 
+.dailog .body .input-box .weight318 {
+  width: 318px;
+}
+
 .dailog .body .input-box .weight372 {
   width: 372px;
+}
+
+.dailog .body .input-box .weightLabelRight {
+  width: calc(100% - 72px);
 }
 
 .dailog .body .input-box .del-circle {
@@ -454,6 +489,149 @@
   font-size: 16px;
   line-height: 20px;
   margin-right: 4px;
+}
+
+.dailog .body .word-drag-inner .sort-item {
+  position: relative;
+  padding-left: 24px;
+}
+
+.dailog .body .word-drag-inner .sort-item .label {
+  margin-right: 8px;
+}
+
+.dailog .body .word-drag-inner .sort-item:hover .icon-drag-inner {
+  display: block;
+}
+
+.dailog .body .word-drag-inner .sort-item .icon-drag {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  font-size: 16px;
+  cursor: move;
+  color: #CCCCCC;
+  display: none;
+}
+
+.dailog .body .word-drag-inner .sort-item .icon-drag:hover {
+  color: #82C3FF;
+}
+
+.dailog .center-body {
+  padding: 0 24px;
+}
+
+.dailog .center-body .left-tree {
+  width: 200px;
+  height: 463px;
+  border-right: 1px solid #e9e9e9;
+}
+
+.dailog .center-body .left-tree .title {
+  padding-top: 16px;
+  line-height: 32px;
+  color: #999999;
+  font-size: 14px;
+  padding-left: 12px;
+}
+
+.dailog .center-body .tree-lists {
+  height: 414px;
+  overflow: auto;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__content {
+  position: relative;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__expand-icon {
+  position: absolute;
+  right: 16px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: url("../images/chevron-down.png") no-repeat;
+  background-size: 100%;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__expand-icon:before {
+  display: none;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__expand-icon.is-leaf {
+  display: none;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__expand-icon.expanded {
+  -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.dailog .center-body .tree-lists .el-tree-node:focus > .el-tree-node__content {
+  background: rgba(0, 132, 255, 0.08);
+}
+
+.dailog .center-body .tree-lists .el-tree-node:focus > .el-tree-node__content .el-tree-node__label {
+  color: #0084FF;
+  font-weight: 500;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__label {
+  display: inline-block;
+  max-width: 144px;
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__content {
+  height: 20px;
+  padding: 14px 0;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__content .el-tree-node__label {
+  padding-left: 16px;
+}
+
+.dailog .center-body .tree-lists .el-tree-node__content:hover {
+  background: rgba(0, 132, 255, 0.08);
+}
+
+.dailog .center-body .right-choose {
+  width: calc(100% - 201px);
+}
+
+.dailog .center-body .right-choose .total {
+  line-height: 32px;
+  color: #999999;
+  font-size: 14px;
+  padding: 16px 16px 0 12px;
+}
+
+.dailog .center-body .right-choose .checkbox {
+  float: right;
+  cursor: pointer;
+}
+
+.dailog .center-body .right-choose .checkbox .el-checkbox {
+  margin-left: 10px;
+}
+
+.dailog .center-body .right-choose .lists ul li {
+  line-height: 32px;
+  font-size: 14px;
+  color: #333333;
+  padding: 8px 36px 8px 12px;
+  position: relative;
+}
+
+.dailog .center-body .right-choose .lists ul li .el-checkbox {
+  position: absolute;
+  top: 16px;
+  right: 16px;
 }
 
 .dailog .footer {
@@ -696,6 +874,10 @@
 .dailog.delete-dailog .normal-btn {
   display: inline-block;
   vertical-align: top;
+}
+
+.dailog.setRelationDialog {
+  width: 600px;
 }
 
 .top-con {
