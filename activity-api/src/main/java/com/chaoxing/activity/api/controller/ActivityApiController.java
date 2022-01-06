@@ -39,7 +39,6 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
-import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
@@ -795,12 +794,30 @@ public class ActivityApiController {
 	 * @Date 2021-12-20 17:00:03
 	 * @param activityId
 	 * @param uid
-	 * @return
+	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@CrossOrigin
 	@RequestMapping("/outer/user-certificate")
 	public RestRespDTO getUserCertificateInfo(@RequestParam Integer activityId, @RequestParam Integer uid) {
 		return RestRespDTO.success(certificateQueryService.getUserCertificateInfo(uid, activityId));
+	}
+
+	/**活动重新绑定模版
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-06 10:36:33
+	 * @param activityId
+	 * @param webTemplateId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@Deprecated
+	@RequestMapping("{activityId}/web-template/{webTemplateId}/bind")
+	public RestRespDTO reBindWebTemplate(@PathVariable Integer activityId, @PathVariable Integer webTemplateId) {
+		Activity activity = activityQueryService.getById(activityId);
+		if (activity != null) {
+			activityHandleService.reBindWebTemplate(activity, webTemplateId);
+		}
+		return RestRespDTO.success();
 	}
 
 }

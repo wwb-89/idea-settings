@@ -744,6 +744,35 @@ public class ActivityHandleService {
 		);
 	}
 
+	/**重新绑定模版
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-06 10:14:44
+	 * @param activity
+	 * @param webTemplateId
+	 * @return void
+	*/
+	public void reBindWebTemplate(Activity activity, Integer webTemplateId) {
+		LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
+		// 创建模块
+		createModuleByWebTemplateId(activity, webTemplateId);
+		// 克隆
+		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
+		MhCloneResultDTO mhCloneResult = mhApiService.cloneTemplate(mhCloneParam);
+		Integer pageId = mhCloneResult.getPageId();
+		// 获取websiteId
+		Integer websiteId = mhApiService.getWebsiteIdByPageId(pageId);
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getId, activity.getId())
+				.set(Activity::getWebTemplateId, webTemplateId)
+				.set(Activity::getPageId, mhCloneResult.getPageId())
+				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
+				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
+				.set(Activity::getWebsiteId, websiteId)
+		);
+	}
+
 	private void handleActivityTags(Activity activity, List<String> tagNames) {
 		Integer marketId = activity.getMarketId();
 		if (marketId != null) {
@@ -759,7 +788,7 @@ public class ActivityHandleService {
 	 * 找到是本地数据源的图标应用
 	 * @author wwb
 	 * @Date 2020-11-23 20:36:17
-	 * @param activityId
+	 * @param activity
 	 * @param webTemplateId
 	 * @return void
 	 */
