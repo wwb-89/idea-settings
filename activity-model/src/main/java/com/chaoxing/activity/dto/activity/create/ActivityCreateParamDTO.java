@@ -328,6 +328,13 @@ public class ActivityCreateParamDTO {
 				.address("")
 				.detailAddress("")
 				.openWork(false)
+				.openAudit(false)
+				.openGroup(false)
+				.openRating(false)
+				.openClazzInteraction(false)
+				.openPushReminder(false)
+				.openInspectionConfig(false)
+				.openReading(false)
 				.build();
 	}
 
