@@ -39,6 +39,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
+import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
@@ -122,6 +123,8 @@ public class ActivityApiController {
 	private MarketQueryService marketQueryService;
 	@Resource
 	private CertificateQueryService certificateQueryService;
+	@Resource
+	private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
 
 	/**组活动推荐
 	 * @Description 
@@ -816,6 +819,18 @@ public class ActivityApiController {
 		Activity activity = activityQueryService.getById(activityId);
 		if (activity != null) {
 			activityHandleService.reBindWebTemplate(activity, webTemplateId);
+			String origin = activity.getOrigin();
+			Integer originFormUserId = activity.getOriginFormUserId();
+			if (StringUtils.isNotBlank(origin) && originFormUserId != null) {
+				// 如果是表单的活动则更新表单数据
+				WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
+						.activityId(activityId)
+						.fid(activity.getCreateFid())
+						.formId(Integer.parseInt(origin))
+						.formUserId(originFormUserId)
+						.build();
+				wfwFormActivityDataUpdateQueue.push(queueParam);
+			}
 		}
 		return RestRespDTO.success();
 	}
