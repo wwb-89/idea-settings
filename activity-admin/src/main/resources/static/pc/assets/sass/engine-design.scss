@@ -494,6 +494,8 @@
                 }
             }
             .lists {
+                height: 414px;
+                overflow: auto;
                 ul {
                     li {
                         line-height: 32px;

@@ -628,6 +628,11 @@
   margin-left: 10px;
 }
 
+.dailog .center-body .right-choose .lists {
+  height: 414px;
+  overflow: auto;
+}
+
 .dailog .center-body .right-choose .lists ul li {
   line-height: 32px;
   font-size: 14px;
