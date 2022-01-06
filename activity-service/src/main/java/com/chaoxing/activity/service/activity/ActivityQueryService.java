@@ -1504,6 +1504,21 @@ public class ActivityQueryService {
 		);
 	}
 
+	/**活动应该开始但是状态不是进行中的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-06 15:07:54
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listOngoingButStatusError() {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.ne(Activity::getStatus, Activity.StatusEnum.ONGOING.getValue())
+				.eq(Activity::getReleased, true)
+				.le(Activity::getStartTime, LocalDateTime.now())
+		);
+	}
+
 	/**查询未结束的活动
 	 * @Description
 	 * @author wwb
@@ -1514,6 +1529,21 @@ public class ActivityQueryService {
 	public List<Activity> listNotEnd() {
 		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.in(Activity::getStatus, Lists.newArrayList(Activity.StatusEnum.WAIT_RELEASE.getValue(), Activity.StatusEnum.RELEASED.getValue(), Activity.StatusEnum.ONGOING.getValue()))
+		);
+	}
+
+	/**查询活动结束但是状态不对的活动列表
+	 * @Description 活动应该结束但是状态不是已结束的
+	 * @author wwb
+	 * @Date 2022-01-06 15:06:08
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listEndedButStatusError() {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.ne(Activity::getStatus, Activity.StatusEnum.ENDED.getValue())
+				.eq(Activity::getReleased, true)
+				.le(Activity::getEndTime, LocalDateTime.now())
 		);
 	}
 

@@ -201,7 +201,7 @@ public class QueueApiController {
 	*/
 	@RequestMapping("init/activity_start_time_reach")
 	public RestRespDTO initActivityStartTimeReach() {
-		List<Activity> activities = activityQueryService.listNotStart();
+		List<Activity> activities = activityQueryService.listOngoingButStatusError();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 			for (Activity activity : activities) {
@@ -224,7 +224,7 @@ public class QueueApiController {
 	*/
 	@RequestMapping("init/activity_end_time_reach")
 	public RestRespDTO initActivityEndTimeReach() {
-		List<Activity> activities = activityQueryService.listNotEnd();
+		List<Activity> activities = activityQueryService.listEndedButStatusError();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 			for (Activity activity : activities) {
