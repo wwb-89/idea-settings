@@ -24,7 +24,7 @@
 
         /*地图 2*/
         .static-map-style1{
-
+            min-height: 300px;
         }
         .static-map-style1 .map-box{
             position: absolute;
@@ -137,10 +137,12 @@
     </style>
 </head>
 <body>
-<div class="static-map-style1" style="background-color: white;">
+<div style="position: relative;">
+<div class="static-map-style1" style="background-color: white;position: relative;">
     <div class="map-box">
         <div class="eng-map-container"></div>
     </div>
+</div>
 </div>
 <!--百度地图api-->
 <script type="text/javascript" src="./baiduMapApi.js"></script>
