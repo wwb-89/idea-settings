@@ -444,6 +444,14 @@
   color: #333333;
 }
 
+.dailog .body .display-flex1 {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 14px;
+}
+
 .dailog .body .condition-box .condition-item {
   position: relative;
   margin-top: 20px;
