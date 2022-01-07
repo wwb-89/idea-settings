@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/Swiper-3.4.2/dist/css/swiper.min.css" th:href="@{/pc/assets/lib/Swiper-3.4.2/dist/css/swiper.min.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/webuploader/webuploader.css" th:href="@{/pc/assets/lib/webuploader/webuploader.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/messageContent.css" th:href="@{/pc/assets/css/messageContent.css}">
     <link rel="stylesheet" th:href="|${noteDomain}/res/css/pc/note/richtext_detail.css|">
     <style>
         body .create-class .layui-layer-btn0{
@@ -35,10 +37,10 @@
             background: #0084ff;
             line-height: 30px;
         }
-        .webuploader-element-invisible {
+        .btn-box .webuploader-element-invisible {
             display: none;
         }
-        .webuploader-pick {
+        .btn-box .webuploader-pick {
             color: #0084FF!important;
             background: unset!important;
             padding: unset!important;
@@ -630,9 +632,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-item" v-else-if="item.type == 'text' || item.type == 'int' || item.type == 'decimal'">
+                        <div class="form-item" v-else-if="inputTypes.indexOf(item.type) != -1">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
-                            <div :class="{'input-box': true, 'setForm': item.type == 'int' || item.type == 'decimal'}">
+                            <template v-if="item.type == 'rich_text'">
+                                <!-- 富文本编辑器 -->
+                                <div class="set-box configurationForm" style="margin-top: 0" @click="toEditCustomRichText(item.id)">
+                                    <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                    <span class="tips set-information">编辑文本内容</span>
+                                </div>
+                            </template>
+                            <div v-else :class="{'input-box': true, 'setForm': item.type == 'int' || item.type == 'decimal'}">
                                 <el-input v-if="item.type == 'text'" type="text" placeholder="请填写" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
                                 <input v-else type="number" v-model.trim="activityComponentValueMap[item.id].value" :step="item.type == 'decimal' ? 0.1 : 1" placeholder="请输入" class="score-input" @change="inputDataParseByType($event, item.id, item.type)">
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
@@ -753,6 +762,9 @@
                 </div>
             </div>
         </div>
+
+
+
         <!-- 图片库弹窗 end -->
 
         <!-- 删除分类弹窗 -->
@@ -767,6 +779,7 @@
         <vue-custom-participate-scope :dom-scope-id="'reminder-scope-tree'" ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
         <!--报名条件配置-->
         <vue-sign-up-condition ref="signUpConfigDialogWindow" @callback="confirmSignUpConditionDetails"></vue-sign-up-condition>
+        <vue-rich-text ref="richTextEditDialogWindow" @callback="confirmRichTextEdit"></vue-rich-text>
         <!--预览url复制容器-->
         <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
         <!--活动是线下但是没有选择地点的提示-->
@@ -778,7 +791,7 @@
             <div class="dailog dialog-wrap edit-remind">
                 <div class="header">
                     <span class="color333">编辑提醒内容</span>
-                    <img src="/static/pc/assets/images/close.png" class="close" @click="remindContentShow = false">
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close" @click="remindContentShow = false">
                 </div>
                 <div class="dialog-content">
                     <form action="">
@@ -846,6 +859,7 @@
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/vue-custom-participate-scope.js" th:src="@{/pc/assets/component/vue-custom-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/sign-up-condition.js" th:src="@{/pc/assets/component/sign-up-condition.js}"></script>
+    <script src="/static/pc/assets/component/rich-text.js" th:src="@{/pc/assets/component/rich-text.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-parent.js" th:src="@{/pc/assets/lib/set-iframe-height-parent.js}"></script>
@@ -872,6 +886,7 @@
                 tplComponentPartitions: [],
                 templateComponentMap: {},
                 needInitEditor: false,
+                inputTypes: ['text', 'int', 'decimal', 'rich_text'],
                 isEmbedded: activityApp.isEmbedded(),
                 // 是否重新选择模版
                 isReselectConfig: false,
@@ -946,6 +961,7 @@
                 // 活动标示
                 activityFlag: [[${activityFlag}]],
                 // 当前操作的对象
+                operateTplComponentId: null,
                 operateSignUpOriginId: -1,
                 strict: [[${strict}]],
                 // 活动封面上传中
@@ -1202,7 +1218,7 @@
                             }
                             signUp.originId = this.id;
                             $this.$set($this.signUpMap, this.id, signUp);
-                        } else if ((this.type == 'text' || this.type == 'radio' || this.type == 'checkbox' || this.type == 'int' || this.type == 'decimal') && !$this.activityComponentValueMap[this.id]) {
+                        } else if ((this.type == 'radio' || this.type == 'checkbox' || $this.inputTypes.indexOf(this.type) != -1) && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
                                 templateId: this.templateId,
@@ -1220,7 +1236,7 @@
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             signUpTplComponentIds.push(this.id);
-                        } else if ((this.type == 'radio' || this.type == 'checkbox' || this.type == 'text' || this.type == 'int' || this.type == 'decimal') && !$this.activityComponentValueMap[this.id]) {
+                        } else if ((this.type == 'radio' || this.type == 'checkbox' || $this.inputTypes.indexOf(this.type) != -1) && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
                                 templateId: this.templateId,
@@ -1915,7 +1931,7 @@
                     if ($this.activityComponentValueMap) {
                         var customComponentRequiredMap = {};
                         $($this.templateComponents).each(function () {
-                            if (this.type == 'text' || this.type == "checkbox" || this.type == 'int' || this.type == 'decimal') {
+                            if (this.type == "checkbox" || $this.inputTypes.indexOf(this.type) != -1) {
                                 customComponentRequiredMap[this.id] = this;
                             }
                         });
@@ -2160,6 +2176,13 @@
                     tmpDeleteIds.pushArray(deleteDetailIds);
                     $this.signUpConditionMap[tplComponentId].deleteDetailIds = tmpDeleteIds;
                 },
+                // 确定自定义富文本编辑，回填数据
+                confirmRichTextEdit: function (content, cloudIds) {
+                    var $this = this;
+                    cloudIds = cloudIds || [];
+                    $this.$set($this.activityComponentValueMap[$this.operateTplComponentId], "value", content);
+                    $this.$set($this.activityComponentValueMap[$this.operateTplComponentId], "cloudIds", cloudIds.join(','));
+                },
                 // 表单
                 toConfigForm: function (tplComponentId) {
                     var $this = this;
@@ -2369,6 +2392,13 @@
                     var $this = this;
                     var url = activityApp.getReadingBookManageUrl($this.activity.readingId, $this.activity.readingModuleId, $this.xueyaDomain);
                     window.open(url);
+                },
+                toEditCustomRichText: function (tplComponentId) {
+                    var $this = this;
+                    $this.operateTplComponentId = tplComponentId;
+                    var { value, cloudIds } = $this.activityComponentValueMap[tplComponentId];
+                    var cloudIdList = activityApp.isEmpty(cloudIds) ? [] : cloudIds.split(',');
+                    $this.$refs.richTextEditDialogWindow.showWindow(value || '', cloudIdList);
                 },
                 toPushReminderConfig: function () {
                     var $this = this;

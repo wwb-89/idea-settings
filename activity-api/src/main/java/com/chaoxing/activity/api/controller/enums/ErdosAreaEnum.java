@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**鄂尔多斯区域enum
  * @description:
  * @author: huxiaolong
@@ -34,8 +36,7 @@ public enum ErdosAreaEnum {
         this.fid = fid;
     }
 
-    public static JSONArray buildRegionCondition() {
-        JSONArray regionJsonArray = new JSONArray();
+    public static JSONObject buildRegionCondition() {
         JSONObject firstLevel = new JSONObject();
         firstLevel.put("id", "");
         firstLevel.put("name", "地区");
@@ -50,8 +51,15 @@ public enum ErdosAreaEnum {
             subs.add(item);
         }
         firstLevel.put("subs", subs);
-        regionJsonArray.add(firstLevel);
-        return regionJsonArray;
+        return firstLevel;
     }
 
+    public static boolean existAreaCode(String areaCode) {
+        for (ErdosAreaEnum areaEnum : ErdosAreaEnum.values()) {
+            if (Objects.equals(areaEnum.getAreaCode(), areaCode)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

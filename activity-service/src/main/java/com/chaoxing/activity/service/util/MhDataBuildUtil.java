@@ -19,8 +19,7 @@ import java.util.List;
 public class MhDataBuildUtil {
 
 
-    public static JSONArray buildClassifies(List<Classify> classifies) {
-        JSONArray activityClassifyJsonArray = new JSONArray();
+    public static JSONObject buildClassifies(List<Classify> classifies) {
         JSONObject firstLevel = new JSONObject();
         firstLevel.put("id", "");
         firstLevel.put("name", "活动类型");
@@ -38,8 +37,7 @@ public class MhDataBuildUtil {
             }
         }
         firstLevel.put("subs", subs);
-        activityClassifyJsonArray.add(firstLevel);
-        return activityClassifyJsonArray;
+        return firstLevel;
     }
 
     public static JSONObject buildField(String key, Object value, Integer flag) {

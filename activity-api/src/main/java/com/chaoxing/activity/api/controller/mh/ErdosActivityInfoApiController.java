@@ -190,8 +190,10 @@ public class ErdosActivityInfoApiController {
     public RestRespDTO mhClassifies(@RequestBody String data) {
         List<Classify> classifies = classifyQueryService.areaUnionClassifies(ERDOS_TOP_AREA_CODE, ERDOS_FLAGS);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("classifies", MhDataBuildUtil.buildClassifies(classifies));
-        jsonObject.put("regions", ErdosAreaEnum.buildRegionCondition());
+        JSONArray classifyArray = new JSONArray();
+        classifyArray.add(MhDataBuildUtil.buildClassifies(classifies));
+        classifyArray.add(ErdosAreaEnum.buildRegionCondition());
+        jsonObject.put("classifies", classifyArray);
         return RestRespDTO.success(jsonObject);
     }
 
@@ -210,8 +212,8 @@ public class ErdosActivityInfoApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 搜索内容
         String sw = urlParams.getString("sw");
-        Integer activityClassifyId = Optional.ofNullable(getIDFromUrlParams("classifies", urlParams)).map(Integer::valueOf).orElse(null);
-        String areaCode = Optional.ofNullable(getIDFromUrlParams("regions", urlParams)).orElse(null);
+        Integer activityClassifyId = Optional.ofNullable(getClassifyIDFromUrlParams(urlParams)).map(Integer::valueOf).orElse(null);
+        String areaCode = Optional.ofNullable(getAreaCodeFromUrlParams(urlParams)).orElse(null);
         // 状态
         String statusParams = urlParams.getString("status");
         List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
@@ -262,13 +264,30 @@ public class ErdosActivityInfoApiController {
         return fids;
     }
 
-    private String getIDFromUrlParams(String key, JSONObject urlParams) {
-        String jsonStr = urlParams.getString(key);
+    private Integer getClassifyIDFromUrlParams(JSONObject urlParams) {
+        String jsonStr = urlParams.getString("classifies");
         if (StringUtils.isNotBlank(jsonStr)) {
             JSONArray jsonArray = JSON.parseArray(jsonStr);
-            if (jsonArray.size() > 0) {
-                JSONObject obj = jsonArray.getJSONObject(0);
-                return obj.getString("id");
+            for (Object o : jsonArray) {
+                JSONObject obj = (JSONObject) o;
+                String classifyId = obj.getString("id");
+                if (!ErdosAreaEnum.existAreaCode(classifyId)) {
+                    return Integer.valueOf(classifyId);
+                }
+            }
+        }
+        return null;
+    }
+    private String getAreaCodeFromUrlParams(JSONObject urlParams) {
+        String jsonStr = urlParams.getString("classifies");
+        if (StringUtils.isNotBlank(jsonStr)) {
+            JSONArray jsonArray = JSON.parseArray(jsonStr);
+            for (Object o : jsonArray) {
+                JSONObject obj = (JSONObject) o;
+                String areaCode = obj.getString("id");
+                if (ErdosAreaEnum.existAreaCode(areaCode)) {
+                    return areaCode;
+                }
             }
         }
         return null;

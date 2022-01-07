@@ -51,6 +51,7 @@ public class ActivityComponentValueService {
                     .templateId(v.getTemplateId())
                     .templateComponentId(v.getTemplateComponentId())
                     .value(v.getValue())
+                    .cloudIds(v.getCloudIds())
                     .build());
         });
         activityComponentValueMapper.batchAdd(activityComponentValues);
@@ -73,6 +74,7 @@ public class ActivityComponentValueService {
                         .templateComponentId(v.getTemplateComponentId())
                         .componentId(v.getComponentId())
                         .value(v.getValue())
+                        .cloudIds(v.getCloudIds())
                         .build());
             }
         });
@@ -182,6 +184,7 @@ public class ActivityComponentValueService {
                 activityComponentValueRes.add(ActivityComponentValueDTO.builder()
                         .id(item.getId())
                         .value(item.getValue())
+                        .cloudIds(item.getCloudIds())
                         .componentId(item.getComponentId())
                         .templateComponentId(item.getTemplateComponentId())
                         .templateComponentName(v.getName())

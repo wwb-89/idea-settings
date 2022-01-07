@@ -38,6 +38,8 @@ public class ActivityComponentValueDTO {
 	private Integer componentId;
 	/** 值 */
 	private String value;
+	/** 云盘id集合 */
+	private String cloudIds;
 	/** 模板组件名称 */
 	private String templateComponentName;
 

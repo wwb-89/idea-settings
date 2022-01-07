@@ -170,7 +170,7 @@
                                 <template v-else-if="item.code == 'introduction'">
                                     <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
                                 </template>
-                                <template v-else-if="item.type == 'text' || item.type == 'int' || item.type == 'decimal'">
+                                <template v-else-if="inputTypes.indexOf(item.type) != -1">
                                     <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
                                     <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
@@ -458,11 +458,11 @@
                     <el-form class="form" label-width="72px">
                         <el-input v-model="addEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
                         <el-input v-model="addEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <template v-if="addEditItem.type == 'text' || addEditItem.type == 'int' || addEditItem.type == 'decimal'">
+                        <template v-if="inputTypes.indexOf(addEditItem.type) != -1">
                             <el-form-item label="类型" class="marginBottom20">
                             <el-select v-model="addEditItem.type" placeholder="请选择">
                                 <el-option
-                                        v-for="item in [{label: '文本', value: 'text'}, {label: '整数', value: 'int'}, {label: '小数', value: 'decimal'}]"
+                                        v-for="item in customInputTypes"
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value"
@@ -832,6 +832,13 @@
                     marketId: [[${marketId}]],
                     currTemplateId: [[${templateId}]],
                     templateInfo: [[${templateInfo}]],
+                    inputTypes: ['text', 'int', 'decimal', 'rich_text'],
+                    customInputTypes: [ //  自定义输入类型
+                        {label: '文本', value: 'text'},
+                        {label: '整数', value: 'int'},
+                        {label: '小数', value: 'decimal'},
+                        {label: '富文本', value: 'rich_text'}
+                    ],
                     icons: [[${icons}]],
                     iconMap: {},
                     // 当前编辑的应用配置，主要用于图标编辑时的临时存储
@@ -908,7 +915,7 @@
                         name: '自定义应用',
                         required: false,
                         templateId: [[${templateId}]],
-                        type: 'custom_app',
+                        type: 'custom_app'
                     },
                     // uncheckCode
                     nonDefaultCheckedCodes: ["wfw_participation_scope", "sign_up_condition"],
@@ -1133,7 +1140,7 @@
                     addAdvanceComponentAssociate: function (item) {
                         var $this = this;
                         $this.isAddComponent = true;
-                        if (item.code == 'sign_up' || item.code == 'partition' || item.type == 'text' || item.type == 'int' || item.type == 'decimal') {
+                        if (item.code == 'sign_up' || item.code == 'partition' || $this.inputTypes.indexOf(item.type) != -1) {
                             $this.openTextDialog(item)
                         } else if (item.type == 'custom_app') {
                             $this.openCustomAppConfigDialog(item);
@@ -1256,7 +1263,7 @@
                         }
                         // 编辑操作
                         $this.currEditIndex = index;
-                        $this.addEditItem = (item.type == 'text' || item.type == 'int' || item.type == 'decimal')
+                        $this.addEditItem = $this.inputTypes.indexOf(item.type) != -1
                             ? $.extend({}, $.grep($this.components, function (it) { return it.id == item.componentId; })[0])
                             : $this.addEditItem = $.extend({}, item);
                     },
@@ -1373,7 +1380,7 @@
                             app.showMsg("发布范围接口地址未填");
                             return;
                         }
-                        if ($this.addEditItem.type == 'text' || $this.addEditItem.type == 'int' || $this.addEditItem.type == 'decimal') {
+                        if ($this.inputTypes.indexOf($this.addEditItem.type) != -1) {
                             // 自定义文本组件新增、编辑，需要处理
                             $this.submitCustomComponent($this.addEditItem)
                             return;
@@ -1656,7 +1663,7 @@
                         return {
                             pid: 0,
                             name: '',
-                            required: true,
+                            required: false,
                             templateId: [[${templateId}]],
                             dataOrigin: dataOrigin,
                             originIdentify: '',

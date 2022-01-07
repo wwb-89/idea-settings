@@ -9,11 +9,17 @@
         <result column="component_id" jdbcType="INTEGER" property="componentId" />
         <result column="value" jdbcType="VARCHAR" property="value" />
     </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.chaoxing.activity.model.ActivityComponentValue">
+        <result column="cloud_ids" jdbcType="LONGVARCHAR" property="cloudIds" />
+    </resultMap>
     <sql id="Base_Column_List">
         t.id, t.activity_id, t.template_component_id, t.template_id, t.component_id, t.value
     </sql>
+    <sql id="Blob_Column_List">
+        t.cloud_ids
+    </sql>
     <insert id="batchAdd">
-        INSERT INTO t_activity_component_value ( activity_id, template_component_id, template_id, component_id, `value` )
+        INSERT INTO t_activity_component_value ( activity_id, template_component_id, template_id, component_id, `value`, cloud_ids )
         VALUES
         <foreach collection="activityComponentValues" index="key" item="item" open="" close="" separator=",">
             (
@@ -21,7 +27,8 @@
                 #{item.templateComponentId},
                 #{item.templateId},
                 #{item.componentId},
-                #{item.value}
+                #{item.value},
+                #{item.cloudIds}
             )
         </foreach>
     </insert>
