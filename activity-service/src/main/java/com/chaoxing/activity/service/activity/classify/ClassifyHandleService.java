@@ -11,7 +11,10 @@ import com.chaoxing.activity.mapper.OrgClassifyMapper;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.MarketClassify;
 import com.chaoxing.activity.model.OrgClassify;
+import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.classify.component.ClassifyShowComponentHandleService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**活动分类处理服务
@@ -47,6 +52,10 @@ public class ClassifyHandleService {
 	private ClassifyValidationService classifyValidationService;
 	@Resource
 	private ActivityHandleService activityHandleService;
+	@Resource
+	private ClassifyShowComponentHandleService classifyShowComponentHandleService;
+	@Resource
+	private TemplateQueryService templateQueryService;
 
 	/**给机构克隆系统分类
 	 * @Description 
@@ -218,6 +227,10 @@ public class ClassifyHandleService {
 				.eq(MarketClassify::getClassifyId, marketClassifyUpdateParamDto.getClassifyId())
 				.eq(MarketClassify::getMarketId, marketClassifyUpdateParamDto.getMarketId())
 		);
+		Integer marketId = marketClassifyUpdateParamDto.getMarketId();
+		Template template = templateQueryService.getMarketFirstTemplate(marketId);
+		// 删除显示组件关联
+		classifyShowComponentHandleService.deleteByClassifyId(marketClassifyUpdateParamDto.getClassifyId(), template.getId());
 	}
 
 	/**批量删除活动市场关联的活动分类
@@ -274,5 +287,23 @@ public class ClassifyHandleService {
 		return classify;
 	}
 
+	/**活动市场分类排序
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-06 19:39:40
+	 * @param marketId
+	 * @param classifyIds
+	 * @return void
+	*/
+	public void marketClassifySort(Integer marketId, List<Integer> classifyIds) {
+		if (CollectionUtils.isEmpty(classifyIds)) {
+			return;
+		}
+		Map<Integer, Integer> classifyIdSequenceMap = new HashMap<>();
+		for (int i = 0; i < classifyIds.size(); i++) {
+			classifyIdSequenceMap.put(classifyIds.get(i), i + 1);
+		}
+		marketClassifyMapper.sort(marketId, classifyIdSequenceMap);
+	}
 
 }

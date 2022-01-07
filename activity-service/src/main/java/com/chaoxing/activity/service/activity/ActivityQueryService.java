@@ -1507,13 +1507,13 @@ public class ActivityQueryService {
 	/**活动应该开始但是状态不是进行中的活动
 	 * @Description 
 	 * @author wwb
-	 * @Date 2022-01-06 15:07:54
+	 * @Date 2022-01-06 15:09:20
 	 * @param 
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
 	*/
 	public List<Activity> listOngoingButStatusError() {
 		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
-				.ne(Activity::getStatus, Activity.StatusEnum.ONGOING.getValue())
+				.in(Activity::getStatus, Lists.newArrayList(Activity.StatusEnum.RELEASED.getValue(), Activity.StatusEnum.ENDED.getValue()))
 				.eq(Activity::getReleased, true)
 				.le(Activity::getStartTime, LocalDateTime.now())
 		);
@@ -1541,7 +1541,7 @@ public class ActivityQueryService {
 	*/
 	public List<Activity> listEndedButStatusError() {
 		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
-				.ne(Activity::getStatus, Activity.StatusEnum.ENDED.getValue())
+				.in(Activity::getStatus, Lists.newArrayList(Activity.StatusEnum.RELEASED.getValue(), Activity.StatusEnum.ONGOING.getValue()))
 				.eq(Activity::getReleased, true)
 				.le(Activity::getEndTime, LocalDateTime.now())
 		);

@@ -199,10 +199,10 @@ public class MhApiService {
 	*/
 	public String getEvaluationUrl(Integer formUserId, Integer formId, String url) {
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		params.add("shopId", 6);
+		params.add("shopId", 0);
 		params.add("goodsId", formId);
 		params.add("goodsRowId", formUserId);
-		params.add("resourceType", 0);
+		params.add("resourceType", 6);
 		params.add("url", url);
 		String result = restTemplate.postForObject(GET_EVALUATION_URL, params, String.class);
 		return result;

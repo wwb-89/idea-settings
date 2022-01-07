@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/engine-design.css" th:href="@{/pc/assets/css/engine-design.css}">
+    <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/confirm_dialog.css" th:href="@{/pc/assets/sign/assets/css/confirm_dialog.css}">
 </head>
 <body>
     <div class="field-setting" id="field-setting" v-cloak>
@@ -85,14 +86,14 @@
                                     </div>
                                     <div class="address-box">
                                         <el-input type="text" placeholder="请输入活动地点" autocomplete="off" class="address-input" readonly></el-input>
-                                        <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" alt="" class="address-icon">
+                                        <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="address-icon">
                                         <el-input type="text" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="detaile-address" readonly></el-input>
                                     </div>
                                 </template>
                                 <!-- 活动类型：activity_classify -->
                                 <template v-else-if="item.code == 'activity_classify'">
-                                    <el-input type="text" v-model="activityType" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
-                                    <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
+                                    <el-input type="text" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
+                                    <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" class="arrow-down">
                                     <p class="tips first">{{item.introduction}}</p>
                                 </template>
                                 <template v-else-if="item.code == 'period'">
@@ -244,7 +245,7 @@
                                                     </div>
                                                 </template>
                                                 <template v-else-if="it.code == 'sign_up_person_limit'">
-                                                    <el-input type="text" v-model="person" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
+                                                    <el-input type="text" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
                                                     <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
                                                     <div class="person-box">
                                                         <el-input type="number" placeholder="请输入正整数" readonly></el-input>
@@ -809,6 +810,88 @@
                 </div>
             </div>
         </div>
+
+        <!--分类组件弹窗-->
+        <div class="dialog-mask" v-show="classifyWindowShow">
+            <div class="dailog choose-field">
+                <div class="header">
+                    <span>{{addEditItem.name}}</span>
+                    <i class="close" @click="classifyWindowShow = false"></i>
+                </div>
+                <div class="body">
+                    <div class="form">
+                        <el-input type="text" v-model.trim="addEditItem.name" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
+                        <el-input type="text" v-model.trim="addEditItem.introduction" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
+                        <div class="choose-box word-drag-inner" id="word-drag-inner">
+                            <div name="classify" :data-id="classify.id" class="input-box sort-item" v-for="(classify, index) of classifies" :key="'classify-' + index">
+                                <i class="icon-drag-inner icon-drag"></i>
+                                <label class="label">{{addEditItem.name}}{{index + 1}}</label>
+                                <el-input type="text" v-model.trim="classify.name" placeholder="请输入" class="weight318"  maxlength="10" show-word-limit @blur="addEditClassifySubmit(index)"></el-input>
+                                <i class="del-circle" @click="toDeleteClassify(index)"></i>
+                            </div>
+                        </div>
+                        <div class="add-option" @click="toAddClassify">
+                            <i></i>添加{{addEditItem.name}}
+                        </div>
+                        <div class="switch-box display-flex1">
+                            <label class="label">必填项</label>
+                            <el-switch class="switch" v-model="addEditItem.required"></el-switch>
+                            <label class="label">关联字段</label>
+                            <div class="set-icon"><span class="cursor" @click="openClassifyShowComponentWindow()"><i class="icon-setting"></i>设置</span>
+                                <el-tooltip class="item" effect="dark" content="提示文字" placement="top">
+                                    <i class="icon-info"></i>
+                                </el-tooltip>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="classifyWindowShow = false">取消</div>
+                        <div class="normal-btn" @click="confirmClassifyConfig">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--分类值关联组件弹窗-->
+        <div class="dialog-mask" v-show="classifyAssociatedFieldWindowShow">
+            <div class="dailog setRelationDialog">
+                <div class="header">
+                    <span>设置关联字段</span>
+                    <i class="close"></i>
+                </div>
+                <div class="center-body">
+                    <div class="left-tree fl">
+                        <div class="title">选项</div>
+                        <el-tree class="tree-lists" label="name" :data="classifies" @node-click="selectClassify"></el-tree>
+                    </div>
+                    <div class="right-choose fl">
+                        <div class="total">
+                            <span>关联字段</span>
+                        </div>
+                        <div class="lists">
+                            <ul>
+                                <li v-for="(item, index) of selectedClassifyTemplateComponents" :key="'template-component-' + index">
+                                    <span>{{item.name}}</span>
+                                    <el-checkbox v-model="item.checked"></el-checkbox>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="classifyAssociatedFieldWindowShow = false">取消</div>
+                        <div class="normal-btn" @click="classifyShowComponentAssociatedSubmit">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 删除分类弹窗 -->
+        <vue-confirm-common ref="deleteClassifyWindow" :message="'确认删除此' + addEditItem.name" :cancel="'保留'" :sure="'删除'" @callback="deleteClassifySubmit"></vue-confirm-common>
     </div>
     <div th:replace="pc/include/common_js :: common_js(~{::script})">
         <script src="/static/pc/assets/lib/jquery.min.js" th:src="@{/pc/assets/lib/jquery.min.js}"></script>
@@ -816,6 +899,8 @@
         <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
         <script src="/static/pc/assets/lib/drag/sortTable.js" th:src="@{/pc/assets/lib/drag/sortTable.js}"></script>
         <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+        <script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
+        <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
         <script th:inline="javascript">
             var uuid = function () {
                 return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -917,13 +1002,23 @@
                     currFormField: { type: 'input', options: []},
                     // v-model 临时变量
                     scoreNum: 0,
-                    baomingzhe:'报名者',
                     radioModel:'1',
                     selectModel: [],
-                    activityType:'创新创业',
-                    person:'自定义人数',
                     inputModel:'',
-                    switchModel: true
+                    switchModel: true,
+                    // 分类
+                    classifyWindowShow: false,
+                    classifyAssociatedFieldWindowShow: false,
+                    // 分类列表
+                    classifies: [[${classifies}]],
+                    // 模板组件列表
+                    existTemplateComponents: [[${templateComponents}]],
+                    operateClassifyIndex: null,
+                    classifyShowComponents: [[${classifyShowComponents}]],
+                    // 分类显示组件关联 分类id: templateComponent
+                    classifyShowComponentAssociated: {},
+                    selectedClassify: {},
+                    selectedClassifyTemplateComponents: []
                 },
                 created: function () {
                     var $this = this;
@@ -944,7 +1039,39 @@
                         $this.fixRightEndBtnStyle();
                         $this.handleJqthumb();
                         $this.initMouseEnterField();
-                    })
+                    });
+                    $("#word-drag-inner").sortable({
+                        scroll: true,
+                        axis: "y",
+                        dalay: 300,
+                        handle: ".icon-drag-inner",
+                        update: function (event, ui) {
+                            var changedClassifies = [];
+                            $("div[name='classify']").each(function () {
+                                var id = $(this).data("id");
+                                if (id) {
+                                    changedClassifies.push(id);
+                                }
+                            });
+                            var url = ctx + "/api/market/" + $this.marketId + "/classify/sort";
+                            var params = {
+                                classifyIds: changedClassifies
+                            };
+                            app.ajaxPostWithLoading(url, params, function (data) {
+                                if (data.success) {
+
+                                } else {
+                                    var message = data.message;
+                                    if (activityApp.isEmpty(message)) {
+                                        message = "字段关联失败";
+                                    }
+                                    app.showMsg(message);
+                                }
+                            }, function () {
+                                app.showMsg("排序失败");
+                            });
+                        },
+                    });
                 },
                 methods:{
                     initData: function () {
@@ -966,6 +1093,21 @@
                         });
                         $this.packageTemplateComponents(templateComponents);
                         $this.initComponentTypeList(templateComponents);
+                        $this.initClassifyShowComponentAssociated();
+                    },
+                    initClassifyShowComponentAssociated: function () {
+                        var $this = this;
+                        var classifyShowComponentAssociated = {};
+                        $($this.classifyShowComponents).each(function () {
+                            var classifyId = this.classifyId;
+                            var templateComponentIds = classifyShowComponentAssociated[classifyId];
+                            if (templateComponentIds == null) {
+                                templateComponentIds = [];
+                            }
+                            templateComponentIds.push(this.templateComponentId);
+                            classifyShowComponentAssociated[classifyId] = templateComponentIds;
+                        });
+                        $this.classifyShowComponentAssociated = classifyShowComponentAssociated;
                     },
                     // 根据关联关系，处理展示出来的模板组件
                     packageTemplateComponents: function(templateComponents) {
@@ -1281,10 +1423,12 @@
                     // index -> templateComponents[index], item -> templateComponent
                     openEditDialog: function (index, item) {
                         var $this = this;
-                        if (item.type == 'radio' || item.type == 'checkbox') {
+                        if (item.type == "radio" || item.type == "checkbox") {
                             $this.openChooseEditDialog(item, index);
-                        } else if(item.type == 'custom_app') {
+                        } else if(item.type == "custom_app") {
                             $this.openCustomAppConfigDialog(item, index);
+                        } else if (item.code == "activity_classify") {
+                            $this.openClassifyConfigDialog(item, index);
                         } else {
                             $this.openTextDialog(item, index);
                         }
@@ -1295,7 +1439,8 @@
                         var $this = this;
                         if (item.code == 'sign_up_condition' || item.code == 'sign_up_fill_info') {
                             $this.openChildComponentDialog(index, item, idx);
-                        } else {    // 这里只存在报名的系统组件，不存在自定义组件
+                        } else {
+                            // 这里只存在报名的系统组件，不存在自定义组件
                             $this.innerCurrEditIndex = idx;
                             $this.openTextDialog(item, index);
                         }
@@ -1322,6 +1467,22 @@
                         }
                         $this.currEditIndex = index;
                         $this.innerCurrEditIndex = idx;
+                    },
+                    // 打开分类配置弹窗
+                    openClassifyConfigDialog: function (item, index) {
+                        var $this = this;
+                        $this.currEditIndex = index;
+                        var cmp = $.grep($this.components, function (it) { return it.id == item.componentId; })[0];
+                        $this.addEditItem = $.extend({}, { templateComponentId: (item && item.id) || '', componentId: (cmp && cmp.id) || '' }, cmp);
+                        // 清除id为空的分类
+                        var classifies = [];
+                        $($this.classifies).each(function () {
+                            if (this.id) {
+                                classifies.push(this);
+                            }
+                        });
+                        $this.classifies = classifies;
+                        $this.classifyWindowShow = true;
                     },
                     // 打开自定义应用配置弹框
                     openCustomAppConfigDialog: function (item, index) {
@@ -1994,6 +2155,169 @@
                     removeConditionDetail: function (index) {
                         var $this = this;
                         $this.innerAddEditItem.templateConditionDetails.splice(index, 1);
+                    },
+                    toAddClassify: function () {
+                        var $this = this;
+                        var classify = {
+                            id: null,
+                            name: ""
+                        };
+                        $this.classifies.push(classify);
+                    },
+                    addEditClassifySubmit: function (index) {
+                        var $this = this;
+                        var addEditClassify = $this.classifies[index];
+                        if (activityApp.isEmpty(addEditClassify.name)) {
+                            app.showMsg("名称不能为空");
+                            return;
+                        }
+                        $this.operateClassifyIndex = index;
+                        var isAdd = activityApp.isEmpty(addEditClassify.id);
+                        var tips = "新增";
+                        var url = ctx + "/api/market/" + $this.marketId + "/classify/add";
+                        if (!isAdd) {
+                            url = ctx + "/api/market/" + $this.marketId + "/classify/update";
+                            tips = "修改";
+                        }
+                        var params = {
+                            classifyId: addEditClassify.id,
+                            name: addEditClassify.name,
+                            marketId: $this.marketId
+                        };
+                        app.ajaxPostWithLoading(url, params, function (data) {
+                            if (data.success) {
+                                var data = data.data;
+                                $this.classifies.splice($this.operateClassifyIndex, 1, data);
+                            } else {
+                                var message = data.message;
+                                if (activityApp.isEmpty(message)) {
+                                    message = tips + $this.addEditItem.name + "失败";
+                                }
+                                app.showMsg(message);
+                            }
+                        }, function () {
+                            app.showMsg(tips + $this.addEditItem.name + "失败");
+                        });
+                    },
+                    toDeleteClassify: function (index) {
+                        var $this = this;
+                        var classify = $this.classifies[index];
+                        $this.operateClassifyIndex = index;
+                        $this.$refs.deleteClassifyWindow.show = true;
+                    },
+                    deleteClassifySubmit: function () {
+                        var $this = this;
+                        var classify = $this.classifies[$this.operateClassifyIndex];
+                        var url = ctx + "/api/market/" + $this.marketId + "/classify/" + classify.id + "/delete";
+                        app.ajaxPostWithLoading(url, {}, function (data) {
+                            if (data.success) {
+                                $this.$refs.deleteClassifyWindow.show = false;
+                                $this.classifies.splice($this.operateClassifyIndex, 1);
+                            } else {
+                                var message = data.message;
+                                if (activityApp.isEmpty(message)) {
+                                    message = "删除" + $this.addEditItem.name + "失败";
+                                }
+                                app.showMsg(message);
+                            }
+                        }, function () {
+                            app.showMsg("删除" + $this.addEditItem.name + "失败");
+                        });
+                    },
+                    confirmClassifyConfig: function () {
+                        var $this = this;
+                        if (activityApp.isEmpty($this.addEditItem.name)) {
+                            app.showMsg("标题不能为空");
+                            return false;
+                        }
+                        $this.submitCustomComponent($this.addEditItem);
+                        $this.classifyWindowShow = false;
+                    },
+                    openClassifyShowComponentWindow: function () {
+                        var $this = this;
+                        // 给分类添加label属性
+                        $($this.classifies).each(function (i) {
+                            var classify = this;
+                            $this.$set($this.classifies[i], "label", this.name);
+                            var existTemplateComponents = [];
+                            var checkedTemplateComponentIds = $this.classifyShowComponentAssociated[classify.id];
+                            if (!checkedTemplateComponentIds) {
+                                checkedTemplateComponentIds = [];
+                            }
+                            $($this.existTemplateComponents).each(function () {
+                                var templateComponent = $.extend({}, this);
+                                // 是否选中
+                                templateComponent.checked = checkedTemplateComponentIds.indexOf(templateComponent.id) > -1;
+                                existTemplateComponents.push(templateComponent);
+                            });
+                            $this.$set($this.classifies[i], "templateComponents", existTemplateComponents);
+                        });
+                        $this.selectedClassifyTemplateComponents = [];
+                        $this.classifyAssociatedFieldWindowShow = true;
+                    },
+                    selectClassify: function (data) {
+                        var $this = this;
+                        var selectedClassify = null;
+                        $($this.classifies).each(function () {
+                            if (this.id == data.id) {
+                                selectedClassify = this;
+                                return false;
+                            }
+                        });
+                        $this.selectedClassify = selectedClassify;
+                        var selectedClassifyTemplateComponents = [];
+                        $($this.selectedClassify.templateComponents).each(function () {
+                            if (this.componentId != 6) {
+                                selectedClassifyTemplateComponents.push(this);
+                            }
+                        });
+                        $this.selectedClassifyTemplateComponents = selectedClassifyTemplateComponents;
+                    },
+                    // 分类显示组件关联提交
+                    classifyShowComponentAssociatedSubmit: function () {
+                        var $this = this;
+                        var url = ctx + "/classify/component/show/associated";
+                        var classifyShowComponents = [];
+                        $($this.classifies).each(function () {
+                            var classify = this;
+                            $(this.templateComponents).each(function () {
+                                if (this.checked) {
+                                    classifyShowComponents.push({
+                                        classifyId: classify.id,
+                                        templateComponentId: this.id
+                                    });
+                                }
+                            });
+                        });
+                        var params = {
+                            templateId: $this.currTemplateId,
+                            classifyShowComponentJsonArray: activityApp.getJsonStr(classifyShowComponents)
+                        };
+                        app.ajaxPostWithLoading(url, params, function (data) {
+                            if (data.success) {
+                                var classifyShowComponentAssociated = {};
+                                $($this.classifies).each(function () {
+                                    var classify = this;
+                                    var templateComponentIds = [];
+                                    $(this.templateComponents).each(function () {
+                                        if (this.checked) {
+                                            templateComponentIds.push(this.id);
+                                        }
+                                    });
+                                    classifyShowComponentAssociated[classify.id] = templateComponentIds;
+                                });
+                                $this.classifyShowComponentAssociated = classifyShowComponentAssociated;
+                                $this.classifyAssociatedFieldWindowShow = false;
+                            } else {
+                                var message = data.message;
+                                if (activityApp.isEmpty(message)) {
+                                    message = "字段关联失败";
+                                }
+                                app.showMsg(message);
+                            }
+                        }, function () {
+                            app.showMsg("字段关联失败");
+                        });
                     }
                 }
             })
