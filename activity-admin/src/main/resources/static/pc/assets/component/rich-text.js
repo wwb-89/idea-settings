@@ -11,7 +11,7 @@ Vue.component("vue-rich-text", {
         "                            <el-input type='textarea' placeholder='请输入' :autosize='{ minRows: 5, maxRows: 5}' v-model='content' resize='none' maxlength='100' show-word-limit></el-input>\n" +
         "                        </div>\n" +
         "                        <div class='uplode-list'>\n" +
-        "                            <div class='uplode-img' id='rich-uploader'></div>\n" +
+        "                            <div class='uplode-img' id='rich-uploader'>上传</div>\n" +
         "                            <template v-if='cloudIds && cloudIds.length > 0'>\n" +
         "                                <div class='img-box js-crop-img' v-for='cloudId in cloudIds'>\n" +
         "                                    <img :src='cloudDomain + \"/star3/380_160c/\" + cloudId'>\n" +
