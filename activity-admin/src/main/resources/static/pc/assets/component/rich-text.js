@@ -11,16 +11,16 @@ Vue.component("vue-rich-text", {
         "                            <el-input type='textarea' placeholder='请输入' :autosize='{ minRows: 5, maxRows: 5}' v-model='content' resize='none' maxlength='100' show-word-limit></el-input>\n" +
         "                        </div>\n" +
         "                        <div class='uplode-list'>\n" +
-        "                            <div class='uplode-img' id='rich-uploader'>上传</div>\n" +
         "                            <template v-if='cloudIds && cloudIds.length > 0'>\n" +
-        "                                <div class='img-box js-crop-img' v-for='cloudId in cloudIds'>\n" +
-        "                                    <img :src='cloudDomain + \"/star3/380_160c/\" + cloudId'>\n" +
-        "                                    <i class='delete'></i>\n" +
+        "                                <div class='img-box js-crop-img' v-for='(cloudId, index) in cloudIds'>\n" +
+        "                                    <img :src='cloudDomain + \"/star3/380_160c/\" + cloudId' class='jqthumbImg'>\n" +
+        "                                    <i class='delete' @click='removePic(index)'></i>\n" +
         "                                    <div class='hoverBg'>\n" +
         "                                        <i class='icon-zoom'></i>\n" +
         "                                    </div>\n" +
         "                                </div>\n" +
         "                            </template>\n" +
+        "                            <div class='uplode-img' id='rich-uploader'></div>\n" +
         "                        </div>\n" +
         "                    </div>\n" +
         "                </div>\n" +
@@ -34,6 +34,7 @@ Vue.component("vue-rich-text", {
         return {
             show: false,
             ctx: ctx,
+            cloudDomain: '',
             closeImgUrl: ctx + '/pc/assets/images/close.png',
             content: '',
             cloudIds: [],
@@ -74,9 +75,7 @@ Vue.component("vue-rich-text", {
                     data = activityApp.getJsonObject(data);
                     var result = data.result;
                     if (result == 1) {
-                        var cloudId = data.objectid;
-                        $this.$set($this.activity, "coverUrl", "");
-                        $this.$set($this.activity, "coverCloudId", cloudId);
+                        $this.cloudIds.push(data.objectid)
                         $this.$nextTick(function () {
                             $this.handleImg();
                         });
@@ -99,16 +98,25 @@ Vue.component("vue-rich-text", {
                 app.showMsg(reason);
             });
         },
-        destroyUploader: function () {
-            var $this = this;
+        handleImg: function () {
+            $('.jqthumbImg').jqthumb({
+                width: '100%',
+                height: '100%'
+            });
         },
-        showWindow: function (content, cloudIds) {
+        removePic: function (index) {
             var $this = this;
+            $this.cloudIds.splice(index, 1);
+        },
+        showWindow: function (cloudDomain, content, cloudIds) {
+            var $this = this;
+            $this.cloudDomain = cloudDomain;
             $this.content = content || '';
             $this.cloudIds = $.extend(true, [], cloudIds || []);
 
             $this.$nextTick(function () {
                 $this.initUploader();
+                $this.handleImg();
             });
 
             $this.show = true;
@@ -126,7 +134,6 @@ Vue.component("vue-rich-text", {
 
             $this.$emit("callback", $this.content, $this.cloudIds);
             $this.close();
-
         }
     }
 })

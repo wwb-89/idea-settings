@@ -632,13 +632,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-item" v-else-if="inputTypes.indexOf(item.type) != -1">
+                        <div :class="{'form-item': true, 'align-start': item.type == 'rich_text'}" v-else-if="inputTypes.indexOf(item.type) != -1">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <template v-if="item.type == 'rich_text'">
-                                <!-- 富文本编辑器 -->
-                                <div class="set-box configurationForm" style="margin-top: 0" @click="toEditCustomRichText(item.id)">
-                                    <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                    <span class="tips set-information">编辑文本内容</span>
+                                <div class="input-box column">
+                                    <!-- 富文本编辑器 -->
+                                    <div class="set-box configurationForm" style="margin-top: 0" @click="toEditCustomRichText(item.id)">
+                                        <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                        <span class="tips set-information">编辑文本内容</span>
+                                    </div>
                                 </div>
                             </template>
                             <div v-else :class="{'input-box': true, 'setForm': item.type == 'int' || item.type == 'decimal'}">
@@ -2398,7 +2400,7 @@
                     $this.operateTplComponentId = tplComponentId;
                     var { value, cloudIds } = $this.activityComponentValueMap[tplComponentId];
                     var cloudIdList = activityApp.isEmpty(cloudIds) ? [] : cloudIds.split(',');
-                    $this.$refs.richTextEditDialogWindow.showWindow(value || '', cloudIdList);
+                    $this.$refs.richTextEditDialogWindow.showWindow($this.cloudDomain, value || '', cloudIdList);
                 },
                 toPushReminderConfig: function () {
                     var $this = this;
