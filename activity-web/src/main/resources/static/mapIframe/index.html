@@ -24,7 +24,7 @@
 
         /*地图 2*/
         .static-map-style1{
-
+            min-height: 300px;
         }
         .static-map-style1 .map-box{
             position: absolute;
@@ -115,6 +115,7 @@
         @media only screen and (min-width: 1px) and (max-width: 767px) {
             .static-map-style1 {
                 min-width: 0;
+                min-height: 18.75rem;
             }
             .static-map-style1 .map-box{
                 overflow-y: auto;
@@ -137,14 +138,17 @@
     </style>
 </head>
 <body>
-<div class="static-map-style1" style="background-color: white;">
+<div style="position: relative;">
+<div class="static-map-style1" style="background-color: white;position: relative;">
     <div class="map-box">
         <div class="eng-map-container"></div>
     </div>
 </div>
+</div>
 <!--百度地图api-->
 <script type="text/javascript" src="./baiduMapApi.js"></script>
 <script type="text/javascript" src="./jquery.min.js"></script>
+<script type="text/javascript" src="./set-iframe-height-child.js"></script>
 <script>
     $(function () {
 
