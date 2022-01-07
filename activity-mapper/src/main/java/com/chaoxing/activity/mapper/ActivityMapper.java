@@ -25,12 +25,13 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 
 	/**
 	 * 第三方活动分页查询
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-11-30 19:05:02
+	 *
 	 * @param page
 	 * @param activityQuery
 	 * @return
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-30 19:05:02
 	 **/
 	Page<Activity> createParticipateActivityPage(@Param("page") Page<?> page, @Param("params") ActivityCreateParticipateQueryDTO activityQuery);
 
@@ -46,33 +47,39 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
-	/**查询flag下的活动
-	 * @Description 
+	/**
+	 * 查询flag下的活动
+	 *
+	 * @param page
+	 * @param activityQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-10-11 17:53:55
-	 * @param page
-	 * @param activityQuery
-	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 */
 	Page<Activity> pageFlag(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
-	/**鄂尔多斯定制的能参与的活动列表
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-11-23 18:06:38
+	/**
+	 * 鄂尔多斯定制的能参与的活动列表
+	 *
 	 * @param page
 	 * @param activityQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-11-23 18:06:38
+	 */
 	Page<Activity> pageErdosParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
-	
-	/**鄂尔多斯门户分页查询
-	 * @Description 
-	 * @author huxiaolong
-	 * @Date 2021-12-30 12:36:28
+
+	/**
+	 * 鄂尔多斯门户分页查询
+	 *
 	 * @param page
 	 * @param activityQuery
 	 * @return
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-30 12:36:28
 	 */
 	Page<Activity> erdosMhDatacenterPage(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
@@ -112,14 +119,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> listOrgParticipatedOrCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
 
-	/**查询市场创建的活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-12-22 18:11:02
+	/**
+	 * 查询市场创建的活动
+	 *
 	 * @param page
 	 * @param marketId
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-12-22 18:11:02
+	 */
 	Page<Activity> listMarketCreated(@Param("page") Page<?> page, @Param("marketId") Integer marketId);
 
 	/**
@@ -210,20 +219,22 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 									   @Param("activityClassifyId") Integer activityClassifyId,
 									   @Param("marketIds") List<Integer> marketIds);
 
-	/**分页查询已报名的活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-11-23 18:07:07
+	/**
+	 * 分页查询已报名的活动
+	 *
 	 * @param page
 	 * @param signIds
 	 * @param activityClassifyId
 	 * @param marketIds
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-11-23 18:07:07
+	 */
 	Page<Activity> pageSignedUpActivities(@Param("page") Page<?> page,
-										@Param("signIds") List<Integer> signIds,
-									   @Param("activityClassifyId") Integer activityClassifyId,
-									   @Param("marketIds") List<Integer> marketIds);
+										  @Param("signIds") List<Integer> signIds,
+										  @Param("activityClassifyId") Integer activityClassifyId,
+										  @Param("marketIds") List<Integer> marketIds);
 
 	/**
 	 * 分页查询报名的活动列表
@@ -324,6 +335,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 
 	/**
 	 * 鄂尔多斯定制的机构创建的作品征集id列表
+	 *
 	 * @param participateFid
 	 * @param activityFlag
 	 * @param activityClassifyId 活动分类id
@@ -332,17 +344,19 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @author wwb
 	 * @Date 2021-09-07 20:49:01
 	 */
-	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag, @Param("activityClassifyId") Integer activityClassifyId);
+	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("createFid") Integer createFid, @Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag, @Param("activityClassifyId") Integer activityClassifyId);
 
-	/**统计机构或市场下活动数量
-	 *
+	/**
+	 * 统计机构或市场下活动数量
+	 * <p>
 	 * marketId 不为空，优先统计市场下的活动数量
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-12-07 17:17:46
+	 *
 	 * @param marketId
 	 * @param fid
 	 * @return
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-12-07 17:17:46
 	 */
     List<Activity> listActivityIdsByMarketIdOrFid(@Param("marketId") Integer marketId, @Param("fid") Integer fid);
 

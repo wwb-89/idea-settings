@@ -2041,3 +2041,118 @@ input.btn-name,
     resize: none;
     padding: 5px 11px;
 }
+.fixed-select {
+    height: 203px;
+    max-height: 203px;
+    padding-bottom: 36px!important;
+    .el-scrollbar {
+        position: static;
+    }
+   .el-select-dropdown__list {
+        max-height: 167px;
+       .el-select-dropdown__item {
+           padding: 0 12px;
+       }
+
+       .el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+           background: rgba(0, 132, 255, 0.04);
+       }
+   }
+    .no-content-self {
+        height: 203px;
+        .no-con {
+            color: #999999;
+            font-size: 14px;
+            line-height: 20px;
+            margin: 73px auto 74px;
+            text-align: center;
+        }
+    }
+    .setiing-absolute{
+        width: 100%;
+        height: 36px;
+        line-height: 36px;
+        position: absolute;
+        top: 163px;
+        font-size: 14px;
+        color: #0084FF;
+        background: #ffffff;
+        padding: 0 12px;
+        box-sizing: border-box;
+        border-top: 1px solid #e9e9e9;
+        cursor: pointer;
+        i{
+            margin-right: 4px;
+        }
+    }
+}
+.choose-field{
+    width: 498px;
+    .body{
+        padding: 16px 32px;
+        overflow: auto;
+    }
+    .choose-box {
+       .sort-item {
+           position: relative;
+           padding-left: 16px;
+           padding-right: 24px;
+           display: flex;
+           align-items: center;
+           margin-bottom: 24px;
+           .icon-drag-inner {
+               position: absolute;
+               left: 0;
+               font-size: 16px;
+               color: #CCCCCC;
+               cursor: move;
+               &:hover {
+                 color: #82C3FF;
+               }
+           }
+           .icon-minus-circle {
+               position: absolute;
+               right: 0;
+               font-size: 16px;
+               color: #CCCCCC;
+               display: none;
+               cursor: pointer;
+               margin-left: 8px;
+               &:hover {
+                   color: #FF666D;
+               }
+           }
+           label {
+               width: 44px;
+               overflow: hidden;
+               text-overflow: ellipsis;
+               white-space: nowrap;
+               margin: 0 8px;
+           }
+           &:hover {
+              .icon-minus-circle {
+                  display: block;
+              }
+           }
+       }
+    }
+    .add-option{
+        margin-left: 68px;
+        color: #0084FF;
+        font-size: 14px;
+        line-height: 20px;
+        cursor: pointer;
+        display: flex;
+        i{
+           font-size: 16px;
+            display: inline-block;
+            vertical-align: top;
+            margin-top: 2px;
+            margin-right: 4px;
+            color: #0084FF;
+        }
+        &:hover{
+            opacity: 0.8;
+        }
+    }
+}

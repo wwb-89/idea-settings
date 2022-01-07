@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../../assets/icomoon/style.css">
     <link rel="stylesheet" href="../../assets/css/public.css">
     <link rel="stylesheet" href="../../assets/css/engine-design.css">
+
 </head>
 <body>
     <div class="field-setting" id="field-setting" v-cloak>
@@ -751,21 +752,36 @@
                     <div class="form">
                         <el-input v-model="title" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
                         <el-input v-model="explain" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <div class="choose-box">
-                            <div class="input-box" v-for="(item,index) in option1">
+                        <div class="input-box">
+                            <label class="label fl" style="">数据来源</label>
+                                <el-select v-model="form.select1" class="fl weightLabelRight" size="small" placeholder="请选择">
+                                <el-option label="自定义" :value="1">自定义</el-option>
+                                <el-option label="表单数据" :value="2">表单数据</el-option>
+                            </el-select>
+                        </div>
+
+                        <div class="choose-box word-drag-inner" id="word-drag-inner">
+                            <div class="input-box sort-item" v-for="(item,index) in option1">
+                                <i class="icon-drag-inner icon-drag"></i>
                                 <label for="" class="label">选项{{index + 1}}</label>
-                                <el-input v-model="item.title" type="text" placeholder="请输入" class="weight348"></el-input>
+                                <el-input v-model="item.title" type="text" placeholder="请输入" class="weight318"  maxlength="10" show-word-limit></el-input>
                                 <i :class="[delclick ? 'del-circle' : 'del-circle disable']" @click="delOption1(index)"></i>
                             </div>
                         </div>
                         <div class="add-option" @click="addOption1">
                             <i></i>添加选项
                         </div>
-                        <div class="switch-box">
+                        <div class="switch-box display-flex1">
                             <label for="" class="label">必填项</label>
                             <el-switch class="switch" v-model="switch1"></el-switch>
                             <label for="" class="label">允许多选</label>
                             <el-switch class="switch" v-model="switch2"></el-switch>
+                            <label class="label">关联字段</label>
+                            <div class="set-icon"><span class="cursor" v-on:click="setRelationDialog=true"><i class="icon-setting"></i>设置</span>
+                                <el-tooltip class="item" effect="dark" content="提示文字" placement="top">
+                                    <i class="icon-info"></i>
+                                </el-tooltip>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -778,6 +794,43 @@
                 </div>
             </div>
         </div>
+<!--        设置关联字段-->
+        <div class="dialog-mask" v-show="setRelationDialog">
+            <div class="dailog setRelationDialog">
+                <div class="header">
+                    <span>设置关联字段</span>
+                    <i class="close" @click="setRelationDialog=false"></i>
+                </div>
+                <div class="center-body">
+                    <div class="left-tree fl">
+                        <div class="title">选项</div>
+                        <el-tree class="tree-lists" :data="data" @node-click="handleNodeClick"></el-tree>
+                    </div>
+                    <div class="right-choose fl">
+                        <div class="total">
+                            <span>关联字段</span>
+                            <label class="checkbox">全选<el-checkbox v-model="Allchecked"></el-checkbox></label>
+                        </div>
+                        <div class="lists">
+                            <ul>
+                                <li v-for="item in lists2" :key="item.index">
+                                    <div class="name">{{item.name}}</div>
+                                    <el-checkbox v-model="item.type"></el-checkbox>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn">取消</div>
+                        <div class="normal-btn">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 分区弹窗 -->
         <div class="dialog-mask" v-show="partitionDialog">
             <div class="dailog">
@@ -1140,10 +1193,12 @@
     <script src="../../assets/lib/element-ui/lib/index.js"></script>
     <script src="../../assets/lib/drag/sortTable.js"></script>
     <script src="../../assets/lib/jqthumb.min.js"></script>
+    <script src="../../assets/lib/jquery.nicescroll.min.js"></script>
     <script>
         var app = new Vue({
             el: '#field-setting',
             data: {
+                Allchecked:false,//全选
                 radio1:'1',
                 activityType:'创新创业',
                 delivery1:'',
@@ -1176,6 +1231,7 @@
                 textDialog:false,
                 addFieldDialog:false,
                 chooseDialog:false,
+                setRelationDialog:true,
                 partitionDialog:false,
                 delDialog:false,
                 activityNameDialog:false,
@@ -1200,7 +1256,7 @@
                     select8: '',
                 },
                 input:'',
-                selectLinkDialog: true,   //选择应用---链接弹窗
+                selectLinkDialog: false,   //选择应用---链接弹窗
               linkName: '班级互动',
               linkSubname: '学生的补充信息规则配置',
               linkSwitch1: true,
@@ -1228,6 +1284,44 @@
                 {url:'../../assets/images/link-icon/link11.png'},
               ],
               isActive: 0,
+                data: [{
+                    label: '一级一级一级一级一级一级一级 1',
+                    children: [{
+                        label: '二级 1-1',
+                    }]
+                }, {
+                    label: '一级 2',
+                    children: [{
+                        label: '二级 2-1',
+                    }, {
+                        label: '二级 2-2',
+                    }]
+                }, {
+                    label: '一级 3',
+                    children: [{
+                        label: '二级 3-1',
+                    }, {
+                        label: '二级 3-2',
+                    }, {
+                        label: '二级 3-2',
+                    }, {
+                        label: '二级 3-2',
+                    }]
+                }],
+                lists2:[
+                    {
+                        name:"主办方",
+                        type:false
+                    },
+                    {
+                        name:"主办方1",
+                        type:false
+                    },
+                    {
+                        name:"主办方2",
+                        type:false
+                    }
+                ],
             },
             watch: {
                 /* 监听选项列表的改变 */
@@ -1311,7 +1405,10 @@
               },
               selectIconFunc: function (item,index) {
                 this.isActive = index;
-              }
+              },
+              handleNodeClick:function (data) {
+                console.log(data);
+              },
             }
         })
     </script>
@@ -1381,6 +1478,18 @@
                 var right = $('.w-900px.info-box').offset().left + 50
                 $('#add-circle').css('right',right)
             })
+
+            //字段设置拖动
+            $("#word-drag-inner").sortable({
+                scroll: true,
+                axis: "y",
+                dalay: 300,
+                handle: ".icon-drag-inner",
+                start: function () {
+                    // $("#dragBubble").hide()
+                },
+            });
+
         })
     </script>
 </body>

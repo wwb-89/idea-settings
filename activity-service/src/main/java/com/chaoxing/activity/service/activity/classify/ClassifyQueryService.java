@@ -227,7 +227,7 @@ public class ClassifyQueryService {
 	 * @return java.util.Set<com.chaoxing.activity.model.Classify>
 	 */
 	public List<Classify> classifiesUnionAreaClassifies(String flag, String code, List<Classify> permissionClassifies) {
-		Set<Classify> classifies = new HashSet<>(permissionClassifies);
+		List<Classify> classifies = permissionClassifies;
 		List<Integer> ownerClassifyIds = permissionClassifies.stream().map(Classify::getId).collect(Collectors.toList());
 		if (StringUtils.isNotBlank(flag) && StringUtils.isNotBlank(code)) {
 			Integer areaFid = wfwAreaApiService.listByCode(code).stream().filter(v -> Objects.equals(code, v.getCode())).map(WfwAreaDTO::getFid).findFirst().orElse(null);

@@ -11,6 +11,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.component.ClassifyShowComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
@@ -75,6 +76,8 @@ public class ActivityController {
 	private TagQueryService tagQueryService;
 	@Resource
 	private MarketQueryService marketQueryService;
+	@Resource
+	private ClassifyShowComponentQueryService classifyShowComponentQueryService;
 
 	/**新活动管理主页
 	 * @Description
@@ -159,8 +162,9 @@ public class ActivityController {
 		// 活动分类列表范围
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(fid, marketId, loginUser.getUid());
+		List<Classify> classifies = classifyQueryService.classifiesUnionAreaClassifies(flag, areaCode, permission.getClassifies());
 
-		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(flag, areaCode, permission.getClassifies()));
+		model.addAttribute("activityClassifies", classifies);
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		flag = Optional.ofNullable(template).map(Template::getActivityFlag).orElse(flag);
@@ -202,6 +206,9 @@ public class ActivityController {
 		// 活动标签
 		List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(fid));
 		model.addAttribute("tags", tags);
+		// 查询出活动分类关联的模板组建id列表
+		List<ClassifyShowComponent> classifyShowComponents = classifyShowComponentQueryService.listByTemplateId(templateId);
+		model.addAttribute("classifyShowComponents", classifyShowComponents);
 
 		model.addAttribute("workDomain", DomainConstant.WORK);
 		model.addAttribute("xueyaDomain", DomainConstant.XUEYA);

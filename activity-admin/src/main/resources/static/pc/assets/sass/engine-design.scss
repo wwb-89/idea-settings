@@ -212,6 +212,24 @@
             .switch{
                 margin-right: 32px;
             }
+            .set-icon {
+                color: #0084FF;
+                font-size: 14px;
+                display: inline-flex;
+                align-items: center;
+                i{
+                    font-size: 16px;
+                    margin: 0 2px 0 4px;
+                    cursor: pointer;
+                }
+
+                .icon-info {
+                    color: #CCCCCC;
+                }
+            }
+        }
+        .cursor {
+            cursor: pointer;
         }
         .input-box{
             margin-bottom: 16px;
@@ -227,8 +245,14 @@
             .weight348{
                 width: 348px;
             }
+            .weight318{
+                width: 318px;
+            }
             .weight372{
                 width: 372px;
+            }
+            .weightLabelRight {
+                width: calc(100% - 72px);
             }
             .del-circle{
                 width: 16px;
@@ -320,6 +344,10 @@
                 }
             }
         }
+        .display-flex1 {
+            display: flex;
+            font-size: 14px;
+        }
         .condition-box {
          .condition-item {
              position: relative;
@@ -359,7 +387,134 @@
                 }
             }
         }
+        .word-drag-inner {
+            .sort-item {
+                position: relative;
+                padding-left: 24px;
+                .label{
+                    margin-right: 8px;
+                }
+                &:hover {
+                    .icon-drag-inner {
+                        display: block;
+                    }
+                }
+                .icon-drag{
+                    position: absolute;
+                    top: 8px;
+                    left: 0;
+                    font-size: 16px;
+                    cursor: move;
+                    color: #CCCCCC;
+                    display: none;
+                    &:hover{
+                        color: #82C3FF;
+                    }
+                }
 
+            }
+        }
+    }
+    .center-body {
+        padding: 0 24px;
+        .left-tree {
+            width: 200px;
+            height: 463px;
+            border-right: 1px solid #e9e9e9;
+            .title {
+                padding-top: 16px;
+                line-height: 32px;
+                color: #999999;
+                font-size: 14px;
+                padding-left: 12px;
+            }
+        }
+        .tree-lists {
+            height: 414px;
+            overflow: auto;
+            .el-tree-node__content {
+                position: relative;
+            }
+            .el-tree-node__expand-icon {
+                position: absolute;
+                right: 16px;
+                width: 16px;
+                height: 16px;
+                padding: 0;
+                background: url("../images/chevron-down.png") no-repeat;
+                background-size: 100%;
+                &:before {
+                    display: none;
+                }
+                &.is-leaf {
+                    display: none;
+                }
+                &.expanded{
+                    transform: rotate(180deg)
+                }
+            }
+            .el-tree-node:focus>.el-tree-node__content {
+                background: rgba(0, 132, 255, 0.08);
+                .el-tree-node__label {
+                    color: #0084FF;
+                    font-weight: 500;
+                }
+            }
+            .el-tree-node__label {
+                display: inline-block;
+                max-width: 144px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .el-tree-node__content {
+                height: 20px;
+                padding: 14px 0;
+                .el-tree-node__label {
+                    padding-left: 16px;
+                }
+                &:hover {
+                    background: rgba(0, 132, 255, 0.08);
+                }
+            }
+        }
+        .right-choose {
+            width: calc(100% - 201px);
+            .total {
+                line-height: 32px;
+                color: #999999;
+                font-size: 14px;
+                padding: 16px 16px 0 12px;
+            }
+            .checkbox {
+                float: right;
+                cursor: pointer;
+                .el-checkbox {
+                    margin-left: 10px;
+                }
+            }
+            .lists {
+                height: 414px;
+                overflow: auto;
+                ul {
+                    li {
+                        line-height: 32px;
+                        font-size: 14px;
+                        color: #333333;
+                        padding: 8px 36px 8px 12px;
+                        position: relative;
+                        .name {
+                            display: inline-block;
+                        }
+                       .el-checkbox {
+                           position: absolute;
+                           //top: 16px;
+                           right: 16px;
+                       }
+                    }
+                }
+            }
+        }
     }
     .footer {
         height: 58px;
@@ -570,7 +725,11 @@
             vertical-align: top;
         }
     }
+    &.setRelationDialog {
+        width: 600px;
+    }
 }
+
 .top-con{
     position: fixed;
     top: 0px;
@@ -1709,6 +1868,7 @@
         .switch{
           margin-right: 0;
         }
+
       }
       .link-lists{
         padding-top: 16px;

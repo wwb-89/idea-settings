@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @className: OrgClassifyMapper
@@ -36,4 +37,14 @@ public interface OrgClassifyMapper extends BaseMapper<OrgClassify> {
 	 * @return int
 	*/
 	int getMaxSequenceByFid(@Param("fid") Integer fid);
+
+	/**排序
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-07 17:06:31
+	 * @param fid
+	 * @param classifyIdSequenceMap
+	 * @return void
+	*/
+	void sort(@Param("fid") Integer fid, @Param("classifyIdSequenceMap") Map<Integer, Integer> classifyIdSequenceMap);
 }

@@ -92,5 +92,20 @@ public class MarketClassifyApiController {
 		classifyHandleService.batchDeleteMarketClassify(marketId, Lists.newArrayList(classifyIds));
 		return RestRespDTO.success();
 	}
+	
+	/**排序
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-06 19:38:33
+	 * @param request
+	 * @param marketId
+	 * @param classifyIds
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("sort")
+	public RestRespDTO sort(HttpServletRequest request, @PathVariable Integer marketId, @RequestParam(value = "classifyIds[]") Integer[] classifyIds) {
+		classifyHandleService.marketClassifySort(marketId, Lists.newArrayList(classifyIds));
+		return RestRespDTO.success();
+	}
 
 }

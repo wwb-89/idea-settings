@@ -3,10 +3,16 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
+import com.chaoxing.activity.model.Classify;
+import com.chaoxing.activity.model.ClassifyShowComponent;
 import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.model.TemplateComponent;
 import com.chaoxing.activity.service.activity.IconQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.component.ClassifyShowComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -43,6 +49,12 @@ public class ActivityEngineController {
     private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
     @Resource
     private IconQueryService iconQueryService;
+    @Resource
+    private ClassifyQueryService classifyQueryService;
+    @Resource
+    private TemplateComponentService templateComponentService;
+    @Resource
+    private ClassifyShowComponentQueryService classifyShowComponentQueryService;
 
     @LoginRequired
     @RequestMapping("{templateId}")
@@ -76,6 +88,15 @@ public class ActivityEngineController {
         model.addAttribute("wfwFormApprovalTemplates", signUpWfwFormTemplateService.listApproval());
         model.addAttribute("conditionEnums", ConditionDTO.listWithoutNoLimit());
         model.addAttribute("icons", iconQueryService.list());
+        // 市场下的所有分类
+        List<Classify> classifies = classifyQueryService.listMarketClassifies(marketId);
+        model.addAttribute("classifies", classifies);
+        // 模板下的所有组件
+        List<TemplateComponent> templateComponents = templateComponentService.listTemplateComponentByTemplateId(templateId);
+        model.addAttribute("templateComponents", templateComponents);
+        // 分类关联显示组件
+        List<ClassifyShowComponent> classifyShowComponents = classifyShowComponentQueryService.listByTemplateId(templateId);
+        model.addAttribute("classifyShowComponents", classifyShowComponents);
         return "pc/engine/index";
     }
 }

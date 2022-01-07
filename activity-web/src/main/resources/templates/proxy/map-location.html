@@ -24,7 +24,7 @@
 
         /*地图 2*/
         .static-map-style1{
-
+            min-height: 300px;
         }
         .static-map-style1 .map-box{
             position: absolute;
@@ -115,6 +115,7 @@
         @media only screen and (min-width: 1px) and (max-width: 767px) {
             .static-map-style1 {
                 min-width: 0;
+                min-height: 18.75rem;
             }
             .static-map-style1 .map-box{
                 overflow-y: auto;
@@ -139,14 +140,17 @@
 	</style>
 </head>
 <body>
-<div class="static-map-style1" style="background-color: white;" id="vm" v-cloak>
-	<div class="map-box">
-		<div class="eng-map-container"></div>
+<div id="vm" v-cloak style="position: relative;">
+	<div class="static-map-style1" style="background-color: white;position: relative;">
+		<div class="map-box">
+			<div class="eng-map-container"></div>
+		</div>
 	</div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
 	<script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
 	<script src="/static/pc/assets/js/app.pc.js" th:src="@{/pc/assets/js/app.pc.js}"></script>
+	<script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
 	<script th:inline="javascript">
         vm = new Vue({
 	        el: "#vm",
