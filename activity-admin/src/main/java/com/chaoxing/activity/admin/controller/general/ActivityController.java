@@ -162,8 +162,9 @@ public class ActivityController {
 		// 活动分类列表范围
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(fid, marketId, loginUser.getUid());
+		List<Classify> classifies = classifyQueryService.classifiesUnionAreaClassifies(flag, areaCode, permission.getClassifies());
 
-		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(flag, areaCode, permission.getClassifies()));
+		model.addAttribute("activityClassifies", classifies);
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		flag = Optional.ofNullable(template).map(Template::getActivityFlag).orElse(flag);

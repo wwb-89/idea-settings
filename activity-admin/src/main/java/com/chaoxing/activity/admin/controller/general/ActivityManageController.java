@@ -15,6 +15,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.component.ClassifyShowComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
@@ -98,6 +99,8 @@ public class ActivityManageController {
 	private TagQueryService tagQueryService;
 	@Resource
 	private CustomAppConfigQueryService customAppConfigQueryService;
+	@Resource
+	private ClassifyShowComponentQueryService classifyShowComponentQueryService;
 
 	/**活动管理主页
 	 * @Description 
@@ -293,6 +296,9 @@ public class ActivityManageController {
 		// 活动标签
 		List<Tag> tags = Optional.ofNullable(marketId).map(v -> tagQueryService.listMarketTag(marketId)).orElse(tagQueryService.listOrgTag(activityFid));
 		model.addAttribute("tags", tags);
+		// 查询出活动分类关联的模板组建id列表
+		List<ClassifyShowComponent> classifyShowComponents = classifyShowComponentQueryService.listByTemplateId(templateId);
+		model.addAttribute("classifyShowComponents", classifyShowComponents);
 
 		// 启用的自定义应用列表
 		List<Integer> enableCustomAppTplComponentIds = customAppConfigQueryService.listEnabledActivityCustomAppTplComponentId(activityId);

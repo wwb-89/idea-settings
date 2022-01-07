@@ -1,6 +1,6 @@
 Vue.component('vue-confirm', {
     props: ['message', 'sure', 'cancel'],
-    template: "<div class='dailog-box1' v-show='show'>\n" +
+    template: "<div class='dailog-box1' style='z-index: 999;' v-show='show'>\n" +
         "    <div class='dailog delete-dailog'>\n" +
         "        <img :src='warnImgUrl' class='warn'>\n" +
         "        <span>{{message}}</span>\n" +

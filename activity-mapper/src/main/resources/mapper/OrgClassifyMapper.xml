@@ -29,4 +29,18 @@
             t.fid = #{fid}
     </select>
 
+    <update id="sort">
+        UPDATE t_org_classify t
+        SET t.sequence =
+            <foreach collection="classifyIdSequenceMap" index="key" item="value" open="(CASE t.classify_id" close=" END)" separator=" ">
+                WHEN #{key} THEN #{value}
+            </foreach>
+        WHERE
+            t.fid = #{fid}
+            AND t.classify_id IN
+            <foreach collection="classifyIdSequenceMap" index="key" item="value" open="(" close=")" separator=",">
+                #{key}
+            </foreach>
+    </update>
+
 </mapper>

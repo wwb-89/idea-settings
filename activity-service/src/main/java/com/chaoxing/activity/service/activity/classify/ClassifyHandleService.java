@@ -306,4 +306,23 @@ public class ClassifyHandleService {
 		marketClassifyMapper.sort(marketId, classifyIdSequenceMap);
 	}
 
+	/**机构市场分类排序
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-07 17:05:47
+	 * @param fid
+	 * @param classifyIds
+	 * @return void
+	*/
+	public void orgClassifySort(Integer fid, List<Integer> classifyIds) {
+		if (CollectionUtils.isEmpty(classifyIds)) {
+			return;
+		}
+		Map<Integer, Integer> classifyIdSequenceMap = new HashMap<>();
+		for (int i = 0; i < classifyIds.size(); i++) {
+			classifyIdSequenceMap.put(classifyIds.get(i), i + 1);
+		}
+		orgClassifyMapper.sort(fid, classifyIdSequenceMap);
+	}
+
 }

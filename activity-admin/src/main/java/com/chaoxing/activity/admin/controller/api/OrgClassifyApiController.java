@@ -8,10 +8,8 @@ import com.chaoxing.activity.dto.activity.classify.OrgClassifyUpdateParamDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.google.common.collect.Lists;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -76,6 +74,21 @@ public class OrgClassifyApiController {
 				.classifyId(id)
 				.fid(fid)
 				.build());
+		return RestRespDTO.success();
+	}
+
+	/**排序
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-07 17:07:33
+	 * @param request
+	 * @param fid
+	 * @param classifyIds
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("sort")
+	public RestRespDTO sort(HttpServletRequest request, @PathVariable Integer fid, @RequestParam(value = "classifyIds[]") Integer[] classifyIds) {
+		classifyHandleService.orgClassifySort(fid, Lists.newArrayList(classifyIds));
 		return RestRespDTO.success();
 	}
 
