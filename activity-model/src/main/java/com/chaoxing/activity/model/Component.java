@@ -96,6 +96,7 @@ public class Component {
         TEXT("文本", "text"),
         INT("整数", "int"),
         DECIMAL("小数", "decimal"),
+        RICH_TEXT("富文本", "rich_text"),
         RADIO("单选", "radio"),
         CHECKBOX("多选", "checkbox"),
         CUSTOM_APP("自定义应用", "custom_app");

@@ -425,11 +425,6 @@ public class ActivityMhV3ApiController {
                 if (CollectionUtils.isNotEmpty(signInIds)) {
                     result.add(buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
-                // 班级互动
-                Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
-                if (openClazzInteraction) {
-                    result.add(buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activity.getId(), "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
-                }
                 existSignUpInfo = true;
             } else{
                 signedUp = false;
@@ -526,13 +521,18 @@ public class ActivityMhV3ApiController {
         if (openReading && activity.getReadingId() != null) {
             result.add(buildBtnField("阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), activityQueryService.getReadingTestUrl(activity), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
         }
+        // 班级互动
+        Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
+        if (openClazzInteraction && signedUp) {
+            result.add(buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activity.getId(), "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+        }
         // 查询自定义配置列表中的前端按钮地址
         List<CustomAppConfig> frontendAppConfigs = customAppConfigQueryService.listFrontendAppConfigsByActivity(activity.getId());
         for (CustomAppConfig config : frontendAppConfigs) {
             boolean showAfterSignUp = Optional.ofNullable(config.getShowAfterSignUp()).orElse(false);
             String iconCloudUrl = StringUtils.isBlank(config.getDefaultIconCloudId()) ? "" : cloudApiService.buildImageUrl(config.getDefaultIconCloudId());
             if (showAfterSignUp) {
-                if (existSignUp && signedUp) {
+                if (signedUp) {
                     result.add(buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
                 }
             } else {

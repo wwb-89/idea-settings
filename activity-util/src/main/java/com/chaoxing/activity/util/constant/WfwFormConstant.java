@@ -23,5 +23,11 @@ public class WfwFormConstant {
     public static final String CREATE_SIGN = "deptManager_hdcp";
     /** 创建相关key */
     public static final String CREATE_KEY = "SObtv7P3d$UVuBkTjg";
+    
+    /** 审批相关 */
+    /** sign */
+    public static final String APPROVAL_SIGN = "approveData_activity";
+    /** key */
+    public static final String APPROVAL_KEY = "XtTpP2MjfoHZa^5!s8";
 
 }

@@ -4,16 +4,23 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.api.controller.enums.ErdosAreaEnum;
 import com.chaoxing.activity.api.controller.enums.MhBtnSequenceEnum;
 import com.chaoxing.activity.api.util.MhPreParamsUtils;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.Classify;
+import com.chaoxing.activity.service.activity.ActivityMhService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.util.MhDataBuildUtil;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -28,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**鄂尔多斯活动信息
  * @author wwb
@@ -49,6 +57,16 @@ public class ErdosActivityInfoApiController {
     private WorkApiService workApiService;
     @Resource
     private CloudApiService cloudApiService;
+    @Resource
+    private ClassifyQueryService classifyQueryService;
+    @Resource
+    private WfwAreaApiService wfwAreaApiService;
+    @Resource
+    private ActivityMhService activityMhService;
+
+    private static final String ERDOS_TOP_AREA_CODE = "0017";
+    private static final List<String> ERDOS_FLAGS = Lists.newArrayList("class", "school", "region");
+
 
     /**活动信息
      * @Description 
@@ -161,7 +179,25 @@ public class ErdosActivityInfoApiController {
         return RestRespDTO.success(jsonObject);
     }
 
-    @RequestMapping("data-center")
+    /**鄂尔多斯分类区域筛选条件数据源
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-05 20:18:03
+     * @param data
+     * @return
+     */
+    @RequestMapping("classifies-regions")
+    public RestRespDTO mhClassifies(@RequestBody String data) {
+        List<Classify> classifies = classifyQueryService.areaUnionClassifies(ERDOS_TOP_AREA_CODE, ERDOS_FLAGS);
+        JSONObject jsonObject = new JSONObject();
+        JSONArray classifyArray = new JSONArray();
+        classifyArray.add(MhDataBuildUtil.buildClassifies(classifies));
+        classifyArray.add(ErdosAreaEnum.buildRegionCondition());
+        jsonObject.put("classifies", classifyArray);
+        return RestRespDTO.success(jsonObject);
+    }
+
+    @RequestMapping("activities")
     public RestRespDTO mhDatacenter(@RequestBody String data) {
         JSONObject params = JSON.parseObject(data);
         // wfwfid
@@ -176,15 +212,8 @@ public class ErdosActivityInfoApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 搜索内容
         String sw = urlParams.getString("sw");
-        Integer activityClassifyId = null;
-        String classifies = urlParams.getString("classifies");
-        if (StringUtils.isNotBlank(classifies)) {
-            JSONArray jsonArray = JSON.parseArray(classifies);
-            if (jsonArray.size() > 0) {
-                JSONObject activityClassify = jsonArray.getJSONObject(0);
-                activityClassifyId = activityClassify.getInteger("id");
-            }
-        }
+        Integer activityClassifyId = Optional.ofNullable(getClassifyIDFromUrlParams(urlParams)).map(Integer::valueOf).orElse(null);
+        String areaCode = Optional.ofNullable(getAreaCodeFromUrlParams(urlParams)).orElse(null);
         // 状态
         String statusParams = urlParams.getString("status");
         List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
@@ -196,14 +225,75 @@ public class ErdosActivityInfoApiController {
                 .flag(flag)
                 .topFid(wfwfid)
                 .sw(sw)
+                .fids(getFidsByAreaCode(wfwfid, areaCode))
+                .areaCode(areaCode)
                 .activityType(activityType)
                 .statusList(statusList)
                 .activityClassifyId(activityClassifyId)
                 .build();
+
         Page<Activity> page = new Page(pageNum, pageSize);
         page = activityQueryService.erdosMhDatacenterPage(page, activityQuery);
-        return RestRespDTO.success(page);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("curPage", page.getCurrent());
+        jsonObject.put("totalPages", page.getPages());
+        jsonObject.put("totalRecords", page.getTotal());
+        List<Activity> records = page.getRecords();
+        JSONArray activityJsonArray = activityMhService.packageActivities(records, urlParams);
+        jsonObject.put("results", activityJsonArray);
+        return RestRespDTO.success(jsonObject);
     }
+
+    private List<Integer> getFidsByAreaCode(Integer topFid, String areaCode) {
+        List<WfwAreaDTO> wfwRegionalArchitectures = Lists.newArrayList();
+        if (StringUtils.isNotBlank(areaCode)) {
+            // 区域的
+            wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
+        }
+        if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
+            wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
+        }
+        List<Integer> fids = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+            List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
+            fids.addAll(subFids);
+        } else {
+            fids.add(topFid);
+        }
+        return fids;
+    }
+
+    private Integer getClassifyIDFromUrlParams(JSONObject urlParams) {
+        String jsonStr = urlParams.getString("classifies");
+        if (StringUtils.isNotBlank(jsonStr)) {
+            JSONArray jsonArray = JSON.parseArray(jsonStr);
+            for (Object o : jsonArray) {
+                JSONObject obj = (JSONObject) o;
+                String classifyId = obj.getString("id");
+                if (!ErdosAreaEnum.existAreaCode(classifyId)) {
+                    return Integer.valueOf(classifyId);
+                }
+            }
+        }
+        return null;
+    }
+    private String getAreaCodeFromUrlParams(JSONObject urlParams) {
+        String jsonStr = urlParams.getString("classifies");
+        if (StringUtils.isNotBlank(jsonStr)) {
+            JSONArray jsonArray = JSON.parseArray(jsonStr);
+            for (Object o : jsonArray) {
+                JSONObject obj = (JSONObject) o;
+                String areaCode = obj.getString("id");
+                if (ErdosAreaEnum.existAreaCode(areaCode)) {
+                    return areaCode;
+                }
+            }
+        }
+        return null;
+    }
+
+
 
     private Activity getActivityByParams(JSONObject params) {
         Integer websiteId = params.getInteger("websiteId");

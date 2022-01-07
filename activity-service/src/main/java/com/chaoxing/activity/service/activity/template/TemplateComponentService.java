@@ -165,14 +165,17 @@ public class TemplateComponentService {
         List<Integer> sucTplComponentIds = Lists.newArrayList();
         // 报名信息填写类型templateComponentIds
         List<Integer> sufiTplComponentIds = Lists.newArrayList();
-        tplCompoenents.forEach(v -> {
-            if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue())) {
-                sucTplComponentIds.add(v.getId());
-            } else if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
-                // 报名填报信息的模板组件id为报名的模板组件id
-                sufiTplComponentIds.add(v.getPid());
+        for (TemplateComponentDTO tplCompoenent : tplCompoenents) {
+            Integer pid = tplCompoenent.getPid();
+            if (!Objects.equals(pid, 0)) {
+                if (Objects.equals(tplCompoenent.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue())) {
+                    sucTplComponentIds.add(tplCompoenent.getId());
+                } else if (Objects.equals(tplCompoenent.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
+                    // 报名填报信息的模板组件id为报名的模板组件id
+                    sufiTplComponentIds.add(tplCompoenent.getPid());
+                }
             }
-        });
+        }
         Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listWithTemplateDetailsByTplComponentIds(sucTplComponentIds).stream()
                 .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
         Map<Integer, SignUpFillInfoType> signUpFillInfoTypeMap = signUpFillInfoTypeService.listByTemplateComponentIds(sufiTplComponentIds).stream()

@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.controller.api;
+package com.chaoxing.activity.admin.controller.api.market;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;

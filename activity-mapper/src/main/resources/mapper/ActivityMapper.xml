@@ -434,7 +434,7 @@
         </if>
         <include refid="classifyJoinConditionSql"></include>
         WHERE
-            t.work_id IS NOT NULL
+            t.is_open_work = 0
             <choose>
                 <when test="params.status != null">
                     AND t.`status` = #{params.status}

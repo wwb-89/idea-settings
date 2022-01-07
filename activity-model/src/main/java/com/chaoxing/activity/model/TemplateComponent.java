@@ -117,7 +117,7 @@ public class TemplateComponent {
         List<TemplateComponent> result = Lists.newArrayList();
         CollectionUtils.collect(templateComponents, o -> TemplateComponent.builder()
                 .id(o.getId())
-                .pid(o.getPid())
+                .pid(o.getPid() == null ? 0 : o.getPid())
                 .templateId(o.getTemplateId())
                 .componentId(o.getComponentId())
                 .name(o.getName())

@@ -25,6 +25,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
@@ -103,6 +104,8 @@ public class WfwFormSyncActivityQueueService {
 
     @Resource
     private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
+    @Resource
+    private ActivityPushReminderService activityPushReminderService;
 
 
     /**
@@ -200,6 +203,12 @@ public class WfwFormSyncActivityQueueService {
         if (activityCreateParam.getOpenWork()) {
             activityCreateParam.setWorkId(workApiService.createDefault(loginUser.getUid(), fid));
         }
+        // 处理通知的叶子结构
+        if (activityCreateParam.getOpenPushReminder()) {
+            ActivityPushReminder activityPushReminder = activityPushReminderService.handleReminderScopesFromWfwForm(fid, activityCreateParam.getActivityPushReminder());
+            activityCreateParam.setActivityPushReminder(activityPushReminder);
+        }
+
         // 处理网页模版
         String webTemplateName = activityCreateParam.getWebTemplateName();
         if (webTemplateId == null && StringUtils.isNotBlank(webTemplateName)) {

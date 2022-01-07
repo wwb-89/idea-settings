@@ -273,19 +273,6 @@ public class ActivityQueryService {
 	}
 
 	public Page<Activity> erdosMhDatacenterPage(Page<Activity> page, ActivityQueryDTO activityQuery) {
-		List<Integer> fids = new ArrayList<>();
-		Integer topFid = activityQuery.getTopFid();
-		if (StringUtils.isNotBlank(activityQuery.getFlag())) {
-			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(",")));
-		}
-		List<WfwAreaDTO> wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
-			fids.addAll(subFids);
-		} else {
-			fids.add(topFid);
-		}
-		activityQuery.setFids(fids);
 		return activityMapper.erdosMhDatacenterPage(page, activityQuery);
 	}
 
@@ -741,7 +728,9 @@ public class ActivityQueryService {
 			result = activitiesConvert2ActivitySignedUp(waitAuditPage.getRecords(), userSignUpStatuses, uid);
 			additionalTotal = result.size();
 		}
-		page = activityMapper.pageSignedUpActivities(page, successSignIds, null, marketIds);
+		if (CollectionUtils.isNotEmpty(successSignIds)) {
+			page = activityMapper.pageSignedUpActivities(page, successSignIds, null, marketIds);
+		}
 		List<ActivitySignedUpDTO> records = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatuses, uid);
 		result.addAll(records);
 
@@ -1382,7 +1371,9 @@ public class ActivityQueryService {
 			default:
 				queryActivityFlag = "";
 		}
-		return activityMapper.listErdosCustomOrgCreatedWorkId(activity.getCreateFid(), queryActivityFlag, activity.getActivityClassifyId());
+		List<Integer> workIds = activityMapper.listErdosCustomOrgCreatedWorkId(fid, queryActivityFlag, activity.getActivityClassifyId());
+		workIds.remove(workId);
+		return workIds;
 	}
 
 	/**

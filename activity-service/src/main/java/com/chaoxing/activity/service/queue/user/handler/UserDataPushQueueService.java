@@ -109,10 +109,8 @@ public class UserDataPushQueueService {
             }
             if (formUserId == null) {
                 marketUserDataPushRecordService.delete(userDataPushRecord.getId());
-                userDataPushRecord = null;
             }
         }
-        Boolean valid = Optional.ofNullable(userStatSummary.getValid()).orElse(false);
         String wfwFormData = generateWfwFormPushData(activity, userStatSummary, dataPushConfig);
         if (formUserId == null) {
             // 新增

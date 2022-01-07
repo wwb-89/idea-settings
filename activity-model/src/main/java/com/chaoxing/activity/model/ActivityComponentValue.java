@@ -36,4 +36,6 @@ public class ActivityComponentValue {
     private Integer componentId;
     /** 值; column: value*/
     private String value;
+    /** 云盘id集合; column: cloud_ids */
+    private String cloudIds;
 }

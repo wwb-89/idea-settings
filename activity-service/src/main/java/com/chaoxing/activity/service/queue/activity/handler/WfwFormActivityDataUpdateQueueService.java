@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
+import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.util.constant.WfwFormAliasConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -125,8 +126,10 @@ public class WfwFormActivityDataUpdateQueueService {
                     result.add(item);
                 }
             } else if (Objects.equals(alias, WfwFormAliasConstant.ACTIVITY_PREVIEW_URL)) {
+                // 预览地址需要删除域名
                 String previewUrl = wfwFormActivityWriteBackData.getPreviewUrl();
                 if (StringUtils.isNotBlank(previewUrl)) {
+                    previewUrl = UrlUtils.clearDomain(previewUrl);
                     data.add(previewUrl);
                     item.put("val", data);
                     result.add(item);
@@ -178,7 +181,7 @@ public class WfwFormActivityDataUpdateQueueService {
             if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.SIGN_UP_STATUS)) {
                 String signUpStatus = formRecord.getStringValue(WfwFormAliasConstant.SIGN_UP_STATUS);
                 String localSignUpStatus = wfwFormActivityWriteBackData.getSignUpStatus();
-                if (!Objects.equals(wfwFormActivityWriteBackData.getSignUpStatus(), signUpStatus) && StringUtils.isNotBlank(localSignUpStatus)) {
+                if (!Objects.equals(localSignUpStatus, signUpStatus) && StringUtils.isNotBlank(localSignUpStatus)) {
                     log.info("万能表单活动:{} 报名状态改变 {} -> {}", localActivityId, signUpStatus, localSignUpStatus);
                     return true;
                 }
@@ -187,7 +190,10 @@ public class WfwFormActivityDataUpdateQueueService {
             if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_PREVIEW_URL)) {
                 String previewUrl = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_PREVIEW_URL);
                 String localPreviewUrl = wfwFormActivityWriteBackData.getPreviewUrl();
-                if (!Objects.equals(wfwFormActivityWriteBackData.getPreviewUrl(), previewUrl)) {
+                if (StringUtils.isNotBlank(localPreviewUrl)) {
+                    localPreviewUrl = UrlUtils.clearDomain(localPreviewUrl);
+                }
+                if (!Objects.equals(localPreviewUrl, previewUrl)) {
                     log.info("万能表单活动:{} 浏览地址改变 {} -> {}", localActivityId, previewUrl, localPreviewUrl);
                     return true;
                 }
@@ -196,7 +202,7 @@ public class WfwFormActivityDataUpdateQueueService {
             if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS)) {
                 String releaseStatus = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS);
                 String localReleaseStatus = wfwFormActivityWriteBackData.getActivityReleaseStatus();
-                if (!Objects.equals(wfwFormActivityWriteBackData.getActivityReleaseStatus(), releaseStatus)) {
+                if (!Objects.equals(localReleaseStatus, releaseStatus)) {
                     log.info("万能表单活动:{} 发布状态改变 {} -> {}", localActivityId, releaseStatus, localReleaseStatus);
                     return true;
                 }
