@@ -1,6 +1,5 @@
 package com.chaoxing.activity.api.controller.mh.datacenter;
 
-import cn.hutool.http.HtmlUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -8,21 +7,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.api.util.MhPreParamsUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.mh.MhMarketDataCenterDTO;
-import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.dto.stat.UserSummaryStatDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.Market;
-import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
+import com.chaoxing.activity.service.activity.ActivityMhService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
-import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
@@ -31,9 +26,8 @@ import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
-import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.service.util.MhDataBuildUtil;
 import com.chaoxing.activity.util.constant.CommonConstant;
-import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -47,8 +41,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -68,13 +64,9 @@ public class ActivityMhDataCenterApiController {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private ActivityCoverUrlSyncService activityCoverUrlSyncService;
-    @Resource
     private MarketQueryService marketQueryService;
     @Resource
     private ClassifyQueryService classifyQueryService;
-    @Resource
-    private ActivityComponentValueService activityComponentValueService;
     @Resource
     private SignApiService signApiService;
     @Resource
@@ -87,6 +79,8 @@ public class ActivityMhDataCenterApiController {
     private ActivityRatingQueryService activityRatingQueryService;
     @Resource
     private CloudApiService cloudApiService;
+    @Resource
+    private ActivityMhService activityMhService;
 
     /** 用户活动总积分排行 */
     private static final String USER_TOTAL_INTEGRAL_RANK = "user_total_integral_rank";
@@ -178,123 +172,9 @@ public class ActivityMhDataCenterApiController {
         jsonObject.put("totalPages", page.getPages());
         jsonObject.put("totalRecords", page.getTotal());
         List<Activity> records = page.getRecords();
-        JSONArray activityJsonArray = packageActivities(records, urlParams);
+        JSONArray activityJsonArray = activityMhService.packageActivities(records, urlParams);
         jsonObject.put("results", activityJsonArray);
         return RestRespDTO.success(jsonObject);
-    }
-
-    /**封装活动数据为门户标准接收格式
-    * @Description 
-    * @author huxiaolong
-    * @Date 2021-09-26 17:57:46
-    * @param activities
-    * @return com.alibaba.fastjson.JSONArray
-    */
-    private JSONArray packageActivities(List<Activity> activities, JSONObject urlParams) {
-        JSONArray activityJsonArray = new JSONArray();
-        if (CollectionUtils.isEmpty(activities)) {
-            return activityJsonArray;
-        }
-        Map<Integer, Integer> activityTemplateMap = activities.stream().filter(v -> v.getTemplateId() != null).collect(Collectors.toMap(Activity::getId, Activity::getTemplateId, (v1, v2) -> v2));
-        List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
-        List<Integer> signIds = activities.stream().map(Activity::getSignId).collect(Collectors.toList());
-        Map<Integer, SignStatDTO> signStatMap = signApiService.statSignSignUps(signIds).stream().collect(Collectors.toMap(SignStatDTO::getId, v -> v, (v1, v2) -> v2));
-        Map<Integer, List<ActivityComponentValueDTO>> activityComponentValuesMap = activityComponentValueService.listActivityComponentValues(activityTemplateMap);
-
-        Map<Integer, String> introductionMap = activityQueryService.listDetailByActivityIds(activityIds)
-                .stream()
-                .collect(Collectors.toMap(ActivityDetail::getActivityId, v -> HtmlUtil.cleanHtmlTag(v.getIntroduction()).replaceAll(HtmlUtil.NBSP, " "), (v1, v2) -> v2));
-
-        for (Activity record : activities) {
-            Map<String, String> fieldCodeNameMap = activityQueryService.getFieldCodeNameRelation(record);
-            SignStatDTO signStat = signStatMap.get(record.getSignId());
-
-            // 活动
-            JSONObject activity = new JSONObject();
-            Integer activityId = record.getId();
-            activity.put("id", activityId);
-            activity.put("type", 3);
-            activity.put("orsUrl", record.getPreviewUrl());
-            JSONArray fields = new JSONArray();
-            activity.put("fields", fields);
-            int fieldFlag = 0;
-            // 封面
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_cover", "封面"), activityCoverUrlSyncService.getCoverUrl(record), fieldFlag));
-            // 活动名称
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_name", "名称"), record.getName(), ++fieldFlag));
-            Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(record.getActivityType());
-            String activityAddress = record.getAddress();
-            if (StringUtils.isNotBlank(activityAddress)) {
-                String detailAddress = record.getDetailAddress();
-                if (StringUtils.isNotBlank(detailAddress)) {
-                    activityAddress += detailAddress;
-                }
-            }
-            // 类型
-            String activityType = Optional.ofNullable(activityTypeEnum).map(Activity.ActivityTypeEnum::getName).orElse(StringUtils.isBlank(activityAddress) ? Activity.ActivityTypeEnum.ONLINE.getName() : Activity.ActivityTypeEnum.OFFLINE.getName());
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_type", "类型"), activityType, ++fieldFlag));
-
-            // 地点
-            fields.add(buildField("地点", activityAddress, ++fieldFlag));
-            // 主办方
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_organisers", "主办方"), record.getOrganisers(), ++fieldFlag));
-            // 开始结束时间
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()), ++fieldFlag));
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()), ++fieldFlag));
-            // 报名数据封装
-            String emptySignUpText = urlParams.getString("emptySignUp");
-            String signUpStatus = Optional.ofNullable(emptySignUpText).orElse(""), signUpStartTime = "", signUpEndTime = "";
-            int signedUpNum = 0, personLimit = 0;
-            if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                if (signStat.getSignUpStartTime() != null && signStat.getSignUpEndTime() != null) {
-                    signUpStatus = getSignUpStatus(signStat, urlParams);
-                }
-                if (signStat.getSignUpStartTime() != null) {
-                    signUpStartTime = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime());
-                }
-                if (signStat.getSignUpStartTime() != null) {
-                    signUpEndTime = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime());
-                }
-                signedUpNum = Optional.ofNullable(signStat.getSignedUpNum()).orElse(0);
-                personLimit = Optional.ofNullable(signStat.getLimitNum()).orElse(0);
-            }
-            // 报名状态
-            fields.add(buildField("报名状态", signUpStatus, ++fieldFlag));
-            // 已报名人数
-            fields.add(buildField("已报名人数", signedUpNum, ++fieldFlag));
-            // 报名开始结束时间
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpStartTime, ++fieldFlag));
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpEndTime, ++fieldFlag));
-            // 人数限制
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_person_limit", "人数限制"), personLimit == 0 ? "不限" : signStat.getLimitNum(), ++fieldFlag));
-            // 活动状态
-            fields.add(buildField("活动状态", Activity.getStatusDescription(record.getStatus()), ++fieldFlag));
-            // 简介（40字纯文本）
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("introduction", "简介"), introductionMap.get(activityId), ++fieldFlag));
-            // 活动分类
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_classify", "分类"), record.getActivityClassifyName(), ++fieldFlag));
-            // 标签
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("tags", "标签"), record.getTags(), ++fieldFlag));
-            // 自定义字段标题和值
-            List<ActivityComponentValueDTO> componentValues = activityComponentValuesMap.get(activityId);
-            if (CollectionUtils.isNotEmpty(componentValues)) {
-                for (ActivityComponentValueDTO componentValue : componentValues) {
-                    fields.add(buildField(componentValue.getTemplateComponentName(), componentValue.getValue(), ++fieldFlag));
-
-                }
-            }
-            // 模板的分类
-            fields.add(buildField("活动标识", record.getActivityFlag(), ++fieldFlag));
-            fields.add(buildField("发布时间", Optional.ofNullable(record.getReleaseTime()).map(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM::format).orElse(""), ++fieldFlag));
-            fields.add(buildField("typeID", record.getActivityClassifyId(), 102));
-            fields.add(buildField("活动时间段", DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime(), DateUtils.MIDDLE_LINE_SEPARATOR), 103));
-            Boolean needStatusValue = Optional.ofNullable(urlParams.getBoolean("needStatusValue")).orElse(false);
-            if (needStatusValue) {
-                fields.add(buildField("活动状态value", getStatusValue(record), ++fieldFlag));
-            }
-            activityJsonArray.add(activity);
-        }
-        return activityJsonArray;
     }
 
     /**查询市场下分类的列表
@@ -383,7 +263,7 @@ public class ActivityMhDataCenterApiController {
         jsonObject.put("totalPages", page.getPages());
         jsonObject.put("totalRecords", page.getTotal());
         List<Activity> records = page.getRecords();
-        JSONArray activityJsonArray = packageActivities(records, urlParams);
+        JSONArray activityJsonArray = activityMhService.packageActivities(records, urlParams);
         jsonObject.put("results", activityJsonArray);
         return RestRespDTO.success(jsonObject);
     }
@@ -506,10 +386,10 @@ public class ActivityMhDataCenterApiController {
 
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         JSONObject jsonObject = new JSONObject();
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_ACTIVITY_NUM.getValue()), "活动数", "个", activityNum , mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_RATING_NUM.getValue()), "评论数", "条", ratingNum, mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_IN_NUM.getValue()), "签到数", "个", signedInNum, mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_UP_NUM.getValue()), "报名数", "次", signedUpNum, mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_ACTIVITY_NUM.getValue()), "活动数", "个", activityNum , mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_RATING_NUM.getValue()), "评论数", "条", ratingNum, mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_IN_NUM.getValue()), "签到数", "个", signedInNum, mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_UP_NUM.getValue()), "报名数", "次", signedUpNum, mainFields);
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
@@ -528,8 +408,8 @@ public class ActivityMhDataCenterApiController {
             JSONArray fields = new JSONArray();
             jsonObject.put("fields", fields);
             int fieldFlag = 0;
-            fields.add(buildField("姓名", item.getRealName(), fieldFlag));
-            fields.add(buildField("积分", item.getIntegralSum(), fieldFlag));
+            fields.add(MhDataBuildUtil.buildField("姓名", item.getRealName(), fieldFlag));
+            fields.add(MhDataBuildUtil.buildField("积分", item.getIntegralSum(), fieldFlag));
             jsonArray.add(jsonObject);
         }
         return jsonArray;
@@ -595,119 +475,5 @@ public class ActivityMhDataCenterApiController {
         return mainFields;
     }
 
-    /**从signStat报名时间获取报名的进行状态
-    * @Description 
-    * @author huxiaolong
-    * @Date 2021-09-26 17:59:31
-    * @param signStat
-    * @return java.lang.String
-    */
-    private String getSignUpStatus(SignStatDTO signStat, JSONObject urlParams) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startTime = signStat.getSignUpStartTime();
-        LocalDateTime endTime = signStat.getSignUpEndTime();
-        String customText;
-        if (startTime.isAfter(now)) {
-            customText = urlParams.getString("signUpNotStarted");
-            return StringUtils.isNotBlank(customText)? customText : "报名未开始";
-        }
-        if (now.isAfter(endTime)) {
-            customText = urlParams.getString("signUpEnded");
-            return StringUtils.isNotBlank(customText)? customText : "已结束";
-        }
-        customText = urlParams.getString("signUpOngoing");
-        return StringUtils.isNotBlank(customText)? customText : "报名中";
-    }
 
-    public static Integer getStatusValue(Activity activity) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startTime = activity.getStartTime();
-        LocalDateTime endTime = activity.getEndTime();
-        if (startTime.isAfter(now)) {
-            return 1;
-        }
-        if (now.isAfter(endTime)) {
-           return 3;
-        }
-        return 2;
-    }
-
-    private JSONObject buildField(String key, Object value, Integer flag) {
-        JSONObject field = new JSONObject();
-        field.put("key", key);
-        field.put("value", value);
-        field.put("flag", flag);
-        return field;
-    }
-
-    private void buildField(String iconUrl,
-                            String key,
-                            String value,
-                            String unit,
-                            List<MhGeneralAppResultDataDTO> mainFields) {
-        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
-        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
-        int flag = 0;
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("图标")
-                .value(iconUrl)
-                .type("3")
-                .flag(String.valueOf(flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("标题")
-                .value(key)
-                .type("3")
-                .flag(String.valueOf(++flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("内容")
-                .value(value)
-                .type("3")
-                .flag(String.valueOf(++flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("单位")
-                .value(unit)
-                .type("3")
-                .flag(String.valueOf(++flag))
-                .build());
-        item.setFields(fields);
-        mainFields.add(item);
-    }
-
-
-    private MhGeneralAppResultDataDTO buildField(String key, String iconUrl, String url, String type, boolean isAjax, Integer sequence) {
-        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
-        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
-        if (isAjax) {
-            item.setType(7);
-        }
-        item.setOrsUrl(url);
-        int flag = 0;
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("封面")
-                .value(iconUrl)
-                .type("3")
-                .flag(String.valueOf(flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("标题")
-                .orsUrl(isAjax ? url : "")
-                .value(key)
-                .type(isAjax ? "7" : "3")
-                .flag(String.valueOf(++flag))
-                .build());
-        if (StringUtils.isNotBlank(type)) {
-            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                    .key("按钮类型")
-                    .value(type)
-                    .type(isAjax ? "7" : "3")
-                    .flag(String.valueOf(++flag))
-                    .build());
-        }
-        item.setSequence(sequence);
-        item.setFields(fields);
-        return item;
-    }
 }

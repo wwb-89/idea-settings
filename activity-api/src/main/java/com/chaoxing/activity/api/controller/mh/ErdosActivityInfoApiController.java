@@ -14,11 +14,13 @@ import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Classify;
+import com.chaoxing.activity.service.activity.ActivityMhService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.util.MhDataBuildUtil;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -59,6 +61,8 @@ public class ErdosActivityInfoApiController {
     private ClassifyQueryService classifyQueryService;
     @Resource
     private WfwAreaApiService wfwAreaApiService;
+    @Resource
+    private ActivityMhService activityMhService;
 
     private static final String ERDOS_TOP_AREA_CODE = "0017";
     private static final List<String> ERDOS_FLAGS = Lists.newArrayList("class", "school", "region");
@@ -184,32 +188,10 @@ public class ErdosActivityInfoApiController {
      */
     @RequestMapping("classifies-regions")
     public RestRespDTO mhClassifies(@RequestBody String data) {
-        JSONObject params = JSON.parseObject(data);
-        Integer wfwfid = params.getInteger("wfwfid");
-        List<Integer> wfwfids = Lists.newArrayList();
-        wfwfids.add(wfwfid);
         List<Classify> classifies = classifyQueryService.areaUnionClassifies(ERDOS_TOP_AREA_CODE, ERDOS_FLAGS);
         JSONObject jsonObject = new JSONObject();
-        JSONArray activityClassifyJsonArray = new JSONArray();
-        jsonObject.put("classifies", activityClassifyJsonArray);
-        if (CollectionUtils.isNotEmpty(classifies)) {
-            for (Classify classify : classifies) {
-                JSONObject item = new JSONObject();
-                item.put("id", classify.getId());
-                item.put("typeId", classify.getId());
-                item.put("name", classify.getName());
-                activityClassifyJsonArray.add(item);
-            }
-        }
-        JSONArray regionJsonArray = new JSONArray();
-        jsonObject.put("regions", regionJsonArray);
-        for (ErdosAreaEnum areaEnum : ErdosAreaEnum.values()) {
-            JSONObject item = new JSONObject();
-            item.put("id", areaEnum.getAreaCode());
-            item.put("typeId", areaEnum.getAreaCode());
-            item.put("name", areaEnum.getName());
-            regionJsonArray.add(item);
-        }
+        jsonObject.put("classifies", MhDataBuildUtil.buildClassifies(classifies));
+        jsonObject.put("regions", ErdosAreaEnum.buildRegionCondition());
         return RestRespDTO.success(jsonObject);
     }
 
@@ -249,9 +231,16 @@ public class ErdosActivityInfoApiController {
                 .build();
 
         Page<Activity> page = new Page(pageNum, pageSize);
-        page = activityQueryService.pageFlag(page, activityQuery);
         page = activityQueryService.erdosMhDatacenterPage(page, activityQuery);
-        return RestRespDTO.success(page);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("curPage", page.getCurrent());
+        jsonObject.put("totalPages", page.getPages());
+        jsonObject.put("totalRecords", page.getTotal());
+        List<Activity> records = page.getRecords();
+        JSONArray activityJsonArray = activityMhService.packageActivities(records, urlParams);
+        jsonObject.put("results", activityJsonArray);
+        return RestRespDTO.success(jsonObject);
     }
 
     private List<Integer> getFidsByAreaCode(Integer topFid, String areaCode) {
