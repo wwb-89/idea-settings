@@ -1,12 +1,13 @@
 package com.chaoxing.activity.service.util;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
-import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.Classify;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -17,6 +18,29 @@ import java.util.List;
  */
 public class MhDataBuildUtil {
 
+
+    public static JSONArray buildClassifies(List<Classify> classifies) {
+        JSONArray activityClassifyJsonArray = new JSONArray();
+        JSONObject firstLevel = new JSONObject();
+        firstLevel.put("id", "");
+        firstLevel.put("name", "活动类型");
+        firstLevel.put("description", "");
+        firstLevel.put("count", 0);
+        JSONArray subs = new JSONArray();
+        if (CollectionUtils.isNotEmpty(classifies)) {
+            firstLevel.put("count", classifies.size());
+            for (Classify classify : classifies) {
+                JSONObject item = new JSONObject();
+                item.put("id", classify.getId());
+                item.put("name", classify.getName());
+                item.put("description", "");
+                subs.add(item);
+            }
+        }
+        firstLevel.put("subs", subs);
+        activityClassifyJsonArray.add(firstLevel);
+        return activityClassifyJsonArray;
+    }
 
     public static JSONObject buildField(String key, Object value, Integer flag) {
         JSONObject field = new JSONObject();

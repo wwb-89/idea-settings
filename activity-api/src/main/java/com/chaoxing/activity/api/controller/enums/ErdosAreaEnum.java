@@ -1,5 +1,7 @@
 package com.chaoxing.activity.api.controller.enums;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 
 /**鄂尔多斯区域enum
@@ -30,6 +32,26 @@ public enum ErdosAreaEnum {
         this.name = name;
         this.areaCode = areaCode;
         this.fid = fid;
+    }
+
+    public static JSONArray buildRegionCondition() {
+        JSONArray regionJsonArray = new JSONArray();
+        JSONObject firstLevel = new JSONObject();
+        firstLevel.put("id", "");
+        firstLevel.put("name", "地区");
+        firstLevel.put("description", "");
+        firstLevel.put("count", ErdosAreaEnum.values().length);
+        JSONArray subs = new JSONArray();
+        for (ErdosAreaEnum areaEnum : ErdosAreaEnum.values()) {
+            JSONObject item = new JSONObject();
+            item.put("id", areaEnum.getAreaCode());
+            item.put("name", areaEnum.getName());
+            item.put("description", "");
+            subs.add(item);
+        }
+        firstLevel.put("subs", subs);
+        regionJsonArray.add(firstLevel);
+        return regionJsonArray;
     }
 
 }
