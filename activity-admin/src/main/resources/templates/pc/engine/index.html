@@ -873,7 +873,7 @@
                         <div class="lists">
                             <ul>
                                 <li v-for="(item, index) of selectedClassifyTemplateComponents" :key="'template-component-' + index">
-                                    <span>{{item.name}}</span>
+                                    <div class="name">{{item.name}}</div>
                                     <el-checkbox v-model="item.checked"></el-checkbox>
                                 </li>
                             </ul>

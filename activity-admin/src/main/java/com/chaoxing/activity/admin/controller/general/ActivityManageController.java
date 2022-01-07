@@ -179,7 +179,7 @@ public class ActivityManageController {
 			sign = signApiService.getCreateById(signId);
 		}
 		model.addAttribute("sign", sign);
-		return activityAddEditView(model,
+		return editView(model,
 				activityId,
 				loginUser.getFid(),
 				activity.getCreateFid(),
@@ -216,7 +216,7 @@ public class ActivityManageController {
 			sign = signApiService.getCloneSign(signId, loginUser.getFid(), loginUser.getUid());
 		}
 		model.addAttribute("sign", sign);
-		return activityAddEditView(model,
+		return editView(model,
 				activityId,
 				loginUser.getFid(),
 				createParam.getCreateFid(),
@@ -246,7 +246,7 @@ public class ActivityManageController {
 	 * @param strict
 	 * @return java.lang.String
 	*/
-	private String activityAddEditView(Model model, Integer activityId, Integer userFid, Integer activityFid, Integer marketId, Integer uid, String activityFlag, Integer templateId, Integer webTemplateId, String areaCode, Integer strict) {
+	private String editView(Model model, Integer activityId, Integer userFid, Integer activityFid, Integer marketId, Integer uid, String activityFlag, Integer templateId, Integer webTemplateId, String areaCode, Integer strict) {
 		// 活动对应的模板组件列表
 		model.addAttribute("templateComponents", templateComponentService.listTemplateComponentTree(templateId, activityFid));
 		// 活动类型列表

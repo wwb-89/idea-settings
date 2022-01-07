@@ -1028,7 +1028,7 @@
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
             AND t1.fid = #{participateFid}
         WHERE
-            t.create_uid = #{createFid}
+            t.create_fid = #{createFid}
             AND t.`status` IN ( 1, 2, 3, 4 )
             <if test="activityFlag != null and activityFlag != ''">
                 AND t.activity_flag = #{activityFlag}

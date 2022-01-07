@@ -1363,6 +1363,7 @@ public class ActivityQueryService {
 		switch (activityFlagEnum) {
 			case CLASS:
 				queryActivityFlag = Activity.ActivityFlagEnum.SCHOOL.getValue();
+				superiorFid = activity.getCreateFid();
 				break;
 			case SCHOOL:
 			case REGION:
