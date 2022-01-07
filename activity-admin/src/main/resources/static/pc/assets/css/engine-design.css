@@ -641,9 +641,12 @@
   position: relative;
 }
 
+.dailog .center-body .right-choose .lists ul li .name {
+  display: inline-block;
+}
+
 .dailog .center-body .right-choose .lists ul li .el-checkbox {
   position: absolute;
-  top: 16px;
   right: 16px;
 }
 
