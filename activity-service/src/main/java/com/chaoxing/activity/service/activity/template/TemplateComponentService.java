@@ -61,6 +61,7 @@ public class TemplateComponentService {
         return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
                 .eq(TemplateComponent::getTemplateId, templateId)
                 .eq(TemplateComponent::getDeleted, false)
+                .eq(TemplateComponent::getPid, 0)
         );
     }
 

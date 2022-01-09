@@ -159,20 +159,22 @@
                             </div>
                         </div>
                         <!--活动形式-->
-                        <template v-else-if="item.code == 'activity_type'" v-show="templateComponentShow(item.id)">
-                            <div class="form-item">
-                                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
-                                <div class="input-box">
-                                    <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type" v-if="activityType.value != 'other' || showOtherActivityType">{{activityType.name}}</el-radio>
-                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                        <template v-else-if="item.code == 'activity_type'">
+                            <div v-show="templateComponentShow(item.id)">
+                                <div class="form-item">
+                                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                                    <div class="input-box">
+                                        <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type" v-if="activityType.value != 'other' || showOtherActivityType">{{activityType.name}}</el-radio>
+                                        <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-item" v-show="activity.activityType == 'offline' || activity.activityType == 'other'">
-                                <label class="label">位置</label>
-                                <div class="input-box">
-                                    <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
-                                    <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
-                                    <input type="text" v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
+                                <div class="form-item" v-show="activity.activityType == 'offline' || activity.activityType == 'other'">
+                                    <label class="label">位置</label>
+                                    <div class="input-box">
+                                        <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
+                                        <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                                        <input type="text" v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
+                                    </div>
                                 </div>
                             </div>
                         </template>
@@ -379,30 +381,32 @@
                             </div>
                         </div>
                         <!--定时发布-->
-                        <template v-else-if="item.code == 'timing_release'" v-show="templateComponentShow(item.id)">
-                            <div class="form-item">
-                                <label class="label">{{item.name}}</label>
-                                <div class="input-box">
-                                    <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
-                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                        <template v-else-if="item.code == 'timing_release'">
+                            <div v-show="templateComponentShow(item.id)">
+                                <div class="form-item">
+                                    <label class="label">{{item.name}}</label>
+                                    <div class="input-box">
+                                        <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
+                                        <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-item" v-show="activity.timingRelease">
-                                <label class="label"></label>
-                                <div class="input-box">
-                                    <el-date-picker v-model="activity.timingReleaseTimeStamp"
-                                                    type="datetime"
-                                                    placeholder="发布时间"
-                                                    format="yyyy-MM-dd HH:mm"
-                                                    value-format="timestamp"
-                                                    prefix-icon="disable"
-                                                    :clearable="false"
-                                                    :editable="false"
-                                                    :picker-options="timingReleasePickerOption">
-                                    </el-date-picker>
-                                    <span class="date-piker-icon" style="left: 192px;">
+                                <div class="form-item" v-show="activity.timingRelease">
+                                    <label class="label"></label>
+                                    <div class="input-box">
+                                        <el-date-picker v-model="activity.timingReleaseTimeStamp"
+                                                        type="datetime"
+                                                        placeholder="发布时间"
+                                                        format="yyyy-MM-dd HH:mm"
+                                                        value-format="timestamp"
+                                                        prefix-icon="disable"
+                                                        :clearable="false"
+                                                        :editable="false"
+                                                        :picker-options="timingReleasePickerOption">
+                                        </el-date-picker>
+                                        <span class="date-piker-icon" style="left: 192px;">
                                     <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
                                 </span>
+                                    </div>
                                 </div>
                             </div>
                         </template>
@@ -1444,7 +1448,7 @@
                     var classifyId = $this.activity.activityClassifyId;
                     var showTemplateComponentIds = $this.classifyShowComponentsMap[classifyId];
                     if (!showTemplateComponentIds) {
-                        return;
+                        showTemplateComponentIds = [];
                     }
                     var curHideTemplateComponentIds = [];
                     $($this.allHideTemplateComponentIds).each(function () {
@@ -1481,7 +1485,7 @@
                 // 模板组件是否显示
                 templateComponentShow: function (templateComponentId) {
                     var $this = this;
-                    return $.inArray(templateComponentId, $this.curHideTemplateComponentIds) < 0;
+                    return $this.curHideTemplateComponentIds.indexOf(templateComponentId) < 0;
                 },
                 // 分区是否显示（当分区的所有templateComponent都隐藏时需要隐藏）
                 partitionShow: function (index) {
@@ -2808,6 +2812,10 @@
                 deleteClassifySubmit: function () {
                     var $this = this;
                     var classify = $this.activityClassifies[$this.operateClassifyIndex];
+                    if (!classify.id) {
+                        // 直接删除
+                        $this.activityClassifies.splice($this.operateClassifyIndex, 1);
+                    }
                     var url = ctx + "/api/market/" + $this.marketId + "/classify/" + classify.id + "/delete";
                     if (!$this.marketId) {
                         url = ctx + "/api/org/" + $this.fid + "/classify/" + classify.id + "/delete";
