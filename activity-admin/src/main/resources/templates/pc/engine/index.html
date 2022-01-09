@@ -1677,8 +1677,7 @@
                         if (frontendConfigs.length > 0) {
                             for (var i = 0; i < frontendConfigs.length; i++) {
                                 var it = frontendConfigs[i];
-                                if (activityApp.isEmpty(it.title) || activityApp.isEmpty(it.url)) {
-                                    app.showMsg("应用配置标题和链接不能为空");
+                                if (!$this.validCustomAppConfig(it)) {
                                     return;
                                 }
                                 it.showAfterSignUp = showAfterSignUp;
@@ -1689,17 +1688,7 @@
                         if (backendConfigs.length > 0) {
                             for (var j = 0; j < backendConfigs.length; j++) {
                                 var bit = backendConfigs[j];
-                                if (activityApp.isEmpty(bit.title) || activityApp.isEmpty(bit.url)) {
-                                    app.showMsg("应用配置标题和链接不能为空");
-                                    return;
-                                }
-                                var pattern = /^(https?:\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
-                                if (!pattern.test(bit.url)) {
-                                    app.showMsg("后台应用配置地址不规范");
-                                    return;
-                                }
-                                if (bit.url.indexOf("https") == -1) {
-                                    app.showMsg("后台应用配置地址必须为http");
+                                if (!$this.validCustomAppConfig(bit)) {
                                     return;
                                 }
                                 bit.openBlank = openBlank;
@@ -1711,6 +1700,33 @@
                         $this.addEditItem.removeCustomAppConfigIds = removeCustomAppConfigIds || [];
                         $this.submitCustomComponent($this.addEditItem)
                     },
+                    validCustomAppConfig: function (appConfig) {
+                        if (!appConfig) {
+                            app.showMsg("应用配置不存在");
+                            return false;
+                        }
+                        if (activityApp.isEmpty(appConfig.iconId)) {
+                            app.showMsg("图标不能为空");
+                            return;
+                        }
+                        if (activityApp.isEmpty(appConfig.title) || activityApp.isEmpty(appConfig.url)) {
+                            app.showMsg("应用配置标题和链接不能为空");
+                            return false;
+                        }
+                        if (appConfig.type == 'backend') {
+                            var pattern = /^(https?:\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
+                            if (!pattern.test(appConfig.url)) {
+                                app.showMsg("后台应用配置地址不规范");
+                                return false;
+                            }
+                            if (appConfig.url.indexOf("https") == -1) {
+                                app.showMsg("后台应用配置地址必须为http");
+                                return false;
+                            }
+                        }
+                        return true;
+                    },
+
                     // 校验报名条件填写内容是否合格
                     validateSignUpCondition: function () {
                         var $this = this;

@@ -312,13 +312,15 @@
                         });
                     }
                     $($this.customAppConfigs).each(function () {
-                        $this.activityMenus.push(this.code);
-                        $this.menus[this.code] = {
-                            name: this.title,
-                            defaultIconUrl: $this.cloudDomain + '/star3/origin/' + this.defaultIconCloudId,
-                            activeIconUrl: $this.cloudDomain + '/star3/origin/' + this.activeIconCloudId,
-                            url: this.url + "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid,
-                            selected: false
+                        if (!activityApp.isEmpty(this.code)) {
+                            $this.activityMenus.push(this.code);
+                            $this.menus[this.code] = {
+                                name: this.title,
+                                defaultIconUrl: $this.cloudDomain + '/star3/origin/' + this.defaultIconCloudId,
+                                activeIconUrl: $this.cloudDomain + '/star3/origin/' + this.activeIconCloudId,
+                                url: this.url + "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid,
+                                selected: false
+                            }
                         }
                     });
                 },
