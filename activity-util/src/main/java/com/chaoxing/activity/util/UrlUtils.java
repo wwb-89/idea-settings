@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class UrlUtils {
 
     private static final String URL_REGEX = "http(s)?://([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?";
-    private static final Pattern DOMAIN_PATTERN = Pattern.compile("^http(?:s?):\\/\\/.*?(\\/.*)");
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile("^http(?:s?):\\/\\/(?:[^\\/])*(?<!\\/)");
 
 
     /**
@@ -64,11 +64,7 @@ public class UrlUtils {
         if (StringUtils.isBlank(url) || StringUtils.isBlank(domain)) {
             return url;
         }
-        Matcher matcher = DOMAIN_PATTERN.matcher(url);
-        if (matcher.find()) {
-            return domain + matcher.group(1);
-        }
-        return url;
+        return domain + clearDomain(url);
     }
 
     /**清除地址的域名
@@ -82,9 +78,27 @@ public class UrlUtils {
         if (StringUtils.isBlank(url)) {
             return url;
         }
+        String domain = extractDomain(url);
+        if (StringUtils.isNotBlank(domain)) {
+            return url.replace(domain, "");
+        }
+        return url;
+    }
+
+    /**提取域名
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-08 00:08:05
+     * @param url
+     * @return java.lang.String
+    */
+    public static String extractDomain(String url) {
+        if (StringUtils.isBlank(url)) {
+            return url;
+        }
         Matcher matcher = DOMAIN_PATTERN.matcher(url);
         if (matcher.find()) {
-            return matcher.group(1);
+            return matcher.group(0);
         }
         return url;
     }

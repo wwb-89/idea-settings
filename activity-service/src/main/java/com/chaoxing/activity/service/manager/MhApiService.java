@@ -7,6 +7,7 @@ import com.alibaba.fastjson.parser.ParserConfig;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.stat.MhViewNumDailyStatDTO;
+import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -204,6 +205,7 @@ public class MhApiService {
 		params.add("goodsRowId", formUserId);
 		params.add("resourceType", 6);
 		params.add("url", url);
+		params.add("loginUrl", UrlUtils.extractDomain(url) + "/login");
 		String result = restTemplate.postForObject(GET_EVALUATION_URL, params, String.class);
 		return result;
 	}
