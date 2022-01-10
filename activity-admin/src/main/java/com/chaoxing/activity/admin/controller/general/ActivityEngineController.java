@@ -92,7 +92,7 @@ public class ActivityEngineController {
         List<Classify> classifies = classifyQueryService.listMarketClassifies(marketId);
         model.addAttribute("classifies", classifies);
         // 模板下的所有组件
-        List<TemplateComponent> templateComponents = templateComponentService.listTemplateComponentByTemplateId(templateId);
+        List<TemplateComponent> templateComponents = templateComponentService.listSupperTemplateComponentByTemplateId(templateId);
         model.addAttribute("templateComponents", templateComponents);
         // 分类关联显示组件
         List<ClassifyShowComponent> classifyShowComponents = classifyShowComponentQueryService.listByTemplateId(templateId);

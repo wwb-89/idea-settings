@@ -61,8 +61,19 @@ public class TemplateComponentService {
         return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
                 .eq(TemplateComponent::getTemplateId, templateId)
                 .eq(TemplateComponent::getDeleted, false)
-                .eq(TemplateComponent::getPid, 0)
         );
+    }
+
+    /**查询模板下模板组件列表（只查询父组件关联的）
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-10 17:32:13
+     * @param templateId
+     * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+    */
+    public List<TemplateComponent> listSupperTemplateComponentByTemplateId(Integer templateId) {
+        List<TemplateComponent> templateComponents = listTemplateComponentByTemplateId(templateId);
+        return templateComponents.stream().filter(v -> Objects.equals(v.getPid(), 0)).collect(Collectors.toList());
     }
 
     /**根据模版id和组件id查询模版组件列表
