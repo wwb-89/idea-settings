@@ -212,8 +212,8 @@ public class ErdosActivityInfoApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 搜索内容
         String sw = urlParams.getString("sw");
-        Integer activityClassifyId = Optional.ofNullable(getClassifyIDFromUrlParams(urlParams)).map(Integer::valueOf).orElse(null);
-        String areaCode = Optional.ofNullable(getAreaCodeFromUrlParams(urlParams)).orElse(null);
+        Integer activityClassifyId = Optional.ofNullable(getClassifyIDFromParams(params)).map(Integer::valueOf).orElse(null);
+        String areaCode = Optional.ofNullable(getAreaCodeFromParams(params)).orElse(null);
         // 状态
         String statusParams = urlParams.getString("status");
         List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
@@ -264,8 +264,8 @@ public class ErdosActivityInfoApiController {
         return fids;
     }
 
-    private Integer getClassifyIDFromUrlParams(JSONObject urlParams) {
-        String jsonStr = urlParams.getString("classifies");
+    private Integer getClassifyIDFromParams(JSONObject params) {
+        String jsonStr = params.getString("classifies");
         if (StringUtils.isNotBlank(jsonStr)) {
             JSONArray jsonArray = JSON.parseArray(jsonStr);
             for (Object o : jsonArray) {
@@ -278,8 +278,8 @@ public class ErdosActivityInfoApiController {
         }
         return null;
     }
-    private String getAreaCodeFromUrlParams(JSONObject urlParams) {
-        String jsonStr = urlParams.getString("classifies");
+    private String getAreaCodeFromParams(JSONObject params) {
+        String jsonStr = params.getString("classifies");
         if (StringUtils.isNotBlank(jsonStr)) {
             JSONArray jsonArray = JSON.parseArray(jsonStr);
             for (Object o : jsonArray) {
