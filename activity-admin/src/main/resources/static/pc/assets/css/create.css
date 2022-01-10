@@ -45,7 +45,7 @@ button {
   border-radius: 15px;
   border: none;
   color: #fff;
-  margin-left: 10px;
+  margin-left: 24px;
   cursor: pointer;
   font-size: 13px;
   line-height: 15px;
@@ -136,6 +136,10 @@ select {
   -webkit-transform: translate(-50%, -50%);
       -ms-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
+}
+
+.top .margin-left-auto {
+  margin-left: auto;
 }
 
 .create {

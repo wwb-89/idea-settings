@@ -38,7 +38,7 @@ button {
     border-radius: 15px;
     border: none;
     color: #fff;
-    margin-left: 10px;
+    margin-left: 24px;
     cursor: pointer;
     font-size: 13px;
     line-height: 15px;
@@ -47,6 +47,7 @@ button {
 .create-btn:hover {
     background: rgba(0, 132, 255, 0.8);
 }
+
 
 input {
     -webkit-appearance: button;
@@ -116,6 +117,9 @@ select {
         left: 50%;
         top: 50%;
         transform: translate(-50%,-50%);
+    }
+    .margin-left-auto {
+        margin-left: auto;
     }
 }
 
