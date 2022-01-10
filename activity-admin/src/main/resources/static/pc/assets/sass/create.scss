@@ -1875,6 +1875,7 @@ input.btn-name,
     border-radius: 4px;
     margin: 10px;
     float: left;
+    width: calc(100%/3 - 20px);
 }
 .picture-dialog .picture-box .img-box{
     width: 100%;
@@ -2127,7 +2128,6 @@ input.btn-name,
                }
            }
            label {
-               width: 44px;
                overflow: hidden;
                text-overflow: ellipsis;
                white-space: nowrap;

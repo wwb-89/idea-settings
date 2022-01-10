@@ -845,7 +845,7 @@
                 <span>{{activityClassifyTitle}}</span>
                 <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close" @click="classifyWindowShow = false">
             </div>
-            <div class="body">
+            <div class="body" style="max-height: 400px;">
                 <div class="form">
                     <div class="choose-box word-drag-inner" id="word-drag-inner">
                         <div class="sort-item" name="classify" :data-id="classify.id" v-for="(classify, index) of activityClassifies" :key="'edit-classify-' + index">

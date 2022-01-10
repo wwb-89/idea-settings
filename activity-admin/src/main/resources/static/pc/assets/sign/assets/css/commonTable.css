@@ -690,6 +690,7 @@ body {
 
 .el-table.table-box .el-table__fixed, .el-table.table-box .el-table__fixed-right {
   background-color: white;
+  width: 180px;
 }
 
 .el-table.table-box .input-transparent {
@@ -1050,6 +1051,10 @@ body {
 .el-table-filter li.el-table-filter__list-item:hover {
   background-color: #F8F8F8;
   color: #0084FF;
+}
+.el-table-filter__list {
+  max-height: 300px;
+  overflow: auto;
 }
 
 .el-table__body tr.hover-row.current-row > td, .el-table__body tr.hover-row.el-table__row--striped.current-row > td, .el-table__body tr.hover-row.el-table__row--striped > td, .el-table__body tr.hover-row > td {
