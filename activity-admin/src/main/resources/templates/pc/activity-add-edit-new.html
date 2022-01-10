@@ -182,13 +182,20 @@
                         <div class="form-item" v-else-if="item.code == 'activity_classify'" v-show="templateComponentShow(item.id)">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
-                                <el-select v-model="activity.activityClassifyId" placeholder="请选择" popper-class="fixed-select">
+                                <el-select v-model="activity.activityClassifyId" placeholder="请选择" v-if="strict != 1" popper-class="fixed-select">
                                     <el-option v-for="(classify, index) of activityClassifies" :key="'classify-' + index" :label="classify.name" :value="classify.id"></el-option>
                                     <!-- 注意这有俩个编辑，一个空的一个有数据的，我已经尽力了，只有这样能实现-->
-                                    <div v-if="activityClassifies.length > 0 && strict != 1" class="setiing-absolute" @click="toConfigClassify()"><i class="icon-setting"></i>编辑</div>
+                                    <div v-if="activityClassifies.length > 0" class="setiing-absolute" @click="toConfigClassify()"><i class="icon-setting"></i>编辑</div>
                                     <div v-else slot="empty" class="no-content-self">
                                         <div class="no-con">暂无{{item.name}}</div>
-                                        <div class="setiing-absolute" v-if="strict != 1" @click="toConfigClassify()"><i class="icon-setting"></i>编辑</div>
+                                        <div class="setiing-absolute" @click="toConfigClassify()"><i class="icon-setting"></i>编辑</div>
+                                    </div>
+                                </el-select>
+                                <el-select v-model="activity.activityClassifyId" placeholder="请选择" v-else>
+                                    <el-option v-for="(classify, index) of activityClassifies" :key="'classify-' + index" :label="classify.name" :value="classify.id"></el-option>
+                                    <!-- 注意这有俩个编辑，一个空的一个有数据的，我已经尽力了，只有这样能实现-->
+                                    <div v-if="activityClassifies.length < 1" slot="empty" class="no-content-self">
+                                        <div class="no-con">暂无{{item.name}}</div>
                                     </div>
                                 </el-select>
                             </div>
@@ -2750,6 +2757,14 @@
                             activityClassifies.push(this);
                         }
                     });
+                    if (activityClassifies < 1) {
+                        // 默认添加一个
+                        activityClassifies.push({
+                            classifyId: null,
+                            name: "",
+                            owner: true
+                        });
+                    }
                     $this.activityClassifies = activityClassifies;
                     $this.classifyWindowShow = true;
                 },

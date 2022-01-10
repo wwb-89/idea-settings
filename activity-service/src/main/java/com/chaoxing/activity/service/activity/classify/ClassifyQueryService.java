@@ -233,7 +233,8 @@ public class ClassifyQueryService {
 			Integer areaFid = wfwAreaApiService.listByCode(code).stream().filter(v -> Objects.equals(code, v.getCode())).map(WfwAreaDTO::getFid).findFirst().orElse(null);
 			if (areaFid != null) {
 				Integer areaMarketId = marketQueryService.getMarketIdByFlag(areaFid, flag);
-				classifies.addAll(listMarketClassifies(areaMarketId));
+				List<Classify> areaClassifies = listMarketClassifies(areaMarketId);
+				classifies.addAll(areaClassifies.stream().filter(v -> !ownerClassifyIds.contains(v.getId())).collect(Collectors.toList()));
 			}
 		}
 		return classifies.stream().peek(v -> v.setOwner(ownerClassifyIds.contains(v.getId()))).sorted(Comparator.comparing(Classify::getOwner)).collect(Collectors.toList());
