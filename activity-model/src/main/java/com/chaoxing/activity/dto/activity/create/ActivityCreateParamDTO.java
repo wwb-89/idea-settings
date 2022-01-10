@@ -457,13 +457,13 @@ public class ActivityCreateParamDTO {
 			activityCreateParamDto.setTimeLengthUpperLimit(timeLengthUpperLimit);
 		}
 		// 活动通知
-		String noticeRemindContent = WfwFormUtils.getValue(formData, "notice_remind_content");
-		if (StringUtils.isBlank(noticeRemindContent)) {
-			noticeRemindContent = "有新的活动，快来看看吧!";
-		}
 		List<DepartmentDTO> noticeRemindScopes = WfwFormUtils.listDepartment(formData, "notice_remind_scope");
 		if (CollectionUtils.isNotEmpty(noticeRemindScopes)) {
 			activityCreateParamDto.setOpenPushReminder(true);
+			String noticeRemindContent = WfwFormUtils.getValue(formData, "notice_remind_content");
+			if (StringUtils.isBlank(noticeRemindContent)) {
+				noticeRemindContent = "有新的活动，快来看看吧!";
+			}
 			activityCreateParamDto.setActivityPushReminder(ActivityPushReminder.builder()
 					.content(noticeRemindContent)
 					.receiveScopes(DepartmentDTO.convert2ContactsParticipateScopes(noticeRemindScopes))
