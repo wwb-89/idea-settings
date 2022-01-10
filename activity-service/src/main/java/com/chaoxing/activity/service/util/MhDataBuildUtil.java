@@ -19,6 +19,13 @@ import java.util.List;
 public class MhDataBuildUtil {
 
 
+    /**封装门户分类数据
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-10 11:07:23
+     * @param classifies
+     * @return 
+     */
     public static JSONObject buildClassifies(List<Classify> classifies) {
         JSONObject firstLevel = new JSONObject();
         firstLevel.put("id", "");
@@ -40,6 +47,15 @@ public class MhDataBuildUtil {
         return firstLevel;
     }
 
+    /**
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-10 11:07:38
+     * @param key
+     * @param value
+     * @param flag
+     * @return 
+     */
     public static JSONObject buildField(String key, Object value, Integer flag) {
         JSONObject field = new JSONObject();
         field.put("key", key);
@@ -47,12 +63,19 @@ public class MhDataBuildUtil {
         field.put("flag", flag);
         return field;
     }
-
-    public static void buildField(String iconUrl,
-                            String key,
-                            String value,
-                            String unit,
-                            List<MhGeneralAppResultDataDTO> mainFields) {
+    
+    /**封装门户接收单个数据体
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-10 11:08:23
+     * @param iconUrl
+     * @param key
+     * @param value
+     * @return 
+     */
+    private static MhGeneralAppResultDataDTO buildField(String iconUrl,
+                                                        String key,
+                                                        String value) {
         MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
         int flag = 0;
@@ -74,18 +97,86 @@ public class MhDataBuildUtil {
                 .type("3")
                 .flag(String.valueOf(++flag))
                 .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+        item.setFields(fields);
+        return item;
+    }
+
+    /**封装门户接收单个数据体
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-10 11:08:51
+     * @param iconUrl
+     * @param key
+     * @param value
+     * @param mainFields
+     * @return 
+     */
+    public static void buildField(String iconUrl, String key, String value, List<MhGeneralAppResultDataDTO> mainFields) {
+        mainFields.add(buildField(iconUrl, key, value));
+    }
+
+    /**封装门户接收数据体（带单位）
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-10 11:09:24
+     * @param iconUrl
+     * @param key
+     * @param value
+     * @param unit
+     * @param mainFields
+     * @return 
+     */
+    public static void buildFieldWithUnit(String iconUrl,
+                            String key,
+                            String value,
+                            String unit,
+                            List<MhGeneralAppResultDataDTO> mainFields) {
+        MhGeneralAppResultDataDTO item = buildField(iconUrl, key, value);
+        if (CollectionUtils.isEmpty(item.getFields())) {
+            item.setFields(Lists.newArrayList());
+        }
+        int flag = item.getFields().size();
+        item.getFields().add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                 .key("单位")
                 .value(unit)
                 .type("3")
                 .flag(String.valueOf(++flag))
                 .build());
-        item.setFields(fields);
         mainFields.add(item);
     }
 
-
-    public static MhGeneralAppResultDataDTO buildField(String key, String iconUrl, String url, String type, boolean isAjax, Integer sequence) {
+    /**封装门户接收数据体（带osrUrl）
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-10 11:10:25
+     * @param iconUrl
+     * @param key
+     * @param value
+     * @param osrUrl
+     * @param mainFields
+     * @return 
+     */
+    public static void buildFieldWithOsrUrl(String iconUrl, String key, String value, String osrUrl, List<MhGeneralAppResultDataDTO> mainFields) {
+        MhGeneralAppResultDataDTO item = buildField(iconUrl, key, value);
+        if (StringUtils.isNotBlank(osrUrl)) {
+            item.setOrsUrl(osrUrl);
+        }
+        mainFields.add(item);
+    }
+    
+    /**封装门户按钮数据体
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-10 11:11:16
+     * @param key
+     * @param iconUrl
+     * @param url
+     * @param type
+     * @param isAjax
+     * @param sequence
+     * @return
+     */
+    public static MhGeneralAppResultDataDTO buildBtnField(String key, String iconUrl, String url, String type, boolean isAjax, Integer sequence) {
         MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
         if (isAjax) {

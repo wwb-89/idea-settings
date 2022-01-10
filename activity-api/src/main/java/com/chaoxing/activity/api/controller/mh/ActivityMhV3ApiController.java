@@ -25,6 +25,7 @@ import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.service.util.MhDataBuildUtil;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -173,7 +174,7 @@ public class ActivityMhV3ApiController {
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         // 主办方
         if (StringUtils.isNotBlank(activity.getOrganisers())) {
-            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), fieldCodeNameMap.getOrDefault("activity_organisers", "主办方"), activity.getOrganisers(), mainFields);
+            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), fieldCodeNameMap.getOrDefault("activity_organisers", "主办方"), activity.getOrganisers(), mainFields);
         }
         // 地址
         String address = "";
@@ -186,19 +187,19 @@ public class ActivityMhV3ApiController {
             address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
         }
         if (StringUtils.isNotBlank(address)) {
-            buildFieldWithUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, activityAddressLink, mainFields);
+            MhDataBuildUtil.buildFieldWithOsrUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, activityAddressLink, mainFields);
 
         }
         // 报名时间
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGN_TIME_TIME.getValue()), fieldCodeNameMap.getOrDefault("sign_up_time_scope", signUpKeyword + "时间"),  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
+                MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGN_TIME_TIME.getValue()), fieldCodeNameMap.getOrDefault("sign_up_time_scope", signUpKeyword + "时间"),  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
             }
         }
         // 积分
         if (activity.getIntegral() != null && activity.getIntegral().compareTo(new BigDecimal(0)) != 0) {
-            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), fieldCodeNameMap.getOrDefault("integral", "积分"), Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
+            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), fieldCodeNameMap.getOrDefault("integral", "积分"), Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
         }
         // 评价
         Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(false);
@@ -210,7 +211,7 @@ public class ActivityMhV3ApiController {
             } else {
                 ratingContent = "0人；0分";
             }
-            buildFieldWithUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING_1.getValue()), fieldCodeNameMap.getOrDefault("activity_rating", "评价"), ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
+            MhDataBuildUtil.buildFieldWithOsrUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING_1.getValue()), fieldCodeNameMap.getOrDefault("activity_rating", "评价"), ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
         }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
@@ -246,9 +247,9 @@ public class ActivityMhV3ApiController {
         if (signActivityStat != null) {
             signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
         }
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
 
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
@@ -414,35 +415,35 @@ public class ActivityMhV3ApiController {
                 if (openedStudengSignUp) {
                     // 必须要报名
                     if (userSignParticipationStat.getSignedUp()) {
-                        result.add(buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                        result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                     }
                 } else {
-                    result.add(buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
             }
             if (userSignParticipationStat.getSignedUp()) {
                 // 已报名
                 if (CollectionUtils.isNotEmpty(signInIds)) {
-                    result.add(buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
                 existSignUpInfo = true;
             } else{
                 signedUp = false;
                 if (userSignParticipationStat.getSignUpAudit()) {
                     // 审核中
-                    result.add(buildBtnField(signUpKeyword +"审核中", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField(signUpKeyword +"审核中", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     existSignUpInfo = true;
                 } else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
                     // 活动和报名都结束的情况显示活动已结束
-                    result.add(buildBtnField("活动已结束", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField("活动已结束", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
                 } else if (userSignParticipationStat.getSignUpEnded()) {
-                    result.add(buildBtnField(signUpKeyword + "已结束", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField(signUpKeyword + "已结束", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getSignUpNotStart()) {
-                    result.add(buildBtnField(signUpKeyword + "未开始", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField(signUpKeyword + "未开始", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-                    result.add(buildBtnField("不在参与范围内", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField("不在参与范围内", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getNoPlaces()) {
-                    result.add(buildBtnField("名额已满", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField("名额已满", "", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else {
                     String showName = signUpKeyword + "参加";
                     List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
@@ -455,20 +456,20 @@ public class ActivityMhV3ApiController {
                         }
                         if (!signUps.get(0).getFillInfo() && uid != null) {
                             setSignUpBtn = Boolean.TRUE;
-                            result.add(buildBtnField(showName, cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                            result.add(MhDataBuildUtil.buildBtnField(showName, cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                         }
                     }
                     if (!setSignUpBtn) {
-                        result.add(buildBtnField(showName, cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), userSignParticipationStat.getSignUpUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                        result.add(MhDataBuildUtil.buildBtnField(showName, cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), userSignParticipationStat.getSignUpUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     }
                 }
             }
         }else {
             if (activityFlagValidateService.isDualSelect(activity)) {
-                result.add(buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
             if (CollectionUtils.isNotEmpty(signInIds)) {
-                result.add(buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                result.add(MhDataBuildUtil.buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
         }
         if (openWork && workId != null) {
@@ -494,37 +495,37 @@ public class ActivityMhV3ApiController {
                 } else {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue());
                 }
-                result.add(buildBtnField(btnName, buttonIcon, workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
+                result.add(MhDataBuildUtil.buildBtnField(btnName, buttonIcon, workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
             }
         }
         // 讨论小组
         Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
         String groupBbsid = activity.getGroupBbsid();
         if (openGroup && StringUtils.isNotBlank(groupBbsid) && signedUp) {
-            result.add(buildBtnField("讨论小组", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.getGroupUrl(groupBbsid), "1", false, MhBtnSequenceEnum.GROUP.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("讨论小组", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.getGroupUrl(groupBbsid), "1", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员
         if (isManager) {
-            result.add(buildBtnField("管理", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.MANAGE_TRANSPARENT.getValue()), activityQueryService.getActivityManageUrl(activity.getId()), "1", false, MhBtnSequenceEnum.MANAGE.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("管理", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.MANAGE_TRANSPARENT.getValue()), activityQueryService.getActivityManageUrl(activity.getId()), "1", false, MhBtnSequenceEnum.MANAGE.getSequence()));
         }
         // 评价
         Boolean openRating = activity.getOpenRating();
         openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
         if (openRating) {
-            result.add(buildBtnField("评价", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.RATING.getValue()), activityQueryService.getActivityRatingUrl(activity.getId()), "1", false, MhBtnSequenceEnum.RATING.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("评价", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.RATING.getValue()), activityQueryService.getActivityRatingUrl(activity.getId()), "1", false, MhBtnSequenceEnum.RATING.getSequence()));
         }
         if (existSignUpInfo) {
-            result.add(buildBtnField(signUpKeyword + "信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField(signUpKeyword + "信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
         }
         // 阅读测评
         Boolean openReading = Optional.ofNullable(activity.getOpenReading()).orElse(false);
         if (openReading && activity.getReadingId() != null) {
-            result.add(buildBtnField("阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), activityQueryService.getReadingTestUrl(activity), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), activityQueryService.getReadingTestUrl(activity), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
         }
         // 班级互动
         Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
         if (openClazzInteraction && signedUp) {
-            result.add(buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activity.getId(), "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activity.getId(), "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
         }
         // 查询自定义配置列表中的前端按钮地址
         List<CustomAppConfig> frontendAppConfigs = customAppConfigQueryService.listFrontendAppConfigsByActivity(activity.getId());
@@ -533,10 +534,10 @@ public class ActivityMhV3ApiController {
             String iconCloudUrl = StringUtils.isBlank(config.getDefaultIconCloudId()) ? "" : cloudApiService.buildImageUrl(config.getDefaultIconCloudId());
             if (showAfterSignUp) {
                 if (signedUp) {
-                    result.add(buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
                 }
             } else {
-                result.add(buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
+                result.add(MhDataBuildUtil.buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
             }
         }
         // 排序
@@ -611,98 +612,6 @@ public class ActivityMhV3ApiController {
                 .orsUrl(osrUrl)
                 .type("3")
                 .build());
-    }
-
-    private void buildField(String iconUrl,
-                                String key,
-                                String value,
-                                List<MhGeneralAppResultDataDTO> mainFields) {
-        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
-        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
-        int flag = 0;
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("图标")
-                .value(iconUrl)
-                .type("3")
-                .flag(String.valueOf(flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("标题")
-                .value(key)
-                .type("3")
-                .flag(String.valueOf(++flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("内容")
-                .value(value)
-                .type("3")
-                .flag(String.valueOf(++flag))
-                .build());
-        item.setFields(fields);
-        mainFields.add(item);
-    }
-
-    private void buildFieldWithUrl(String iconUrl, String key, String value, String osrUrl, List<MhGeneralAppResultDataDTO> mainFields) {
-        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
-        if (StringUtils.isNotBlank(osrUrl)) {
-            item.setOrsUrl(osrUrl);
-        }
-        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
-        int flag = 0;
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("图标")
-                .value(iconUrl)
-                .type("3")
-                .flag(String.valueOf(flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("标题")
-                .value(key)
-                .type("3")
-                .flag(String.valueOf(++flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("内容")
-                .value(value)
-                .type("3")
-                .flag(String.valueOf(++flag))
-                .build());
-        item.setFields(fields);
-        mainFields.add(item);
-    }
-
-    private MhGeneralAppResultDataDTO buildBtnField(String key, String iconUrl, String url, String type, boolean isAjax, Integer sequence) {
-        MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
-        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
-        if (isAjax) {
-            item.setType(7);
-        }
-        item.setOrsUrl(url);
-        int flag = 0;
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("封面")
-                .value(iconUrl)
-                .type("3")
-                .flag(String.valueOf(flag))
-                .build());
-        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key("标题")
-                .orsUrl(isAjax ? url : "")
-                .value(key)
-                .type(isAjax ? "7" : "3")
-                .flag(String.valueOf(++flag))
-                .build());
-        if (StringUtils.isNotBlank(type)) {
-            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                    .key("按钮类型")
-                    .value(type)
-                    .type(isAjax ? "7" : "3")
-                    .flag(String.valueOf(++flag))
-                    .build());
-        }
-        item.setSequence(sequence);
-        item.setFields(fields);
-        return item;
     }
 
 }

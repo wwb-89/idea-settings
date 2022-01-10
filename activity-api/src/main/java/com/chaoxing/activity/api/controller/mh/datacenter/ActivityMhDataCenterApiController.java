@@ -386,10 +386,10 @@ public class ActivityMhDataCenterApiController {
 
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         JSONObject jsonObject = new JSONObject();
-        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_ACTIVITY_NUM.getValue()), "活动数", "个", activityNum , mainFields);
-        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_RATING_NUM.getValue()), "评论数", "条", ratingNum, mainFields);
-        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_IN_NUM.getValue()), "签到数", "个", signedInNum, mainFields);
-        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_UP_NUM.getValue()), "报名数", "次", signedUpNum, mainFields);
+        MhDataBuildUtil.buildFieldWithUnit(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_ACTIVITY_NUM.getValue()), "活动数", "个", activityNum , mainFields);
+        MhDataBuildUtil.buildFieldWithUnit(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_RATING_NUM.getValue()), "评论数", "条", ratingNum, mainFields);
+        MhDataBuildUtil.buildFieldWithUnit(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_IN_NUM.getValue()), "签到数", "个", signedInNum, mainFields);
+        MhDataBuildUtil.buildFieldWithUnit(cloudApiService.buildImageUrl(MhAppIconEnum.FOUR.TOTAL_SIGNED_UP_NUM.getValue()), "报名数", "次", signedUpNum, mainFields);
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
