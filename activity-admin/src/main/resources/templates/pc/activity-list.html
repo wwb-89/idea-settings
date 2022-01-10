@@ -237,6 +237,7 @@
                                 :filters="customFilterMap[item.originComponentId]"
                                 :filter-multiple="false"
                                 filter-placement="bottom"
+                                show-overflow-tooltip
                         >
                             <template slot-scope="scope">
                                 <span>{{scope.row.componentIdValueMap[item.originComponentId] || ''}}</span>
@@ -250,6 +251,7 @@
                                 :ifCenter="item.align"
                                 :min-width="item.minWidth"
                                 :sortable="item.sortable"
+                                show-overflow-tooltip
                         >
                             <template slot-scope="scope">
                                 <span>{{scope.row.componentIdValueMap[item.originComponentId] || ''}}</span>

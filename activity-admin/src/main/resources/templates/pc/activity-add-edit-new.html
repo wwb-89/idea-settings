@@ -636,7 +636,7 @@
                                     <!-- 富文本编辑器 -->
                                     <div class="set-box configurationForm" style="margin-top: 0" @click="toEditCustomRichText(item.id)">
                                         <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                        <span class="tips set-information">编辑文本内容</span>
+                                        <span class="tips set-information">编辑内容</span>
                                     </div>
                                 </div>
                             </template>
@@ -2536,8 +2536,9 @@
                     var $this = this;
                     $this.operateTplComponentId = tplComponentId;
                     var { value, cloudIds } = $this.activityComponentValueMap[tplComponentId];
+                    var title = $this.templateComponentMap[tplComponentId] && $this.templateComponentMap[tplComponentId].name;
                     var cloudIdList = activityApp.isEmpty(cloudIds) ? [] : cloudIds.split(',');
-                    $this.$refs.richTextEditDialogWindow.showWindow($this.cloudDomain, value || '', cloudIdList);
+                    $this.$refs.richTextEditDialogWindow.showWindow($this.cloudDomain, title, value || '', cloudIdList);
                 },
                 toPushReminderConfig: function () {
                     var $this = this;

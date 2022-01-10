@@ -2,13 +2,13 @@ Vue.component("vue-rich-text", {
     template: "<div class='dialog-box5' v-show='show'>\n" +
         "            <div class='dailog dialog-wrap edit-prize'>\n" +
         "                <div class='header'>\n" +
-        "                    <span class='color333'>富文本编辑</span>\n" +
+        "                    <span class='color333'>{{title}}</span>\n" +
         "                    <img :src='closeImgUrl' class='close' @click='close'>\n" +
         "                </div>\n" +
         "                <div class='dialog-content' style='height: auto'>\n" +
         "                    <div class='iframe-content' style='min-height: auto'>\n" +
         "                        <div class='input-box notice'>\n" +
-        "                            <el-input type='textarea' placeholder='请输入' :autosize='{ minRows: 5, maxRows: 5}' v-model='content' resize='none' maxlength='100' show-word-limit></el-input>\n" +
+        "                            <el-input type='textarea' placeholder='请输入' :autosize='{ minRows: 5, maxRows: 5}' v-model='content' resize='none' maxlength='500' show-word-limit></el-input>\n" +
         "                        </div>\n" +
         "                        <div class='uplode-list'>\n" +
         "                            <template v-if='cloudIds && cloudIds.length > 0'>\n" +
@@ -36,6 +36,7 @@ Vue.component("vue-rich-text", {
             ctx: ctx,
             cloudDomain: '',
             closeImgUrl: ctx + '/pc/assets/images/close.png',
+            title: '',
             content: '',
             cloudIds: [],
             uploader: null,
@@ -108,9 +109,10 @@ Vue.component("vue-rich-text", {
             var $this = this;
             $this.cloudIds.splice(index, 1);
         },
-        showWindow: function (cloudDomain, content, cloudIds) {
+        showWindow: function (cloudDomain, title, content, cloudIds) {
             var $this = this;
             $this.cloudDomain = cloudDomain;
+            $this.title = title || '富文本编辑';
             $this.content = content || '';
             $this.cloudIds = $.extend(true, [], cloudIds || []);
 
