@@ -624,6 +624,66 @@
                                 <span class="remove" style="display: none;">移除</span>
                             </div>
                         </div>
+                        <div class="field-item label-item">
+                            <p class="field overHidden1">参与范围</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <br><span class="spanLabel">标签</span>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
+                        </div>
+                        <div class="field-item label-item">
+                            <p class="field overHidden1">参与范围</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <br><span class="spanLabel">标签</span>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
+                        </div>
+                        <div class="field-item label-item">
+                            <p class="field overHidden1">参与范围</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <br><span class="spanLabel">标签</span>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
+                        </div>
+                        <div class="field-item label-item">
+                            <p class="field overHidden1">参与范围</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <br><span class="spanLabel">标签</span>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
+                        </div>
+                        <div class="field-item label-item">
+                            <p class="field overHidden1">参与范围</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <br><span class="spanLabel">标签</span>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
+                        </div>
                         <div class="field-item aready-add">
                             <p class="field overHidden1">活动时间活动时间活动</p>
                             <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
@@ -738,7 +798,7 @@
             </div>
         </div>
         <!-- 选择字段弹窗 -->
-        <div class="dialog-mask" v-show="chooseDialog">
+        <div class="dialog-mask" v-show="!chooseDialog">
             <div class="dailog choose-field">
                 <div class="header">
                     <span>选择字段</span>
@@ -761,6 +821,18 @@
                         </div>
 
                         <div class="choose-box word-drag-inner" id="word-drag-inner">
+                            <div class="input-box sort-item" v-for="(item,index) in option1">
+                                <i class="icon-drag-inner icon-drag"></i>
+                                <label for="" class="label">选项{{index + 1}}</label>
+                                <el-input v-model="item.title" type="text" placeholder="请输入" class="weight318"  maxlength="10" show-word-limit></el-input>
+                                <i :class="[delclick ? 'del-circle' : 'del-circle disable']" @click="delOption1(index)"></i>
+                            </div>
+                            <div class="input-box sort-item" v-for="(item,index) in option1">
+                                <i class="icon-drag-inner icon-drag"></i>
+                                <label for="" class="label">选项{{index + 1}}</label>
+                                <el-input v-model="item.title" type="text" placeholder="请输入" class="weight318"  maxlength="10" show-word-limit></el-input>
+                                <i :class="[delclick ? 'del-circle' : 'del-circle disable']" @click="delOption1(index)"></i>
+                            </div>
                             <div class="input-box sort-item" v-for="(item,index) in option1">
                                 <i class="icon-drag-inner icon-drag"></i>
                                 <label for="" class="label">选项{{index + 1}}</label>

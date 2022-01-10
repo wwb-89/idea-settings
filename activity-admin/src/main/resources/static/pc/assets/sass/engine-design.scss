@@ -260,8 +260,9 @@
                 display: inline-block;
                 vertical-align: top;
                 background-image: url(../images/yq-design/minus-circle.png);
-                margin-left: 7px;
-                margin-top: 8px;
+                position: absolute;
+                right: 0;
+                top: 8px;
                 cursor: pointer;
                 &:hover{
                     background-image: url(../images/yq-design/minus-circle-hover.png);
@@ -586,7 +587,7 @@
             position: relative;
             display: inline-block;
             vertical-align: top;
-            width: 223px;
+            width: calc(50% - 24px/2);
             //height: 36px;
             background: #FFFFFF;
             border: 1px solid #E9E9E9;
