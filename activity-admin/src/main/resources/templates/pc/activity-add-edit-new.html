@@ -556,13 +556,13 @@
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                     </div>
-                                    <!--取消报名设置-->
+                                    <!--限制取消报名-->
                                     <template v-else-if="it.code == 'sign_up_cancel_signed_up' && signUpMap[item.id].formType != 'approval'">
                                         <div class="form-item">
                                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                             <div class="input-box">
                                                 <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)"></el-switch>
-                                                <span class="tips" v-if="it.introduction">{{it.introduction}}{{signUpMap[item.id].formType}}</span>
+                                                <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                             </div>
                                         </div>
                                         <div class="form-item" v-show="signUpMap[item.id].endNotAllowCancel">
