@@ -46,7 +46,7 @@
     <select id="listCustomAppConfigWithCloudId" resultType="com.chaoxing.activity.model.CustomAppConfig">
         SELECT
         <include refid="Base_Column_ALIAS_List"></include>,
-        t1.code as code, t1.default_icon_cloud_id as defaultIconCloudId, t1.active_icon_cloud_id as activeIconCloudId
+        t1.default_icon_cloud_id as defaultIconCloudId, t1.active_icon_cloud_id as activeIconCloudId
         FROM t_custom_app_config t
         LEFT JOIN t_icon t1 ON t.icon_id = t1.id
         WHERE t.template_component_id in
@@ -56,6 +56,8 @@
         <if test="type != null and type != ''">
             AND t.type = #{type}
         </if>
-        AND t.is_deleted = 0
+        <if test="!containDeleted">
+            AND t.is_deleted = 0
+        </if>
     </select>
 </mapper>

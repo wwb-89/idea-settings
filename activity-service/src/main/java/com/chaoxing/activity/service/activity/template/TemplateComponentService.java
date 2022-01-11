@@ -440,15 +440,46 @@ public class TemplateComponentService {
     * @param templateId
     * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
     */
-    public List<TemplateComponent> listCustomTemplateComponent(Integer templateId) {
+    public List<TemplateComponent> listAllCustomTplComponent(Integer templateId) {
+        return listCustomTemplateComponent(templateId, Component.listCustomComponentType());
+
+    }
+
+    /**获取自定义组件（除去自定义应用）
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-10 11:19:03
+     * @param templateId
+     * @return
+     */
+    public List<TemplateComponent> listCustomTplComponentWithoutCustomApp(Integer templateId) {
+        return listCustomTemplateComponent(templateId, Component.listCustomTypeWithoutCustomApp());
+    }
+
+    private List<TemplateComponent> listCustomTemplateComponent(Integer templateId, List<String> customComponentTypes) {
         if (templateId == null) {
             return Lists.newArrayList();
         }
         return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
                 .eq(TemplateComponent::getTemplateId, templateId)
                 .eq(TemplateComponent::getDeleted, false)
-                .in(TemplateComponent::getType, Component.listCustomComponentType())
+                .in(TemplateComponent::getType, customComponentTypes)
                 .orderByAsc(TemplateComponent::getSequence));
+    }
+
+    /**获取自定义应用模板组件id列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-11 17:16:58
+     * @param templateId
+     * @return
+     */
+    public List<Integer> listCustomAppComponentTplComponentIds(Integer templateId) {
+        return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
+                .eq(TemplateComponent::getTemplateId, templateId)
+                .eq(TemplateComponent::getDeleted, false)
+                .eq(TemplateComponent::getType, Component.TypeEnum.CUSTOM_APP.getValue())
+                .orderByAsc(TemplateComponent::getSequence)).stream().map(TemplateComponent::getId).collect(Collectors.toList());
     }
 
     /**获取模板列表中的自定义组件

@@ -29,7 +29,7 @@
                     <p class="name">{{menu.name}}</p>
                     <p class="desc">{{menu.desc}}</p>
                 </div>
-                <input type="checkbox" checked :name="menu.value" lay-skin="switch" lay-filter="switchTest" title="开关">
+                <input type="checkbox" checked :name="menu.code" lay-skin="switch" lay-filter="switchTest" title="开关">
             </div>
         </form>
     </div>
@@ -89,7 +89,7 @@
                             var existMenus = $this.manager.menu || "";
                             $($this.menus).each(function () {
                                 // 临时active属性初始化为false
-                                $this.menuForm[this.value] = existMenus.indexOf(this.value) != -1;
+                                $this.menuForm[this.code] = existMenus.indexOf(this.code) != -1;
                             });
                         },
                         // 确认权限配置

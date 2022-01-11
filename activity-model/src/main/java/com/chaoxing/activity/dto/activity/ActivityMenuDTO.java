@@ -1,13 +1,21 @@
 package com.chaoxing.activity.dto.activity;
 
+import com.chaoxing.activity.dto.module.ClazzInteractionDTO;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.CustomAppConfig;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -25,32 +33,78 @@ import java.util.stream.Collectors;
 public class ActivityMenuDTO {
 
     private String name;
-    private String value;
+    private String code;
+    private Boolean system;
+    private Integer templateComponentId;
+    private Integer sequence;
+    /** 系统菜单才有的描述值，在管理员权限配置处展示 */
+    private String desc;
+    /** 自定义应用字段 */
+    private Boolean openBlank;
+    /** 以下三个字段仅在班级互动和自定义应用菜单才会有值 */
+    private String defaultIconUrl;
+    private String activeIconUrl;
+    private String url;
 
-    public static ActivityMenuDTO buildFromActivityMenuEnum(ActivityMenuEnum activityMenuEnum) {
-        return ActivityMenuDTO.builder()
-                .name(activityMenuEnum.getName())
-                .value(activityMenuEnum.getValue())
-                .build();
-    }
-
-    /**获取全部菜单values集合
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-09-30 11:45:13
-    * @param
-    * @return java.util.List<java.lang.String>
-    */
-    public static List<String> listMenus() {
-        return list().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
-    }
-
-    public static List<ActivityMenuDTO> list() {
+    /**列出所有系统菜单模块
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-10 15:04:52
+     * @return
+     */
+    public static List<ActivityMenuDTO> listSystemModule() {
         ActivityMenuEnum[] values = ActivityMenuEnum.values();
-        return Arrays.stream(values).map(ActivityMenuDTO::buildFromActivityMenuEnum).collect(Collectors.toList());
+        return Arrays.stream(values).map(v -> ActivityMenuDTO.builder().name(v.getName()).code(v.getValue()).desc(v.getDesc()).sequence(v.getSequence()).system(true).build()).collect(Collectors.toList());
     }
 
-    public static List<ActivityMenuDTO> buildFromActivityMenus(List<String> activityMenus) {
-        return list().stream().filter(v -> activityMenus.contains(v.getValue())).collect(Collectors.toList());
+    /**自定义应用配置转换成菜单name&value
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-10 14:27:44
+     * @param customAppConfigs
+     * @return
+     */
+    public static List<ActivityMenuDTO> convertCustomApps2MenuDTO(List<CustomAppConfig> customAppConfigs) {
+        if (CollectionUtils.isEmpty(customAppConfigs)) {
+            return Lists.newArrayList();
+        }
+        // 自定义应用菜单排序从100开始
+        AtomicInteger sequence = new AtomicInteger(150);
+        return customAppConfigs.stream().map(v -> ActivityMenuDTO.builder()
+                .name(v.getTitle())
+                .code(String.valueOf(v.getId()))
+                .templateComponentId(v.getTemplateComponentId())
+                .sequence(sequence.incrementAndGet())
+                .system(false)
+                .openBlank(Optional.ofNullable(v.getOpenBlank()).orElse(false))
+                .url(v.getUrl())
+                .defaultIconUrl(Optional.ofNullable(v.getDefaultIconCloudId()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
+                .activeIconUrl(Optional.ofNullable(v.getActiveIconCloudId()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
+                .build()).collect(Collectors.toList());
     }
+
+    /**班级互动菜单转换成菜单name&value
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-10 14:24:28
+     * @return
+     */
+    public static List<ActivityMenuDTO> listDefaultClazzInteractionMenus() {
+        return convertClazzInteractions2MenuDTO(new Activity(), null, null);
+    }
+    public static List<ActivityMenuDTO> convertClazzInteractions2MenuDTO(Activity activity, Integer uid, Integer fid) {
+        List<ClazzInteractionDTO.ClazzInteractionMenu> clazzInteractionMenus = ClazzInteractionDTO.listClazzInteractionMenus(activity, uid, fid);
+        // 班级互动排序从50开始
+        AtomicInteger sequence = new AtomicInteger(100);
+        return clazzInteractionMenus.stream().map(v -> ActivityMenuDTO.builder()
+                .name(v.getName())
+                .code(v.getCode())
+                .sequence(sequence.incrementAndGet())
+                .system(true)
+                .url(v.getUrl())
+                .defaultIconUrl(Optional.ofNullable(v.getDefaultIcon()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
+                .activeIconUrl(Optional.ofNullable(v.getActiveIcon()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
+                .build()).collect(Collectors.toList());
+    }
+
 }

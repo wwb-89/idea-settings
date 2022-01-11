@@ -225,18 +225,12 @@ public class ActivityHandleService {
 		// 考核配置
 		boolean openInspectionConfig = Optional.ofNullable(activityCreateParamDto.getOpenInspectionConfig()).orElse(false);
 		boolean existInspectionConfigCp = templateComponentService.existTemplateComponent(activity.getTemplateId(), "inspection_config");
-		List<ActivityMenuDTO> activityMenus;
-		if (isClone && activity.getOriginActivityId() != null) {
-			activityMenus = activityMenuService.listMenus(activity.getOriginActivityId());
-		} else {
-			activityMenus = activityMenuService.listMenu();
-		}
-		List<String> defaultMenus = activityMenus.stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+		boolean disabledInspectionConfig = false;
 		if (!openInspectionConfig || activityCreateParamDto.getInspectionConfigId() == null) {
 			inspectionConfigHandleService.initInspectionConfig(activityId);
 			if (existInspectionConfigCp && !openInspectionConfig) {
 				// 模板存在考核管理但未开启考核配置，关闭默认考核管理菜单勾选
-				defaultMenus = defaultMenus.stream().filter(v -> !Objects.equals(v, ActivityMenuEnum.RESULTS_MANAGE.getValue())).collect(Collectors.toList());
+				disabledInspectionConfig = true;
 			}
 		}
 		if (activityCreateParamDto.getInspectionConfigId() != null) {
@@ -249,12 +243,27 @@ public class ActivityHandleService {
 		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
 		activityDetailMapper.insert(activityDetail);
 		// 活动菜单配置
-		activityMenuService.configActivityMenu(activityId, defaultMenus);
+		List<ActivityMenuConfig> activityMenus;
+		if (isClone && activity.getOriginActivityId() != null) {
+			activityMenus = activityMenuService.listByActivityId(activity.getOriginActivityId());
+		} else {
+			activityMenus = activityMenuService.listActivityAllDefaultMenus(activityId, activity.getTemplateId());
+		}
+		if (disabledInspectionConfig) {
+			for (ActivityMenuConfig activityMenu : activityMenus) {
+				if (Objects.equals(activityMenu.getMenu(), ActivityMenuEnum.RESULTS_MANAGE.getValue())) {
+					activityMenu.setEnable(false);
+					break;
+				}
+			}
+		}
+		Integer realActivityId = isClone && activity.getOriginActivityId() != null ? activity.getOriginActivityId() : activityId;
+		activityMenuService.configActivityDefaultMenu(realActivityId, activityMenus);
 		// 若活动由市场所建，新增活动市场与活动关联
 		activityMarketService.associate(activity);
 		// 默认添加活动市场管理
 		// 添加管理员
-		ActivityManager activityManager = ActivityManager.buildCreator(activity);
+		ActivityManager activityManager = ActivityManager.buildCreator(activity, activityMenus);
 		activityManagerService.add(activityManager, loginUser);
 
 		// 处理发布范围

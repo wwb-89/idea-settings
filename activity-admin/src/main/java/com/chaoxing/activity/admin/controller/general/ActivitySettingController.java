@@ -226,8 +226,8 @@ public class ActivitySettingController {
     @RequestMapping("menu")
     public String menuSetting(Model model, @PathVariable Integer activityId) {
         model.addAttribute("activityId", activityId);
-        model.addAttribute("activityMenus", activityMenuService.listActivityMenuConfig(activityId));
-        model.addAttribute("menuList", activityMenuService.listMenu());
+        model.addAttribute("enableMenus", activityMenuService.listActivityEnableMenus(activityId));
+        model.addAttribute("canConfigMenus", activityMenuService.listCanConfigMenus(activityId));
         model.addAttribute("mainDomain", DomainConstant.MAIN);
         return "pc/activity/setting/menu";
     }

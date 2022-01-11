@@ -3,7 +3,6 @@ package com.chaoxing.activity.model;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +10,9 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 活动管理人员表
@@ -48,14 +50,15 @@ public class ActivityManager {
     * @author huxiaolong
     * @Date 2021-09-28 14:15:51
     * @param activity
+    * @param activityMenus
     * @return com.chaoxing.activity.model.ActivityManager
     */
-    public static ActivityManager buildCreator(Activity activity) {
+    public static ActivityManager buildCreator(Activity activity, List<ActivityMenuConfig> activityMenus) {
         return ActivityManager.builder()
                 .activityId(activity.getId())
                 .uid(activity.getCreateUid())
                 .userName(activity.getCreateUserName())
-                .menu(StringUtils.join(ActivityMenuDTO.listMenus(), ","))
+                .menu(StringUtils.join(activityMenus.stream().filter(v -> Objects.equals(v.getEnable(), Boolean.TRUE)).map(ActivityMenuConfig::getMenu).collect(Collectors.toList()), ","))
                 .build();
     }
 

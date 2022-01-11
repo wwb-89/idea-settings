@@ -9,6 +9,7 @@ import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.mapper.ActivityManagerMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityManager;
+import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
@@ -107,8 +108,8 @@ public class ActivityManagerService {
                 .in(ActivityManager::getUid, uids));
         List<Integer> existUids = existActivityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList());
         List<ActivityManager> addActivityManagers = Lists.newArrayList();
-        List<String> activityMenus = activityMenuService.listMenus(activityId).stream()
-                .map(ActivityMenuDTO::getValue)
+        List<String> activityMenus = activityMenuService.listActivityEnableMenus(activityId).stream()
+                .map(ActivityMenuConfig::getMenu)
                 .filter(value -> !Objects.equals(value, ActivityMenuEnum.SETTING.getValue())).collect(Collectors.toList());
         for (ActivityManager activityManager : activityManagers) {
             Integer uid = activityManager.getUid();

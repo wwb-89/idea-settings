@@ -55,9 +55,6 @@ public class CustomAppConfig {
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
 
-    /** 图标code */
-    @TableField(exist = false)
-    private String code;
     /** 默认图标cloudId */
     @TableField(exist = false)
     private String defaultIconCloudId;
