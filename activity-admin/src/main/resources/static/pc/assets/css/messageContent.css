@@ -16,6 +16,10 @@
   margin: 0;
 }
 
+.iframe-content .uplode-list {
+  font-size: 0;
+}
+
 .iframe-content .uplode-list .uplode-img {
   display: inline-block;
   vertical-align: top;
@@ -26,6 +30,7 @@
 }
 
 .iframe-content .uplode-list .webuploader-pick {
+  z-index: 2;
   width: 76px;
   height: 76px;
   background: url(../images/yq-design/uplode.png);

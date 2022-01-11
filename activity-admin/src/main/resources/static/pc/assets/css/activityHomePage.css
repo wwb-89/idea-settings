@@ -10,6 +10,24 @@ body {
     font-family: "SF Pro Display","Helvetica Neue",Helvetica,Tahoma,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
 }
 
+.color333{
+    color: #333333;
+}
+.color666{
+    color: #666666;
+}
+.color999{
+    color: #999999;
+}
+.fs14{
+    font-size: 14px;
+}
+.fs12{
+    font-size: 12px;
+}
+.font600{
+    font-weight: 600;
+}
 .container {
     border-radius: 8px;
     min-height: 860px;
@@ -27,24 +45,38 @@ body {
 }
 
 .slider .title {
-    color: #333333;
+    position: relative;
     text-align: left;
-    padding: 24px;
+    padding: 20px;
     display: flex;
     align-items: center;
 }
-
-.slider .title span {
+.slider .title .title-box{
+    padding: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.slider .title .title-box img{
+    width: 40px;
+    height: 40px;
+    box-sizing: border-box;
+    border: 1px solid #E9E9E9;
+    border-radius: 2px;
+    float: left;
+}
+.slider .title .title-name {
     font-weight: 500;
-    font-size: 18px;
-    line-height: 30px;
+    font-size: 14px;
+    line-height: 20px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     -webkit-line-clamp: 2;
     flex: 1;
-    margin-right: 8px;
+    float: left;
+    max-width: calc(100% - 48px);
+    margin-left: 8px;
 }
 .slider .title .icon-qr-code {
     display: inline-block;
@@ -56,19 +88,61 @@ body {
     cursor: pointer;
     }
 
+.slider .title .title-pop{
+    position: absolute;
+    top: 87px;
+    left: 24px;
+    width: 260px;
+    background: #FFFFFF;
+    border-radius: 8px;
+    filter: drop-shadow(0px 0px 12px rgba(0, 0, 0, 0.12)) drop-shadow(0px 4px 20px rgba(0, 0, 0, 0.12));
+    display: none;
+}
+.slider .title:hover .title-box{
+    background: #F8F8F8;
+}
+.slider .title:hover .title-pop{
+    display: block;
+}
+.slider .title .title-pop .img{
+    width: 100%;
+    height: 128px;
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+}
+.slider .title .title-pop .img img{
+    width: 100%;
+}
+.slider .title .title-pop .pop-info{
+    padding: 12px 16px 16px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.slider .title .info-time{
+    margin-top: 4px;
+}
+.slider .title .icon-qr-code{
+    margin-top: 8px;
+}
+.divider{
+    height: 1px;
+    background-color: #F0F0F0;
+    margin: 0 13px 0 12px;
+    border: 0;
+}
 .menu {
     width: 220px;
 }
 
 .menu-item {
     padding: 12px 0;
-    border-top: 1px solid #f0f0f0;
+    /*border-top: 1px solid #f0f0f0;*/
 }
 
 .item {
     width: 196px;
     height: 24px;
-    padding: 14px 0 14px 24px;
+    padding: 16px 0 16px 24px;
     text-align: left;
     cursor: pointer;
 }
@@ -86,19 +160,19 @@ body {
 }
 
 .item img {
-    width: 24px;
-    height: 24px;
+    width: 16px;
+    height: 16px;
     display: block;
     float: left;
+    margin-top: 2px;
 }
 
 .item span {
     font-size: 14px;
-    color: #737886;
     display: block;
-    line-height: 24px;
+    line-height: 20px;
     float: left;
-    margin-left: 7px;
+    margin-left: 8px;
 }
 
 .content {
@@ -163,7 +237,7 @@ body {
     }
 .qrCode-dialog .el-dialog__body {
     padding: 0 40px 40px;
-    
+
     }
 .qrCode-dialog .el-dialog__body .inner {
     border: 1px solid #E9E9E9;

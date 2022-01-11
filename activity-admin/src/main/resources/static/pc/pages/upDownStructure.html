@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/upDownStructure.css">
+    <title>上下结构</title>
+</head>
+
+<body>
+    <div class="container" id="vue">
+        <div class="header">
+            <div class="title">成都少儿阅读活动之“阅读之星爱阅读之星爱阅读之星爱</div>
+            <div class="menu">
+                <div class="menu-item active"><a href="#">学生报名</a></div>
+                <div class="menu-item"><a href="#">企业报名</a></div>
+                <div class="menu-item"><a href="#">互动</a></div>
+                <div class="menu-item"><a href="#">征集设置</a></div>
+                <div class="menu-item"><a href="#">讨论</a></div>
+                <div class="menu-item"><a href="#">考核管理</a></div>
+                <div class="menu-item"><a href="#">奖项管理</a></div>
+                <div class="menu-item"><a href="#">证书</a></div>
+                <div class="menu-item"><a href="#">统计</a></div>
+                <div class="menu-item"><a href="#">设置</a></div>
+            </div>
+            <!--更多-->
+            <el-dropdown class="right-more-drop" @command="handleCommand">
+                  <span class="el-dropdown-link">
+                    <i class="el-icon-more"></i>
+                  </span>
+                <el-dropdown-menu slot="dropdown" class="header-more-drop">
+                    <el-dropdown-item command="a" :class="dropActive=='a'?'drop-active':''">设置</el-dropdown-item>
+                    <el-dropdown-item command="b" :class="dropActive=='b'?'drop-active':''">统计</el-dropdown-item>
+                    <el-dropdown-item command="c" :class="dropActive=='c'?'drop-active':''">证书</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+            <div class="clear"></div>
+        </div>
+        <div class="content">
+<!--            <iframe id="ifr" src="test2.html"></iframe>-->
+        </div>
+
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+<script src="../../assets/js/vue.min.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/jquery.qrcode.min.js"></script>
+<script>
+    window.onload = function () {
+        resizePageHeight();
+      menuFunc();
+    };
+
+    function resizePageHeight () {
+        // container的最小高度
+        var containerMinHeight = $(".container").css("min-height");
+        containerMinHeight = containerMinHeight.replace(/px/gi, "");
+        var containerHeight = $(".container").height();
+        // 窗口的高度
+        var windowHeight = $(window).height() - 40;
+        // iframe的高度
+        var iframeHeight = $("#content").height();
+        // iframe中内容的真实高度
+        var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height() + 24;
+        // container应该取最大高度
+        var maxHeight = containerMinHeight > containerHeight ? containerMinHeight : containerHeight;
+        maxHeight = maxHeight > windowHeight ? maxHeight : windowHeight;
+        maxHeight = maxHeight > iframeHeight ? maxHeight : iframeHeight;
+        maxHeight = maxHeight > iframeContentHeight ? maxHeight : iframeContentHeight;
+        // 如果窗口高度能满足最大高度就是用窗口高度
+        if (windowHeight > iframeContentHeight) {
+            maxHeight = windowHeight;
+        }
+        $(".container").height(maxHeight);
+        $("#content").height(maxHeight);
+        $("#content").contents().find("body").height(maxHeight);
+    }
+
+    function menuFunc() {
+      $('.menu .menu-item').on('click', function () {
+        $(this).siblings().removeClass('active');
+        $(this).addClass('active');
+      })
+    }
+
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+              dropActive: 'a',
+            }
+        },
+        created: function () {
+
+
+        },
+        mounted: function () {
+            this.$nextTick(function (){
+                $('#qrCode').qrcode({
+                    text: "http://www.jq22.com",
+                    width: 300,
+                    height: 300
+                });
+            });
+
+        },
+        methods: {
+          handleCommand(command) {
+            console.log(command)
+            this.dropActive = command;
+          },
+        }
+    });
+
+</script>
