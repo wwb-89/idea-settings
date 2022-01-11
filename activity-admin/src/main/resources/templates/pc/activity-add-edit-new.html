@@ -1057,8 +1057,6 @@
                         }
                     }
                 });
-                // 分类显示组件map封装
-                $this.packageClassifyShowComponentsMap();
                 // 表单字段map封装
                 var formFields = [[${formFieldStructures}]] || {}
                 var formIds = Object.keys(formFields);
@@ -1358,6 +1356,8 @@
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
                 }
+                // 分类显示组件map封装
+                $this.packageClassifyShowComponentsMap();
             },
             mounted: function () {
                 var $this = this;
@@ -1767,8 +1767,8 @@
                         return dataUrl;
                     }
                     var paramSplitIndex = dataUrl.indexOf("?"),
-                        originUrl = dataUrl.substring(0, paramSplitIndex),
-                        params = dataUrl.substring(paramSplitIndex + 1).split("&");
+                            originUrl = dataUrl.substring(0, paramSplitIndex),
+                            params = dataUrl.substring(paramSplitIndex + 1).split("&");
                     var existUid = false, existFid = false;
                     $(params).each(function (i) {
                         if (!existUid && params[i].indexOf("uid=") != -1) {
