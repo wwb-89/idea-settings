@@ -323,10 +323,8 @@ public class WfwFormSyncActivityQueueService {
             if (personLimit) {
                 signUpCreateParam.setPersonLimit(Integer.valueOf(signUpPersonLimit));
             }
-            String signUpReview = WfwFormUtils.getValue(formUserRecord, "sign_up_review");
-            if (StringUtils.isNotBlank(signUpReview)) {
-                signUpCreateParam.setOpenAudit(Objects.equals(signUpReview, "是"));
-            }
+            // 使用万能表单后 报名默认不支持审批
+            signUpCreateParam.setOpenAudit(false);
             // 通讯录参与范围
             FormDataItemDTO contactPublishAreas = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "contacts_participation_scope")).findFirst().orElse(null);
             if (contactPublishAreas != null) {
