@@ -54,7 +54,7 @@ public class WfwContactApiService {
 	private RestTemplate restTemplate;
 
 	/**用户有通讯录的机构列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-12 17:10:16
 	 * @param uid
@@ -88,7 +88,7 @@ public class WfwContactApiService {
 	}
 
 	/**查询所有下级
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-11-08 19:00:12
 	 * @param wfwGroup
@@ -110,7 +110,7 @@ public class WfwContactApiService {
 	}
 
 	/**deptment转换成wfwGroup数据结构
-	* @Description 
+	* @Description
 	* @author huxiaolong
 	* @Date 2021-06-17 11:45:28
 	* @param departments
@@ -148,7 +148,7 @@ public class WfwContactApiService {
 	}
 
 	/**搜索联系人
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-28 12:23:26
 	 * @param page
@@ -173,7 +173,7 @@ public class WfwContactApiService {
 	}
 
 	/**查询机构下级部门
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-28 16:59:08
 	 * @param page
@@ -194,6 +194,47 @@ public class WfwContactApiService {
 			log.error("根据fid:{}, uid:{} 查询部门error:{}", fid, uid);
 			throw new BusinessException("查询部门列表失败");
 		}
+	}
+
+	/**查询用户加入的机构部门列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-11 11:08:45
+	 * @param uid
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO>
+	*/
+	public List<WfwDepartmentDTO> listUserJoinDepartment(Integer uid, Integer fid) {
+		String forObject = restTemplate.getForObject(GET_DEPARTMENT_URL, String.class, fid, uid, 1, Integer.MAX_VALUE);
+		JSONObject jsonObject = JSON.parseObject(forObject);
+		Integer result = jsonObject.getInteger("result");
+		if (Objects.equals(result, 1)) {
+			String wfwContactersJsonStr = jsonObject.getString("msg");
+			List<WfwDepartmentDTO> wfwDepartments = JSON.parseArray(wfwContactersJsonStr, WfwDepartmentDTO.class);
+			// 过滤上级部门
+			if (wfwDepartments == null) {
+				wfwDepartments = Lists.newArrayList();
+			}
+			List<Integer> pids = wfwDepartments.stream().map(WfwDepartmentDTO::getPid).collect(Collectors.toList());
+			return wfwDepartments.stream().filter(v -> !pids.contains(v.getId())).collect(Collectors.toList());
+		} else {
+			log.error("根据uid:{}, fid:{} 查询用户加入的部门error", uid, fid);
+			throw new BusinessException("查询部门列表失败");
+		}
+	}
+
+	/**查询用户的部门（多个部门获取第一个）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-11 11:14:56
+	 * @param uid
+	 * @param fid
+	 * @return com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO
+	*/
+	public WfwDepartmentDTO getUserDepartment(Integer uid, Integer fid) {
+		List<WfwDepartmentDTO> wfwDepartments = listUserJoinDepartment(uid, fid);
+		return wfwDepartments.stream().findFirst().orElse(null);
+
 	}
 
 	/**查询机构下级部门
@@ -227,7 +268,7 @@ public class WfwContactApiService {
 	}
 
 	/**查询部门下的联系人
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-28 17:19:32
 	 * @param page
@@ -252,7 +293,7 @@ public class WfwContactApiService {
 	}
 
 	/**查询部门下的用户id列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-28 16:43:51
 	 * @param departmentId

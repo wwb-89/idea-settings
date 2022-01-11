@@ -1,13 +1,13 @@
 package com.chaoxing.activity;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.dto.manager.wfw.WfwContacterDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**通讯录api
  * @author wwb
@@ -24,12 +24,11 @@ public class WfwContactApiServiceTests {
 	private WfwContactApiService wfwContactApiService;
 
 	@Test
-	public void search() {
-		Page<WfwContacterDTO> page = new Page<>();
+	public void listUserJoinDepartment() {
 		Integer uid = 25418810;
-		String sw = "";
-		Page<WfwContacterDTO> search = wfwContactApiService.search(page, uid, sw);
-		System.out.println(JSON.toJSONString(search));
+		Integer fid = 117211;
+		List<WfwDepartmentDTO> departments = wfwContactApiService.listUserJoinDepartment(uid, fid);
+		System.out.println(JSON.toJSONString(departments));
 	}
 
 }
