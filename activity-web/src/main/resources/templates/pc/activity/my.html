@@ -53,7 +53,7 @@
                                 <div class="card-info">
                                     <div class="title-box">
                                         <h2 v-if="currentTab.code == 'signedUp'" class="title overHidden1 fl">{{activity.name}}</h2>
-                                        <h2 v-else class="title overHidden1 fl" @click="activityManageIndex(index)">{{activity.name}}</h2>
+                                        <h2 v-else class="title overHidden1 fl" @click="activityManageIndex(index, $event)">{{activity.name}}</h2>
                                         <label style="margin-left: 8px;" v-if="currentTab.code == 'signedUp' && activity.managAble">管理</label>
                                         <div class="clear"></div>
                                     </div>
@@ -482,7 +482,8 @@
                    }
                 },
                 // 活动管理主页
-                activityManageIndex: function (index) {
+                activityManageIndex: function (index, e) {
+                    e.stopPropagation();
                     var $this = this;
                     var activity = $this.activities[index];
                     window.open(activityApp.getActivityManageIndexUrl(activity.id, $this.adminDomain));
