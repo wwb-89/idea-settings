@@ -851,28 +851,6 @@ public class ActivityQueryService {
 		return page;
 	}
 
-	/**获取活动管理url
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-09 19:11:37
-	 * @param activityId
-	 * @return java.lang.String
-	 */
-	public String getActivityManageUrl(Integer activityId) {
-		return String.format(UrlConstant.ATIVITY_MANAGE_URL, activityId);
-	}
-
-	/**活动评价地址
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-16 11:12:37
-	 * @param activityId
-	 * @return java.lang.String
-	 */
-	public String getActivityRatingUrl(Integer activityId) {
-		return String.format(UrlConstant.ACTIVITY_RATING_URL, activityId);
-	}
-
 	/**阅读测评的地址
 	 * @Description 
 	 * @author wwb

@@ -167,7 +167,7 @@ public class RedirectController {
     @RequestMapping("activity-index/from/wfw-form")
     public String redirectToActivityIndex(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
-        return "redirect:" + activity.getAdminUrl();
+        return "redirect:" + activity.getManageUrl();
     }
 
     /**重定向签到管理列表
