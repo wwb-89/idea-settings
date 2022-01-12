@@ -81,7 +81,7 @@
 
 <body>
 <div class="page" id="activity-vue" v-cloak>
-    <div v-show="!showSignInListIframe">
+    <div v-show="!showSignInListIframe && !showFormCollectionIframe">
         <!-- 创建/编辑活动头部 -->
         <div class="top flex" id="create">
             <div class="go-back" @click="returnBack">
@@ -268,6 +268,18 @@
                                 <div class="already_add" @click="toSignInList">
                                     <div>
                                         {{signInNum == 0 ? '添加签到' : ('已发布' + signInNum + '个签到')}}
+                                    </div>
+                                    <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
+                                </div>
+                                <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                            </div>
+                        </div>
+                        <div class="form-item align-start" v-else-if="item.code == 'form_collection'" v-show="templateComponentShow(item.id)">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box wrap">
+                                <div class="already_add" @click="toFormCollectionList">
+                                    <div>
+                                        {{formCollectionNum == 0 ? '添加表单采集' : ('已发布' + formCollectionNum + '个表单采集')}}
                                     </div>
                                     <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
                                 </div>
@@ -838,6 +850,17 @@
         </div>
         <iframe id="sign-in-list" src="" width="100%" style="border: 0; background-color: #fff; margin-top: 10px;"></iframe>
     </div>
+    <div v-show="showFormCollectionIframe">
+        <div class="top flex">
+            <div class="go-back" @click="getFormCollectionSignId">
+                <template>
+                    <i class="icon-back"></i><span>返回</span>
+                </template>
+            </div>
+            <div class="name-txt">编辑表单采集</div>
+        </div>
+        <iframe id="form-collection-list" src="" width="100%" style="border: 0; background-color: #fff; margin-top: 10px;"></iframe>
+    </div>
     <!--分类组件弹窗-->
     <div class="dailog-box2" v-show="classifyWindowShow">
         <div class="dailog choose-field">
@@ -1001,8 +1024,10 @@
                 pictureCloudIds: activityApp.default_cover_cloud_id_repo,
                 pictureShow: false,
                 showSignInListIframe: false,
+                showFormCollectionIframe: false,
                 scrollHeight: 0,
                 signInNum: 0,
+                formCollectionNum: 0,
                 // 报名填报万能表单窗口
                 wfwFormConfigWindow: null,
                 // 考核管理配置窗口
@@ -1050,6 +1075,16 @@
                                 $this.$nextTick(function () {
                                     $(document).scrollTop($this.scrollHeight);
                                 });
+                            } else if ("form_collection_list" == data.type) {
+                                var signId = data.value;
+                                if (!$this.sign.id) {
+                                    $this.$set($this.sign, "id", signId);
+                                }
+                                $this.countFormCollectionNum();
+                                $this.showFormCollectionIframe = false;
+                                $this.$nextTick(function () {
+                                    $(document).scrollTop($this.scrollHeight);
+                                })
                             } else if ("inspection_config" == data.type) {
                                 $this.activity.inspectionConfigId = data.inspectionConfigId;
                             }
@@ -2576,9 +2611,30 @@
                     $this.scrollHeight = $(document).scrollTop();
                     $(document).scrollTop(0);
                 },
+                // 表单采集管理页面
+                toFormCollectionList: function () {
+                    var $this = this;
+                    var signId = $this.sign.id;
+                    var url = "";
+                    if (signId) {
+                        url = "//" + $this.signWebDomain.replace(/http(|s):\/\//, "") + "/manage/form-collection/list?signId=" + signId + "&back=true";
+                    } else {
+                        url = "//" + $this.signWebDomain.replace(/http(|s):\/\//, "") + "/manage/form-collection/list/new?back=true";
+                    }
+                    $("#form-collection-list").attr("src", url);
+                    $this.showFormCollectionIframe = true;
+                    $("#form-collection-list").css("min-height", $(window).height());
+                    // 记录滚动条高度后重置滚动条
+                    $this.scrollHeight = $(document).scrollTop();
+                    $(document).scrollTop(0);
+                },
                 // 获取报名签到id
                 getSignId: function () {
                     $("#sign-in-list")[0].contentWindow.postMessage(activityApp.getJsonStr({type: "get_sign_id"}), "*");
+                },
+                // 获取报名签到id
+                getFormCollectionSignId: function () {
+                    $("#form-collection-list")[0].contentWindow.postMessage(activityApp.getJsonStr({type: "get_sign_id"}), "*");
                 },
                 // 获取签到数量
                 countSignInNum: function () {
@@ -2596,6 +2652,24 @@
                         }
                     }, function () {
                         app.showMsg("获取已发布签到数量失败");
+                    });
+                },
+                // 获取表单采集数量
+                countFormCollectionNum: function () {
+                    var $this = this;
+                    var url = ctx + "/api/sign/" + $this.sign.id + "/form-collection/num";
+                    app.ajaxPost(url, {}, function (data) {
+                        if (data.success) {
+                            $this.formCollectionNum = data.data;
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "获取表单采集数量失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("获取表单采集数量失败");
                     });
                 },
                 // 重新选择模版

@@ -60,4 +60,10 @@ public class SignApiController {
 		return RestRespDTO.success(signApiService.countSignInNum(signId));
 	}
 
+	@LoginRequired
+	@RequestMapping("{signId}/form-collection/num")
+	public RestRespDTO countFormCollectionNum(@PathVariable Integer signId) {
+		return RestRespDTO.success(signApiService.countFormCollectionNum(signId));
+	}
+
 }

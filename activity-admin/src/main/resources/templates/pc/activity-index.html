@@ -33,6 +33,12 @@
                     <img :src="menus.sign_in.defaultIconUrl" v-else>
                     <span>{{menus.sign_in.name}}</span>
                 </div>
+                <!--表单采集管理-->
+                <div :class="{'item': true, 'active': menus.form_collection.selected}" @click="toFormCollectionManage" v-if="menuShow('form_collection')">
+                    <img :src="menus.form_collection.activeIconUrl" v-if="menus.form_collection.selected">
+                    <img :src="menus.form_collection.defaultIconUrl" v-else>
+                    <span>{{menus.form_collection.name}}</span>
+                </div>
             </div>
             <div class="entry menu-item" v-if="activity.openClazzInteraction">
                 <!--讨论-->
@@ -160,6 +166,13 @@
                         url: "//" + signWebSimpleDomain + "/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]],
                         selected: false
                     },
+                    form_collection: {
+                        name: "表单采集",
+                        defaultIconUrl: ctx + "/pc/assets/images/name-list-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/name-list-active.png",
+                        url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
+                        selected: false
+                    },
                     results_manage: {
                         name: "考核管理",
                         defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png",
@@ -261,6 +274,9 @@
                             break;
                         case 'sign_in':
                             $this.toSignInManage();
+                            break;
+                        case 'form_collection':
+                            $this.toFormCollectionManage();
                             break;
                         case 'results_manage':
                             $this.toResultsManage();
@@ -401,6 +417,11 @@
                 toSignInManage: function () {
                     var $this = this;
                     $this.selectMenu("sign_in");
+                },
+                // 签到管理
+                toFormCollectionManage: function () {
+                    var $this = this;
+                    $this.selectMenu("form_collection");
                 },
                 // 考核管理
                 toResultsManage: function () {
