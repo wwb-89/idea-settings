@@ -333,17 +333,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	List<Integer> listOrgsReleasedActivityId(@Param("fids") List<Integer> fids, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
-	/**
-	 * 鄂尔多斯定制的机构创建的作品征集id列表
-	 *
+	/**鄂尔多斯定制的机构创建的作品征集id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-12 15:07:32
+	 * @param createFid
 	 * @param participateFid
 	 * @param activityFlag
-	 * @param activityClassifyId 活动分类id
+	 * @param activityClassifyId
 	 * @return java.util.List<java.lang.Integer>
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-09-07 20:49:01
-	 */
+	*/
 	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("createFid") Integer createFid, @Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag, @Param("activityClassifyId") Integer activityClassifyId);
 
 	/**

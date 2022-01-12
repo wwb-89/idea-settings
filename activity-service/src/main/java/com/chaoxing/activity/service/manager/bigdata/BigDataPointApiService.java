@@ -37,6 +37,7 @@ public class BigDataPointApiService {
     /** 消耗积分接口 */
     private static final String SPEND_POINT_URL = DomainConstant.BIGDATA_SCORE_SPEND + "/house/gt/point/spend?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
     private static final Map<Integer, String> KEY_MAP = Maps.newHashMap();
+    private static final String RESULT_CODE_KEY = "status";
 
     static {
         KEY_MAP.put(23274, "y$$Ojy$s");
@@ -64,7 +65,7 @@ public class BigDataPointApiService {
                 pointPushParam.getPointType().getValue(), pointPushParam.getPoint(), pointPushParam.getTime(), enc);
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
-        if (Objects.equals(1, jsonObject.getInteger("status"))) {
+        if (Objects.equals(1, jsonObject.getInteger(RESULT_CODE_KEY))) {
             String message = jsonObject.getString("msg");
             log.error("根据url:{} 新增大数据积分失败:{}", url, message);
             throw new BusinessException("大数据积分新增失败");
@@ -89,7 +90,7 @@ public class BigDataPointApiService {
                 pointPushParam.getPointType().getValue(), pointPushParam.getPoint(), pointPushParam.getTime(), enc);
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
-        if (!jsonObject.getBoolean("status")) {
+        if (!jsonObject.getBoolean(RESULT_CODE_KEY)) {
             String message = jsonObject.getString("msg");
             log.error("根据url:{} 消费大数据积分失败:{}", url, message);
             if (message.contains("积分不足")) {

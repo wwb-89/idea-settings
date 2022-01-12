@@ -253,7 +253,7 @@ public class ActivityQueryService {
 		}
 		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(activityQuery.getFlag())) {
-			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(",")));
+			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(CommonConstant.DEFAULT_SEPARATOR)));
 		}
 		List<WfwAreaDTO> wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
