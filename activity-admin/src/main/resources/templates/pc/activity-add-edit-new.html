@@ -1057,8 +1057,6 @@
                         }
                     }
                 });
-                // 分类显示组件map封装
-                $this.packageClassifyShowComponentsMap();
                 // 表单字段map封装
                 var formFields = [[${formFieldStructures}]] || {}
                 var formIds = Object.keys(formFields);
@@ -1358,6 +1356,8 @@
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
                 }
+                // 分类显示组件map封装
+                $this.packageClassifyShowComponentsMap();
             },
             mounted: function () {
                 var $this = this;
@@ -1483,11 +1483,20 @@
                         templateComponentIds.push(templateComponentId);
                         if ($this.allHideTemplateComponentIds.indexOf(templateComponentId) < 0) {
                             $this.allHideTemplateComponentIds.push(templateComponentId);
-                            $this.curHideTemplateComponentIds.push(templateComponentId);
                         }
                         classifyShowComponentsMap[classifyId] = templateComponentIds;
                     });
                     $this.classifyShowComponentsMap = classifyShowComponentsMap;
+                    var showTemplateComponentIds = $this.classifyShowComponentsMap[$this.activity.activityClassifyId];
+                    if (!showTemplateComponentIds) {
+                        showTemplateComponentIds = [];
+                    }
+                    $($this.allHideTemplateComponentIds).each(function () {
+                        var templateComponentId = parseInt(this);
+                        if (showTemplateComponentIds.indexOf(templateComponentId) < 0) {
+                            $this.curHideTemplateComponentIds.push(templateComponentId);
+                        }
+                    });
                 },
                 // 模板组件是否显示
                 templateComponentShow: function (templateComponentId) {
@@ -1758,8 +1767,8 @@
                         return dataUrl;
                     }
                     var paramSplitIndex = dataUrl.indexOf("?"),
-                        originUrl = dataUrl.substring(0, paramSplitIndex),
-                        params = dataUrl.substring(paramSplitIndex + 1).split("&");
+                            originUrl = dataUrl.substring(0, paramSplitIndex),
+                            params = dataUrl.substring(paramSplitIndex + 1).split("&");
                     var existUid = false, existFid = false;
                     $(params).each(function (i) {
                         if (!existUid && params[i].indexOf("uid=") != -1) {
@@ -2074,7 +2083,8 @@
                         });
                         var tplComponentIds = Object.keys($this.activityComponentValueMap);
                         for (var i = 0; i < tplComponentIds.length; i++) {
-                            var tplComponentId = tplComponentIds[i], customTplComponent = customComponentRequiredMap[tplComponentId];
+                            var tplComponentId = parseInt(tplComponentIds[i]);
+                            var customTplComponent = customComponentRequiredMap[tplComponentId];
                             var required = customTplComponent && customTplComponent.required;
                             var componentValue = $this.activityComponentValueMap[tplComponentId];
                             // 需要额外判断是不是隐藏的

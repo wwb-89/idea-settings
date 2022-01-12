@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>模块设置</title>
+  <link rel="stylesheet" href="../../assets/lib/layui/css/layui.css">
+  <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="../../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css">
+  <link rel="stylesheet" href="../../assets/icomoon/style.css">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/moduleSet.css">
+</head>
+<body>
+<div id="vue">
+  <div class="manage-page">
+    <div class="top-title">
+      <span class="font16 color333 title-name">管理功能</span>
+      <el-button class="fr btn-add" plain round @click="selectLinkDialog = true">添加</el-button>
+    </div>
+    <div class="sortable-box ">
+      <ul class="table-deader fs0">
+        <li class="li-drag">排序</li>
+        <li class="li-name">菜单名称</li>
+        <li class="li-status">开启</li>
+        <li class="li-operate">操作</li>
+      </ul>
+      <div class="table-body" id="sortDragBox1">
+        <ul v-for="(item,index) in list1" :key="index" class="table-tr fs0 list-group-item">
+          <li class="table-td li-drag"><i class="icon-drag"></i></li>
+          <li class="table-td li-name">{{item.name}}</li>
+          <li class="table-td li-status">
+            <el-switch v-model="item.status"></el-switch>
+          </li>
+          <li class="table-td li-operate">
+            <span class="btn btn-edit">编辑</span>
+            <span class="btn btn-delete" @click="ifDeletePop=true">删除</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="top-title">
+      <span class="font16 color333 title-name">用户参与按钮</span>
+      <el-button class="fr btn-add" plain round @click="selectLinkDialog = true">添加</el-button>
+    </div>
+    <div class="sortable-box ">
+      <ul class="table-deader fs0">
+        <li class="li-drag">排序</li>
+        <li class="li-button">按钮</li>
+        <li class="li-rule">显示规则</li>
+        <li class="li-status">开启</li>
+        <li class="li-operate">操作</li>
+      </ul>
+      <div class="table-body" id="sortDragBox2">
+        <ul v-for="(item,index) in list2" :key="index" class="table-tr fs0 list-group-item">
+          <li class="table-td li-drag"><i class="icon-drag"></i></li>
+          <li class="table-td li-button">{{item.name}}</li>
+          <li class="table-td li-rule">
+            <el-select v-model="item.value" placeholder="请选择">
+              <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+              </el-option>
+            </el-select>
+          </li>
+          <li class="table-td li-status">
+            <el-switch v-model="item.status"></el-switch>
+          </li>
+          <li class="table-td li-operate">
+            <span class="btn btn-edit">编辑</span>
+            <span class="btn btn-delete" @click="ifDeletePop=true">删除</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--添加弹窗-->
+    <!--选择应用---链接-->
+    <div class="dialog-mask selectLinkPop" v-show="selectLinkDialog">
+      <div class="dailog">
+        <div class="dailog-header">
+          <span>添加模块</span>
+          <i class="close" @click="selectLinkDialog=false"></i>
+        </div>
+        <div class="body">
+          <div class="form">
+            <el-input v-model="linkName" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+            <div class="content-switch-box marginBottom20">
+              <div class="switch-title">
+                <span class="color333 font14">管理员菜单</span>
+                <div class="switch-box fr">
+                  <label class="label color666">报名后显示</label>
+                  <el-switch class="switch" v-model="linkSwitch1" @change="changeLinkShow(1)"></el-switch>
+                </div>
+              </div>
+              <div class="link-lists link-lists1">
+                <div class="link-list marginBottom16" v-for="(item ,index) in linkLists1" :key="index">
+                  <div class="left-box">
+                    <div class="line1 marginBottom16">
+                      <div class="icon-img" @click="showSelectIconFunc()"><img :src="item.icon" alt=""></div>
+                      <el-input v-model="item.name" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                    </div>
+                    <div class="line2">
+                      <el-input v-model="item.link" type="text" placeholder="链接"></el-input>
+                    </div>
+                  </div>
+                </div>
+                <div class="terminal-select">
+                  <el-checkbox v-model="checkedPc">电脑端</el-checkbox>
+                  <el-checkbox v-model="checkedApp">移动端</el-checkbox>
+                </div>
+              </div>
+            </div>
+            <div class="content-switch-box">
+              <div class="switch-title">
+                <span class="color333 font14">用户端菜单</span>
+              </div>
+              <div class="link-lists link-lists2">
+                <div class="link-list marginBottom16" v-for="(item ,index) in linkLists2" :key="index">
+                  <div class="left-box">
+                    <div class="line1 marginBottom16">
+                      <div class="icon-img" @click="showSelectIconFunc()"><img :src="item.icon" alt=""></div>
+                      <el-input v-model="item.name" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                    </div>
+                    <div class="line2">
+                      <el-input v-model="item.link" type="text" placeholder="链接"></el-input>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="btn-box">
+            <div class="border-btn" @click="selectLinkDialog=false">取消</div>
+            <div class="normal-btn">确定</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--确认取消报名弹窗-->
+    <div class="dialog-box" v-show="ifDeletePop">
+      <div class="masking" @click="ifDeletePop = false"></div>
+      <div class="confirm_dialog">
+        <span class="icon"><img src="../../assets/images/icon-warning.png"></span>
+        <span class="text">确定删除吗？</span>
+        <div class="btn">
+          <span class="cancel" @click="ifDeletePop = false">保留</span>
+          <span class="ok">删除</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+<script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+<script src="../../assets/lib/vue.js"></script>
+<script src="../../assets/lib/layui/layui.js"></script>
+<script src="../../assets/lib/element-ui/lib/index.js"></script>
+<script src="../../assets/lib/jquery.nicescroll.min.js"></script>
+<script src="../../assets/lib/jqthumb.js"></script>
+<script src="../../assets/js/create-active.js"></script>
+<script src="../../assets/js/main.js"></script>
+<script src="../../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
+<script src="../../assets/lib/zTree_v3/js/jquery.ztree.excheck.js"></script>
+<script src="../../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+<script src="../../assets/lib/Sortable.js"></script>
+
+
+<script>
+  var vm = new Vue({
+    el: '#vue',
+    data: function () {
+      return {
+        list1: [
+          {
+            name: '报名管理',
+            status: 0,
+          },
+          {
+            name: '签到管理',
+            status: 1,
+          }
+        ],
+        list2: [
+          {
+            name: '报名管理',
+            status: 0,
+            value: 0,
+          },
+          {
+            name: '签到管理',
+            status: 1,
+            value: 1,
+          },
+          {
+            name: '发证书',
+            status: 1,
+            value: 2,
+          }
+        ],
+        options: [
+          {
+            value: 0,
+            label: '不限'
+          }, {
+            value: 1,
+            label: '报名前'
+          }, {
+            value: 2,
+            label: '报名后'
+          }
+        ],
+        selectLinkDialog: false,   //选择应用---链接弹窗
+        linkName: '班级互动',
+        linkSwitch1: true,
+        linkLists1:[
+          {
+            icon: '../../assets/images/link-icon/link1.png',
+            name:'班级互动',
+            link: 'https://www.iconfont.cn/collections/detail'
+          }
+        ],
+        linkSwitch2: true,
+        linkLists2:[
+          {
+            icon: '../../assets/images/link-icon/link1.png',
+            name:'班级互动',
+            link: 'https://www.iconfont.cn/collections/detail'
+          }
+        ],
+        checkedPc: true,
+        checkedApp: true,
+        ifDeletePop: false,
+      }
+    },
+    created: function () {
+    },
+    mounted: function () {
+      // cropImgFun("body");
+      this.createSort();
+    },
+    methods: {
+      createSort: function () {
+        var _this = this;
+        var dragList1 = document.getElementById('sortDragBox1'),
+                dragList2 = document.getElementById('sortDragBox2');
+        var sortable1 = new Sortable(dragList1, {
+          animation: 150,
+          handle: '.icon-drag',
+          group: '.list-group-item',
+        });
+
+        var sortable2 = new Sortable(dragList2, {
+          handle: '.icon-drag',
+          animation: 150,
+          group: '.list-group-item',
+        });
+      },
+    }
+  });
+</script>
+
+</html>

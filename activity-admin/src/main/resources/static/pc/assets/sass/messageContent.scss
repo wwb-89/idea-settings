@@ -13,6 +13,7 @@
     margin: 0;
   }
   .uplode-list {
+    //font-size: 0;
     .uplode-img {
       display: inline-block;
       vertical-align: top;
@@ -22,6 +23,7 @@
       height: 76px;
     }
     .webuploader-pick {
+      //z-index: 2;
       width: 76px;
       height: 76px;
       background: url(../images/yq-design/uplode.png);
