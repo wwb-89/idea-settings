@@ -1113,7 +1113,7 @@ public class ActivityQueryService {
 		if (inspectionConfig != null) {
 			activityCreateParam.setInspectionConfigId(inspectionConfig.getId());
 		}
-		List<String> menus = activityMenuService.listMenus(activityId).stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+		List<String> menus = activityMenuService.listActivityEnableMenusDTO(activityId).stream().map(ActivityMenuDTO::getCode).collect(Collectors.toList());
 		activityCreateParam.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.RESULTS_MANAGE.getValue()));
 	}
 

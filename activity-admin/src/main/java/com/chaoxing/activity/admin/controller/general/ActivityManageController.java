@@ -19,8 +19,6 @@ import com.chaoxing.activity.service.activity.classify.component.ClassifyShowCom
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
-import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
-import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
@@ -78,11 +76,7 @@ public class ActivityManageController {
 	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
-	private ActivityManagerValidationService activityManagerValidationService;
-	@Resource
 	private TemplateComponentService templateComponentService;
-	@Resource
-	private ActivityManagerService activityManagerService;
 	@Resource
 	private ActivityMenuService activityMenuService;
 	@Resource
@@ -114,7 +108,6 @@ public class ActivityManageController {
 	@RequestMapping("{activityId}")
 	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Integer operateUid = loginUser.getUid();
 //		todo 暂时屏蔽校验
 //		Activity activity = activityValidationService.manageAble(activityId, operateUid);
 		Activity activity = activityValidationService.activityExist(activityId);
@@ -123,35 +116,14 @@ public class ActivityManageController {
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		// 是不是创建者
-		boolean creator = activityValidationService.isCreator(activity, operateUid);
-		List<String> activityMenus = Lists.newArrayList();
-		// todo 特殊情况，非管理人员获取当前活动所有菜单
-		if (!activityManagerValidationService.isManager(activityId, operateUid) || creator) {
-			// 创建者获取活动所有菜单
-			activityMenus = activityMenuService.listActivityMenuConfig(activityId).stream()
-					.map(ActivityMenuConfig::getMenu).collect(Collectors.toList());
-		} else {
-			ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, operateUid);
-			if (activityManager != null && StringUtils.isNotBlank(activityManager.getMenu())) {
-				List<String> managerMenus = Arrays.asList(StringUtils.split(activityManager.getMenu(), ","));
-				activityMenus = ActivityMenuDTO.buildFromActivityMenus(managerMenus)
-						.stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
-			}
-		}
+		boolean creator = activityValidationService.isCreator(activity, loginUser.getUid());
+		List<ActivityMenuDTO> activityMenuConfigs = activityMenuService.listUserActivityMenus(activity, loginUser, creator);
 		model.addAttribute("isCreator", creator);
-		model.addAttribute("activityMenus", activityMenus);
+		model.addAttribute("activityMenuConfigs", activityMenuConfigs);
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("webDomain", DomainConstant.WEB);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
-		List<ClazzInteractionDTO.ClazzInteractionMenu> clazzInteractionMenus = Lists.newArrayList();
-		if (activity.getOpenClazzInteraction()) {
-			clazzInteractionMenus = ClazzInteractionDTO.listClazzInteractionMenus(activity, operateUid, loginUser.getFid());
-		}
-		List<CustomAppConfig> customAppConfigs = customAppConfigQueryService.listBackendAppConfigsByActivity(activityId);
-		model.addAttribute("clazzInteractionMenus", clazzInteractionMenus);
-		model.addAttribute("customAppConfigs", customAppConfigs);
-
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {

@@ -91,7 +91,7 @@ public class ActivityComponentValueService {
     */
     public List<ActivityComponentValueDTO> listActivityComponentValues(Integer activityId, Integer templateId) {
         // 根据模板查询自定义组件列表
-        List<TemplateComponent> customTplComponents = templateComponentService.listCustomTemplateComponent(templateId);
+        List<TemplateComponent> customTplComponents = templateComponentService.listCustomTplComponentWithoutCustomApp(templateId);
         if (CollectionUtils.isEmpty(customTplComponents)) {
             return Lists.newArrayList();
         }

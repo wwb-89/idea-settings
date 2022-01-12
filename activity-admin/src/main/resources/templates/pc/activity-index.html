@@ -33,8 +33,14 @@
                     <img :src="menus.sign_in.defaultIconUrl" v-else>
                     <span>{{menus.sign_in.name}}</span>
                 </div>
+                <!--表单采集管理-->
+                <div :class="{'item': true, 'active': menus.form_collection.selected}" @click="toFormCollectionManage" v-if="menuShow('form_collection')">
+                    <img :src="menus.form_collection.activeIconUrl" v-if="menus.form_collection.selected">
+                    <img :src="menus.form_collection.defaultIconUrl" v-else>
+                    <span>{{menus.form_collection.name}}</span>
+                </div>
             </div>
-            <div class="entry menu-item" v-show="activity.openClazzInteraction">
+            <div class="entry menu-item" v-if="activity.openClazzInteraction">
                 <!--讨论-->
                 <div :class="{'item': true, 'active': menus.discuss.selected}" @click="toDiscuss" v-if="menuShow('discuss')">
                     <img :src="menus.discuss.activeIconUrl" v-if="menus.discuss.selected">
@@ -92,9 +98,9 @@
                     <span>{{menus.stat.name}}</span>
                 </div>
             </div>
-            <div class="entry menu-item" v-if="customAppConfigs">
+            <div class="entry menu-item" v-if="customMenus && customMenus.length > 0">
                 <!--自定义应用列表-->
-                <div v-for="(appConfig, acIndex) in customAppConfigs" :key="'custom-app-config-' + acIndex" :class="{'item': true, 'active': menus[appConfig.code].selected}" @click="toCustomApp(acIndex)" v-if="menuShow(appConfig.code)">
+                <div v-for="(appConfig, acIndex) in customMenus" :key="'custom-app-config-' + acIndex" :class="{'item': true, 'active': menus[appConfig.code].selected}" @click="toCustomApp(acIndex)" v-if="menuShow(appConfig.code)">
                     <img :src="menus[appConfig.code].activeIconUrl" v-if="menus[appConfig.code].selected">
                     <img :src="menus[appConfig.code].defaultIconUrl" v-else>
                     <span>{{menus[appConfig.code].name}}</span>
@@ -141,10 +147,10 @@
                 activity: [[${activity}]],
                 loginUser: [[${session._login_user_}]],
                 signActivityManageIndex: [[${signActivityManageIndex}]],
-                activityMenus: [[${activityMenus}]],
-                clazzInteractionMenus: [[${clazzInteractionMenus}]],
-                customAppConfigs: [[${customAppConfigs}]],
-                menus: {
+                activityMenuConfigs: [[${activityMenuConfigs}]],
+                activityMenus: [],
+                customMenus: [],    // 自定义菜单列表
+                systemMenus: {
                     // 报名签到
                     sign_up: {
                         name: [[${signActivityManageIndex.signUpKeyword == null || signActivityManageIndex.signUpKeyword == '' ? '报名' : signActivityManageIndex.signUpKeyword}]] + "名单",
@@ -158,6 +164,13 @@
                         defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png",
                         activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png",
                         url: "//" + signWebSimpleDomain + "/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]],
+                        selected: false
+                    },
+                    form_collection: {
+                        name: "表单采集",
+                        defaultIconUrl: ctx + "/pc/assets/images/name-list-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/name-list-active.png",
+                        url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
                         selected: false
                     },
                     results_manage: {
@@ -199,6 +212,7 @@
                         selected: false
                     }
                 },
+                menus: [],
                 iframeUrl: "",
                 activityHomeQrcodeShow: false,
                 activityHomeQrcodeGenerated: false
@@ -207,7 +221,7 @@
                 var $this = this;
                 // 解决跨域
                 document.domain = $this.mainDomain;
-                $this.additionalMenus();
+                $this.handleActivityMenuConfigs();
                 $this.$nextTick(function () {
                     var signUpIds = $this.signActivityManageIndex.signUpIds;
                     if (!activityApp.isEmpty(signUpIds) && signUpIds.length > 1) {
@@ -238,12 +252,12 @@
                     window.onresize = function () {
                         $this.resizePageHeight();
                     };
-                    var firstMenuKey = Object.keys($this.menus)[0];
+                    var firstMenuKey = $this.activityMenuConfigs[0] && $this.activityMenuConfigs[0].code;
                     // 自定义应用配置判断
                     var firstShowAppMenu = false, firstAppIndex;
-                    if ($this.customAppConfigs && $this.customAppConfigs.length > 0) {
-                        for (var i = 0; i < $this.customAppConfigs.length; i++) {
-                            var appConfig = $this.customAppConfigs[i];
+                    if ($this.customMenus && $this.customMenus.length > 0) {
+                        for (var i = 0; i < $this.customMenus.length; i++) {
+                            var appConfig = $this.customMenus[i];
                             if (firstMenuKey == appConfig.code) {
                                 firstShowAppMenu = true
                                 firstAppIndex = i;
@@ -260,6 +274,9 @@
                             break;
                         case 'sign_in':
                             $this.toSignInManage();
+                            break;
+                        case 'form_collection':
+                            $this.toFormCollectionManage();
                             break;
                         case 'results_manage':
                             $this.toResultsManage();
@@ -297,28 +314,29 @@
                 })
             },
             methods: {
-                additionalMenus: function () {
+                // 处理活动菜单配置
+                handleActivityMenuConfigs: function () {
                     var $this = this;
-                    if ($this.activity.openClazzInteraction) {
-                        $($this.clazzInteractionMenus).each(function () {
+                    var menuConfigs = $this.activityMenuConfigs || [];
+                    $this.menus = $.extend(true, [], $this.systemMenus);
+                    var systemMenuCodes = Object.keys($this.systemMenus);
+                    $this.customMenus = [];
+                    $(menuConfigs).each(function () {
+                        if (!$this.activityMenus.includes(this.code)) {
                             $this.activityMenus.push(this.code);
+                        }
+                        // 非系统模块菜单
+                        if (!systemMenuCodes.includes(this.code)) {
+                            if (!this.system) {
+                                this.url += "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid;
+                                $this.customMenus.push(this);
+                            }
                             $this.menus[this.code] = {
                                 name: this.name,
-                                defaultIconUrl: ctx + "/pc/assets/images/" + this.defaultIcon + ".png",
-                                activeIconUrl: ctx + "/pc/assets/images/" + this.activeIcon + ".png",
-                                url: this.url,
-                                selected: false
-                            }
-                        });
-                    }
-                    $($this.customAppConfigs).each(function () {
-                        if (!activityApp.isEmpty(this.code)) {
-                            $this.activityMenus.push(this.code);
-                            $this.menus[this.code] = {
-                                name: this.title,
-                                defaultIconUrl: $this.cloudDomain + '/star3/origin/' + this.defaultIconCloudId,
-                                activeIconUrl: $this.cloudDomain + '/star3/origin/' + this.activeIconCloudId,
-                                url: this.url + "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid,
+                                code: this.code,
+                                defaultIconUrl: this.defaultIconUrl,
+                                activeIconUrl: this.activeIconUrl,
+                                url: this.url ,
                                 selected: false
                             }
                         }
@@ -381,7 +399,7 @@
                     var $this = this;
                     var appConfig;
                     if (!menuKey && !activityApp.isEmpty(appConfigIndex)) {
-                        appConfig = $this.customAppConfigs[appConfigIndex];
+                        appConfig = $this.customMenus[appConfigIndex];
                         menuKey = appConfig.code;
                     }
                     for (var key in $this.menus) {
@@ -399,6 +417,11 @@
                 toSignInManage: function () {
                     var $this = this;
                     $this.selectMenu("sign_in");
+                },
+                // 签到管理
+                toFormCollectionManage: function () {
+                    var $this = this;
+                    $this.selectMenu("form_collection");
                 },
                 // 考核管理
                 toResultsManage: function () {

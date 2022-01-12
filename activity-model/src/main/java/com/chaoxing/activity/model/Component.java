@@ -89,6 +89,16 @@ public class Component {
         return Arrays.stream(TypeEnum.values()).map(TypeEnum::getValue).collect(Collectors.toList());
     }
 
+    /**获取除自定义应用外的自定义组件列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-10 11:17:29
+     * @return
+     */
+    public static List<String> listCustomTypeWithoutCustomApp() {
+        return Arrays.stream(TypeEnum.values()).map(TypeEnum::getValue).filter(value -> !Objects.equals(value, TypeEnum.CUSTOM_APP.getValue())).collect(Collectors.toList());
+    }
+
     @Getter
     public enum TypeEnum {
 

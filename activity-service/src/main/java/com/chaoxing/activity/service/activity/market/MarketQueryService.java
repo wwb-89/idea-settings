@@ -198,7 +198,7 @@ public class MarketQueryService {
 		if (marketTemplate == null) {
 			return Lists.newArrayList();
 		}
-		return templateComponentService.listCustomTemplateComponent(marketTemplate.getId());
+		return templateComponentService.listCustomTplComponentWithoutCustomApp(marketTemplate.getId());
 	}
 	
 	/**获取市场所属机构名称

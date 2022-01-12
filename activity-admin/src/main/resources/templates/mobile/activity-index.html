@@ -73,9 +73,19 @@
                     mainDomain: [[${mainDomain}]],
                     signWebDomain: [[${signWebDomain}]],
                     activity: [[${activity}]],
-                    activityMenus: [[${activityMenus}]],
+                    activityMenuConfigs: [[${activityMenuConfigs}]],
+                    activityMenus: [],
                     signActivityManageIndex: [[${signActivityManageIndex}]],
                     loaded: true
+                },
+                created: function () {
+                    var $this = this;
+                    var menuConfigs = $this.activityMenuConfigs || [];
+                    $(menuConfigs).each(function () {
+                        if (!$this.activityMenus.includes(this.code)) {
+                            $this.activityMenus.push(this.code);
+                        }
+                    });
                 },
                 methods: {
                     menuShow: function (menu) {

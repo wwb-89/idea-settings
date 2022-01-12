@@ -24,17 +24,11 @@
             <div class="input-box">
                 <div class="check-list">
                     <el-checkbox-group v-model="checkedMenus" class="fl" @change="changeMenu">
-                        <el-checkbox v-for="item in menuList" :label="item.value" :key="item.value" v-if="item.value != 'setting'">{{item.name}}</el-checkbox>
+                        <el-checkbox v-for="item in canConfigMenus" :label="item.code" :key="item.code" v-if="item.code != 'setting'">{{item.name}}</el-checkbox>
                     </el-checkbox-group>
                 </div>
             </div>
         </div>
-
-<!--        <div class="btn-box-margin">-->
-<!--            <button class="btn-main btn-width-80" @click="submitForm">保存</button>-->
-<!--            <button class="btn-second-normal btn-width-80">取消</button>-->
-<!--        </div>-->
-
     </el-form>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -46,8 +40,8 @@
             data: {
                 mainDomain: [[${mainDomain}]],
                 activityId: [[${activityId}]],
-                menuList: [[${menuList}]],
-                activityMenus: [[${activityMenus}]] || [],
+                canConfigMenus: [[${canConfigMenus}]],
+                enableMenus: [[${enableMenus}]] || [],
                 checkedMenus:[]
             },
             created: function () {
@@ -56,7 +50,7 @@
             },
             mounted: function () {
                 var $this = this;
-                $this.checkedMenus = $.map($this.activityMenus, function (item) {
+                $this.checkedMenus = $.map($this.enableMenus, function (item) {
                     return item.menu;
                 });
             },
