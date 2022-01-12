@@ -1,6 +1,5 @@
 package com.chaoxing.activity.service.activity.collection;
 
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.ActivityCollection;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,18 +20,6 @@ public class ActivityCollectionValidateService {
 
 	@Resource
 	private ActivityCollectionQueryService activityCollectionQueryService;
-
-	/**是否已收藏
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-01-28 20:49:04
-	 * @param activityId
-	 * @param loginUser
-	 * @return boolean
-	 */
-	public boolean isCollected(Integer activityId, LoginUserDTO loginUser) {
-		return isCollected(activityId, loginUser.getUid());
-	}
 
 	/**是否已收藏
 	 * @Description

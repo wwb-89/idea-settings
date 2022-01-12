@@ -74,8 +74,8 @@ public class ActivityCreatePermission {
         COMPETENT_RANGE("作为主管的范围", 2),
         CUSTOM("自定义", 3);
 
-        private String name;
-        private Integer value;
+        private final String name;
+        private final Integer value;
 
         SignUpScopeType(String name, Integer value) {
             this.name = name;

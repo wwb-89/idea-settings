@@ -116,7 +116,6 @@ public class ErdosActivityInfoApiController {
         mhGeneralAppResultDataFields.add(buildField("", "", "106"));
         mhGeneralAppResultDataFields.add(buildField("", "", "107"));
         mhGeneralAppResultDataFields.add(buildField("", "", "108"));
-        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns;
         List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116);
         Integer workId = activity.getWorkId();
         Integer readingId = activity.getReadingId();

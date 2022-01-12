@@ -34,8 +34,6 @@ import java.util.List;
 @Service
 public class ExportService {
 	static class ExcelWidthStyleStrategy extends AbstractColumnWidthStyleStrategy {
-		// 统计setColumnWidth被调用多少次
-		private static int count = 0;
 
 		@Override
 		protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<CellData> cellDataList, Cell cell, Head head,

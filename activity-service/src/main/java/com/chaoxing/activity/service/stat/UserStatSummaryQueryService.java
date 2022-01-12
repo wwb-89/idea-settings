@@ -13,7 +13,6 @@ import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
@@ -58,8 +57,6 @@ public class UserStatSummaryQueryService {
 	private PassportApiService passportApiService;
 	@Resource
 	private ActivityQueryService activityQueryService;
-	@Resource
-	private MarketQueryService marketQueryService;
 
 	/**
 	 * 分页查询用户统计

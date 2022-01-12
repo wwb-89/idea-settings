@@ -5,11 +5,9 @@ import com.chaoxing.activity.mapper.CustomAppConfigMapper;
 import com.chaoxing.activity.mapper.CustomAppEnableMapper;
 import com.chaoxing.activity.model.CustomAppConfig;
 import com.chaoxing.activity.model.CustomAppEnable;
-import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,12 +24,10 @@ import java.util.stream.Collectors;
 @Service
 public class CustomAppConfigQueryService {
 
-    @Autowired
-    private CustomAppEnableMapper customAppEnableMapper;
-    @Autowired
-    private CustomAppConfigMapper customAppConfigMapper;
     @Resource
-    private TemplateComponentService templateComponentService;
+    private CustomAppEnableMapper customAppEnableMapper;
+    @Resource
+    private CustomAppConfigMapper customAppConfigMapper;
 
     /**根据组件id查询自定义应用配置
      * @Description 
