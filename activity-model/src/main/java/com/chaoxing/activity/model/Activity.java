@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
-import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
@@ -522,8 +522,24 @@ public class Activity {
         return Optional.ofNullable(getAddress()).orElse("") + Optional.ofNullable(getDetailAddress()).orElse("");
     }
 
-    public String getAdminUrl() {
-        return DomainConstant.ADMIN + "/activity/" + id;
+    /**获取活动管理url
+     * @Description
+     * @author wwb
+     * @Date 2021-03-09 19:11:37
+     * @return java.lang.String
+     */
+    public String getManageUrl() {
+        return String.format(UrlConstant.ATIVITY_MANAGE_URL, getId());
+    }
+
+    /**活动评价地址
+     * @Description
+     * @author wwb
+     * @Date 2021-03-16 11:12:37
+     * @return java.lang.String
+     */
+    public String getRatingUrl() {
+        return String.format(UrlConstant.ACTIVITY_RATING_URL, getId());
     }
 
 }

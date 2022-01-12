@@ -135,7 +135,7 @@ public class GdwywmLibraryMhApiController {
         }
         // 是不是管理员
         if (isManager) {
-            result.add(buildBtn("管理", activityQueryService.getActivityManageUrl(activity.getId())));
+            result.add(buildBtn("管理", activity.getManageUrl()));
         }
         if (openWork && workId != null) {
             result.add(buildBtn("提交作品", getWorkIndexUrl(workId)));

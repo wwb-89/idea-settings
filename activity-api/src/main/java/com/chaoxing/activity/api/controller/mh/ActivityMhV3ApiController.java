@@ -211,7 +211,7 @@ public class ActivityMhV3ApiController {
             } else {
                 ratingContent = "0人；0分";
             }
-            MhDataBuildUtil.buildFieldWithOsrUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING_1.getValue()), fieldCodeNameMap.getOrDefault("activity_rating", "评价"), ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
+            MhDataBuildUtil.buildFieldWithOsrUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING_1.getValue()), fieldCodeNameMap.getOrDefault("activity_rating", "评价"), ratingContent, activity.getRatingUrl(), mainFields);
         }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
@@ -506,13 +506,13 @@ public class ActivityMhV3ApiController {
         }
         // 是不是管理员
         if (isManager) {
-            result.add(MhDataBuildUtil.buildBtnField("管理", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.MANAGE_TRANSPARENT.getValue()), activityQueryService.getActivityManageUrl(activity.getId()), "1", false, MhBtnSequenceEnum.MANAGE.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("管理", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.MANAGE_TRANSPARENT.getValue()), activity.getManageUrl(), "1", false, MhBtnSequenceEnum.MANAGE.getSequence()));
         }
         // 评价
         Boolean openRating = activity.getOpenRating();
         openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
         if (openRating) {
-            result.add(MhDataBuildUtil.buildBtnField("评价", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.RATING.getValue()), activityQueryService.getActivityRatingUrl(activity.getId()), "1", false, MhBtnSequenceEnum.RATING.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("评价", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.RATING.getValue()), activity.getRatingUrl(), "1", false, MhBtnSequenceEnum.RATING.getSequence()));
         }
         if (existSignUpInfo) {
             result.add(MhDataBuildUtil.buildBtnField(signUpKeyword + "信息", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_UP_INFO.getValue()), userSignParticipationStat.getSignUpResultUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));

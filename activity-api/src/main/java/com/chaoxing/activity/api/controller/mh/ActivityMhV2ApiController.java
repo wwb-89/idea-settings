@@ -144,14 +144,14 @@ public class ActivityMhV2ApiController {
 			}
 			// 是不是管理员
 			if (activityValidationService.isManageAble(activity, uid)) {
-				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> manageBtns = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
+				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> manageBtns = buildBtnField("管理", getFlag(availableFlags), activity.getManageUrl(), "2");
 				manageBtns.forEach(v -> hashMap.put(v.getFlag(), v));
 			}
 			// 评价
 			Boolean openRating = activity.getOpenRating();
 			openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
 			if (openRating) {
-				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> ratingBtns = buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2");
+				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> ratingBtns = buildBtnField("评价", getFlag(availableFlags), activity.getRatingUrl(), "2");
 				ratingBtns.forEach(v -> hashMap.put(v.getFlag(), v));
 			}
 		}
@@ -297,7 +297,7 @@ public class ActivityMhV2ApiController {
 		// 是不是管理员
 		if (isManager) {
 			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
-			btns.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
+			btns.addAll(buildBtnField("管理", getFlag(availableFlags), activity.getManageUrl(), "2"));
 			for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn : btns) {
 				result.add(btn);
 			}
@@ -310,7 +310,7 @@ public class ActivityMhV2ApiController {
 		// 评价
 		Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(Boolean.FALSE);
 		if (openRating) {
-			result.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
+			result.addAll(buildBtnField("评价", getFlag(availableFlags), activity.getRatingUrl(), "2"));
 		}
 		if (existSignUpInfo) {
 			result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
