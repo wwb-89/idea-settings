@@ -12,12 +12,27 @@
 <body>
     <div class="container" id="vue">
         <div class="slider">
-            <div class="title">
-                <span>成都少儿阅读活动</span>
-                <i class="icon-qr-code" v-on:click="dialogQrCodeVisible=true"></i>
+            <div class="title color333">
+                <div class="title-box">
+                    <img src="../assets/images/touxiang.png" alt="">
+                    <span class="title-name ">成都少儿阅读活动成都少儿阅读活动成都少儿阅读活动</span>
+                    <div class="clear"></div>
+                </div>
+                <div class="title-pop">
+                    <div class="img">
+                        <img src="../assets/images/example.jpg" alt="">
+                    </div>
+                    <div class="pop-info">
+                        <p class="color333 fs14 font600">书香浙江 云享阅读2020浙江省云阅读计划之“晒书房计划之“晒书房</p>
+                        <p class="color666 fs14 info-time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                        <div id="qrCodeMini" v-on:click="qrPopFunc"></div>
+                        <p class="fs12 color999">扫码访问首页</p>
+                    </div>
+                </div>
             </div>
-            <div class="menu">
-                <div class="entry menu-item">
+            <hr class="divider">
+            <div class="menu color333">
+                <div class="entry menu-item ">
                     <div class="item ">
                         <img src="../assets/images/icon-name-list-active.png">
                         <span>
@@ -30,8 +45,7 @@
                             签到管理
                         </span>
                     </div>
-                </div>
-                <div class="grade menu-item">
+
                     <div class="item active">
                         <img src="../assets/images/icon-grade-manage-active.png">
                         <span>
@@ -44,16 +58,13 @@
                             管理员
                         </span>
                     </div>
-                </div>
-                <div class="message menu-item">
+
                     <div class="item">
                         <img src="../assets/images/icon-notice-default.png">
                         <span>
                             发通知
                         </span>
                     </div>
-                </div>
-                <div class="statistics menu-item">
                     <div class="item">
                         <img src="../assets/images/icon-statistics-default.png">
                         <span>
@@ -62,7 +73,7 @@
                     </div>
                 </div>
             </div>
-            <div class="edit">
+            <div class="edit" style="display: none;">
                 <div class="item">
                     <img src="../assets/images/icon-edit-default.png">
                     <span>
@@ -128,7 +139,7 @@
         el: '#vue',
         data: function () {
             return {
-                dialogQrCodeVisible:true,
+                dialogQrCodeVisible: false,
             }
         },
         created: function () {
@@ -137,15 +148,23 @@
         },
         mounted: function () {
             this.$nextTick(function (){
-                $('#qrCode').qrcode({
+                $('#qrCodeMini').qrcode({
                     text: "http://www.jq22.com",
-                    width: 300,
-                    height: 300
+                    width: 62,
+                    height: 62
                 });
+              $('#qrCode').qrcode({
+                text: "http://www.jq22.com",
+                width: 300,
+                height: 300
+              });
             });
 
         },
         methods: {
+          qrPopFunc: function () {
+            this.dialogQrCodeVisible=true;
+          }
         }
     });
 

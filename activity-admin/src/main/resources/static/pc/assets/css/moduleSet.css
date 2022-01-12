@@ -1,0 +1,723 @@
+@charset "UTF-8";
+.fs0 {
+  font-size: 0;
+}
+
+/*模块设置*/
+.manage-page {
+  padding: 16px 32px;
+  background-color: white;
+}
+
+.manage-page .top-title {
+  min-height: 34px;
+}
+
+.manage-page .top-title .title-name {
+  line-height: 22px;
+  padding: 6px 0;
+  display: inline-block;
+}
+
+.manage-page .top-title .el-button.btn-add {
+  line-height: 28px;
+  padding: 0 26px;
+  border: 1px solid #82C3FF;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  font-size: 13px;
+  color: #0084FF;
+  margin-top: 2px;
+}
+
+.manage-page .sortable-box {
+  margin: 16px 0;
+}
+
+.manage-page .sortable-box .table-deader {
+  background: #F7F8F9;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.manage-page .sortable-box .table-deader li {
+  line-height: 20px;
+  font-weight: 500;
+  color: #666666;
+  padding: 10px 8px;
+}
+
+.manage-page .sortable-box .table-body .table-tr {
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.manage-page .sortable-box .table-body .table-tr .el-input__inner {
+  border: 0;
+  padding-left: 0;
+  height: 20px;
+  line-height: 20px;
+  width: 75px;
+}
+
+.manage-page .sortable-box .table-body .table-tr .el-input__suffix .el-input__icon {
+  line-height: 20px;
+}
+
+.manage-page .sortable-box .table-body li {
+  line-height: 32px;
+  color: #333333;
+  padding: 16px 8px;
+}
+
+.manage-page .sortable-box .table-body li.li-drag i {
+  margin-top: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.manage-page .sortable-box .table-body li.li-operate {
+  color: #0084FF;
+}
+
+.manage-page .sortable-box .table-body li.li-operate .btn {
+  cursor: pointer;
+}
+
+.manage-page .sortable-box .table-body li.li-operate .btn-delete {
+  margin-left: 16px;
+}
+
+.manage-page .sortable-box li {
+  display: inline-block;
+  font-size: 14px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.manage-page .sortable-box .li-drag {
+  width: 5%;
+}
+
+.manage-page .sortable-box .li-name {
+  width: 76%;
+}
+
+.manage-page .sortable-box .li-status {
+  width: 8%;
+}
+
+.manage-page .sortable-box .li-operate {
+  width: 11%;
+}
+
+.manage-page .sortable-box .li-button {
+  width: 38%;
+}
+
+.manage-page .sortable-box .li-rule {
+  width: 38%;
+}
+
+.dialog-mask {
+  height: 100%;
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dailog {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  width: 488px;
+  background: #ffffff;
+  border-radius: 8px;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.dailog .dailog-header {
+  position: relative;
+  height: 58px;
+  background: #ffffff;
+  border-radius: 10px 10px 0px 0px;
+  border-bottom: 1px solid #f0f2f7;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  color: #333333;
+  line-height: 58px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.dailog .dailog-header .close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  background-image: url("../images/yq-design/close-default.png");
+  background-size: cover;
+}
+
+.dailog .dailog-header .close:hover {
+  background-image: url("../images/yq-design/close-hover.png");
+}
+
+.dailog .body {
+  position: relative;
+  padding: 16px 32px;
+  font-size: 0;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  max-height: 428px;
+  overflow: auto;
+}
+
+.dailog .body .marginBottom24 {
+  margin-bottom: 24px;
+}
+
+.dailog .body .marginBottom20 {
+  margin-bottom: 20px;
+}
+
+.dailog .body .marginBottom8 {
+  margin-bottom: 8px;
+}
+
+.dailog .body .switch-box {
+  margin-bottom: 8px;
+}
+
+.dailog .body .switch-box .label {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  margin-right: 15px;
+}
+
+.dailog .body .switch-box .switch {
+  margin-right: 32px;
+}
+
+.dailog .body .switch-box .set-icon {
+  color: #0084FF;
+  font-size: 14px;
+  display: -webkit-inline-box;
+  display: -moz-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.dailog .body .switch-box .set-icon i {
+  font-size: 16px;
+  margin: 0 2px 0 4px;
+  cursor: pointer;
+}
+
+.dailog .body .switch-box .set-icon .icon-info {
+  color: #CCCCCC;
+}
+
+.dailog .body .cursor {
+  cursor: pointer;
+}
+
+.dailog .body .input-box {
+  margin-bottom: 16px;
+  line-height: 32px;
+  height: 32px;
+}
+
+.dailog .body .input-box .label {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 14px;
+  color: #333333;
+  margin-right: 16px;
+}
+
+.dailog .body .input-box .weight348 {
+  width: 348px;
+}
+
+.dailog .body .input-box .weight318 {
+  width: 318px;
+}
+
+.dailog .body .input-box .weight372 {
+  width: 372px;
+}
+
+.dailog .body .input-box .weightLabelRight {
+  width: calc(100% - 72px);
+}
+
+.dailog .body .input-box .del-circle {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: top;
+  background-image: url(../images/yq-design/minus-circle.png);
+  position: absolute;
+  right: 0;
+  top: 8px;
+  cursor: pointer;
+}
+
+.dailog .body .input-box .del-circle:hover {
+  background-image: url(../images/yq-design/minus-circle-hover.png);
+}
+
+.dailog .body .input-box .del-circle.disable {
+  cursor: not-allowed;
+}
+
+.dailog .body .input-box .del-circle.disable:hover {
+  background-image: url(../images/yq-design/minus-circle-disable.png);
+}
+
+.dailog .body .add-option {
+  display: inline-block;
+  margin-left: 52px;
+  color: #0084FF;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.dailog .body .add-option i {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: top;
+  background-image: url(../images/yq-design/plus-circle-16.png);
+  margin-top: 2px;
+  margin-right: 4px;
+}
+
+.dailog .body .add-option:hover {
+  opacity: 0.8;
+}
+
+.dailog .body .el-form .el-form-item__content {
+  height: 32px;
+  line-height: 32px;
+}
+
+.dailog .body .el-form .el-select {
+  width: 100%;
+}
+
+.dailog .body .el-form .el-input__inner {
+  line-height: 32px;
+}
+
+.dailog .body .el-form .el-input__icon {
+  line-height: 32px;
+}
+
+.dailog .body .el-form .el-form-item__label {
+  text-align: left;
+  color: #333333;
+  line-height: 32px;
+}
+
+.dailog .body .el-form .tips {
+  color: #666666;
+  font-size: 14px;
+  line-height: 32px;
+}
+
+.dailog .body .el-form .three {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.dailog .body .el-form .three > span {
+  line-height: 32px;
+  color: #333333;
+  font-size: 14px;
+  margin: 0 12px;
+}
+
+.dailog .body .el-form .three .width186 {
+  width: 178px;
+}
+
+.dailog .body .el-form .three .width150 {
+  width: 150px;
+}
+
+.dailog .body .display-flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 14px;
+}
+
+.dailog .body .display-flex .el-switch {
+  margin-left: auto;
+}
+
+.dailog .body .display-flex .el-switch .el-switch__label.is-active {
+  color: #333333;
+}
+
+.dailog .body .display-flex1 {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 14px;
+}
+
+.dailog .body .condition-box .condition-item {
+  position: relative;
+  margin-top: 20px;
+}
+
+.dailog .body .condition-box .condition-item .el-select {
+  width: 100px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  margin-right: 12px;
+}
+
+.dailog .body .condition-box .condition-item .el-select:first-child {
+  width: 120px;
+}
+
+.dailog .body .condition-box .condition-item > .el-input {
+  width: 152px;
+}
+
+.dailog .body .condition-box .condition-item .icon-minus-circle {
+  position: absolute;
+  font-size: 16px;
+  line-height: 32px;
+  margin-left: 12px;
+  cursor: pointer;
+  color: #CCCCCC;
+}
+
+.dailog .body .condition-box .condition-item .icon-minus-circle:hover {
+  color: #FF666D;
+}
+
+.dailog .body .condition-box .add-box {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #0084FF;
+}
+
+.dailog .body .condition-box .add-box i {
+  font-size: 16px;
+  line-height: 20px;
+  margin-right: 4px;
+}
+
+.dailog .body .word-drag-inner .sort-item {
+  position: relative;
+  padding-left: 24px;
+}
+
+.dailog .body .word-drag-inner .sort-item .label {
+  margin-right: 8px;
+}
+
+.dailog .body .word-drag-inner .sort-item:hover .icon-drag-inner {
+  display: block;
+}
+
+.dailog .body .word-drag-inner .sort-item .icon-drag {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  font-size: 16px;
+  cursor: move;
+  color: #CCCCCC;
+  display: none;
+}
+
+.dailog .body .word-drag-inner .sort-item .icon-drag:hover {
+  color: #82C3FF;
+}
+
+.dailog .center-body {
+  padding: 0 24px;
+}
+
+.dailog .footer {
+  height: 58px;
+  background: #ffffff;
+  border-radius: 0px 0px 10px 10px;
+  border-top: 1px solid #f0f2f7;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.dailog .footer .btn-box {
+  text-align: center;
+  padding: 14px 0;
+  font-size: 0;
+}
+
+.dailog .footer .border-btn {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 24px;
+}
+
+.dailog .footer .normal-btn {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.marginBottom16 {
+  margin-bottom: 16px;
+}
+
+/*选择应用---链接--弹窗*/
+.selectLinkPop .body {
+  padding: 21px 32px;
+}
+
+.selectLinkPop .body .form .el-input__inner {
+  color: #333333;
+  height: 32px;
+  line-height: 32px;
+  border: 1px solid #E9E9E9;
+  border-radius: 2px;
+  padding: 0 11px;
+}
+
+.selectLinkPop .body .content-switch-box {
+  background: #F8F8F8;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.selectLinkPop .body .content-switch-box .switch-box .label {
+  color: #666666;
+}
+
+.selectLinkPop .body .content-switch-box .switch-box .switch {
+  margin-right: 0;
+}
+
+.selectLinkPop .body .content-switch-box .link-lists {
+  padding-top: 16px;
+}
+
+.selectLinkPop .body .content-switch-box .link-lists .link-list {
+  position: relative;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.selectLinkPop .body .content-switch-box .link-lists .link-list .left-box .line1 {
+  overflow: hidden;
+  width: 100%;
+}
+
+.selectLinkPop .body .content-switch-box .link-lists .link-list .left-box .line1 .icon-img {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #E7E7E7;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 6px;
+  text-align: center;
+  float: left;
+  cursor: pointer;
+  background-color: white;
+}
+
+.selectLinkPop .body .content-switch-box .link-lists .link-list .left-box .line1 .icon-img img {
+  width: 16px;
+  margin-top: 8px;
+}
+
+.selectLinkPop .body .content-switch-box .link-lists .link-list .left-box .line1 .el-input {
+  width: calc(100% - 48px);
+  float: right;
+}
+
+.selectLinkPop .body .content-switch-box .link-lists .terminal-select .el-checkbox__label {
+  color: #333333;
+}
+
+.border-btn {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 14px;
+  border: 1px solid #82c3ff;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #0084ff;
+  cursor: pointer;
+}
+
+.border-btn:hover {
+  background: #EBF5FF;
+}
+
+.normal-btn {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 14px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  background: #0084ff;
+  color: #ffffff;
+  border: none;
+}
+
+.normal-btn.disable {
+  opacity: 0.3;
+}
+
+.normal-btn.disable:hover {
+  opacity: 0.3;
+}
+
+.normal-btn:hover {
+  opacity: 0.8;
+}
+
+.dialog-box {
+  height: 100%;
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.dialog-box .masking {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+}
+
+.confirm_dialog {
+  z-index: 4;
+  position: absolute;
+  padding: 30px;
+  width: 300px;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  text-align: center;
+  margin: auto;
+  left: 0;
+  top: calc(50% - 100px);
+  right: 0;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.confirm_dialog .icon {
+  display: block;
+  height: 30px;
+}
+
+.confirm_dialog .icon img {
+  width: 30px;
+  height: 30px;
+}
+
+.confirm_dialog .text {
+  font-size: 16px;
+  line-height: 24px;
+  color: #333333;
+  margin-top: 20px;
+  margin-bottom: 0;
+  display: block;
+}
+
+.confirm_dialog .btn {
+  margin-top: 32px;
+  font-size: 0;
+}
+
+.confirm_dialog .btn span {
+  font-size: 13px;
+  border-radius: 15px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  line-height: 18px;
+  padding: 5px 13px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.confirm_dialog .btn .cancel {
+  border: 1px solid #82C3FF;
+  color: #0084FF;
+  background: #FFFFFF;
+  margin-right: 24px;
+}
+
+.confirm_dialog .btn .cancel:hover {
+  background: #EBF5FF;
+}
+
+.confirm_dialog .btn .ok {
+  border: 1px solid #0084FF;
+  color: #FFFFFF;
+  background: #0084FF;
+}
+
+.confirm_dialog .btn .ok:hover {
+  background: rgba(0, 132, 255, 0.8);
+}
