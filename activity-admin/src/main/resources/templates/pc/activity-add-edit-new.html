@@ -1507,29 +1507,31 @@
                 // 使用jquery循环来显示隐藏
                 showOrHideComponent: function () {
                     var $this = this;
-                    $("div[data-name='template-component']").each(function () {
-                        var templateComponentId = $(this).data("id");
-                        if ($this.curHideTemplateComponentIds.indexOf(templateComponentId) < 0) {
-                            $(this).show();
-                        } else {
-                            $(this).hide();
-                        }
-                    });
-                    $("div[data-name='template-component-partition']").each(function () {
-                        var partitionIndex = $(this).data("index");
-                        var existShowTemplateComponent = false;
-                        var templateComponents = $this.tplComponentPartitions[partitionIndex];
-                        $(templateComponents).each(function () {
-                            if ($this.curHideTemplateComponentIds.indexOf(this.id) < 0) {
-                                existShowTemplateComponent = true;
-                                return false;
+                    $this.$nextTick(function () {
+                        $("div[data-name='template-component']").each(function () {
+                            var templateComponentId = $(this).data("id");
+                            if ($this.curHideTemplateComponentIds.indexOf(templateComponentId) < 0) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
                             }
                         });
-                        if (existShowTemplateComponent) {
-                            $(this).show();
-                        } else {
-                            $(this).hide();
-                        }
+                        $("div[data-name='template-component-partition']").each(function () {
+                            var partitionIndex = $(this).data("index");
+                            var existShowTemplateComponent = false;
+                            var templateComponents = $this.tplComponentPartitions[partitionIndex];
+                            $(templateComponents).each(function () {
+                                if ($this.curHideTemplateComponentIds.indexOf(this.id) < 0) {
+                                    existShowTemplateComponent = true;
+                                    return false;
+                                }
+                            });
+                            if (existShowTemplateComponent) {
+                                $(this).show();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
                     });
                 },
                 // 分类显示组件map封装
