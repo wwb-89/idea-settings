@@ -19,6 +19,8 @@ public class CommonConstant {
 
 	}
 
+	public static final String SCHEME_HTTP = "http";
+	public static final String SCHEME_HTTPS = "https";
 	/** 默认的文件路径分隔符 */
 	public static final String DEFAULT_FILE_SEPARATOR = "/";
 	/** groupName分隔符 */

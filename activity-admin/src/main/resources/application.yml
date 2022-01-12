@@ -84,6 +84,9 @@ server:
   tomcat:
     ## 不限制post的大小
     max-http-form-post-size: -1
+    remoteip:
+      protocol-header: X-Forwarded-Proto
+      protocol-header-https-value: https
 ## actuator配置
 management:
   access:

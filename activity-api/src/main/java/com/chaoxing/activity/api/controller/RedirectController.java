@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.queue.activity.handler.WfwFormSyncActivityQueueService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.CookieUtils;
+import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -280,7 +281,8 @@ public class RedirectController {
         flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
         marketId = getOrCreateMarketByFlag(request, marketId, flag);
         if (marketId != null) {
-            return "redirect:" + DomainConstant.ADMIN + "/activity/add" + "?marketId=" + marketId + "&flag=" + flag;
+            String redirectUrl = DomainConstant.ADMIN + "/activity/add" + "?marketId=" + marketId + "&flag=" + flag;
+            return "redirect:" + UrlUtils.handleRedirectUrl(redirectUrl, request);
         }
         return "";
     }
