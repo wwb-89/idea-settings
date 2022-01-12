@@ -1,0 +1,90 @@
+/*二级菜单样式表*/
+
+html {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.color333 {
+  color: #333333;
+}
+
+.color666 {
+  color: #666666;
+}
+
+.color999 {
+  color: #999999;
+}
+
+.fs14 {
+  font-size: 14px;
+}
+
+.fs12 {
+  font-size: 12px;
+}
+
+.font600 {
+  font-weight: 600;
+}
+
+.sub-container {
+  border-radius: 8px;
+  min-height: 860px;
+  height: 100%;
+  .slider {
+    float: left;
+    height: 100%;
+    max-width: 220px;
+    background: #ffffff;
+    border-radius: 8px 0px 0px 8px;
+    position: relative;
+    .menu {
+      width: 220px;
+      .menu-item {
+        padding: 12px 0;
+        .item {
+          height: 24px;
+          padding: 16px 24px;
+          text-align: left;
+          cursor: pointer;
+          &:hover {
+            background: rgba(0, 132, 255, 0.04);
+          }
+          span {
+            font-size: 14px;
+            display: block;
+            line-height: 20px;
+            float: left;
+          }
+        }
+      }
+    }
+  }
+  .content {
+    float: left;
+    height: calc(100%);
+    width: calc(100% - 221px);
+    border-radius: 0px 8px 8px 0px;
+    background: #ffffff;
+    border-left: 1px solid #f0f0f0;
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .active {
+    background: rgba(0, 132, 255, 0.04);
+    span {
+      color: #0084FF;
+      font-weight: 500;
+    }
+  }
+}
