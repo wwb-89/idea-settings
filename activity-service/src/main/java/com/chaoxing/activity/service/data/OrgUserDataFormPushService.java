@@ -4,12 +4,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.model.OrgUserDataPushRecord;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
@@ -48,6 +50,8 @@ public class OrgUserDataFormPushService {
 
     @Resource
     private WfwFormApiService wfwFormApiService;
+    @Resource
+    private WfwContactApiService wfwContactApiService;
     @Resource
     private ActivityQueryService activityQueryService;
 
@@ -166,9 +170,24 @@ public class OrgUserDataFormPushService {
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "department")) {
-                    data.add(userStatSummary.getOrganizationStructure());
-                    item.put("val", data);
-                    result.add(item);
+                    // 部门信息
+                    if (Objects.equals("department", formInfo.getCompt())) {
+                        List<WfwDepartmentDTO> wfwDepartments = wfwContactApiService.listUserJoinDepartment(userStatSummary.getUid(), activity.getCreateFid());
+                        if (CollectionUtils.isNotEmpty(wfwDepartments)) {
+                            for (WfwDepartmentDTO wfwDepartment : wfwDepartments) {
+                                JSONObject user = new JSONObject();
+                                user.put("id", wfwDepartment.getId());
+                                user.put("name", wfwDepartment.getName());
+                                data.add(user);
+                            }
+                            item.put("idNames", data);
+                            result.add(item);
+                        }
+                    } else {
+                        data.add(userStatSummary.getOrganizationStructure());
+                        item.put("val", data);
+                        result.add(item);
+                    }
                 } else if (Objects.equals(alias, "activity_id")) {
                     data.add(userStatSummary.getActivityId());
                     item.put("val", data);
