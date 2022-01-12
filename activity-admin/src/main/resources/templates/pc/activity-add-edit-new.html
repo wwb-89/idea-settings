@@ -95,11 +95,11 @@
         </div>
         <!-- 创建活动头部 -->
         <div v-show="templateComponents && activity">
-            <div class="info box" v-for="(tplComponents, tplIdx) in tplComponentPartitions" v-show="partitionShow(tplIdx)">
+            <div class="info box" v-for="(tplComponents, tplIdx) in tplComponentPartitions" data-name="template-component-partition" :data-index="tplIdx">
                 <form action="" onsubmit="return false;">
                     <template v-for="(item, index) in tplComponents">
                         <div class="title" v-if="item.code == 'partition'">{{item.name}}</div>
-                        <div class="form-item" v-if="item.code == 'activity_name'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-if="item.code == 'activity_name'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <el-input type="text" placeholder="请填写" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
@@ -107,7 +107,7 @@
                             </div>
                         </div>
                         <!--活动时间-->
-                        <div class="form-item" v-else-if="item.code == 'activity_time_scope'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.code == 'activity_time_scope'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <el-date-picker
@@ -133,7 +133,7 @@
                             </div>
                         </div>
                         <!--活动封面-->
-                        <div class="form-item align-start" v-else-if="item.code == 'activity_cover'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'activity_cover'" data-name="template-component" :data-id="item.id">
                             <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <div class="img-box">
@@ -151,7 +151,7 @@
                             </div>
                         </div>
                         <!--主办方-->
-                        <div class="form-item" v-else-if="item.code == 'activity_organisers'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.code == 'activity_organisers'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box" style="width: 400px;">
                                 <el-input type="text" placeholder="请填写" v-model.trim="activity.organisers" maxlength="20"></el-input>
@@ -160,7 +160,7 @@
                         </div>
                         <!--活动形式-->
                         <template v-else-if="item.code == 'activity_type'">
-                            <div v-show="templateComponentShow(item.id)">
+                            <div data-name="template-component" :data-id="item.id">
                                 <div class="form-item">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                                     <div class="input-box">
@@ -179,7 +179,7 @@
                             </div>
                         </template>
                         <!--活动类型-->
-                        <div class="form-item" v-else-if="item.code == 'activity_classify'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.code == 'activity_classify'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <el-select v-model="activity.activityClassifyId" placeholder="请选择" v-if="strict != 1" popper-class="fixed-select">
@@ -201,7 +201,7 @@
                             </div>
                         </div>
                         <!--积分-->
-                        <div class="form-item" v-else-if="item.code == 'integral'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.code == 'integral'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box setForm">
                                 <input type="number" v-model.trim="activity.integral" min="0" placeholder="请输入" class="score-input">
@@ -210,7 +210,7 @@
                             </div>
                         </div>
                         <!--学时-->
-                        <div class="form-item" v-else-if="item.code == 'period'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.code == 'period'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box setForm">
                                 <input type="number" min="0" step="0.1" v-model.trim="activity.period" @blur="periodChange" placeholder="请输入" class="score-input">
@@ -219,7 +219,7 @@
                             </div>
                         </div>
                         <!--学分-->
-                        <div class="form-item" v-else-if="item.code == 'credit'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.code == 'credit'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box setForm">
                                 <input type="number" min="0" step="0.1" v-model.trim="activity.credit" @blur="creditChange" placeholder="请输入" class="score-input">
@@ -228,7 +228,7 @@
                             </div>
                         </div>
                         <!--参与时长上限-->
-                        <div class="form-item" v-else-if="item.code == 'max_participate_time_length'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.code == 'max_participate_time_length'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box setForm">
                                 <input type="number" min="1" step="1" v-model.trim="activity.timeLengthUpperLimit" placeholder="不限" class="score-input">
@@ -237,7 +237,7 @@
                             </div>
                         </div>
                         <!--发布范围-->
-                        <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box wrap">
                                 <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择" style="width: 45%" :loading="classDataLoading" :loading-text="'加载中'" @focus="loadReleaseClassData(item.originIdentify)">
@@ -262,7 +262,7 @@
                             </div>
                         </div>
                         <!--签到-->
-                        <div class="form-item align-start" v-else-if="item.code == 'sign_in_out'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'sign_in_out'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box wrap">
                                 <div class="already_add" @click="toSignInList">
@@ -274,7 +274,7 @@
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
-                        <div class="form-item align-start" v-else-if="item.code == 'form_collection'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'form_collection'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box wrap">
                                 <div class="already_add" @click="toFormCollectionList">
@@ -287,7 +287,7 @@
                             </div>
                         </div>
                         <!--作品征集设置-->
-                        <div class="form-item align-start" v-else-if="item.code == 'work'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'work'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
@@ -301,7 +301,7 @@
                             </div>
                         </div>
                         <!--考核-->
-                        <div class="form-item align-start" v-else-if="item.code == 'inspection_config'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'inspection_config'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
@@ -315,7 +315,7 @@
                             </div>
                         </div>
                         <!--小组设置-->
-                        <div class="form-item align-start" v-else-if="item.code == 'group'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'group'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
@@ -325,7 +325,7 @@
                             </div>
                         </div>
                         <!--阅读设置-->
-                        <div class="form-item align-start" v-else-if="item.code == 'reading'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'reading'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
@@ -339,7 +339,7 @@
                             </div>
                         </div>
                         <!--班级互动-->
-                        <div class="form-item align-start" v-else-if="item.code == 'clazz_interaction'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'clazz_interaction'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
@@ -349,7 +349,7 @@
                             </div>
                         </div>
                         <!--推送提醒-->
-                        <div class="form-item align-start" v-else-if="item.code == 'push_reminder'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'push_reminder'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
@@ -363,7 +363,7 @@
                             </div>
                         </div>
                         <!--证书设置-->
-                        <div class="form-item align-start" v-else-if="item.code == 'certificate'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.code == 'certificate'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box configurationForm" style="margin-top: 0px;" @click="certificateEdit">
@@ -373,7 +373,7 @@
                             </div>
                         </div>
                         <!--标签-->
-                        <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box wrap">
                                 <el-select v-model="activity.tagNames" style="width: 698px;" multiple filterable allow-create default-first-option placeholder="选择或新建" no-data-text="输入后新建">
@@ -383,7 +383,7 @@
                             </div>
                         </div>
                         <!--评价-->
-                        <div v-else-if="item.code == 'activity_rating'" v-show="templateComponentShow(item.id)">
+                        <div v-else-if="item.code == 'activity_rating'" data-name="template-component" :data-id="item.id">
                             <div class="form-item">
                                 <label class="label">{{item.name}}</label>
                                 <div class="input-box">
@@ -401,7 +401,7 @@
                         </div>
                         <!--定时发布-->
                         <template v-else-if="item.code == 'timing_release'">
-                            <div v-show="templateComponentShow(item.id)">
+                            <div data-name="template-component" :data-id="item.id">
                                 <div class="form-item">
                                     <label class="label">{{item.name}}</label>
                                     <div class="input-box">
@@ -430,7 +430,7 @@
                             </div>
                         </template>
                         <!--简介-->
-                        <div class="form-item align-start" style="margin-bottom: 0px;" v-else-if="item.code == 'introduction'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" style="margin-bottom: 0px;" v-else-if="item.code == 'introduction'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box">
                                 <!-- 笔记编辑器 -->
@@ -441,7 +441,7 @@
                             </div>
                         </div>
                         <!--报名设置列表-->
-                        <div v-else-if="signUpMap[item.id] && (item.code == 'sign_up' || item.code =='company_sign_up')" v-show="templateComponentShow(item.id)">
+                        <div v-else-if="signUpMap[item.id] && (item.code == 'sign_up' || item.code =='company_sign_up')" data-name="template-component" :data-id="item.id">
                             <div class="set-box">
                                 <div class="title set">{{item.name}}</div>
                                 <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
@@ -632,7 +632,7 @@
                             </form>
                         </div>
                         <!--自定义应用配置-->
-                        <div class="form-item align-start" v-else-if="item.type == 'custom_app'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item align-start" v-else-if="item.type == 'custom_app'" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
@@ -641,7 +641,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div :class="{'form-item': true, 'align-start': item.type == 'rich_text'}" v-else-if="inputTypes.indexOf(item.type) != -1" v-show="templateComponentShow(item.id)">
+                        <div :class="{'form-item': true, 'align-start': item.type == 'rich_text'}" v-else-if="inputTypes.indexOf(item.type) != -1" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <template v-if="item.type == 'rich_text'">
                                 <div class="input-box column">
@@ -658,7 +658,7 @@
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
-                        <div class="form-item" v-else-if="item.type == 'radio'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.type == 'radio'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <el-select v-if="item.dataOrigin == 'form'" v-model="activityComponentValueMap[item.id].value" placeholder="请选择">
@@ -670,7 +670,7 @@
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
-                        <div class="form-item" v-else-if="item.type == 'checkbox'" v-show="templateComponentShow(item.id)">
+                        <div class="form-item" v-else-if="item.type == 'checkbox'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <el-select v-if="item.dataOrigin == 'form'" multiple v-model="activityComponentValueMap[item.id].value" placeholder="请选择">
@@ -1396,7 +1396,7 @@
             },
             mounted: function () {
                 var $this = this;
-                // 初始化笔记便假期
+                // 初始化笔记编辑器
                 if ($this.needInitEditor) {
                     app.initUEditor($this.activity.introduction);
                 }
@@ -1500,9 +1500,38 @@
                         }
                     });
                     $this.curHideTemplateComponentIds = curHideTemplateComponentIds;
+                    $this.showOrHideComponent();
                 }
             },
             methods: {
+                // 使用jquery循环来显示隐藏
+                showOrHideComponent: function () {
+                    var $this = this;
+                    $("div[data-name='template-component']").each(function () {
+                        var templateComponentId = $(this).data("id");
+                        if ($this.curHideTemplateComponentIds.indexOf(templateComponentId) < 0) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                    $("div[data-name='template-component-partition']").each(function () {
+                        var partitionIndex = $(this).data("index");
+                        var existShowTemplateComponent = false;
+                        var templateComponents = $this.tplComponentPartitions[partitionIndex];
+                        $(templateComponents).each(function () {
+                            if ($this.curHideTemplateComponentIds.indexOf(this.id) < 0) {
+                                existShowTemplateComponent = true;
+                                return false;
+                            }
+                        });
+                        if (existShowTemplateComponent) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                },
                 // 分类显示组件map封装
                 packageClassifyShowComponentsMap: function () {
                     var $this = this;
@@ -1532,24 +1561,7 @@
                             $this.curHideTemplateComponentIds.push(templateComponentId);
                         }
                     });
-                },
-                // 模板组件是否显示
-                templateComponentShow: function (templateComponentId) {
-                    var $this = this;
-                    return $this.curHideTemplateComponentIds.indexOf(templateComponentId) < 0;
-                },
-                // 分区是否显示（当分区的所有templateComponent都隐藏时需要隐藏）
-                partitionShow: function (index) {
-                    var $this = this;
-                    var existShowTemplateComponent = false;
-                    var templateComponents = $this.tplComponentPartitions[index];
-                    $(templateComponents).each(function () {
-                        if ($this.templateComponentShow(this.id)) {
-                            existShowTemplateComponent = true;
-                            return false;
-                        }
-                    });
-                    return existShowTemplateComponent;
+                    $this.showOrHideComponent();
                 },
                 swiperInit:function (){
                     new Swiper('.swiper-container', {
@@ -1843,17 +1855,6 @@
                     $this.activity.longitude = $this.$refs.activityMap.lng;
                     $this.activity.dimension = $this.$refs.activityMap.lat;
                 },
-                selectActivityClassify: function (index) {
-                    var $this = this;
-                    $($this.activityClassifies).each(function (i) {
-                        if (i == index) {
-                            $this.$set($this.activityClassifies[i], "selected", true);
-                            $this.activity.activityClassifyId = this.id;
-                        } else {
-                            $this.$set($this.activityClassifies[i], "selected", false);
-                        }
-                    });
-                },
                 toAddActivityClassify: function () {
                     var $this = this;
                     $this.addEditActivityClassify = $this.marketId ? {
@@ -1935,34 +1936,6 @@
                     var activityClassify = $this.activityClassifies[index];
                     $this.deleteActivityClassifyId = activityClassify.id;
                     $this.$refs.deleteClassifyWindow.show = true;
-                },
-                deleteActivityClassifySubmit: function () {
-                    var $this = this;
-                    var orgUrl = ctx + "/api/org/" + $this.fid + "/classify/" + $this.deleteActivityClassifyId + "/delete";
-                    var marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/" + $this.deleteActivityClassifyId + "/delete";
-                    var url = $this.marketId ? marketUrl : orgUrl;
-                    app.ajaxPostWithLoading(url, {}, function (data) {
-                        if (data.success) {
-                            $this.$refs.deleteClassifyWindow.show = false;
-                            $($this.activityClassifies).each(function (i) {
-                                if (this.id == $this.deleteActivityClassifyId) {
-                                    if (this.selected) {
-                                        $this.activity.activityClassifyId = null;
-                                    }
-                                    $this.activityClassifies.splice(i, 1);
-                                    return false;
-                                }
-                            });
-                        } else {
-                            var message = data.message;
-                            if (activityApp.isEmpty(message)) {
-                                message = "删除"+ $this.activityClassifyTitle +"失败";
-                            }
-                            app.showMsg(message);
-                        }
-                    }, function () {
-                        app.showMsg("删除"+ $this.activityClassifyTitle +"失败");
-                    });
                 },
                 // 验证输入
                 validateForm: function (validateOfflineAddress) {
