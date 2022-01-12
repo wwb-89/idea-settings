@@ -116,7 +116,6 @@ public class ErdosActivityInfoApiController {
         mhGeneralAppResultDataFields.add(buildField("", "", "106"));
         mhGeneralAppResultDataFields.add(buildField("", "", "107"));
         mhGeneralAppResultDataFields.add(buildField("", "", "108"));
-        List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns;
         List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116);
         Integer workId = activity.getWorkId();
         Integer readingId = activity.getReadingId();
@@ -212,7 +211,7 @@ public class ErdosActivityInfoApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 搜索内容
         String sw = urlParams.getString("sw");
-        Integer activityClassifyId = Optional.ofNullable(getClassifyIDFromParams(params)).map(Integer::valueOf).orElse(null);
+        Integer activityClassifyId = Optional.ofNullable(getClassifyIdFromParams(params)).map(Integer::valueOf).orElse(null);
         String areaCode = Optional.ofNullable(getAreaCodeFromParams(params)).orElse(null);
         // 状态
         String statusParams = urlParams.getString("status");
@@ -264,7 +263,7 @@ public class ErdosActivityInfoApiController {
         return fids;
     }
 
-    private Integer getClassifyIDFromParams(JSONObject params) {
+    private Integer getClassifyIdFromParams(JSONObject params) {
         String jsonStr = params.getString("classifies");
         if (StringUtils.isNotBlank(jsonStr)) {
             JSONArray jsonArray = JSON.parseArray(jsonStr);

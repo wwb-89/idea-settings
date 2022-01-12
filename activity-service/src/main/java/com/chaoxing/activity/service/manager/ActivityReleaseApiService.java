@@ -25,6 +25,7 @@ import java.util.Objects;
 public class ActivityReleaseApiService {
 
     private static final String GET_ACTIVITY_CREATE_URL = DomainConstant.ACTIVITY + "/api/activity/%d/to-activity-engine-param";
+    private static final String CODE = "success";
 
     @Resource
     private RestTemplate restTemplate;
@@ -40,7 +41,7 @@ public class ActivityReleaseApiService {
         String url = String.format(GET_ACTIVITY_CREATE_URL, activityId);
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
-        if (Objects.equals(jsonObject.getBoolean("success"), true)) {
+        if (Objects.equals(jsonObject.getBoolean(CODE), true)) {
             return JSON.parseObject(jsonObject.getString("data"), ActivityCreateFromActivityReleaseParamDTO.class);
         } else {
             String message = jsonObject.getString("message");

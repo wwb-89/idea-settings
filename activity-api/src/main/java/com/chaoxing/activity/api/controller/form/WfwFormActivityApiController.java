@@ -81,7 +81,7 @@ public class WfwFormActivityApiController {
     }
 
     /**通用表单配置发布状态更新接口
-     * @Description 万能表单点击发布/下架掉用接口
+     * @Description 万能表单点击发布/下架调用接口
      * @author huxiaolong
      * @Date 2021-11-13 01:12:47
      * @param fid

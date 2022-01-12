@@ -12,9 +12,8 @@ import com.chaoxing.activity.model.ActivityCreatePermission;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.MoocApiService;
-import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
-import com.chaoxing.activity.service.org.OrgConfigService;
+import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -51,8 +50,6 @@ public class ActivityCreatePermissionService {
     private MoocApiService moocApiService;
     @Resource
     private ActivityCreatePermissionMapper activityCreatePermissionMapper;
-    @Resource
-    private OrgConfigService orgConfigService;
 
     /**查询机构fid下roleId的角色权限
     * @Description

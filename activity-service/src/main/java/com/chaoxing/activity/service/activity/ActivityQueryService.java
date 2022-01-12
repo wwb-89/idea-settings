@@ -10,7 +10,6 @@ import com.chaoxing.activity.dto.activity.*;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.query.ActivityReleasePlatformActivityQueryDTO;
 import com.chaoxing.activity.dto.activity.query.result.ActivityReleasePlatformActivityQueryResultDTO;
-import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpAbleSignDTO;
@@ -43,17 +42,17 @@ import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryServi
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
-import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
-import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.constant.*;
+import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.constant.DateFormatConstant;
+import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
-import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -66,7 +65,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -118,10 +116,6 @@ public class ActivityQueryService {
 	@Resource
 	private ActivityStatSummaryQueryService activityStatSummaryQueryService;
 	@Resource
-	private TableFieldQueryService tableFieldQueryService;
-	@Resource
-	private CloudApiService cloudApiService;
-	@Resource
 	private PassportApiService passportApiService;
 	@Resource
 	private InspectionConfigQueryService inspectionConfigQueryService;
@@ -149,7 +143,7 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 */
 	public Page<Activity> listParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
-		calDateScope(activityQuery);
+		activityQuery.calDateScope();
 		Integer currentUid = activityQuery.getCurrentUid();
 		Boolean signUpAble = activityQuery.getSignUpAble();
 		List<String> tagNames = activityQuery.getTags();
@@ -231,7 +225,7 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 */
 	public Page<Activity> pageFlag(Page<Activity> page, ActivityQueryDTO activityQuery) {
-		calDateScope(activityQuery);
+		activityQuery.calDateScope();
 		Integer currentUid = activityQuery.getCurrentUid();
 		Boolean signUpAble = Optional.ofNullable(activityQuery.getSignUpAble()).orElse(false);
 		if (currentUid != null && signUpAble) {
@@ -259,7 +253,7 @@ public class ActivityQueryService {
 		}
 		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(activityQuery.getFlag())) {
-			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(",")));
+			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(CommonConstant.DEFAULT_SEPARATOR)));
 		}
 		List<WfwAreaDTO> wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
@@ -351,79 +345,6 @@ public class ActivityQueryService {
 	public Page<Activity> listMarketCreated(Page<Activity> page, Integer marketId) {
 		page = activityMapper.listMarketCreated(page, marketId);
 		return page;
-	}
-
-	/**计算查询的时间范围
-	 * @Description
-	 * @author wwb
-	 * @Date 2020-11-13 14:21:57
-	 * @param activityQuery
-	 * @return void
-	 */
-	private void calDateScope(ActivityQueryDTO activityQuery) {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String dateScope = Optional.ofNullable(activityQuery.getDateScope()).orElse("");
-		ActivityQueryDateScopeEnum activityQueryDateEnum = ActivityQueryDateScopeEnum.fromValue(dateScope);
-		LocalDate today = LocalDate.now();
-		String minTimeStr;
-		String maxTimeStr;
-		switch (activityQueryDateEnum) {
-			case ALL:
-				minTimeStr = "";
-				maxTimeStr = "";
-				break;
-			case NEARLY_A_MONTH:
-				minTimeStr = today.atTime(0, 0, 0).plusMonths(-1).format(dateTimeFormatter);
-				maxTimeStr = "";
-				break;
-			case NEARLY_THREE_MONTH:
-				minTimeStr = today.atTime(0, 0, 0).plusMonths(-3).format(dateTimeFormatter);
-				maxTimeStr = "";
-				break;
-			case NEARLY_SIX_MONTH:
-				minTimeStr = today.atTime(0, 0, 0).plusMonths(-6).format(dateTimeFormatter);
-				maxTimeStr = "";
-				break;
-			case NEARLY_A_YEAR:
-				minTimeStr = today.atTime(0, 0, 0).plusYears(-1).format(dateTimeFormatter);
-				maxTimeStr = "";
-				break;
-			case TODAY:
-				minTimeStr = today.atTime(0, 0, 0).format(dateTimeFormatter);
-				maxTimeStr = today.atTime(23, 59, 59).format(dateTimeFormatter);
-				break;
-			case TOMORROW:
-				minTimeStr = today.atTime(0, 0, 0).plusDays(1).format(dateTimeFormatter);
-				maxTimeStr = today.atTime(23, 59, 59).plusDays(1).format(dateTimeFormatter);
-				break;
-			case WEEKEND:
-				// 周末
-				minTimeStr = today.with(DayOfWeek.SATURDAY).atTime(0, 0, 0).format(dateTimeFormatter);
-				maxTimeStr = today.with(DayOfWeek.SUNDAY).atTime(23, 59, 59).format(dateTimeFormatter);
-				break;
-			case NEARLY_A_WEEK:
-				minTimeStr = today.atTime(0,0,0).format(dateTimeFormatter);
-				maxTimeStr = today.atTime(23,59,59).plusWeeks(1).format(dateTimeFormatter);
-				break;
-			case SPECIFIED:
-				String date = activityQuery.getDate();
-				if (StringUtils.isNotBlank(date)) {
-					LocalDate specifiedDate = LocalDate.parse(date, dateFormatter);
-					minTimeStr = specifiedDate.atTime(0, 0, 0).format(dateTimeFormatter);
-					maxTimeStr = specifiedDate.atTime(23, 59, 59).format(dateTimeFormatter);
-				} else {
-					minTimeStr = "";
-					maxTimeStr = "";
-				}
-				break;
-			default:
-				// 更早
-				minTimeStr = "";
-				maxTimeStr = today.atTime(0, 0, 0).plusYears(-1).format(dateTimeFormatter);
-		}
-		activityQuery.setMinTimeStr(minTimeStr);
-		activityQuery.setMaxTimeStr(maxTimeStr);
 	}
 
 	/**查询活动类型列表
@@ -738,7 +659,6 @@ public class ActivityQueryService {
 		page.setTotal(page.getTotal() + additionalTotal);
 	}
 
-
 	/**门户我报名的活动查询
 	 * @Description
 	 * @author huxiaolong
@@ -945,15 +865,11 @@ public class ActivityQueryService {
 	 * @return java.util.List<java.lang.Integer>
 	 */
 	public List<Integer> listSignedUpUid(Activity activity) {
-		List<Integer> uids = Lists.newArrayList();
-		if (activity != null) {
-			Integer signId = activity.getSignId();
-			if (signId != null) {
-				// 报名的uid列表
-				uids = signApiService.listSignedUpUid(signId);
-			}
+		Integer signId = Optional.ofNullable(activity).map(Activity::getSignId).orElse(null);
+		if (signId != null) {
+			return signApiService.listSignedUpUid(signId);
 		}
-		return uids;
+		return Lists.newArrayList();
 	}
 
 	/**根据活动id查询已报名的用户
@@ -964,8 +880,7 @@ public class ActivityQueryService {
 	 * @return java.util.List<com.chaoxing.activity.dto.manager.PassportUserDTO>
 	 */
 	public List<PassportUserDTO> listSignedUpUsers(Integer activityId) {
-		Activity activity = getById(activityId);
-		List<Integer> uids = listSignedUpUid(activity);
+		List<Integer> uids = listSignedUpUid(activityId);
 		List<PassportUserDTO> users = Lists.newArrayList();
 		uids.forEach(uid -> {
 			PassportUserDTO user = passportApiService.getByUid(uid);
@@ -974,7 +889,6 @@ public class ActivityQueryService {
 
 		return users;
 	}
-
 
 	/**根据活动id，查询已报名却未评价的用户id
 	 * @Description
@@ -985,32 +899,29 @@ public class ActivityQueryService {
 	 */
 	public List<Integer> listNoRateSignedUpUid(Activity activity) {
 		List<Integer> signedUpUids = listSignedUpUid(activity);
-		return listNoRatingUid(activity.getId(), signedUpUids);
+		if (CollectionUtils.isEmpty(signedUpUids)) {
+			return Lists.newArrayList();
+		}
+		List<Integer> ratedUid = listActivityRatedUid(activity.getId());
+		signedUpUids.removeAll(ratedUid);
+		return signedUpUids;
 	}
 
-	/**根据活动id，用户ids，过滤出未评价用户id
+	/**查询活动评价的用户id列表
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-05-14 10:50:04
 	 * @param activityId
-	 * @param uids
 	 * @return java.util.List<java.lang.Integer>
 	 */
-	private List<Integer> listNoRatingUid(Integer activityId, List<Integer> uids) {
-		if (CollectionUtils.isEmpty(uids)) {
-			return new ArrayList<>();
-		}
-		List<Integer> ratedUids = activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>().lambda()
+	public List<Integer> listActivityRatedUid(Integer activityId) {
+		return activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>().lambda()
 						.eq(ActivityRatingDetail::getActivityId, activityId)
 						// 未删除的评论
-						.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE)
-						.in(ActivityRatingDetail::getScorerUid, uids))
+						.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE))
 				.stream()
 				.map(ActivityRatingDetail::getScorerUid)
 				.collect(Collectors.toList());
-
-		uids.removeAll(ratedUids);
-		return uids;
 	}
 
 	/**针对创建机构、时间范围，对活动进行分页查询
@@ -1093,11 +1004,9 @@ public class ActivityQueryService {
 			if (CollectionUtils.isNotEmpty(classifies)) {
 				Map<Integer, Classify> classifyIdMap = classifies.stream().collect(Collectors.toMap(Classify::getId, v -> v, (v1, v2) -> v2));
 				for (Activity activity : activities) {
-					Integer activityClassifyId = activity.getActivityClassifyId();
-					Classify classify = classifyIdMap.get(activityClassifyId);
-					if (classify != null) {
-						activity.setActivityClassifyName(classify.getName());
-					}
+					Classify classify = classifyIdMap.get(activity.getActivityClassifyId());
+					String classifyName = Optional.ofNullable(classify).map(Classify::getName).orElse("");
+					activity.setActivityClassifyName(classifyName);
 				}
 			}
 		}
@@ -1126,8 +1035,7 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.ActivityDetail
 	 */
 	public ActivityDetail getDetailByActivityId(Integer activityId) {
-		List<ActivityDetail> activityDetails = activityDetailMapper.selectList(new QueryWrapper<ActivityDetail>()
-				.lambda()
+		List<ActivityDetail> activityDetails = activityDetailMapper.selectList(new LambdaQueryWrapper<ActivityDetail>()
 				.eq(ActivityDetail::getActivityId, activityId)
 		);
 		return activityDetails.stream().findFirst().orElse(null);
@@ -1144,8 +1052,7 @@ public class ActivityQueryService {
 		if (CollectionUtils.isEmpty(activityIds)) {
 			return Lists.newArrayList();
 		}
-		return activityDetailMapper.selectList(new QueryWrapper<ActivityDetail>()
-				.lambda()
+		return activityDetailMapper.selectList(new LambdaQueryWrapper<ActivityDetail>()
 				.in(ActivityDetail::getActivityId, activityIds)
 		);
 	}
@@ -1158,8 +1065,7 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.Activity
 	 */
 	public Activity getByWorkId(Integer workId) {
-		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
-				.lambda()
+		List<Activity> activities = activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.eq(Activity::getWorkId, workId)
 		);
 		return activities.stream().findFirst().orElse(null);
@@ -1225,18 +1131,6 @@ public class ActivityQueryService {
 				.in(Activity::getSignId, signIds)
 				.ne(Activity::getStatus, Activity.StatusEnum.ENDED.getValue())
 		);
-	}
-
-	/**获取活动的字段code与名称的关系
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-08-18 20:11:10
-	 * @param activityId
-	 * @return java.util.Map<java.lang.String,java.lang.String>
-	 */
-	public Map<String, String> getFieldCodeNameRelation(Integer activityId) {
-		Activity activity = getById(activityId);
-		return getFieldCodeNameRelation(activity);
 	}
 
 	/**获取活动的字段code与名称的关系
@@ -1355,121 +1249,6 @@ public class ActivityQueryService {
 		return workIds;
 	}
 
-	/**
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-10-18 16:44:08
-	 * @param queryParam
-	 * @return com.chaoxing.activity.dto.export.ExportDataDTO
-	 */
-	public ExportDataDTO packageExportData(ActivityManageQueryDTO queryParam, LoginUserDTO exportUser) {
-		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listMarketShowTableFieldDetail(queryParam.getMarketId(), TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
-		Page<Activity> page = listManaging(new Page<>(1, Integer.MAX_VALUE), queryParam, exportUser);
-		return ExportDataDTO.builder()
-				.headers(listActivityHeader(tableFieldDetails))
-				.data(listData(page.getRecords(), tableFieldDetails))
-				.build();
-	}
-
-	private List<List<String>> listActivityHeader(List<TableFieldDetail> tableFieldDetails) {
-		List<List<String>> headers = Lists.newArrayList();
-		headers.add(Lists.newArrayList("活动ID"));
-		for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
-			List<String> header = Lists.newArrayList();
-			header.add(tableFieldDetail.getName());
-			headers.add(header);
-		}
-		return headers;
-	}
-
-
-	private String valueToString(Object value) {
-		return value == null ? "" : String.valueOf(value);
-	}
-
-	/**获取数据
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-06-01 16:19:14
-	 * @param records
-	 * @param tableFieldDetails
-	 * @return java.util.List<java.util.List<java.lang.String>>
-	 */
-	private List<List<String>> listData(List<Activity> records, List<TableFieldDetail> tableFieldDetails) {
-		List<List<String>> data = Lists.newArrayList();
-		if (CollectionUtils.isEmpty(records)) {
-			return data;
-		}
-		for (Activity record : records) {
-			List<String> itemData = Lists.newArrayList();
-			PassportUserDTO createUser = passportApiService.getByUid(record.getCreateUid());
-			String createOrgName = passportApiService.getOrgName(record.getCreateFid());
-			// 活动id
-			itemData.add(valueToString(record.getId()));
-			for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
-				String code = tableFieldDetail.getCode();
-				switch (code) {
-					case "cover":
-						String coverUrl = record.getCoverUrl();
-						if (StringUtils.isBlank(coverUrl) && StringUtils.isNotBlank(record.getCoverCloudId())) {
-							coverUrl = cloudApiService.buildImageUrl(record.getCoverCloudId());
-						}
-						itemData.add(coverUrl);
-						break;
-					case "name":
-						itemData.add(record.getName());
-						break;
-					case "createUserName":
-						itemData.add(createUser.getRealName());
-						break;
-					case "createOrgName":
-						itemData.add(createOrgName);
-						break;
-					case "signedUpNum":
-						itemData.add(valueToString(record.getSignedUpNum()));
-						break;
-					case "status":
-						itemData.add(Activity.StatusEnum.fromValue(record.getStatus()).getName());
-						break;
-					case "poster":
-						itemData.add(UrlConstant.getPosterUrl(record.getId()));
-						break;
-					case "startTime":
-						itemData.add(Optional.ofNullable(record.getStartTime()).map(v -> v.format(DateUtils.DATE_MINUTE_TIME_FORMATTER)).orElse(null));
-						break;
-					case "endTime":
-						itemData.add(Optional.ofNullable(record.getEndTime()).map(v -> v.format(DateUtils.DATE_MINUTE_TIME_FORMATTER)).orElse(null));
-						break;
-					case "personLimit":
-						itemData.add(valueToString(record.getPersonLimit()));
-						break;
-					case "signedInNum":
-						itemData.add(valueToString(record.getSignedInNum()));
-						break;
-					case "signedInRate":
-						itemData.add(valueToString(record.getSignedInRate()));
-						break;
-					case "rateNum":
-						itemData.add(valueToString(record.getRateNum()));
-						break;
-					case "rateScore":
-						itemData.add(valueToString(record.getRateScore()));
-						break;
-					case "qualifiedNum":
-						itemData.add(valueToString(record.getQualifiedNum()));
-						break;
-					case "activityClassify":
-						itemData.add(record.getActivityClassifyName());
-						break;
-					default:
-
-				}
-			}
-			data.add(itemData);
-		}
-		return data;
-	}
-
 	/**查询未开始的活动
 	 * @Description
 	 * @author wwb
@@ -1538,7 +1317,6 @@ public class ActivityQueryService {
 				.eq(Activity::getCreateFid, fid)
 		);
 	}
-
 
 	/**根据现有活动activityId，查询活动信息，克隆出一个活动创建实例
 	 * @Description
@@ -1679,25 +1457,6 @@ public class ActivityQueryService {
 		Map<Integer, List<WfwAreaDTO>> activityIdWfwAreasMap = scopeWfwAreas.stream().collect(Collectors.groupingBy(WfwAreaDTO::getActivityId));
 		return ActivityReleasePlatformActivityQueryResultDTO.build(activities, activityIdWfwAreasMap);
 	}
-
-	/**查询所有预告中的活动
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-11-24 15:17:18
-	 * @param
-	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	 */
-	public List<Activity> listAllForecastActivity(ActivityQueryDTO activityQuery) {
-		activityQuery.setStatusList(Lists.newArrayList(2));
-		List<String> tagNames = activityQuery.getTags();
-		if (CollectionUtils.isNotEmpty(tagNames)) {
-			List<Tag> tags = tagQueryService.listByNames(tagNames);
-			activityQuery.setTagIds(tags.stream().map(Tag::getId).collect(Collectors.toList()));
-		}
-		Page<Activity> page = activityMapper.pageParticipate(new Page<>(1, Integer.MAX_VALUE), activityQuery);
-		return page.getRecords();
-	}
-
 
 	/**查询机构或市场下活动列表
 	 *

@@ -5,7 +5,6 @@ import com.chaoxing.activity.dto.engine.TemplateComponentDTO;
 import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
-import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +30,6 @@ public class ActivityEngineQueryService {
     private ComponentQueryService componentQueryService;
     @Resource
     private TemplateComponentService templateComponentService;
-    @Resource
-    private MarketQueryService marketQueryService;
 
     /**根据模板id和市场id查询模板数据(模板字段设置页面使用该查询)
      * @Description

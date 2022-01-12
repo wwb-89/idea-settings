@@ -16,13 +16,13 @@ import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.classify.component.ClassifyShowComponentHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -299,7 +299,7 @@ public class ClassifyHandleService {
 		if (CollectionUtils.isEmpty(classifyIds)) {
 			return;
 		}
-		Map<Integer, Integer> classifyIdSequenceMap = new HashMap<>();
+		Map<Integer, Integer> classifyIdSequenceMap = Maps.newHashMap();
 		for (int i = 0; i < classifyIds.size(); i++) {
 			classifyIdSequenceMap.put(classifyIds.get(i), i + 1);
 		}
@@ -318,7 +318,7 @@ public class ClassifyHandleService {
 		if (CollectionUtils.isEmpty(classifyIds)) {
 			return;
 		}
-		Map<Integer, Integer> classifyIdSequenceMap = new HashMap<>();
+		Map<Integer, Integer> classifyIdSequenceMap = Maps.newHashMap();
 		for (int i = 0; i < classifyIds.size(); i++) {
 			classifyIdSequenceMap.put(classifyIds.get(i), i + 1);
 		}

@@ -11,8 +11,8 @@ import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.mapper.ExportRecordMapper;
 import com.chaoxing.activity.model.ExportRecord;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.export.activity.ActivityExportService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.queue.ExportQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
@@ -61,7 +61,7 @@ public class ExportRecordHandleService {
     @Resource
     private UserResultQueryService userResultQueryService;
     @Resource
-    private ActivityQueryService activityQueryService;
+    private ActivityExportService activityExportService;
     @Resource
     private CloudApiService cloudApiService;
 
@@ -158,7 +158,7 @@ public class ExportRecordHandleService {
             case ACTIVITY_MANAGE:
                 ActivityManageQueryDTO activityManageQueryParams = JSONObject.parseObject(params, ActivityManageQueryDTO.class);
                 LoginUserDTO exportUser = LoginUserDTO.buildDefault(activityManageQueryParams.getExportUid(), activityManageQueryParams.getFid());
-                exportData = activityQueryService.packageExportData(activityManageQueryParams, exportUser);
+                exportData = activityExportService.packageExportData(activityManageQueryParams, exportUser);
                 break;
             default:
         }

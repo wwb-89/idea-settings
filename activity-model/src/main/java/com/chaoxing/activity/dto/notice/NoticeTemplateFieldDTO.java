@@ -36,7 +36,7 @@ public class NoticeTemplateFieldDTO {
     private Boolean enableAutoRemove;
     /** 黑名单自动移除时间 */
     private Integer autoRemoveHours;
-    // 黑名单所需字段
+    /** 黑名单所需字段 */
     private List<SignUpNoticeTemplateFieldDTO> signUps;
 
     @Data

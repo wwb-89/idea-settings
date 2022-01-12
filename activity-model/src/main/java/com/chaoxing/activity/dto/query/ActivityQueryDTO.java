@@ -1,11 +1,17 @@
 package com.chaoxing.activity.dto.query;
 
+import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 /**活动查询对象
  * @author wwb
@@ -69,5 +75,71 @@ public class ActivityQueryDTO {
 	private String minTimeStr;
 	/** 最大时间 */
 	private String maxTimeStr;
+
+	public void calDateScope() {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String dateScope = Optional.ofNullable(getDateScope()).orElse("");
+		ActivityQueryDateScopeEnum activityQueryDateEnum = ActivityQueryDateScopeEnum.fromValue(dateScope);
+		LocalDate today = LocalDate.now();
+		String minTimeStr;
+		String maxTimeStr;
+		switch (activityQueryDateEnum) {
+			case ALL:
+				minTimeStr = "";
+				maxTimeStr = "";
+				break;
+			case NEARLY_A_MONTH:
+				minTimeStr = today.atTime(0, 0, 0).plusMonths(-1).format(dateTimeFormatter);
+				maxTimeStr = "";
+				break;
+			case NEARLY_THREE_MONTH:
+				minTimeStr = today.atTime(0, 0, 0).plusMonths(-3).format(dateTimeFormatter);
+				maxTimeStr = "";
+				break;
+			case NEARLY_SIX_MONTH:
+				minTimeStr = today.atTime(0, 0, 0).plusMonths(-6).format(dateTimeFormatter);
+				maxTimeStr = "";
+				break;
+			case NEARLY_A_YEAR:
+				minTimeStr = today.atTime(0, 0, 0).plusYears(-1).format(dateTimeFormatter);
+				maxTimeStr = "";
+				break;
+			case TODAY:
+				minTimeStr = today.atTime(0, 0, 0).format(dateTimeFormatter);
+				maxTimeStr = today.atTime(23, 59, 59).format(dateTimeFormatter);
+				break;
+			case TOMORROW:
+				minTimeStr = today.atTime(0, 0, 0).plusDays(1).format(dateTimeFormatter);
+				maxTimeStr = today.atTime(23, 59, 59).plusDays(1).format(dateTimeFormatter);
+				break;
+			case WEEKEND:
+				// 周末
+				minTimeStr = today.with(DayOfWeek.SATURDAY).atTime(0, 0, 0).format(dateTimeFormatter);
+				maxTimeStr = today.with(DayOfWeek.SUNDAY).atTime(23, 59, 59).format(dateTimeFormatter);
+				break;
+			case NEARLY_A_WEEK:
+				minTimeStr = today.atTime(0,0,0).format(dateTimeFormatter);
+				maxTimeStr = today.atTime(23,59,59).plusWeeks(1).format(dateTimeFormatter);
+				break;
+			case SPECIFIED:
+				String date = getDate();
+				if (StringUtils.isNotBlank(date)) {
+					LocalDate specifiedDate = LocalDate.parse(date, dateFormatter);
+					minTimeStr = specifiedDate.atTime(0, 0, 0).format(dateTimeFormatter);
+					maxTimeStr = specifiedDate.atTime(23, 59, 59).format(dateTimeFormatter);
+				} else {
+					minTimeStr = "";
+					maxTimeStr = "";
+				}
+				break;
+			default:
+				// 更早
+				minTimeStr = "";
+				maxTimeStr = today.atTime(0, 0, 0).plusYears(-1).format(dateTimeFormatter);
+		}
+		setMinTimeStr(minTimeStr);
+		setMaxTimeStr(maxTimeStr);
+	}
 
 }

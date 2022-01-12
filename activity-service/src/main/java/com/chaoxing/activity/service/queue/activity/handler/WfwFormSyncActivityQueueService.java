@@ -107,7 +107,6 @@ public class WfwFormSyncActivityQueueService {
     @Resource
     private ActivityPushReminderService activityPushReminderService;
 
-
     /**
     * @Description
     * @author huxiaolong
@@ -227,7 +226,7 @@ public class WfwFormSyncActivityQueueService {
         // 报名配置万能表单填报信息
         OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
         if (signUpCreateParam != null) {
-            WfwFormCreateResultDTO wfwFormCreateResult = createWfwFormId(templateId, operateUser);
+            WfwFormCreateResultDTO wfwFormCreateResult = createWfwForm(templateId, operateUser);
             if (wfwFormCreateResult != null) {
                 String openFillInfo = WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.OPEN_FILL_INFO);
                 signUpCreateParam.setFillInfo(Objects.equals("是", openFillInfo));
@@ -260,7 +259,7 @@ public class WfwFormSyncActivityQueueService {
         return activity;
     }
 
-    /**获取万能表单id
+    /**创建万能表单
      * @Description 
      * @author wwb
      * @Date 2021-11-30 17:32:21
@@ -268,7 +267,7 @@ public class WfwFormSyncActivityQueueService {
      * @param operateUser
      * @return com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO
     */
-    private WfwFormCreateResultDTO createWfwFormId(Integer templateId, OperateUserDTO operateUser) {
+    private WfwFormCreateResultDTO createWfwForm(Integer templateId, OperateUserDTO operateUser) {
         // 查询模版关联的报名组件templateComponentId
         Integer sysComponentTplComponentId = templateComponentService.getSysComponentTplComponentId(templateId, Component.SystemComponentCodeEnum.SIGN_UP.getValue());
         if (sysComponentTplComponentId == null) {

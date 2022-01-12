@@ -152,21 +152,6 @@ public class ActivityHandleService {
 	private CustomAppConfigHandleService customAppConfigHandleService;
 
 	/**新增活动
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-09-03 18:27:01
-	 * @param activityCreateParamDto
-	 * @param signCreateParamDto
-	 * @param wfwRegionalArchitectureDtos
-	 * @param loginUser
-	 * @return java.lang.Integer
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser, boolean isClone) {
-		return add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser, isClone);
-	}
-
-	/**新增活动
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-12-22 20:17:33
@@ -290,17 +275,15 @@ public class ActivityHandleService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void handleClazzInteraction(Activity activity, SignCreateParamDTO signCreateParamDto, LoginUserDTO loginUser) {
-		Integer activityId = activity.getId();
-		if (activity.getOpenClazzInteraction() && (activity.getClazzId() == null || activity.getCourseId() == null)) {
+		boolean needCreateClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false) && (activity.getClazzId() == null || activity.getCourseId() == null);
+		if (needCreateClazzInteraction) {
 			SignUpCreateParamDTO signUp = Optional.ofNullable(signCreateParamDto.getSignUps()).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
-			Integer fillFormId = null;
-			if (signUp != null) {
-				fillFormId = signUp.getFillInfoFormId();
-			}
+			Integer fillFormId = Optional.ofNullable(signUp).map(SignUpCreateParamDTO::getFillInfoFormId).orElse(null);
 			String activityName = activity.getName();
 			String coverUrl = activity.getCoverUrl();
 			String flag = activity.getActivityFlag();
 			Integer fid = activity.getCreateFid();
+			Integer activityId = activity.getId();
 			ClazzInteractionDTO clazzInteraction = clazzInteractionApiService.clazzCourseCreate(activityId, activityName, loginUser.getUid(), coverUrl, fillFormId, fid, flag);
 			if (clazzInteraction == null) {
 				return;
