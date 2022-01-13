@@ -52,6 +52,7 @@ body {
     align-items: center;
 }
 .slider .title .title-box{
+    position: relative;
     padding: 4px;
     width: 100%;
     box-sizing: border-box;
@@ -77,6 +78,12 @@ body {
     float: left;
     max-width: calc(100% - 48px);
     margin-left: 8px;
+
+
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 44px;
 }
 .slider .title .icon-qr-code {
     display: inline-block;
