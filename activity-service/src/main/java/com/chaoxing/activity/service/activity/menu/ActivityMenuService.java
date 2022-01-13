@@ -57,9 +57,7 @@ public class ActivityMenuService {
      */
     public List<ActivityMenuConfig> listActivityAllDefaultMenus(Integer activityId, Integer templateId) {
         // 系统的默认全部菜单模块 + 班级互动
-        List<ActivityMenuDTO> activityMenus = Lists.newArrayList();
-        activityMenus.addAll(ActivityMenuDTO.listSystemModule());
-        activityMenus.addAll(ActivityMenuDTO.listDefaultClazzInteractionMenus());
+        List<ActivityMenuDTO> activityMenus = Lists.newArrayList(ActivityMenuDTO.listSystemModule());
         // 获取活动对应的模板，查看是否存在自定义模板应用，若有，则全部加入管理配置
         if (templateId != null) {
             List<CustomAppConfig> customAppConfigs = customAppConfigQueryService.listBackend(templateId);
@@ -108,9 +106,7 @@ public class ActivityMenuService {
         }
         Activity activity = activityQueryService.getById(activityId);
         // 系统固有的模板组件
-        List<ActivityMenuDTO> canConfigMenus = Lists.newArrayList();
-        canConfigMenus.addAll(ActivityMenuDTO.listSystemModule());
-        canConfigMenus.addAll(ActivityMenuDTO.listDefaultClazzInteractionMenus());
+        List<ActivityMenuDTO> canConfigMenus = Lists.newArrayList(ActivityMenuDTO.listSystemModule());
         // 获取模板的自定义应用组件templateComponentId
         List<Integer> customAppTplComponentIds = templateComponentService.listCustomAppComponentTplComponentIds(activity.getId());
         if (CollectionUtils.isNotEmpty(customAppTplComponentIds)) {
@@ -182,8 +178,6 @@ public class ActivityMenuService {
         }
         // 系统模块
         Map<String, ActivityMenuDTO> systemModuleMap = ActivityMenuDTO.listSystemModule().stream().collect(Collectors.toMap(ActivityMenuDTO::getCode, v -> v, (v1, v2) -> v2));
-        // 班级互动
-        Map<String, ActivityMenuDTO> classInteractionMap = ActivityMenuDTO.convertClazzInteractions2MenuDTO(activity, uid, fid).stream().collect(Collectors.toMap(ActivityMenuDTO::getCode, v -> v, (v1, v2) -> v2));
         // 自定义组件菜单列表
         List<Integer> tplComponentIds = activityMenuConfigs.stream().map(ActivityMenuConfig::getTemplateComponentId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         List<ActivityMenuDTO> customAppMenus = ActivityMenuDTO.convertCustomApps2MenuDTO(customAppConfigQueryService.listBackendWithDeleted(tplComponentIds));
@@ -193,11 +187,6 @@ public class ActivityMenuService {
         for (ActivityMenuConfig menuConfig : activityMenuConfigs) {
             String menu = menuConfig.getMenu();
             ActivityMenuDTO menuDTO = systemModuleMap.get(menu);
-            if (menuDTO != null) {
-                result.add(menuDTO);
-                continue;
-            }
-            menuDTO = classInteractionMap.get(menu);
             if (menuDTO != null) {
                 result.add(menuDTO);
                 continue;

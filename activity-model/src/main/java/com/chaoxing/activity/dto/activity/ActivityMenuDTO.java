@@ -41,7 +41,7 @@ public class ActivityMenuDTO {
     private String desc;
     /** 自定义应用字段 */
     private Boolean openBlank;
-    /** 以下三个字段仅在班级互动和自定义应用菜单才会有值 */
+
     private String defaultIconUrl;
     private String activeIconUrl;
     private String url;
@@ -82,29 +82,4 @@ public class ActivityMenuDTO {
                 .activeIconUrl(Optional.ofNullable(v.getActiveIconCloudId()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
                 .build()).collect(Collectors.toList());
     }
-
-    /**班级互动菜单转换成菜单name&value
-     * @Description
-     * @author huxiaolong
-     * @Date 2022-01-10 14:24:28
-     * @return
-     */
-    public static List<ActivityMenuDTO> listDefaultClazzInteractionMenus() {
-        return convertClazzInteractions2MenuDTO(new Activity(), null, null);
-    }
-    public static List<ActivityMenuDTO> convertClazzInteractions2MenuDTO(Activity activity, Integer uid, Integer fid) {
-        List<ClazzInteractionDTO.ClazzInteractionMenu> clazzInteractionMenus = ClazzInteractionDTO.listClazzInteractionMenus(activity, uid, fid);
-        // 班级互动排序从50开始
-        AtomicInteger sequence = new AtomicInteger(100);
-        return clazzInteractionMenus.stream().map(v -> ActivityMenuDTO.builder()
-                .name(v.getName())
-                .code(v.getCode())
-                .sequence(sequence.incrementAndGet())
-                .system(true)
-                .url(v.getUrl())
-                .defaultIconUrl(Optional.ofNullable(v.getDefaultIcon()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
-                .activeIconUrl(Optional.ofNullable(v.getActiveIcon()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
-                .build()).collect(Collectors.toList());
-    }
-
 }

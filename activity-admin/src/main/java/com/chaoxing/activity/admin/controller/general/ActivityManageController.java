@@ -121,6 +121,7 @@ public class ActivityManageController {
 		model.addAttribute("isCreator", creator);
 		model.addAttribute("activityMenuConfigs", activityMenuConfigs);
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
+		model.addAttribute("xiamenTrainingPlatformDomain", DomainConstant.XIAMEN_TRAINING_PLATFORM_API);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("webDomain", DomainConstant.WEB);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);

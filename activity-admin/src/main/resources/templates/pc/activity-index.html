@@ -139,6 +139,8 @@
     <script th:inline="javascript">
         var signWebSimpleDomain = [[${signWebDomain}]];
         signWebSimpleDomain = signWebSimpleDomain.replace(/http(|s):\/\//, "");
+        var xiamenTrainingPlatformDomain = [[${xiamenTrainingPlatformDomain}]];
+        xiamenTrainingPlatformDomain = xiamenTrainingPlatformDomain.replace(/http(|s):\/\//, "")
         vm = new Vue({
             el: "#activity-vue",
             data: {
@@ -151,7 +153,7 @@
                 activityMenuConfigs: [[${activityMenuConfigs}]],
                 activityMenus: [],
                 customMenus: [],    // 自定义菜单列表
-                systemMenus: {
+                menus: {
                     // 报名签到
                     sign_up: {
                         name: [[${signActivityManageIndex.signUpKeyword == null || signActivityManageIndex.signUpKeyword == '' ? '报名' : signActivityManageIndex.signUpKeyword}]] + "名单",
@@ -172,6 +174,34 @@
                         defaultIconUrl: ctx + "/pc/assets/images/name-list-default.png",
                         activeIconUrl: ctx + "/pc/assets/images/name-list-active.png",
                         url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
+                        selected: false
+                    },
+                    task: {
+                        name: "任务",
+                        defaultIconUrl: ctx + "/pc/assets/images/icon-task-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/icon-task-active.png",
+                        url: "//" + xiamenTrainingPlatformDomain + "/activity/task?activityId=" + [[${activity.id}]],
+                        selected: false
+                    },
+                    discuss: {
+                        name: "讨论",
+                        defaultIconUrl: ctx + "/pc/assets/images/icon-discuss-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/icon-discuss-active.png",
+                        url: "//" + xiamenTrainingPlatformDomain + "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                        selected: false
+                    },
+                    homework: {
+                        name: "作业",
+                        defaultIconUrl: ctx + "/pc/assets/images/icon-homework-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/icon-homework-active.png",
+                        url: "//" + xiamenTrainingPlatformDomain + "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                        selected: false
+                    },
+                    review_management: {
+                        name: "评审",
+                        defaultIconUrl: ctx + "/pc/assets/images/icon-review-management-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/icon-review-management-active.png",
+                        url: "//" + xiamenTrainingPlatformDomain + "/review/list?activityId=" + [[${activity.id}]],
                         selected: false
                     },
                     results_manage: {
@@ -213,7 +243,6 @@
                         selected: false
                     }
                 },
-                menus: [],
                 iframeUrl: "",
                 activityHomeQrcodeShow: false,
                 activityHomeQrcodeGenerated: false
@@ -319,19 +348,16 @@
                 handleActivityMenuConfigs: function () {
                     var $this = this;
                     var menuConfigs = $this.activityMenuConfigs || [];
-                    $this.menus = $.extend(true, [], $this.systemMenus);
-                    var systemMenuCodes = Object.keys($this.systemMenus);
                     $this.customMenus = [];
                     $(menuConfigs).each(function () {
                         if (!$this.activityMenus.includes(this.code)) {
                             $this.activityMenus.push(this.code);
                         }
                         // 非系统模块菜单
-                        if (!systemMenuCodes.includes(this.code)) {
-                            if (!this.system) {
-                                this.url += "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid;
-                                $this.customMenus.push(this);
-                            }
+                        if (!this.system) {
+                            this.url += "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid;
+                            $this.customMenus.push(this);
+
                             $this.menus[this.code] = {
                                 name: this.name,
                                 code: this.code,
