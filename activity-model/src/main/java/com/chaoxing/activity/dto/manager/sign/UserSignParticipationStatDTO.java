@@ -38,6 +38,8 @@ public class UserSignParticipationStatDTO {
 	private Boolean inParticipationScope;
 	/** 签到id列表 */
 	private List<Integer> signInIds;
+	/** 表单采集id列表 */
+	private List<Integer> formCollectionIds;
 	/** 用户id */
 	private Integer uid;
 	/** 是否报名成功 */
@@ -49,6 +51,8 @@ public class UserSignParticipationStatDTO {
 	private String signUpUrl;
 	/** 签到地址 */
 	private String signInUrl;
+	/** 表单采集填写地址 */
+	private String formCollectionUrl;
 	/** 报名信息地址 */
 	private String signUpResultUrl;
 

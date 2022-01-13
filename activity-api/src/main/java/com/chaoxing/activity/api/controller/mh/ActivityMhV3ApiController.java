@@ -388,6 +388,7 @@ public class ActivityMhV3ApiController {
             return result;
         }
         List<Integer> signInIds = userSignParticipationStat.getSignInIds();
+        List<Integer> formCollectionIds = userSignParticipationStat.getFormCollectionIds();
         List<Integer> signUpIds = userSignParticipationStat.getSignUpIds();
         Boolean openWork = activity.getOpenWork();
         openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
@@ -425,6 +426,9 @@ public class ActivityMhV3ApiController {
                 // 已报名
                 if (CollectionUtils.isNotEmpty(signInIds)) {
                     result.add(MhDataBuildUtil.buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                }
+                if (CollectionUtils.isNotEmpty(formCollectionIds)) {
+                    result.add(MhDataBuildUtil.buildBtnField("去填写", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), userSignParticipationStat.getFormCollectionUrl(), "1", false, MhBtnSequenceEnum.FORM_COLLECTION.getSequence()));
                 }
                 existSignUpInfo = true;
             } else{
