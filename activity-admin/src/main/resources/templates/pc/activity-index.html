@@ -406,7 +406,15 @@
                         $this.$set($this.menus[key], "selected", false);
                     }
                     $this.$set($this.menus[menuKey], "selected", true);
-                    $this.loadUrl($this.menus[menuKey].url, appConfig);
+                    var url = $this.menus[menuKey].url;
+                    var protocol = location.protocol;
+                    if (url.startsWith("http")) {
+                        var urlProtocol = url.startsWith("https:") ? "https:" : "http:";
+                        if (protocol != urlProtocol) {
+                            url = url.replace(urlProtocol, protocol);
+                        }
+                    }
+                    $this.loadUrl(url, appConfig);
                 },
                 // 报名名单
                 toSignUpList: function () {
@@ -502,13 +510,6 @@
                 }
             }
         });
-
-        /**
-         * 重置iframe的高度
-         */
-        function resetIframeHeight() {
-            vm.resizePageHeight();
-        }
     </script>
 </div>
 </body>
