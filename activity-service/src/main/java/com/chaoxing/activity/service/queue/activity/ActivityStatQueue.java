@@ -88,11 +88,12 @@ public class ActivityStatQueue implements IQueue<Integer> {
      * @return void
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addActivityStatTask(Integer taskId) {
-        if (taskId == null) {
-            taskId = activityStatHandleService.addActivityStatTask();
-        }
+    public void addActivityStatTask() {
+        Integer taskId = activityStatHandleService.addActivityStatTask();
+        pushActivityStatTask(taskId);
 
+    }
+    public void pushActivityStatTask(Integer taskId) {
         if (taskId == null) {
             return;
         }
@@ -107,7 +108,7 @@ public class ActivityStatQueue implements IQueue<Integer> {
      * @param
      * @return java.lang.Integer
      */
-    public Integer getActivityStatTask() throws InterruptedException {
+    public Integer popActivityStatTask() throws InterruptedException {
         return pop(redissonClient, QUEUE_ACTIVITY_STAT_CACHE_KEY);
     }
 }

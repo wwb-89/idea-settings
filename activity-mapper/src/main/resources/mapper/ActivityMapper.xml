@@ -952,6 +952,7 @@
         WHERE
             t.start_date &lt;= #{activityDate}
             AND t.end_date &gt;= #{activityDate}
+            AND t.`status` > 0
     </select>
 
     <select id="listActivityGroupByClassifyId" resultType="com.chaoxing.activity.dto.stat.ActivityClassifyDTO">

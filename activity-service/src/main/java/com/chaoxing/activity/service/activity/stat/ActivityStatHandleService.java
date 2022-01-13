@@ -14,6 +14,7 @@ import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.model.ActivityStatTask;
 import com.chaoxing.activity.model.ActivityStatTaskDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
@@ -25,7 +26,6 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,28 +48,24 @@ public class ActivityStatHandleService {
 
     @Resource
     private DistributedLock distributedLock;
-
     @Resource
     private ActivityQueryService activityQueryService;
-
     @Resource
     private ActivityStatQueryService activityStatQueryService;
-
-    @Autowired
+    @Resource
     private ActivityStatMapper activityStatMapper;
-
-    @Autowired
+    @Resource
     private ActivityStatTaskMapper activityStatTaskMapper;
-
-    @Autowired
+    @Resource
     private ActivityStatTaskDetailMapper activityStatTaskDetailMapper;
 
+    @Resource
+    private ActivityStatQueue activityStatQueueService;
 
-
-    private static final String ACTIVITY_STAT_LOCK_CACHE_KEY_PREFIX =  CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity_stat" +  CacheConstant.CACHE_KEY_SEPARATOR;
+    private static final String ACTIVITY_STAT_LOCK_CACHE_KEY_PREFIX = CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity_stat" + CacheConstant.CACHE_KEY_SEPARATOR;
 
     private String getTaskExcuteLockKey(Integer taskId) {
-        return  ACTIVITY_STAT_LOCK_CACHE_KEY_PREFIX+ taskId;
+        return ACTIVITY_STAT_LOCK_CACHE_KEY_PREFIX + taskId;
     }
 
     /**添加所有活动的统计任务, 返回任务id集合
@@ -311,5 +307,35 @@ public class ActivityStatHandleService {
         return activityStatTaskMapper.selectList(new LambdaQueryWrapper<ActivityStatTask>()
                         .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue()))
                 .stream().map(ActivityStatTask::getId).sorted().collect(Collectors.toList());
+    }
+
+    /**修复活动统计任务
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-13 15:29:56
+     * @param 
+     * @return void
+    */
+    public void fixActivityStatTask() {
+        List<ActivityStatTask> activityStatTasks = activityStatTaskMapper.selectList(new LambdaQueryWrapper<ActivityStatTask>()
+                .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.FAIL.getValue())
+        );
+        if (CollectionUtils.isEmpty(activityStatTasks)) {
+            return;
+        }
+        // 失败的置为待执行
+        activityStatTaskMapper.update(null, new LambdaUpdateWrapper<ActivityStatTask>()
+                .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.FAIL.getValue())
+                .set(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue())
+        );
+        activityStatTaskDetailMapper.update(null, new LambdaUpdateWrapper<ActivityStatTaskDetail>()
+                .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue())
+                .set(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.WAIT_HANDLE.getValue())
+                .set(ActivityStatTaskDetail::getErrorTimes, 0)
+                .set(ActivityStatTaskDetail::getErrorMessage, "")
+        );
+        for (ActivityStatTask activityStatTask : activityStatTasks) {
+            activityStatQueueService.pushActivityStatTask(activityStatTask.getId());
+        }
     }
 }

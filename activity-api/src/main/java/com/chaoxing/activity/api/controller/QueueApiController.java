@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.event.activity.*;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatHandleService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
 import com.chaoxing.activity.service.queue.event.activity.*;
@@ -60,6 +61,8 @@ public class QueueApiController {
 	private OrgUserDataPushQueue orgUserDataPushQueue;
 	@Resource
 	private UserStatSummaryQueryService userStatSummaryQueryService;
+	@Resource
+	private ActivityStatHandleService activityStatHandleService;
 
 	/**初始化活动的汇总统计队列
 	 * @Description
@@ -292,6 +295,19 @@ public class QueueApiController {
 				}
 			}
 		}
+		return RestRespDTO.success();
+	}
+
+	/**修复活动统计任务
+	 * @Description 当活动统计的问题解决后需要继续执行错误的任务
+	 * @author wwbs
+	 * @Date 2022-01-13 15:25:57
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("fix/activity-stat-task")
+	public RestRespDTO fixActivityStatTask() {
+		activityStatHandleService.fixActivityStatTask();
 		return RestRespDTO.success();
 	}
 
