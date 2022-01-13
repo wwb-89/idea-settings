@@ -1052,6 +1052,7 @@ body {
   background-color: #F8F8F8;
   color: #0084FF;
 }
+
 .el-table-filter__list {
   max-height: 300px;
   overflow: auto;

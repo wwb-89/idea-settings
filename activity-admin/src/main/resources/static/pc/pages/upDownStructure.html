@@ -12,7 +12,20 @@
 <body>
     <div class="container" id="vue">
         <div class="header">
-            <div class="title">成都少儿阅读活动之“阅读之星爱阅读之星爱阅读之星爱</div>
+            <div class="title">
+                <div class="title-box">成都少儿阅读活动之“阅读之星爱阅读之星爱阅读之星爱</div>
+                <div class="title-pop">
+                    <div class="img">
+                        <img src="../assets/images/example.jpg" alt="">
+                    </div>
+                    <div class="pop-info">
+                        <p class="color333 fs14 font600">书香浙江 云享阅读2020浙江省云阅读计划之“晒书房计划之“晒书房</p>
+                        <p class="color666 fs14 info-time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                        <div id="qrCodeMini" v-on:click="qrPopFunc"></div>
+                        <p class="fs12 color999">扫码访问首页</p>
+                    </div>
+                </div>
+            </div>
             <div class="menu">
                 <div class="menu-item active"><a href="#">学生报名</a></div>
                 <div class="menu-item"><a href="#">企业报名</a></div>
@@ -42,6 +55,18 @@
 <!--            <iframe id="ifr" src="test2.html"></iframe>-->
         </div>
 
+        <!--正常二维码-->
+        <el-dialog
+                :visible.sync="dialogQrCodeVisible"
+                custom-class="qrCode-dialog"
+                width="428px"
+                center>
+            <p class="tips">扫码访问</p>
+            <div class="inner">
+                <div id="qrCode"></div>
+            </div>
+
+        </el-dialog>
     </div>
 </body>
 </html>
@@ -93,6 +118,7 @@
         data: function () {
             return {
               dropActive: 'a',
+              dialogQrCodeVisible: true,
             }
         },
         created: function () {
@@ -101,11 +127,16 @@
         },
         mounted: function () {
             this.$nextTick(function (){
-                $('#qrCode').qrcode({
+                $('#qrCodeMini').qrcode({
                     text: "http://www.jq22.com",
-                    width: 300,
-                    height: 300
+                      width: 62,
+                      height: 62
                 });
+              $('#qrCode').qrcode({
+                text: "http://www.jq22.com",
+                width: 300,
+                height: 300
+              });
             });
 
         },
@@ -114,6 +145,9 @@
             console.log(command)
             this.dropActive = command;
           },
+          qrPopFunc: function () {
+            this.dialogQrCodeVisible=true;
+          }
         }
     });
 
