@@ -67,3 +67,34 @@ INSERT INTO `activity_engine`.`t_icon` (`id`, `name`, `code`, `default_icon_clou
 INSERT INTO `activity_engine`.`t_icon` (`id`, `name`, `code`, `default_icon_cloud_id`, `active_icon_cloud_id`, `description`) VALUES (33, '评审', 'icon-review-management', '005ca2b504bf6f6f212347ee90e6de15', 'da4882cec8f38768dfc5bf515de44374', '评审管理图标');
 INSERT INTO `activity_engine`.`t_icon` (`id`, `name`, `code`, `default_icon_cloud_id`, `active_icon_cloud_id`, `description`) VALUES (34, '作业', 'icon-homework', '1ff6b8167b8b7854131a273f4ca66599', 'f5b89f4d64c1bd8732406c0730cff170', '作业图标');
 INSERT INTO `activity_engine`.`t_icon` (`id`, `name`, `code`, `default_icon_cloud_id`, `active_icon_cloud_id`, `description`) VALUES (35, '讨论2', 'icon-discuss2', 'b92e2e9564238d821ab84d58a1fb4f34', '82a721fdf200d19c3c26786e038457d6', '讨论图标');
+
+-- 2022-01-13
+ALTER TABLE t_activity_menu_config ADD `is_enable` TINYINT(1) DEFAULT 1 COMMENT '是否启用';
+ALTER TABLE t_activity_menu_config ADD `is_system` TINYINT(1) DEFAULT 0 COMMENT '是否系统菜单';
+ALTER TABLE t_activity_menu_config ADD `template_component_id` INT(11) COMMENT '模板组件id';
+
+INSERT INTO `activity_engine`.`t_component` (`id`, `pid`, `name`, `code`, `is_required`, `introduction`, `is_system`, `is_multi`, `type`, `data_origin`, `origin_identify`, `field_flag`, `template_id`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (51, 0, '表单采集', 'form_collection', 0, '', 1, 0, NULL, NULL, NULL, NULL, NULL, '2022-01-12 15:34:05', 172649568, '2022-01-12 15:34:05', 172649568);
+-- 刷菜单数据
+-- 原有表中的均为系统菜单，所以将表中现有数据置为系统标识
+UPDATE t_activity_menu_config SET is_system = 1;
+-- 插入数据
+INSERT INTO t_activity_menu_config ( activity_id,  menu, template_component_id, is_enable, is_system)
+SELECT DISTINCT
+    t.id AS activity_id,
+    t2.id AS menu ,
+    t1.id AS template_component_id,
+    0 as `is_enable`,
+    0 as `is_system`
+FROM
+    t_activity t
+        INNER JOIN (
+        SELECT
+            id,
+            template_id
+        FROM
+            t_template_component
+        WHERE
+                is_deleted = 0
+          AND id IN ( SELECT DISTINCT template_component_id FROM t_custom_app_config WHERE template_component_id IS NOT NULL AND is_deleted = 0 AND `type` = 'backend' )) t1 ON t1.template_id = t.template_id
+        INNER JOIN t_custom_app_config t2 ON t2.template_component_id = t1.id and t2.is_deleted = 0 and t2.type = 'backend'
+ORDER BY activity_id;
