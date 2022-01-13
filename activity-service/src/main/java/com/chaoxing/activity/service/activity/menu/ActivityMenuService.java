@@ -83,7 +83,7 @@ public class ActivityMenuService {
      * @return
      */
     public List<ActivityMenuConfig> listByActivityId(Integer activityId) {
-        return activityMenuConfigMapper.selectList(new LambdaQueryWrapper<ActivityMenuConfig>().eq(ActivityMenuConfig::getActivityId, activityId));
+        return activityMenuConfigMapper.selectList(new LambdaQueryWrapper<ActivityMenuConfig>().eq(ActivityMenuConfig::getActivityId, activityId).orderByAsc(ActivityMenuConfig::getSequence));
     }
 
     /**获取活动可配置的菜单列表
@@ -109,7 +109,7 @@ public class ActivityMenuService {
         // 系统固有的模板组件
         List<ActivityMenuDTO> canConfigMenus = Lists.newArrayList(ActivityMenuDTO.listSystemModule());
         // 获取模板的自定义应用组件templateComponentId
-        List<Integer> customAppTplComponentIds = templateComponentService.listCustomAppComponentTplComponentIds(activity.getId());
+        List<Integer> customAppTplComponentIds = templateComponentService.listCustomAppComponentTplComponentIds(activity.getTemplateId());
         if (CollectionUtils.isNotEmpty(customAppTplComponentIds)) {
             customAppTplComponentIds.removeAll(existMenuTplComponentIds);
             List<CustomAppConfig> appConfigs = customAppConfigQueryService.listBackend(customAppTplComponentIds);
@@ -194,6 +194,7 @@ public class ActivityMenuService {
             }
             menuDTO = customAppMap.get(menu);
             if (menuDTO != null) {
+                menuDTO.setSequence(menuConfig.getSequence());
                 result.add(menuDTO);
             }
         }
@@ -234,7 +235,18 @@ public class ActivityMenuService {
         menuList.forEach(menu -> {
             ActivityMenuConfig menuConfig = menuConfigMap.get(menu);
             if (menuConfig == null) {
-                waitAddConfigs.add(ActivityMenuConfig.builder().menu(menu).activityId(activityId).system(false).enable(true).build());
+                menuConfig = ActivityMenuConfig.builder().menu(menu).activityId(activityId).enable(true).build();
+                ActivityMenuEnum activityMenuEnum = ActivityMenuEnum.fromValue(menu);
+                if (activityMenuEnum == null) {
+                    Integer tplComponentId = customAppConfigQueryService.getCustomAppTplComponentId(menu);
+                    menuConfig.setSystem(false);
+                    menuConfig.setTemplateComponentId(tplComponentId);
+                    menuConfig.setSequence(150);
+                } else {
+                    menuConfig.setSystem(true);
+                    menuConfig.setSequence(activityMenuEnum.getSequence());
+                }
+                waitAddConfigs.add(menuConfig);
             }
         });
         menuConfigMap.values().forEach(v -> {

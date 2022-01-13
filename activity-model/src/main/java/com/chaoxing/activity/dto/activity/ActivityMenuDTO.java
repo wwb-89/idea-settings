@@ -73,8 +73,9 @@ public class ActivityMenuDTO {
      * @return
      */
     public static List<ActivityMenuDTO> convertCustomApps2MenuDTO(List<CustomAppConfig> customAppConfigs) {
+        List<ActivityMenuDTO> result = Lists.newArrayList();
         if (CollectionUtils.isEmpty(customAppConfigs)) {
-            return Lists.newArrayList();
+            return result;
         }
         // 自定义应用菜单排序从100开始
         AtomicInteger sequence = new AtomicInteger(150);

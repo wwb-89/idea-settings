@@ -41,4 +41,4 @@ UPDATE t_activity_menu_config SET `sequence` = 90 WHERE `menu` = 'homework';
 UPDATE t_activity_menu_config SET `sequence` = 100 WHERE `menu` = 'review_management';
 UPDATE t_activity_menu_config SET `sequence` = 500 WHERE `menu` = 'setting';
 UPDATE t_activity_menu_config SET `sequence` = 150 WHERE `menu` not in ('sign_up','sign_in','form_collection','results_manage','certificate','notice','stat','task','discuss','homework','review_management','setting');
-
+UPDATE t_activity_menu_config SET is_system = 1 WHERE `menu` in ('sign_up','sign_in','form_collection','results_manage','certificate','notice','stat','task','discuss','homework','review_management','setting');

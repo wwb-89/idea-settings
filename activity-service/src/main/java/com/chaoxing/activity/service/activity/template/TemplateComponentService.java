@@ -475,6 +475,9 @@ public class TemplateComponentService {
      * @return
      */
     public List<Integer> listCustomAppComponentTplComponentIds(Integer templateId) {
+        if (templateId == null) {
+            return Lists.newArrayList();
+        }
         return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
                 .eq(TemplateComponent::getTemplateId, templateId)
                 .eq(TemplateComponent::getDeleted, false)
