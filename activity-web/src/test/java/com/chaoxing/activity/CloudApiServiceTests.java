@@ -2,11 +2,15 @@ package com.chaoxing.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.manager.CloudApiService;
+import com.google.common.collect.Maps;
+import org.apache.poi.ss.formula.functions.T;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author wwb
@@ -35,11 +39,16 @@ public class CloudApiServiceTests {
 		File folder = new File("/Users/wwb/Downloads/图片库更新");
 		String ip = "171.212.208.156";
 		File[] files = folder.listFiles(file -> file.getName().endsWith(".png"));
+		TreeMap<String, String> treeMap = Maps.newTreeMap();
 		for (File file : files) {
 			String upload = cloudApiService.upload(file, ip);
 			String objectid = JSON.parseObject(upload).getString("objectid");
-			System.out.println(objectid);
+//			System.out.println(file + objectid);
+			treeMap.put(file.getName(), objectid);
+		}
+
+		for (Map.Entry<String, String> entry : treeMap.entrySet()) {
+			System.out.println(entry.getKey() + " ====== " + entry.getValue());
 		}
 	}
-
 }

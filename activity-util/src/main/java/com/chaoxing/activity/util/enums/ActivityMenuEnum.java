@@ -22,9 +22,9 @@ public enum ActivityMenuEnum {
     RESULTS_MANAGE("考核管理", "results_manage", "审核用户参与活动的成绩是否为合格", 30),
     CERTIFICATE("证书发放", "certificate", "", 40),
     NOTICE("发通知", "notice", "", 50),
-    task("任务", "task", "", 70),
-    /** 班级互动 */
     STAT("统计", "stat", "", 60),
+    /** 班级互动 */
+    task("任务", "task", "", 70),
     DISCUSS("讨论", "discuss", "", 80),
     HOMEWORK("作业", "homework", "", 90),
     REVIEW_MANAGEMENT("评审", "review_management", "", 100),

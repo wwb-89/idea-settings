@@ -9,7 +9,6 @@ import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.dto.module.ClazzInteractionDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
@@ -30,7 +29,6 @@ import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,7 +42,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -117,9 +114,9 @@ public class ActivityManageController {
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		// 是不是创建者
 		boolean creator = activityValidationService.isCreator(activity, loginUser.getUid());
-		List<ActivityMenuDTO> activityMenuConfigs = activityMenuService.listUserActivityMenus(activity, loginUser, creator);
+		List<ActivityMenuDTO> userActivityMenus = activityMenuService.listUserActivityMenus(activity, loginUser, creator);
 		model.addAttribute("isCreator", creator);
-		model.addAttribute("activityMenuConfigs", activityMenuConfigs);
+		model.addAttribute("userActivityMenus", userActivityMenus);
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
 		model.addAttribute("xiamenTrainingPlatformDomain", DomainConstant.XIAMEN_TRAINING_PLATFORM_API);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);

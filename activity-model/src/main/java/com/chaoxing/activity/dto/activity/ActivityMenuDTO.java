@@ -32,19 +32,27 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ActivityMenuDTO {
 
+    /** 菜单名称 */
     private String name;
+    /** 菜单编码 */
     private String code;
+    /** 是否系统菜单 */
     private Boolean system;
-    private Integer templateComponentId;
+    /** 菜单排序 */
     private Integer sequence;
+    /** 自定义应用字段 */
+    /** 自定义菜单模板组件id */
+    private Integer templateComponentId;
+    /** 是否新窗口打开 */
+    private Boolean openBlank;
+    /** 默认图标url */
+    private String defaultIconUrl;
+    /** 激活态图标url */
+    private String activeIconUrl;
+    /** 接口地址 */
+    private String url;
     /** 系统菜单才有的描述值，在管理员权限配置处展示 */
     private String desc;
-    /** 自定义应用字段 */
-    private Boolean openBlank;
-
-    private String defaultIconUrl;
-    private String activeIconUrl;
-    private String url;
 
     /**列出所有系统菜单模块
      * @Description 

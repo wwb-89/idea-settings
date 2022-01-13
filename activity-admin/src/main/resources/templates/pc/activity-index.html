@@ -12,262 +12,184 @@
         }
     </style>
 </head>
+
 <body>
-<div class="container" id="activity-vue" v-cloak>
-    <div class="slider">
-        <div class="title">
-            <span th:text="${activity.name}" style="cursor: pointer;" @click="activityHome"></span>
-            <i class="icon-qr-code" @click="showActivityHomeQrcode"></i>
-        </div>
-        <div class="menu">
-            <div class="entry menu-item" v-show="menuShow('sign_up') || menuShow('sign_in')">
-                <!--报名名单-->
-                <div :class="{'item': true, 'active': menus.sign_up.selected}" v-if="signActivityManageIndex.signUpExist && menuShow('sign_up')" @click="toSignUpList">
-                    <img :src="menus.sign_up.activeIconUrl" v-if="menus.sign_up.selected">
-                    <img :src="menus.sign_up.defaultIconUrl" v-else>
-                    <span>{{menus.sign_up.name}}</span>
+    <div class="container" id="activity-vue" v-cloak>
+        <div class="slider">
+            <div class="title color333">
+                <div class="title-box">
+                    <img :src="activity | getCloudImgUrl(cloudDomain)" alt="">
+                    <span class="title-name ">{{activity.name}}</span>
+                    <div class="clear"></div>
                 </div>
-                <!--签到管理-->
-                <div :class="{'item': true, 'active': menus.sign_in.selected}" @click="toSignInManage" v-if="menuShow('sign_in')">
-                    <img :src="menus.sign_in.activeIconUrl" v-if="menus.sign_in.selected">
-                    <img :src="menus.sign_in.defaultIconUrl" v-else>
-                    <span>{{menus.sign_in.name}}</span>
-                </div>
-                <!--表单采集管理-->
-                <div :class="{'item': true, 'active': menus.form_collection.selected}" @click="toFormCollectionManage" v-if="menuShow('form_collection')">
-                    <img :src="menus.form_collection.activeIconUrl" v-if="menus.form_collection.selected">
-                    <img :src="menus.form_collection.defaultIconUrl" v-else>
-                    <span>{{menus.form_collection.name}}</span>
+                <div class="title-pop">
+                    <div class="img">
+                        <img :src="activity | getCloudImgUrl(cloudDomain)" alt="">
+                    </div>
+                    <div class="pop-info">
+                        <p class="color333 fs14 font600">{{activity.name}}</p>
+                        <p class="color666 fs14 info-time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
+                        <div id="qrCodeMini" @click="showActivityHomeQrcode"></div>
+                        <p class="fs12 color999">扫码访问首页</p>
+                    </div>
                 </div>
             </div>
-            <div class="entry menu-item" v-if="activity.openClazzInteraction">
-                <!--讨论-->
-                <div :class="{'item': true, 'active': menus.discuss.selected}" @click="toDiscuss" v-if="menuShow('discuss')">
-                    <img :src="menus.discuss.activeIconUrl" v-if="menus.discuss.selected">
-                    <img :src="menus.discuss.defaultIconUrl" v-else>
-                    <span>{{menus.discuss.name}}</span>
-                </div>
-                <!--任务-->
-                <div :class="{'item': true, 'active': menus.task.selected}" @click="toTask" v-if="menuShow('task')">
-                    <img :src="menus.task.activeIconUrl" v-if="menus.task.selected">
-                    <img :src="menus.task.defaultIconUrl" v-else>
-                    <span>{{menus.task.name}}</span>
-                </div>
-                <!--作业-->
-                <div :class="{'item': true, 'active': menus.homework.selected}" @click="toHomework" v-if="menuShow('homework')">
-                    <img :src="menus.homework.activeIconUrl" v-if="menus.homework.selected">
-                    <img :src="menus.homework.defaultIconUrl" v-else>
-                    <span>{{menus.homework.name}}</span>
-                </div>
-                <!--评审管理-->
-                <div :class="{'item': true, 'active': menus.review_management.selected}" @click="toReviewManagement" v-if="menuShow('review_management')">
-                    <img :src="menus.review_management.activeIconUrl" v-if="menus.review_management.selected">
-                    <img :src="menus.review_management.defaultIconUrl" v-else>
-                    <span>{{menus.review_management.name}}</span>
-                </div>
-            </div>
-            <div class="entry menu-item" v-if="menuShow('results_manage')">
-                <!--考核管理-->
-                <div :class="{'item': true, 'active': menus.results_manage.selected}" @click="toResultsManage">
-                    <img :src="menus.results_manage.activeIconUrl" v-if="menus.results_manage.selected">
-                    <img :src="menus.results_manage.defaultIconUrl" v-else>
-                    <span>{{menus.results_manage.name}}</span>
-                </div>
-            </div>
-            <div class="entry menu-item" v-if="menuShow('certificate') && activity.certificateTemplateId">
-                <!--证书-->
-                <div :class="{'item': true, 'active': menus.certificate.selected}" @click="toCertificate">
-                    <img :src="menus.certificate.activeIconUrl" v-if="menus.certificate.selected">
-                    <img :src="menus.certificate.defaultIconUrl" v-else>
-                    <span>{{menus.certificate.name}}</span>
-                </div>
-            </div>
-            <div class="message menu-item" v-if="menuShow('notice')">
-                <!--发通知-->
-                <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
-                    <img :src="menus.notice.activeIconUrl" v-if="menus.notice.selected">
-                    <img :src="menus.notice.defaultIconUrl" v-else>
-                    <span>{{menus.notice.name}}</span>
-                </div>
-            </div>
-            <div class="statistics menu-item" v-if="menuShow('stat')">
-                <!--统计-->
-                <div :class="{'item': true, 'active': menus.stat.selected}" @click="toStat">
-                    <img :src="menus.stat.activeIconUrl" v-if="menus.stat.selected">
-                    <img :src="menus.stat.defaultIconUrl" v-else>
-                    <span>{{menus.stat.name}}</span>
-                </div>
-            </div>
-            <div class="entry menu-item" v-if="customMenus && customMenus.length > 0">
-                <!--自定义应用列表-->
-                <div v-for="(appConfig, acIndex) in customMenus" :key="'custom-app-config-' + acIndex" :class="{'item': true, 'active': menus[appConfig.code].selected}" @click="toCustomApp(acIndex)" v-if="menuShow(appConfig.code)">
-                    <img :src="menus[appConfig.code].activeIconUrl" v-if="menus[appConfig.code].selected">
-                    <img :src="menus[appConfig.code].defaultIconUrl" v-else>
-                    <span>{{menus[appConfig.code].name}}</span>
-                </div>
-            </div>
-            <div class="statistics menu-item" v-if="menuShow('setting')">
-                <!--设置-->
-                <div :class="{'item': true, 'active': menus.setting.selected}" th:if="${isCreator}" @click="toSetting">
-                    <img :src="menus.setting.activeIconUrl" v-if="menus.setting.selected">
-                    <img :src="menus.setting.defaultIconUrl" v-else>
-                    <span>{{menus.setting.name}}</span>
+            <hr class="divider">
+            <div class="menu color333">
+                <div class="entry menu-item">
+                    <div :class="{item: true, active: menu.selected}" v-for="(menu, index) in menus" :key="'activity-menu-' + index" @click="selectMenu(index)">
+                        <img v-show="menu.selected" :src="menu.activeIconUrl">
+                        <img v-show="!menu.selected" :src="menu.defaultIconUrl">
+                        <span>
+                            {{menu.name}}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="content">
+            <iframe id="content" src=""></iframe>
+        </div>
+        <!--正常二维码-->
+        <el-dialog
+                :visible.sync="activityHomeQrcodeShow"
+                    custom-class="qrCode-dialog"
+                width="428px"
+                center>
+            <div class="inner">
+                <div id="qrCode"></div>
+                <p class="tips">扫码访问</p>
+            </div>
+
+        </el-dialog>
     </div>
-    <!--活动主页二维码-->
-    <el-dialog
-            :visible.sync="activityHomeQrcodeShow"
-            custom-class="qrCode-dialog"
-            width="428px"
-            center>
-        <div class="inner">
-            <div id="qrCode"></div>
-            <p class="tips">扫码访问</p>
-        </div>
-    </el-dialog>
-    <div class="content">
-        <iframe id="content" src=""></iframe>
-    </div>
-</div>
+</body>
+</html>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/jquery.qrcode.min.js" th:src="@{/pc/assets/lib/jquery.qrcode.min.js}"></script>
-    <script src="/static/pc/assets/lib/set-iframe-height-parent.js" th:src="@{/pc/assets/lib/set-iframe-height-parent.js}"></script>
     <script th:inline="javascript">
         var signWebSimpleDomain = [[${signWebDomain}]];
         signWebSimpleDomain = signWebSimpleDomain.replace(/http(|s):\/\//, "");
         var xiamenTrainingPlatformDomain = [[${xiamenTrainingPlatformDomain}]];
         xiamenTrainingPlatformDomain = xiamenTrainingPlatformDomain.replace(/http(|s):\/\//, "")
-        vm = new Vue({
-            el: "#activity-vue",
-            data: {
-                mainDomain: [[${mainDomain}]],
-                signWebDomain: [[${signWebDomain}]],
-                cloudDomain: [[${cloudDomain}]],
-                activity: [[${activity}]],
-                loginUser: [[${session._login_user_}]],
-                signActivityManageIndex: [[${signActivityManageIndex}]],
-                activityMenuConfigs: [[${activityMenuConfigs}]],
-                activityMenus: [],
-                customMenus: [],    // 自定义菜单列表
-                menus: {
-                    // 报名签到
-                    sign_up: {
-                        name: [[${signActivityManageIndex.signUpKeyword == null || signActivityManageIndex.signUpKeyword == '' ? '报名' : signActivityManageIndex.signUpKeyword}]] + "名单",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png",
-                        url: "//" + signWebSimpleDomain + "/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]],
-                        selected: false
+
+        var vm = new Vue({
+            el: '#activity-vue',
+            data: function () {
+                return {
+                    mainDomain: [[${mainDomain}]],
+                    signWebDomain: [[${signWebDomain}]],
+                    cloudDomain: [[${cloudDomain}]],
+                    activity: [[${activity}]],
+                    loginUser: [[${session._login_user_}]],
+                    signActivityManageIndex: [[${signActivityManageIndex}]],
+                    customMenus: [],    // 自定义菜单列表
+                    visibleMenus: [],   //  当前用户所能看到的菜单code列表
+                    // 系统应用菜单enums
+                    systemMenus: {
+                        // 报名签到
+                        sign_up: {
+                            name: [[${signActivityManageIndex.signUpKeyword == null || signActivityManageIndex.signUpKeyword == '' ? '报名' : signActivityManageIndex.signUpKeyword}]] + "名单",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-project-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-project-active.png",
+                            url: "//" + signWebSimpleDomain + "/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]],
+                            selected: false
+                        },
+                        sign_in: {
+                            name: "签到管理",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-sign-in-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-sign-in-active.png",
+                            url: "//" + signWebSimpleDomain + "/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]],
+                            selected: false
+                        },
+                        form_collection: {
+                            name: "表单采集",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-active.png",
+                            url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
+                            selected: false
+                        },
+                        task: {
+                            name: "任务",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-active.png",
+                            url: "//" + xiamenTrainingPlatformDomain + "/activity/task?activityId=" + [[${activity.id}]],
+                            selected: false
+                        },
+                        discuss: {
+                            name: "讨论",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-active.png",
+                            url: "//" + xiamenTrainingPlatformDomain + "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                            selected: false
+                        },
+                        homework: {
+                            name: "作业",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-active.png",
+                            url: "//" + xiamenTrainingPlatformDomain + "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                            selected: false
+                        },
+                        review_management: {
+                            name: "评审",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-active.png",
+                            url: "//" + xiamenTrainingPlatformDomain + "/review/list?activityId=" + [[${activity.id}]],
+                            selected: false
+                        },
+                        results_manage: {
+                            name: "考核管理",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-assess-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-assess-active.png",
+                            url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage",
+                            selected: false
+                        },
+                        // 证书
+                        certificate: {
+                            name: "证书发放",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-certificate-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-certificate-active.png",
+                            url: ctx + "/activity/" + [[${activity.id}]] + "/certificate",
+                            selected: false
+                        },
+                        // 通知
+                        notice: {
+                            name: "发通知",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-volume-notice-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-volume-notice-active.png",
+                            url: "//" + signWebSimpleDomain + "/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]],
+                            selected: false
+                        },
+                        // 统计
+                        stat: {
+                            name: "统计",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-statistics-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-statistics-active.png",
+                            url: ctx + "/activity/" + [[${activity.id}]] + "/stat",
+                            selected: false
+                        },
+                        setting: {
+                            name: "设置",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-setting2-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-setting2-active.png",
+                            url: ctx + "/activity/" + [[${activity.id}]] + "/setting/index",
+                            selected: false
+                        }
                     },
-                    sign_in: {
-                        name: "签到管理",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png",
-                        url: "//" + signWebSimpleDomain + "/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]],
-                        selected: false
-                    },
-                    form_collection: {
-                        name: "表单采集",
-                        defaultIconUrl: ctx + "/pc/assets/images/name-list-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/name-list-active.png",
-                        url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
-                        selected: false
-                    },
-                    task: {
-                        name: "任务",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-task-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-task-active.png",
-                        url: "//" + xiamenTrainingPlatformDomain + "/activity/task?activityId=" + [[${activity.id}]],
-                        selected: false
-                    },
-                    discuss: {
-                        name: "讨论",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-discuss-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-discuss-active.png",
-                        url: "//" + xiamenTrainingPlatformDomain + "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
-                        selected: false
-                    },
-                    homework: {
-                        name: "作业",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-homework-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-homework-active.png",
-                        url: "//" + xiamenTrainingPlatformDomain + "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
-                        selected: false
-                    },
-                    review_management: {
-                        name: "评审",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-review-management-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-review-management-active.png",
-                        url: "//" + xiamenTrainingPlatformDomain + "/review/list?activityId=" + [[${activity.id}]],
-                        selected: false
-                    },
-                    results_manage: {
-                        name: "考核管理",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png",
-                        url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage",
-                        selected: false
-                    },
-                    // 证书
-                    certificate: {
-                        name: "证书发放",
-                        defaultIconUrl: ctx + "/pc/assets/images/certificate-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/certificate-active.png",
-                        url: ctx + "/activity/" + [[${activity.id}]] + "/certificate",
-                        selected: false
-                    },
-                    // 通知
-                    notice: {
-                        name: "发通知",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png",
-                        url: "//" + signWebSimpleDomain + "/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]],
-                        selected: false
-                    },
-                    // 统计
-                    stat: {
-                        name: "统计",
-                        defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png",
-                        url: ctx + "/activity/" + [[${activity.id}]] + "/stat",
-                        selected: false
-                    },
-                    setting: {
-                        name: "设置",
-                        defaultIconUrl: ctx + "/pc/assets/images/setting-default.png",
-                        activeIconUrl: ctx + "/pc/assets/images/setting-active.png",
-                        url: ctx + "/activity/" + [[${activity.id}]] + "/setting/index",
-                        selected: false
-                    }
-                },
-                iframeUrl: "",
-                activityHomeQrcodeShow: false,
-                activityHomeQrcodeGenerated: false
+                    menus: [],
+                    iframeUrl: "",
+                    activityHomeQrcodeShow: false,
+                    activityHomeQrcodeGenerated: false
+                }
             },
             created: function () {
                 var $this = this;
                 // 解决跨域
                 document.domain = $this.mainDomain;
-                $this.handleActivityMenuConfigs();
                 $this.$nextTick(function () {
-                    var signUpIds = $this.signActivityManageIndex.signUpIds;
-                    if (!activityApp.isEmpty(signUpIds) && signUpIds.length > 1) {
-                        $this.menus.sign_up.name = ($this.signActivityManageIndex.signUpKeyword || '报名') + "项目";
-                    }
-
-                    var newMenus = {};
-                    var menuKeys = Object.keys($this.menus);
-                    $.each(menuKeys, function (i) {
-                        var key = menuKeys[i];
-                        if ($this.menuShow(key)) {
-                            newMenus[key] = $this.menus[key];
-                        }
-                    });
-                    $this.menus = Object.assign({}, newMenus);
-
+                    $this.handleActivityMenus();
                     app.bindActivityChangeEvent(function (activityId) {
                         if ($this.activity.id == activityId) {
                             window.location.reload();
@@ -277,109 +199,114 @@
             },
             mounted: function () {
                 var $this = this;
-                $this.$nextTick(function () {
+                $this.$nextTick(function (){
                     $this.resizePageHeight();
+                    var url = $this.activity.previewUrl;
+                    $('#qrCodeMini').qrcode({
+                        text: url,
+                        width: 62,
+                        height: 62
+                    });
                     window.onresize = function () {
                         $this.resizePageHeight();
                     };
-                    var firstMenuKey = $this.activityMenuConfigs[0] && $this.activityMenuConfigs[0].code;
-                    // 自定义应用配置判断
-                    var firstShowAppMenu = false, firstAppIndex;
-                    if ($this.customMenus && $this.customMenus.length > 0) {
-                        for (var i = 0; i < $this.customMenus.length; i++) {
-                            var appConfig = $this.customMenus[i];
-                            if (firstMenuKey == appConfig.code) {
-                                firstShowAppMenu = true
-                                firstAppIndex = i;
-                            }
-                        }
-                    }
-                    switch (firstMenuKey) {
-                        case 'sign_up':
-                            if ($this.signActivityManageIndex.signUpExist) {
-                                $this.toSignUpList();
-                            } else {
-                                $this.toSignInManage();
-                            }
-                            break;
-                        case 'sign_in':
-                            $this.toSignInManage();
-                            break;
-                        case 'form_collection':
-                            $this.toFormCollectionManage();
-                            break;
-                        case 'results_manage':
-                            $this.toResultsManage();
-                            break;
-                        case 'certificate':
-                            $this.toCertificate();
-                            break;
-                        case 'notice':
-                            $this.toAddNotice();
-                            break;
-                        case 'stat':
-                            $this.toStat();
-                            break;
-                        case 'setting':
-                            $this.toSetting();
-                            break;
-                        case 'discuss':
-                            $this.toDiscuss();
-                            break;
-                        case 'task':
-                            $this.toTask();
-                            break;
-                        case 'homework':
-                            $this.toHomework();
-                            break;
-                        case 'review_management':
-                            $this.toReviewManagement();
-                            break;
-                        default:
-                            if (firstShowAppMenu) {
-                                $this.toCustomApp(firstAppIndex);
-                            }
-                            break;
-                    }
-                })
+                    $this.selectMenu(0);
+                });
+
             },
             methods: {
-                // 处理活动菜单配置
-                handleActivityMenuConfigs: function () {
+                handleActivityMenus: function () {
                     var $this = this;
-                    var menuConfigs = $this.activityMenuConfigs || [];
-                    $this.customMenus = [];
-                    $(menuConfigs).each(function () {
-                        if (!$this.activityMenus.includes(this.code)) {
-                            $this.activityMenus.push(this.code);
+                    // 初始化
+                    $this.visibleMenus = []; $this.customMenus = [];
+                    var menuSequenceMap = {};
+
+                    var userActivityMenus = [[${userActivityMenus}]] || [];
+                    $(userActivityMenus).each(function () {
+                        menuSequenceMap[this.code] = this.sequence;
+                        // 将菜单code 放进visibleMenus，后续做菜单显隐控制判断
+                        if (!$this.visibleMenus.includes(this.code)) {
+                            $this.visibleMenus.push(this.code);
                         }
                         // 非系统模块菜单
                         if (!this.system) {
                             this.url += "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid;
                             $this.customMenus.push(this);
-
-                            $this.menus[this.code] = {
+                            $this.menus.push({
                                 name: this.name,
                                 code: this.code,
                                 defaultIconUrl: this.defaultIconUrl,
                                 activeIconUrl: this.activeIconUrl,
                                 url: this.url ,
+                                openBlank: this.openBlank || false,
                                 selected: false
-                            }
+                            });
                         }
                     });
-                },
-                menuShow: function (menu) {
-                    // 目前固定notice和setting存在
-                    return this.activityMenus.indexOf(menu) != -1;
-                },
-                // 活动首页
-                activityHome: function () {
-                    var $this = this;
-                    var home = $this.activity.previewUrl;
-                    if (!activityApp.isEmpty(home)) {
-                        window.open(home);
+                    // 系统菜单处理
+                    var systemMenuCodes = Object.keys($this.systemMenus);
+                    var interactionMenus = ['task', 'discuss', 'homework', 'review_management']
+                    for (var i = 0 ; i < systemMenuCodes.length; i++) {
+                        var menu = systemMenuCodes[i];
+                        var sysMenu = $this.systemMenus[menu];
+                        sysMenu.openBlank = false;
+
+                        if (menu == 'sign_up') {
+                            var { signUpExist, signUpIds } = $this.signActivityManageIndex;
+                            var existSignUp = signUpExist && signUpIds && (signUpIds.length > 0);
+                            // 若报名不存在，则不将报名加入菜单中
+                            if (!existSignUp) {
+                                continue;
+                            }
+                            if (signUpIds.length > 1) {
+                                sysMenu.name = ($this.signActivityManageIndex.signUpKeyword || '报名') + "项目";
+                            }
+                        }
+                        // 含有班级互动菜单，却未开启班级互动，则菜单过滤掉
+                        if (interactionMenus.includes(menu) && !$this.activity.openClazzInteraction) {
+                            continue;
+                        }
+                        if ($this.visibleMenus.includes(menu)) {
+                            sysMenu.sequence = menuSequenceMap[menu] || i;
+                            $this.menus.push(sysMenu);
+                        }
                     }
+                    // 菜单排序
+                    $this.menus.sort(function(a, b) { return a.sequence - b.sequence; });
+                },
+                selectMenu: function (index) {
+                    var $this = this;
+                    $($this.menus).each(function () {
+                        $this.$set(this, "selected", false);
+                    });
+                    $this.$set($this.menus[index], "selected", true);
+                    var url = $this.menus[index].url;
+                    var protocol = location.protocol;
+                    if (url.startsWith("http")) {
+                        var urlProtocol = url.startsWith("https:") ? "https:" : "http:";
+                        if (protocol != urlProtocol) {
+                            url = url.replace(urlProtocol, protocol);
+                        }
+                    }
+                    var openBlank = $this.menus[index].openBlank || false;
+                    $this.loadUrl(url, openBlank);
+                },
+                loadUrl: function (url, openBlank) {
+                    var $this = this;
+                    if (url.indexOf("?") != -1) {
+                        url += "&";
+                    } else {
+                        url += "?";
+                    }
+                    url += "time=" + new Date().getTime();
+                    if (openBlank) {
+                        window.open(url);
+                        return;
+                    }
+                    $("#content")[0].src = url;
+                    $("#content")[0].onload = function() {
+                        $this.resizePageHeight();
+                    };
                 },
                 resizePageHeight: function () {
                     // container的最小高度
@@ -402,127 +329,17 @@
                         maxHeight = windowHeight;
                     }
                     $(".container").height(maxHeight);
-                    $("#content")[0].style.height = maxHeight + "px";
+                    $("#content").height(maxHeight);
                     $("#content").contents().find("body").height(maxHeight);
-                },
-                loadUrl: function (url, appConfig) {
-                    var $this = this;
-                    if (url.indexOf("?") != -1) {
-                        url += "&";
-                    } else {
-                        url += "?";
-                    }
-                    url += "time=" + new Date().getTime();
-                    if (appConfig && appConfig.openBlank) {
-                        window.open(url);
-                        return;
-                    }
-                    $("#content")[0].src = url;
-                    $("#content")[0].onload = function() {
-                        $this.resizePageHeight();
-                    };
-                },
-                selectMenu: function (menuKey, appConfigIndex) {
-                    var $this = this;
-                    var appConfig;
-                    if (!menuKey && !activityApp.isEmpty(appConfigIndex)) {
-                        appConfig = $this.customMenus[appConfigIndex];
-                        menuKey = appConfig.code;
-                    }
-                    for (var key in $this.menus) {
-                        $this.$set($this.menus[key], "selected", false);
-                    }
-                    $this.$set($this.menus[menuKey], "selected", true);
-                    var url = $this.menus[menuKey].url;
-                    var protocol = location.protocol;
-                    if (url.startsWith("http")) {
-                        var urlProtocol = url.startsWith("https:") ? "https:" : "http:";
-                        if (protocol != urlProtocol) {
-                            url = url.replace(urlProtocol, protocol);
-                        }
-                    }
-                    $this.loadUrl(url, appConfig);
-                },
-                // 报名名单
-                toSignUpList: function () {
-                    var $this = this;
-                    $this.selectMenu("sign_up");
-                },
-                // 签到管理
-                toSignInManage: function () {
-                    var $this = this;
-                    $this.selectMenu("sign_in");
-                },
-                // 签到管理
-                toFormCollectionManage: function () {
-                    var $this = this;
-                    $this.selectMenu("form_collection");
-                },
-                // 考核管理
-                toResultsManage: function () {
-                    var $this = this;
-                    $this.selectMenu("results_manage");
-                },
-                // 证书
-                toCertificate: function () {
-                    var $this = this;
-                    $this.selectMenu("certificate");
-                },
-                // 设置
-                toSetting: function () {
-                    var $this = this;
-                    $this.selectMenu("setting");
-                },
-                toDiscuss: function () {
-                    var $this = this;
-                    $this.selectMenu("discuss");
-                },
-                toTask: function () {
-                    var $this = this;
-                    $this.selectMenu("task");
-                },
-                toHomework: function () {
-                    var $this = this;
-                    $this.selectMenu("homework");
-                },
-                toReviewManagement: function () {
-                    var $this = this;
-                    $this.selectMenu("review_management");
-                },
-                // 发通知
-                toAddNotice: function () {
-                    var $this = this;
-                    $this.selectMenu("notice");
-                },
-                // 去统计
-                toStat: function () {
-                    var $this = this;
-                    $this.selectMenu("stat");
-                },
-                //
-                toCustomApp: function (appConfigIndex) {
-                    var $this = this;
-                    $this.selectMenu(null, appConfigIndex)
-                },
-                // 去编辑活动
-                toEdit: function () {
-                    var $this = this;
-                    var url = ctx + $this.activity.id + "/edit";
-                    window.open(url);
-                },
-                // 是活动创建者
-                isActivityCreator: function () {
-                    var $this = this;
-                    return $this.loginUser.uid == $this.activity.createUid;
                 },
                 showActivityHomeQrcode: function () {
                     var $this = this;
                     $this.activityHomeQrcodeShow = true;
                     $this.$nextTick(function () {
-                        $this.generareActivityHomeQrcode();
+                        $this.generateActivityHomeQrcode();
                     });
                 },
-                generareActivityHomeQrcode: function () {
+                generateActivityHomeQrcode: function () {
                     var $this = this;
                     if ($this.activityHomeQrcodeGenerated) {
                         return;
@@ -537,7 +354,8 @@
                 }
             }
         });
+
     </script>
 </div>
-</body>
-</html>
+
+

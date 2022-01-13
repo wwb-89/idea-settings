@@ -71,6 +71,7 @@ public class ActivityMenuService {
                 .system(v.getSystem())
                 .enable(Boolean.TRUE)
                 .templateComponentId(v.getTemplateComponentId())
+                .sequence(v.getSequence())
                 .build()).collect(Collectors.toList());
     }
 

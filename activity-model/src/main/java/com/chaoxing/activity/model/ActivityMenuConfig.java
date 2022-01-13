@@ -39,5 +39,7 @@ public class ActivityMenuConfig {
     private Boolean system;
     /** 自定义应用模板组件id; column: template_component_id */
     private Integer templateComponentId;
+    /** 排序 */
+    private Integer sequence;
 
 }

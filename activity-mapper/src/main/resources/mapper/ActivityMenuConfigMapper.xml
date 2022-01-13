@@ -7,17 +7,18 @@
         <result column="menu" jdbcType="VARCHAR" property="menu" />
         <result column="is_enable" jdbcType="BIT" property="enable" />
         <result column="is_system" jdbcType="BIT" property="system" />
-        <result column="template_component+_id" jdbcType="INTEGER" property="templateComponentId" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.activity_id, t.menu
+        t.id, t.activity_id, t.menu, t.is_enable, t.is_system, t.template_component_id, t.sequence
     </sql>
 
     <insert id="batchAdd">
-        INSERT INTO t_activity_menu_config ( activity_id, menu, is_system, template_component_id )
+        INSERT INTO t_activity_menu_config ( activity_id, menu, is_system, template_component_id, sequence )
         VALUES
             <foreach collection="activityMenuConfigs" index="key" item="value" open="" close="" separator=",">
-                ( #{value.activityId}, #{value.menu}, #{value.system}, #{value.templateComponentId} )
+                ( #{value.activityId}, #{value.menu}, #{value.system}, #{value.templateComponentId}, #{value.sequence} )
             </foreach>
     </insert>
 
