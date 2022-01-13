@@ -26,11 +26,17 @@
         <result column="is_valid" jdbcType="BIT" property="valid" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="corrected_integral" jdbcType="DECIMAL" property="correctedIntegral" />
+        <result column="period" jdbcType="DECIMAL" property="period" />
+        <result column="corrected_period" jdbcType="DECIMAL" property="correctedPeriod" />
+        <result column="credit" jdbcType="DECIMAL" property="credit" />
+        <result column="corrected_credit" jdbcType="DECIMAL" property="correctedCredit" />
+        <result column="comment" jdbcType="DECIMAL" property="comment" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time,
         t.sign_in_num, t.signed_in_num, t.sign_in_leave_num, t.not_sign_in_num, t.signed_in_rate, t.rating_num, t.integral, t.activity_integral, t.participate_time_length,
-        t.is_qualified, t.is_valid, t.create_time, t.update_time
+        t.is_qualified, t.is_valid, t.create_time, t.update_time, t.corrected_integral, t.period, t.corrected_period, t.credit, t.corrected_credit, t.comment
     </sql>
     <select id="paging" resultType="com.chaoxing.activity.model.UserStatSummary">
         SELECT

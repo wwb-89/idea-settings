@@ -35,11 +35,11 @@ public class ActivityIntegralChangeEventTask {
             if (eventOrigin == null) {
                 return;
             }
-            log.info("根据餐具:{} 处理活动积分改变事件任务", JSON.toJSONString(eventOrigin));
+            log.info("根据参数:{} 处理活动积分改变事件任务", JSON.toJSONString(eventOrigin));
             activityIntegralChangeEventQueueService.handle(eventOrigin);
             log.info("处理活动积分改变事件任务 success");
         } catch (Exception e) {
-            log.error("根据餐具:{} 处理活动积分改变事件任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
+            log.error("根据参数:{} 处理活动积分改变事件任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
             activityIntegralChangeEventQueue.push(eventOrigin);
         } finally {

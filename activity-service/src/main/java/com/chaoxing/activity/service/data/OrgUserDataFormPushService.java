@@ -240,11 +240,22 @@ public class OrgUserDataFormPushService {
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "integral")) {
-                    data.add(userStatSummary.getActivityIntegral());
+                    BigDecimal integral = Optional.ofNullable(userStatSummary.getCorrectedIntegral()).orElse(userStatSummary.getActivityIntegral());
+                    data.add(integral);
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "unit")) {
                     data.add("积分");
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "period")) {
+                    BigDecimal period = Optional.ofNullable(userStatSummary.getCorrectedPeriod()).orElse(userStatSummary.getPeriod());
+                    data.add(period);
+                    item.put("val", data);
+                    result.add(item);
+                } else if (Objects.equals(alias, "credit")) {
+                    BigDecimal credit = Optional.ofNullable(userStatSummary.getCorrectedCredit()).orElse(userStatSummary.getCredit());
+                    data.add(credit);
                     item.put("val", data);
                     result.add(item);
                 } else if (Objects.equals(alias, "get_time")) {

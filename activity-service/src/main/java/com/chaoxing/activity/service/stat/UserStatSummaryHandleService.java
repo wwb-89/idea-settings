@@ -269,4 +269,74 @@ public class UserStatSummaryHandleService {
         }
     }
 
+    /**更新用户汇总数据中的活动设置的学时
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-13 17:51:40
+     * @param activityId
+     * @param period
+     * @return void
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateActivityPeriod(Integer activityId, BigDecimal period) {
+        period = Optional.ofNullable(period).orElse(BigDecimal.ZERO);
+        List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(activityId);
+        if (CollectionUtils.isEmpty(userStatSummaries)) {
+            return;
+        }
+        userStatSummaryMapper.update(null, new LambdaUpdateWrapper<UserStatSummary>()
+                .eq(UserStatSummary::getActivityId, activityId)
+                .set(UserStatSummary::getPeriod, period)
+        );
+        // 找到活动下合格的用户uid列表
+        List<Integer> uids = userResultQueryService.listActivityQualifiedUid(activityId);
+        if (CollectionUtils.isNotEmpty(uids)) {
+            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
+                    .lambda()
+                    .eq(UserStatSummary::getActivityId, activityId)
+                    .in(UserStatSummary::getUid, uids)
+                    .set(UserStatSummary::getPeriod, period)
+            );
+        }
+        // 触发用户活动汇总数据的变更
+        for (UserStatSummary userStatSummary : userStatSummaries) {
+            userStatSummaryChangeEventService.handle(userStatSummary.getUid(), activityId);
+        }
+    }
+
+    /**更新用户汇总数据中的活动设置的学分
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-13 17:53:06
+     * @param activityId
+     * @param credit
+     * @return void
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateActivityCredit(Integer activityId, BigDecimal credit) {
+        credit = Optional.ofNullable(credit).orElse(BigDecimal.ZERO);
+        List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(activityId);
+        if (CollectionUtils.isEmpty(userStatSummaries)) {
+            return;
+        }
+        userStatSummaryMapper.update(null, new LambdaUpdateWrapper<UserStatSummary>()
+                .eq(UserStatSummary::getActivityId, activityId)
+                .set(UserStatSummary::getCredit, credit)
+        );
+        // 找到活动下合格的用户uid列表
+        List<Integer> uids = userResultQueryService.listActivityQualifiedUid(activityId);
+        if (CollectionUtils.isNotEmpty(uids)) {
+            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
+                    .lambda()
+                    .eq(UserStatSummary::getActivityId, activityId)
+                    .in(UserStatSummary::getUid, uids)
+                    .set(UserStatSummary::getCredit, credit)
+            );
+        }
+        // 触发用户活动汇总数据的变更
+        for (UserStatSummary userStatSummary : userStatSummaries) {
+            userStatSummaryChangeEventService.handle(userStatSummary.getUid(), activityId);
+        }
+    }
+
 }

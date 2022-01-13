@@ -78,6 +78,18 @@ public class UserStatSummary {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+    /** 纠正的积分; column: corrected_integral*/
+    private BigDecimal correctedIntegral;
+    /** 学时; column: period*/
+    private BigDecimal period;
+    /** 纠正的学时; column: corrected_period*/
+    private BigDecimal correctedPeriod;
+    /** 学分; column: credit*/
+    private BigDecimal credit;
+    /** 纠正的学分; column: corrected_credit*/
+    private BigDecimal correctedCredit;
+    /** 评语; column: comment*/
+    private String comment;
     
     // 附加
     /** 合格数量（汇总多个活动时使用） */

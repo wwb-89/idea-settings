@@ -1,3 +1,16 @@
+-- 2022-01-13 积分、学时、学分 且都可以纠正
+ALTER TABLE t_user_stat_summary ADD `corrected_integral` DECIMAL(10, 2) DEFAULT NULL COMMENT '校正的积分';
+ALTER TABLE t_user_stat_summary ADD `period` DECIMAL(10, 2) DEFAULT 0 COMMENT '学时';
+ALTER TABLE t_user_stat_summary ADD `corrected_period` DECIMAL(10, 2) DEFAULT NULL COMMENT '校正的学时';
+ALTER TABLE t_user_stat_summary ADD `credit` DECIMAL(10, 2) DEFAULT 0 COMMENT '学分';
+ALTER TABLE t_user_stat_summary ADD `corrected_credit` DECIMAL(10, 2) DEFAULT NULL COMMENT '校正的学分';
+ALTER TABLE t_user_stat_summary ADD `comment` VARCHAR(512) DEFAULT '' COMMENT '评语';
+UPDATE t_user_stat_summary t,
+    t_activity t1
+SET t.period = t1.period,
+    t.credit = t1.credit
+WHERE
+    t.activity_id = t1.id;
 
 
 -- 更新图标命名
