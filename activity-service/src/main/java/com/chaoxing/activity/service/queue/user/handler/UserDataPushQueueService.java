@@ -170,14 +170,12 @@ public class UserDataPushQueueService {
                 } else if (Objects.equals(alias, "department")) {
                     // 部门信息
                     if (Objects.equals("department", formInfo.getCompt())) {
-                        List<WfwDepartmentDTO> wfwDepartments = wfwContactApiService.listUserJoinDepartment(userStatSummary.getUid(), activity.getCreateFid());
-                        if (CollectionUtils.isNotEmpty(wfwDepartments)) {
-                            for (WfwDepartmentDTO wfwDepartment : wfwDepartments) {
-                                JSONObject user = new JSONObject();
-                                user.put("id", wfwDepartment.getId());
-                                user.put("name", wfwDepartment.getName());
-                                data.add(user);
-                            }
+                        WfwDepartmentDTO wfwDepartment = wfwContactApiService.getUserDepartment(userStatSummary.getUid(), activity.getCreateFid());
+                        if (wfwDepartment != null) {
+                            JSONObject user = new JSONObject();
+                            user.put("id", wfwDepartment.getId());
+                            user.put("name", wfwDepartment.getName());
+                            data.add(user);
                             item.put("idNames", data);
                             result.add(item);
                         }

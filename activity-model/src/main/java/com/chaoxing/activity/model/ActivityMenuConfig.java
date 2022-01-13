@@ -1,17 +1,13 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 活动菜单配置表
@@ -29,6 +25,7 @@ import java.util.stream.Collectors;
 public class ActivityMenuConfig {
 
     /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
     private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
