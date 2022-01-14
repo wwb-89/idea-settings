@@ -21,7 +21,7 @@
                     <div class="clear"></div>
                 </div>
                 <div class="title-pop">
-                    <div class="img">
+                    <div class="img js-crop-img">
                         <img src="../assets/images/example.jpg" alt="">
                     </div>
                     <div class="pop-info">
@@ -113,6 +113,7 @@
     window.onload = function () {
         resizePageHeight();
         cropImgFun('.title-box');
+        cropImgFun('.title-pop');
     };
 
     function resizePageHeight () {

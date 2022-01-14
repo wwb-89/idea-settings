@@ -15,7 +15,7 @@
             <div class="title">
                 <div class="title-box">成都少儿阅读活动之“阅读之星爱阅读之星爱阅读之星爱</div>
                 <div class="title-pop">
-                    <div class="img">
+                    <div class="img js-crop-img">
                         <img src="../assets/images/example.jpg" alt="">
                     </div>
                     <div class="pop-info">
@@ -75,10 +75,13 @@
 <script src="../assets/lib/layui/layui.js"></script>
 <script src="../assets/lib/element-ui/lib/index.js"></script>
 <script src="../assets/lib/jquery.qrcode.min.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/lib/jqthumb.js"></script>
 <script>
     window.onload = function () {
         resizePageHeight();
       menuFunc();
+      cropImgFun('.title-pop');
     };
 
     function resizePageHeight () {
