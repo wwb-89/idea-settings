@@ -17,7 +17,7 @@
     <div class="container" id="activity-vue" v-cloak>
         <div class="slider">
             <div class="title color333">
-                <div class="title-box">
+                <div class="title-box" style="cursor: pointer" @click="activityHome">
                     <div class="img-box js-crop-img">
                         <img :src="activity | getCloudImgUrl(cloudDomain)" alt="">
                     </div>
@@ -358,7 +358,15 @@
                         height: 300
                     });
                     $this.activityHomeQrcodeGenerated = true;
-                }
+                },
+                // 活动首页
+                activityHome: function () {
+                    var $this = this;
+                    var home = $this.activity.previewUrl;
+                    if (!activityApp.isEmpty(home)) {
+                        window.open(home);
+                    }
+                },
             }
         });
 
