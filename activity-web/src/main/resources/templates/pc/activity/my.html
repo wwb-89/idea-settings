@@ -179,7 +179,7 @@
                     $this.hideList = hideStr.split(',');
                 }
                 if ($this.managAble) {
-                    $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
+                        $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
                 } else {
                     if ($this.showTab('signedUp')) {
                         $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
@@ -482,8 +482,8 @@
                     });
                 },
                 toCreateActivity: function () {
-                    var $this = this;
-                    window.location.replace($this.addUrl)
+                    var $this = this
+                    window.open($this.addUrl);
                 },
                activityDetail: function (index) {
                    var $this = this;
