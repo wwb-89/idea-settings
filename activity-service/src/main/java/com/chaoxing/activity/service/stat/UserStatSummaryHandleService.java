@@ -10,7 +10,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.event.UserStatSummaryChangeEventService;
-import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwOrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.user.UserStatService;
@@ -48,7 +48,7 @@ public class UserStatSummaryHandleService {
     @Resource
     private PassportApiService passportApiService;
     @Resource
-    private OrganizationalStructureApiService organizationalStructureApiService;
+    private WfwOrganizationalStructureApiService organizationalStructureApiService;
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource

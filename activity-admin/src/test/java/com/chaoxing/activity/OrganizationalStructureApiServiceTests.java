@@ -1,7 +1,7 @@
 package com.chaoxing.activity;
 
 import com.alibaba.fastjson.JSON;
-import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwOrganizationalStructureApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class OrganizationalStructureApiServiceTests {
 
 	@Resource
-	private OrganizationalStructureApiService organizationalStructureApiService;
+	private WfwOrganizationalStructureApiService organizationalStructureApiService;
 
 	@Test
 	public void listUserOrganizationalStructure() {

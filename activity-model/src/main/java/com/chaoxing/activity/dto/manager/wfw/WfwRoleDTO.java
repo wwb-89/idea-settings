@@ -21,7 +21,13 @@ public class WfwRoleDTO {
 
 	/** 角色id */
 	private Integer id;
+	/** 角色 */
+	private Integer role;
 	/** 角色名称 */
 	private String name;
+	/** 是否是组 */
+	private Boolean group;
+	/** 所属组id */
+	private Integer roleGroupId;
 
 }
