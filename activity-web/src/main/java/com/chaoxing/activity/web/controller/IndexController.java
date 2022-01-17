@@ -290,8 +290,6 @@ public class IndexController {
 		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
 		model.addAttribute("managAble", myActivityParam.getManagAble());
 		if (StringUtils.isNotBlank(myActivityParam.getAddUrl())) {
-			String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl(DomainConstant.WEB + "/my"), StandardCharsets.UTF_8.name());
-			myActivityParam.setAddUrl(myActivityParam.getAddUrl() + "&backurl=" + backUrl);
 			model.addAttribute("addUrl", myActivityParam.getAddUrl());
 		}
 		if (StringUtils.isNotBlank(myActivityParam.getAddBtnName())) {
