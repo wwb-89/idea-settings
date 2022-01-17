@@ -236,7 +236,7 @@ public class ActivityHandleService {
 		}
 		if (disabledInspectionConfig) {
 			for (ActivityMenuConfig activityMenu : activityMenus) {
-				if (Objects.equals(activityMenu.getMenu(), ActivityMenuEnum.RESULTS_MANAGE.getValue())) {
+				if (Objects.equals(activityMenu.getMenu(), ActivityMenuEnum.BackendMenuEnum.RESULTS_MANAGE.getValue())) {
 					activityMenu.setEnable(false);
 					break;
 				}

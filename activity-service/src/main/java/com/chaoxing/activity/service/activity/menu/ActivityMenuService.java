@@ -236,15 +236,15 @@ public class ActivityMenuService {
             ActivityMenuConfig menuConfig = menuConfigMap.get(menu);
             if (menuConfig == null) {
                 menuConfig = ActivityMenuConfig.builder().menu(menu).activityId(activityId).enable(true).build();
-                ActivityMenuEnum activityMenuEnum = ActivityMenuEnum.fromValue(menu);
-                if (activityMenuEnum == null) {
+                ActivityMenuEnum.BackendMenuEnum backendMenuEnum = ActivityMenuEnum.backendMenuFromValue(menu);
+                if (backendMenuEnum == null) {
                     Integer tplComponentId = customAppConfigQueryService.getCustomAppTplComponentId(menu);
                     menuConfig.setSystem(false);
                     menuConfig.setTemplateComponentId(tplComponentId);
                     menuConfig.setSequence(150);
                 } else {
                     menuConfig.setSystem(true);
-                    menuConfig.setSequence(activityMenuEnum.getSequence());
+                    menuConfig.setSequence(backendMenuEnum.getSequence());
                 }
                 waitAddConfigs.add(menuConfig);
             }
@@ -268,7 +268,7 @@ public class ActivityMenuService {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateActivityMenusByInspectionConfig(Integer activityId, boolean openInspectionConfig) {
-        String inspectManage = ActivityMenuEnum.RESULTS_MANAGE.getValue();
+        String inspectManage = ActivityMenuEnum.BackendMenuEnum.RESULTS_MANAGE.getValue();
         ActivityMenuConfig inspectConfigMenu = activityMenuConfigMapper.selectList(new LambdaQueryWrapper<ActivityMenuConfig>()
                 .eq(ActivityMenuConfig::getActivityId, activityId)
                 .eq(ActivityMenuConfig::getMenu, inspectManage)).stream().findFirst().orElse(null);

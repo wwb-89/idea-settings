@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityCustomAppConfigMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityCustomAppConfig">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="icon_id" jdbcType="VARCHAR" property="iconId" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="is_pc" jdbcType="BIT" property="pc" />
+        <result column="is_mobile" jdbcType="BIT" property="mobile" />
+        <result column="show_rule" jdbcType="VARCHAR" property="showRule" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.activity_id, t.type, t.title, t.icon_id, t.url, t.is_pc, t.is_mobile, t.show_rule,
+        t.is_deleted, t.create_time, t.update_time
+    </sql>
+    <sql id="Base_Column_ALIAS_List">
+        t.id as id, t.component_id as componentId, t.template_component_id as templateComponentId, t.type as type, t.title as title, t.icon_id as iconId,
+        t.url as url, t.is_show_after_sign_up as showAfterSignUp, t.is_open_blank as openBlank, t.is_deleted as deleted,
+        t.sequence as `sequence`, t.create_time as createTime, t.update_time as updateTime
+    </sql>
+
+    <select id="listActivityAppWithCloudId" resultType="com.chaoxing.activity.model.ActivityCustomAppConfig">
+        SELECT
+        <include refid="Base_Column_ALIAS_List"></include>,
+        t1.default_icon_cloud_id as defaultIconCloudId, t1.active_icon_cloud_id as activeIconCloudId
+        FROM t_custom_app_config t
+        LEFT JOIN t_icon t1 ON t.icon_id = t1.id
+        WHERE t.template_component_id in
+        <foreach collection="templateComponentIds" open="(" close=")" separator="," item="tplComponentId">
+            #{tplComponentId}
+        </foreach>
+        <if test="type != null and type != ''">
+            AND t.type = #{type}
+        </if>
+        <if test="!containDeleted">
+            AND t.is_deleted = 0
+        </if>
+    </select>
+</mapper>

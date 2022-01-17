@@ -1114,7 +1114,7 @@ public class ActivityQueryService {
 			activityCreateParam.setInspectionConfigId(inspectionConfig.getId());
 		}
 		List<String> menus = activityMenuService.listActivityEnableMenusDTO(activityId).stream().map(ActivityMenuDTO::getCode).collect(Collectors.toList());
-		activityCreateParam.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.RESULTS_MANAGE.getValue()));
+		activityCreateParam.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.BackendMenuEnum.RESULTS_MANAGE.getValue()));
 	}
 
 	/**根据报名签到id列表和活动市场id统计正在进行中的活动数量

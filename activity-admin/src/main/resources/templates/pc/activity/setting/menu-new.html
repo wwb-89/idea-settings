@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+  <meta charset="UTF-8">
+  <title>模块设置</title>
+  <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+  <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+  <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+  <link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
+  <link rel="stylesheet" href="/static/pc/assets/css/moduleSet.css" th:href="@{/pc/assets/css/moduleSet.css}">
+  <style>
+    [v-cloak]{
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div id="vue">
+  <div class="manage-page">
+    <div class="top-title">
+      <span class="font16 color333 title-name">管理功能</span>
+      <el-button class="fr btn-add" plain round @click="selectLinkDialog = true">添加</el-button>
+    </div>
+    <div class="sortable-box ">
+      <ul class="table-deader fs0">
+        <li class="li-drag">排序</li>
+        <li class="li-name">菜单名称</li>
+        <li class="li-status">开启</li>
+        <li class="li-operate">操作</li>
+      </ul>
+      <div class="table-body" id="sortDragBox1">
+        <ul v-for="(item,index) in backendMenus" :key="index" class="table-tr fs0 list-group-item">
+          <li class="table-td li-drag"><i class="icon-drag"></i></li>
+          <li class="table-td li-name">{{item.name}}</li>
+          <li class="table-td li-status">
+            <el-switch v-model="item.status"></el-switch>
+          </li>
+          <li class="table-td li-operate">
+            <span class="btn btn-edit">编辑</span>
+            <span class="btn btn-delete" @click="ifDeletePop=true">删除</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="top-title">
+      <span class="font16 color333 title-name">用户参与按钮</span>
+      <el-button class="fr btn-add" plain round @click="selectLinkDialog = true">添加</el-button>
+    </div>
+    <div class="sortable-box ">
+      <ul class="table-deader fs0">
+        <li class="li-drag">排序</li>
+        <li class="li-button">按钮</li>
+        <li class="li-rule">显示规则</li>
+        <li class="li-status">开启</li>
+        <li class="li-operate">操作</li>
+      </ul>
+      <div class="table-body" id="sortDragBox2">
+        <ul v-for="(item,index) in frontendMenus" :key="index" class="table-tr fs0 list-group-item">
+          <li class="table-td li-drag"><i class="icon-drag"></i></li>
+          <li class="table-td li-button">{{item.name}}</li>
+          <li class="table-td li-rule">
+            <el-select v-model="item.value" placeholder="请选择">
+              <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+              </el-option>
+            </el-select>
+          </li>
+          <li class="table-td li-status">
+            <el-switch v-model="item.status"></el-switch>
+          </li>
+          <li class="table-td li-operate">
+            <span class="btn btn-edit">编辑</span>
+            <span class="btn btn-delete" @click="ifDeletePop=true">删除</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!--添加修改弹窗-->
+    <div class="dialog-mask selectLinkPop" v-show="showAddEditDialog">
+      <div class="dailog">
+        <div class="dailog-header">
+          <span>添加模块</span>
+          <i class="close" @click="showAddEditDialog = false"></i>
+        </div>
+        <div class="body">
+          <div class="form">
+            <div class="content-switch-box marginBottom20">
+              <div class="link-lists link-lists1">
+                <div class="link-list marginBottom16">
+                  <div class="left-box">
+                    <div class="line1 marginBottom16">
+                      <div class="icon-img" @click="showSelectIconFunc()"><img :src="item.icon" alt=""></div>
+                      <el-input v-model="addEditMenu.name" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                    </div>
+                    <div class="line2">
+                      <el-input v-model="addEditMenu.url" type="text" placeholder="链接"></el-input>
+                    </div>
+                  </div>
+                </div>
+                <div class="terminal-select">
+                  <el-checkbox v-model="addEditMenu.pc">电脑端</el-checkbox>
+                  <el-checkbox v-model="addEditMenu.mobile">移动端</el-checkbox>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="btn-box">
+            <div class="border-btn" @click="showAddEditDialog = false">取消</div>
+            <div class="normal-btn">确定</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图标选择弹窗 -->
+  <vue-icon-select ref="iconSelectWindow" :cloud-domain="cloudDomain" :icons="icons" @callback="confirmIconChoose"></vue-icon-select>
+
+</div>
+</body>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+  <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+  <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+  <script src="/static/pc/assets/component/icon-select.js" th:src="@{/pc/assets/component/icon-select.js}"></script>
+  <script src="/static/pc/assets/lib/Sortable.js" th:src="@{/pc/assets/lib/Sortable.js}"></script>
+  <script th:inline="javascript">
+    var vm = new Vue({
+      el: '#vue',
+      data: function () {
+        return {
+          canConfigMenus: [[${canConfigMenus}]],  //  可配置的菜单列表
+          showRules: [[${showRules}]],  // 显示规则列表
+          backendMenus: [],
+          frontendMenus: [],
+          // 显示新增修改菜单弹窗
+          showAddEditDialog: false,
+          // 排序对象
+          backendSortable: null,
+          frontendSortable: null
+        }
+      },
+      created: function () {
+        var $this = this;
+        var canConfigMenus = $this.canConfigMenus || [];
+        $(canConfigMenus).each(function () {
+          if (this.type == 'backend') {
+            $this.backendMenus.push(this);
+          } else if (this.type == 'frontend') {
+            $this.frontendConfigs.push(this);
+          }
+        });
+
+      },
+      mounted: function () {
+        var $this = this;
+        $this.$nextTick(function () {
+          this.createSort();
+        });
+      },
+      methods: {
+        createSortable: function () {
+          var $this = this;
+          $this.backendSortable = new Sortable(document.getElementById('sortDragBox1'), {
+            animation: 150,
+            handle: '.icon-drag',
+            group: '.list-group-item',
+          });
+
+          $this.frontendSortable = new Sortable(document.getElementById('sortDragBox2'), {
+            handle: '.icon-drag',
+            animation: 150,
+            group: '.list-group-item',
+          });
+        },
+      }
+    });
+  </script>
+</div>
+</html>

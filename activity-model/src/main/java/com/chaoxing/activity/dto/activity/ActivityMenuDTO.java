@@ -61,7 +61,7 @@ public class ActivityMenuDTO {
      * @return
      */
     public static List<ActivityMenuDTO> listSystemModule() {
-        ActivityMenuEnum[] values = ActivityMenuEnum.values();
+        ActivityMenuEnum.BackendMenuEnum[] values = ActivityMenuEnum.BackendMenuEnum.values();
         return Arrays.stream(values).map(v -> ActivityMenuDTO.builder().name(v.getName()).code(v.getValue()).desc(v.getDesc()).sequence(v.getSequence()).system(true).build()).collect(Collectors.toList());
     }
 
