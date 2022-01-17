@@ -289,9 +289,14 @@ public class IndexController {
 		model.addAttribute("hide", myActivityParam.getHide());
 		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
 		model.addAttribute("managAble", myActivityParam.getManagAble());
-		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl(DomainConstant.WEB + "/my"), StandardCharsets.UTF_8.name());
-		myActivityParam.setAddUrl(myActivityParam.getAddUrl() + "&backurl=" + backUrl);
-		model.addAttribute("wfwFormUrl", myActivityParam.getAddUrl());
+		if (StringUtils.isNotBlank(myActivityParam.getAddUrl())) {
+			String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl(DomainConstant.WEB + "/my"), StandardCharsets.UTF_8.name());
+			myActivityParam.setAddUrl(myActivityParam.getAddUrl() + "&backurl=" + backUrl);
+			model.addAttribute("addUrl", myActivityParam.getAddUrl());
+		}
+		if (StringUtils.isNotBlank(myActivityParam.getAddBtnName())) {
+			model.addAttribute("addBtnName", myActivityParam.getAddBtnName());
+		}
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("adminDomain", DomainConstant.ADMIN);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);

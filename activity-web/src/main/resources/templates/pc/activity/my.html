@@ -26,8 +26,8 @@
     <div :class="{'activity-list': true, 'width1000': !isEmbedded}">
         <div :class="{'item-block': true, 'nopadding': true, 'minHeight800': true, 'no-border-radius':isEmbedded}">
             <div class="filter" style="height: 30px">
-                <div class="btns" v-show="managAble && flag == 'tcol'">
-                    <button class="btn-main-gradient" @click="toCreateActivity"><i class="addIcon"></i>{{addBtnName ? addBtnName : '添加'}}</button>
+                <div class="btns" v-show="managAble || !isEmptyAddUrl">
+                    <button class="btn-main-gradient" @click="toCreateActivity"><i class="addIcon" v-show="isEmptyAddBtnName"></i>{{addBtnName ? addBtnName : '添加'}}</button>
                 </div>
                 <el-radio-group v-model="currentTab.code" @change="radioChange" v-show="!managAble">
                     <el-radio v-for="(item, index) in tabList" :key="'tab' + index" :label="item.code">{{item.name}}</el-radio>
@@ -157,6 +157,16 @@
                     tipsHtml:'',
                     btnTxt:'确定',
                     createActivity: false, //创建活动
+                }
+            },
+            computed: {
+                isEmptyAddUrl: function () {
+                    var $this = this;
+                    return activityApp.isEmpty($this.addUrl);
+                },
+                isEmptyAddBtnName: function () {
+                    var $this = this;
+                    return activityApp.isEmpty($this.addBtnName);
                 }
             },
             created: function () {
