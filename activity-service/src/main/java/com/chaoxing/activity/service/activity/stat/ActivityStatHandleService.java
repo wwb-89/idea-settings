@@ -156,8 +156,10 @@ public class ActivityStatHandleService {
             log.error("操作任务:{} error:{}", taskId, e.getMessage());
             throw new BusinessException("操作任务失败");
         };
-        ActivityStatTask task = activityStatTaskMapper.selectById(taskId);
-        return handleActivityStat(task);
+        return distributedLock.lock(lockKey, () -> {
+            ActivityStatTask task = activityStatTaskMapper.selectById(taskId);
+            return handleActivityStat(task);
+        }, fail);
     }
 
     private boolean handleActivityStat(ActivityStatTask statTask) {
