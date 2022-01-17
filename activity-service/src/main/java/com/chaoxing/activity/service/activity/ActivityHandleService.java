@@ -50,6 +50,7 @@ import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tag.TagHandleService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
@@ -284,7 +285,10 @@ public class ActivityHandleService {
 			String flag = activity.getActivityFlag();
 			Integer fid = activity.getCreateFid();
 			Integer activityId = activity.getId();
-			ClazzInteractionDTO clazzInteraction = clazzInteractionApiService.clazzCourseCreate(activityId, activityName, loginUser.getUid(), coverUrl, fillFormId, fid, flag);
+			String startTime = Optional.ofNullable(activity.getStartTime()).map(v -> v.format(DateUtils.FULL_TIME_FORMATTER)).orElse(null);
+			String endTime = Optional.ofNullable(activity.getEndTime()).map(v -> v.format(DateUtils.FULL_TIME_FORMATTER)).orElse(null);
+			ClazzInteractionDTO clazzInteraction = clazzInteractionApiService.clazzCourseCreate(activityId, activityName,
+					loginUser.getUid(), coverUrl, fillFormId, fid, flag, startTime, endTime);
 			if (clazzInteraction == null) {
 				return;
 			}
