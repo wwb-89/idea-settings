@@ -13,6 +13,7 @@ import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.model.Tag;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.IconQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
@@ -81,6 +82,8 @@ public class ActivitySettingController {
     private WfwFormApiService formApiService;
     @Resource
     private TagQueryService tagQueryService;
+    @Resource
+    private IconQueryService iconQueryService;
 
     @RequestMapping("index")
     public String settingIndex(Model model, @PathVariable Integer activityId) {
@@ -202,6 +205,7 @@ public class ActivitySettingController {
                             .collect(Collectors.toList()),
                     (v1, v2) -> v2));
         }
+        model.addAttribute("icons", iconQueryService.list());
         model.addAttribute("formFieldStructures", formFieldStructures);
         model.addAttribute("sucTplComponentIds", signUpConditionService.listActivityEnabledTemplateComponentId(activityId));
         model.addAttribute("signUpConditions", signUpConditions);
@@ -212,6 +216,7 @@ public class ActivitySettingController {
         model.addAttribute("mainDomain", DomainConstant.MAIN);
         model.addAttribute("wfwFormDomain", DomainConstant.WFW_FORM_API);
         model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
+        model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
         return "pc/activity/setting/sign-up";
     }
 
@@ -229,6 +234,6 @@ public class ActivitySettingController {
         model.addAttribute("enableMenus", activityMenuService.listActivityEnableMenus(activityId));
         model.addAttribute("canConfigMenus", activityMenuService.listCanConfigMenus(activityId));
         model.addAttribute("mainDomain", DomainConstant.MAIN);
-        return "pc/activity/setting/menu";
+        return "pc/activity/setting/menu-new";
     }
 }
