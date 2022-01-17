@@ -147,4 +147,15 @@
             t.signed_up_num DESC
     </select>
 
+    <select id="countWfwFormMarketActivitySignedUpNum" resultType="java.lang.Integer">
+        SELECT
+            SUM( t.signed_up_num )
+        FROM
+            t_activity_stat_summary t
+            INNER JOIN t_activity t1 ON t.activity_id = t1.id
+            INNER JOIN t_market t2 ON t1.market_id = t2.id
+            AND t2.origin_type = 'wfw_form'
+            AND t2.origin = #{formId}
+    </select>
+
 </mapper>

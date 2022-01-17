@@ -3,7 +3,6 @@ package com.chaoxing.activity;
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.google.common.collect.Maps;
-import org.apache.poi.ss.formula.functions.T;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -51,4 +50,11 @@ public class CloudApiServiceTests {
 			System.out.println(entry.getKey() + " ====== " + entry.getValue());
 		}
 	}
+
+	@Test
+	public void getInfo() {
+		String cloudId = "68065603fbcb805725f7ef5e21cef03c";
+		cloudApiService.getImage(cloudId);
+	}
+
 }

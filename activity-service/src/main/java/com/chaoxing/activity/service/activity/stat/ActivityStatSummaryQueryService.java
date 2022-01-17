@@ -295,4 +295,16 @@ public class ActivityStatSummaryQueryService {
         exportData.setData(data);
         return exportData;
     }
+
+    /**统计万能表单活动市场活动的报名人数
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-17 10:17:22
+     * @param formId
+     * @return java.lang.Integer
+    */
+    public Integer countWfwFormMarketActivitySignedUpNum(Integer formId) {
+        return activityStatSummaryMapper.countWfwFormMarketActivitySignedUpNum(formId);
+    }
+
 }
