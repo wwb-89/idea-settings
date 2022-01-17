@@ -15,11 +15,11 @@ import com.chaoxing.activity.model.ActivityStatTask;
 import com.chaoxing.activity.model.ActivityStatTaskDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
+import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -158,32 +158,35 @@ public class ActivityStatHandleService {
         };
         return distributedLock.lock(lockKey, () -> {
             ActivityStatTask task = activityStatTaskMapper.selectById(taskId);
-            Integer status = task.getStatus();
-            ActivityStatTask.Status statusEnum = ActivityStatTask.Status.fromValue(status);
-
-            if (Objects.equals(ActivityStatTask.Status.WAIT_HANDLE, statusEnum)) {
-                // 活动统计处理中
-                return handleActivityStat(task);
-            }
-            return true;
+            return handleActivityStat(task);
         }, fail);
     }
 
     private boolean handleActivityStat(ActivityStatTask statTask) {
+        if (statTask == null) {
+            return true;
+        }
+        Integer status = statTask.getStatus();
+        if (Objects.equals(ActivityStatTask.Status.SUCCESS.getValue(), status) || Objects.equals(ActivityStatTask.Status.FAIL.getValue(), status)) {
+            // 成功和失败后都不执行
+            return true;
+        }
         Integer taskId = statTask.getId();
-        // 默认初始待处理
-        Integer status = ActivityStatTask.Status.WAIT_HANDLE.getValue();
         try {
-            // 根据任务id查询待处理任务详情
-            List<ActivityStatTaskDetail> taskDetailList = activityStatTaskDetailMapper.selectList(
-                    new QueryWrapper<ActivityStatTaskDetail>()
-                    .lambda()
+            // 未成功的条数
+            Integer notSuccessNum = activityStatTaskDetailMapper.selectCount(new LambdaQueryWrapper<ActivityStatTaskDetail>()
                     .eq(ActivityStatTaskDetail::getTaskId, taskId)
-                    .eq(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.WAIT_HANDLE.getValue())
+                    .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue())
             );
-            if (CollectionUtils.isNotEmpty(taskDetailList)) {
-                int execSuccessNum = 0;
-                for (ActivityStatTaskDetail detail : taskDetailList) {
+            // 根据任务id查询待处理任务详情
+            List<ActivityStatTaskDetail> notSuccessTaskDetailList = activityStatTaskDetailMapper.selectList(
+                    new LambdaQueryWrapper<ActivityStatTaskDetail>()
+                    .eq(ActivityStatTaskDetail::getTaskId, taskId)
+                    .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue())
+            );
+            if (CollectionUtils.isNotEmpty(notSuccessTaskDetailList)) {
+                Integer execSuccessNum = 0;
+                for (ActivityStatTaskDetail detail : notSuccessTaskDetailList) {
                     // 判断活动id前面的任务是否执行成功，若未执行成功，该detail不做任何处理
                     int count = activityStatTaskDetailMapper.selectCount(new QueryWrapper<ActivityStatTaskDetail>()
                             .lambda()
@@ -193,34 +196,18 @@ public class ActivityStatHandleService {
                     if (count != 0) {
                         continue;
                     }
-                    boolean result = false;
-                    // 5次最大尝试处理，成功则跳出处理循环
-                    for (int i = 0; i < CommonConstant.MAX_ERROR_TIMES; i++) {
-                        result = handleActivityStatItem(detail, statTask.getDate());
-                        if (result) {
-                            detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
-                            execSuccessNum++;
-                            break;
-                        }
+                    boolean result = ApplicationContextHolder.getBean(ActivityStatHandleService.class).handleActivityStatItem(detail, statTask.getDate());
+                    if (result) {
+                        execSuccessNum++;
                     }
-                    if (!result) {
-                        detail.setStatus(ActivityStatTaskDetail.Status.FAIL.getValue());
-                        log.error("活动:" + detail.getActivityId() + "统计失败！异常信息:" + detail.getErrorMessage());
-                    }
-                    // 更新统计任务状态
-                    activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
-                            .lambda()
-                            .eq(ActivityStatTaskDetail::getTaskId, detail.getTaskId())
-                            .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
-                            .set(ActivityStatTaskDetail::getStatus, detail.getStatus())
-                            .set(ActivityStatTaskDetail::getErrorMessage, detail.getErrorMessage())
-                    );
-                    if (taskDetailList.size() == execSuccessNum) {
+                    if (notSuccessNum.compareTo(execSuccessNum) <= 0) {
                         status = ActivityStatTask.Status.SUCCESS.getValue();
                     } else {
                         status = ActivityStatTask.Status.FAIL.getValue();
                     }
                 }
+            } else {
+                status = ActivityStatTask.Status.SUCCESS.getValue();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -239,6 +226,7 @@ public class ActivityStatHandleService {
     @Transactional(rollbackFor = Exception.class)
     public boolean handleActivityStatItem(ActivityStatTaskDetail detail, LocalDate statDate) {
         String errorMsg = "";
+        boolean success = true;
         try {
             Integer activityId = detail.getActivityId();
             ActivityStatDTO activityStatDTO = activityStatQueryService.activityStat(activityId);
@@ -268,45 +256,24 @@ public class ActivityStatHandleService {
             activityStat.setSignedInIncrement(signedInIncrement);
 
             activityStatMapper.insert(activityStat);
-            return true;
+            detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
         } catch (Exception e) {
             e.printStackTrace();
+            success = false;
             errorMsg = e.getMessage();
+            detail.setStatus(ActivityStatTaskDetail.Status.FAIL.getValue());
+            log.error("活动:{} 统计error:{}", detail.getActivityId(), detail.getErrorMessage());
         }
         detail.setErrorMessage(errorMsg);
-        return false;
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public List<Integer> rerunFailedStatActivity() {
-        // 查询失败的活动统计任务
-        List<ActivityStatTask> failedActivityStatTasks = activityStatTaskMapper.selectList(new LambdaQueryWrapper<ActivityStatTask>()
-                .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.FAIL.getValue()));
-        if (CollectionUtils.isEmpty(failedActivityStatTasks)) {
-            return Lists.newArrayList();
-        }
-        List<Integer> taskIds = failedActivityStatTasks.stream().map(ActivityStatTask::getId).sorted().collect(Collectors.toList());
-        // 将失败的任务改为待处理
-        activityStatTaskMapper.update(null, new LambdaUpdateWrapper<ActivityStatTask>()
-                .in(ActivityStatTask::getId, taskIds)
-                .set(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue()));
-        // 将失败的任务明细改为待处理
-        activityStatTaskDetailMapper.update(null, new LambdaUpdateWrapper<ActivityStatTaskDetail>()
-                .in(ActivityStatTaskDetail::getTaskId, taskIds)
-                .set(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.WAIT_HANDLE.getValue()));
-        return taskIds;
-    }
-
-    /**查询所有待处理任务id
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-12-15 11:32:57
-     * @return
-     */
-    public List<Integer> getWaitHandleStatActivityTaskIds() {
-        return activityStatTaskMapper.selectList(new LambdaQueryWrapper<ActivityStatTask>()
-                        .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.WAIT_HANDLE.getValue()))
-                .stream().map(ActivityStatTask::getId).sorted().collect(Collectors.toList());
+        // 更新统计任务状态
+        activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
+                .lambda()
+                .eq(ActivityStatTaskDetail::getTaskId, detail.getTaskId())
+                .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
+                .set(ActivityStatTaskDetail::getStatus, detail.getStatus())
+                .set(ActivityStatTaskDetail::getErrorMessage, detail.getErrorMessage())
+        );
+        return success;
     }
 
     /**修复活动统计任务

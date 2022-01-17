@@ -90,20 +90,6 @@ public class QueueApiController {
 		return RestRespDTO.success();
 	}
 
-	@RequestMapping("rerun-failed/activity/stat")
-	public RestRespDTO rerunFailedStatActivity() {
-		activityStatQueueService.rerunFailedStatActivityTask();
-		return RestRespDTO.success();
-	}
-
-	@RequestMapping("rerun-wait-handle/activity/stat")
-	public RestRespDTO rerunWaitHandleStatActivity() {
-		activityStatQueueService.rerunWaitHandleStatActivityTask();
-		return RestRespDTO.success();
-	}
-
-
-
 	/**初始化活动封面队列
 	 * @Description 
 	 * @author wwb

@@ -51,6 +51,10 @@ public class ActivityDataChangeEventService {
 	private ActivityChangeEventQueue activityChangeEventQueue;
 	@Resource
 	private ActivityWebTemplateChangeEventQueue activityWebTemplateChangeEventQueue;
+	@Resource
+	private ActivityPeriodChangeEventQueue activityPeriodChangeEventQueue;
+	@Resource
+	private ActivityCreditChangeEventQueue activityCreditChangeEventQueue;
 
 	/**活动数据改变
 	 * @Description 
@@ -66,6 +70,10 @@ public class ActivityDataChangeEventService {
 		activityNameChangeHandle(activity, oldActivity);
 		// 活动积分改变处理
 		activityIntegralChangeHandle(activity, oldActivity);
+		// 活动学时改变处理
+		activityPeriodChangeHandle(activity, oldActivity);
+		// 活动学分改变处理
+		activityCreditChangeHandle(activity, oldActivity);
 		// 活动时间改变处理
 		activityTimeChangeHandle(activity, oldActivity);
 		// 活动定时发布处理
@@ -144,6 +152,52 @@ public class ActivityDataChangeEventService {
 					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
 					.build();
 			activityIntegralChangeEventQueue.push(eventOrigin);
+		}
+	}
+	/**活动学时的改变
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-14 10:14:26
+	 * @param activity
+	 * @param oldActivity
+	 * @return void
+	*/
+	private void activityPeriodChangeHandle(Activity activity, Activity oldActivity) {
+		if (activity == null || oldActivity == null) {
+			return;
+		}
+		BigDecimal period = Optional.ofNullable(activity.getPeriod()).orElse(BigDecimal.ZERO);
+		BigDecimal oldPeriod = Optional.ofNullable(oldActivity.getPeriod()).orElse(BigDecimal.ZERO);
+		if (period.compareTo(oldPeriod) != 0) {
+			// 积分改变了
+			ActivityPeriodChangeEventOrigin eventOrigin = ActivityPeriodChangeEventOrigin.builder()
+					.activityId(activity.getId())
+					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+					.build();
+			activityPeriodChangeEventQueue.push(eventOrigin);
+		}
+	}
+	/**活动学分的改变
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-14 10:14:42
+	 * @param activity
+	 * @param oldActivity
+	 * @return void
+	*/
+	private void activityCreditChangeHandle(Activity activity, Activity oldActivity) {
+		if (activity == null || oldActivity == null) {
+			return;
+		}
+		BigDecimal credit = Optional.ofNullable(activity.getCredit()).orElse(BigDecimal.ZERO);
+		BigDecimal oldCredit = Optional.ofNullable(oldActivity.getCredit()).orElse(BigDecimal.ZERO);
+		if (credit.compareTo(oldCredit) != 0) {
+			// 积分改变了
+			ActivityCreditChangeEventOrigin eventOrigin = ActivityCreditChangeEventOrigin.builder()
+					.activityId(activity.getId())
+					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+					.build();
+			activityCreditChangeEventQueue.push(eventOrigin);
 		}
 	}
 	/**活动定时发布处理

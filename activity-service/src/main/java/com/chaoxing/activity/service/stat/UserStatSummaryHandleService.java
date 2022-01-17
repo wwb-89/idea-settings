@@ -288,16 +288,6 @@ public class UserStatSummaryHandleService {
                 .eq(UserStatSummary::getActivityId, activityId)
                 .set(UserStatSummary::getPeriod, period)
         );
-        // 找到活动下合格的用户uid列表
-        List<Integer> uids = userResultQueryService.listActivityQualifiedUid(activityId);
-        if (CollectionUtils.isNotEmpty(uids)) {
-            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
-                    .lambda()
-                    .eq(UserStatSummary::getActivityId, activityId)
-                    .in(UserStatSummary::getUid, uids)
-                    .set(UserStatSummary::getPeriod, period)
-            );
-        }
         // 触发用户活动汇总数据的变更
         for (UserStatSummary userStatSummary : userStatSummaries) {
             userStatSummaryChangeEventService.handle(userStatSummary.getUid(), activityId);
@@ -323,16 +313,6 @@ public class UserStatSummaryHandleService {
                 .eq(UserStatSummary::getActivityId, activityId)
                 .set(UserStatSummary::getCredit, credit)
         );
-        // 找到活动下合格的用户uid列表
-        List<Integer> uids = userResultQueryService.listActivityQualifiedUid(activityId);
-        if (CollectionUtils.isNotEmpty(uids)) {
-            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
-                    .lambda()
-                    .eq(UserStatSummary::getActivityId, activityId)
-                    .in(UserStatSummary::getUid, uids)
-                    .set(UserStatSummary::getCredit, credit)
-            );
-        }
         // 触发用户活动汇总数据的变更
         for (UserStatSummary userStatSummary : userStatSummaries) {
             userStatSummaryChangeEventService.handle(userStatSummary.getUid(), activityId);
