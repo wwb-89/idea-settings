@@ -156,10 +156,8 @@ public class ActivityStatHandleService {
             log.error("操作任务:{} error:{}", taskId, e.getMessage());
             throw new BusinessException("操作任务失败");
         };
-        return distributedLock.lock(lockKey, () -> {
-            ActivityStatTask task = activityStatTaskMapper.selectById(taskId);
-            return handleActivityStat(task);
-        }, fail);
+        ActivityStatTask task = activityStatTaskMapper.selectById(taskId);
+        return handleActivityStat(task);
     }
 
     private boolean handleActivityStat(ActivityStatTask statTask) {
@@ -285,7 +283,7 @@ public class ActivityStatHandleService {
     */
     public void fixActivityStatTask() {
         List<ActivityStatTask> activityStatTasks = activityStatTaskMapper.selectList(new LambdaQueryWrapper<ActivityStatTask>()
-                .eq(ActivityStatTask::getStatus, ActivityStatTask.Status.FAIL.getValue())
+                .ne(ActivityStatTask::getStatus, ActivityStatTask.Status.SUCCESS.getValue())
         );
         if (CollectionUtils.isEmpty(activityStatTasks)) {
             return;
