@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
+/**微服务角色对象
  * @author wwb
  * @version ver 1.0
  * @className WfwRoleDTO

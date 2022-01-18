@@ -367,8 +367,10 @@ public class WfwOrganizationalStructureApiService {
 	* @author huxiaolong
 	* @Date 2021-06-02 11:34:06
 	* @param fid
+	* @Deprecated 使用com.chaoxing.activity.service.manager.wfw.WfwRoleApiService
 	* @return java.util.List<com.chaoxing.activity.dto.OrgRoleDTO>
 	*/
+	@Deprecated
 	public List<OrgRoleDTO> listOrgRoles(Integer fid) {
 		String enc = getOrgRoleEnc(fid);
 		String url = String.format(ORG_ROLES_URL, fid, 1, Integer.MAX_VALUE, enc);

@@ -477,7 +477,24 @@
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                     </div>
-                                    <!-- todo 微服务和通讯录应区分开 -->
+                                    <!--参与角色限制-->
+                                    <div class="form-item" v-else-if="it.code == 'sign_up_role_limit'" style="flex-wrap: wrap">
+                                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                                        <div class="input-box">
+                                            <el-switch v-model="signUpMap[item.id].openRoleLimit"></el-switch>
+                                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                                        </div>
+                                        <div class="join-box" style="margin-left: 115px;margin-top: 12px;">
+                                            <div class="join-select" v-show="signUpMap[item.id].openRoleLimit">
+                                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateRole(item.id, it)">
+                                                <span v-if="signUpMap[item.id].roleParticipateScopes.length < 1">请选择</span>
+                                                <div class="add-tags" v-else>
+                                                    <span v-for="(role, roleIndex) of signUpMap[item.id].roleParticipateScopes">{{role.name}}<i class="del_btn" @click="deleteSignUpParticipateRole(item.id, it, roleIndex)"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--微服务参与范围-->
                                     <div class="form-item flexStart" v-else-if="it.code == 'wfw_participation_scope'">
                                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                         <div class="join-box">
@@ -486,7 +503,7 @@
                                                     <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList" :key="'wfw-scope-' + sidx">{{scope.label}}</el-radio>
                                                 </el-radio-group>
                                             </div>
-                                            <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
+                                            <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope" style="margin-top: 12px;">
                                                 <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
                                                 <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
                                                 <div class="add-tags" v-else>
@@ -561,6 +578,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!--报名名单公开-->
                                     <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
                                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                         <div class="input-box">
@@ -774,27 +792,6 @@
             </div>
         </div>
         <!-- 图片库弹窗 end -->
-
-        <!-- 删除分类弹窗 -->
-        <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此' + activityClassifyTitle" :cancel="'保留'" :sure="'删除'" @callback="deleteClassifySubmit"></vue-confirm>
-        <!-- 活动地图弹窗 -->
-        <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
-        <!-- 活动发布范围弹窗 -->
-        <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
-        <!-- 报名参与范围弹窗 -->
-        <vue-custom-participate-scope :dom-scope-id="'sign-up-participate-scope-tree'" ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
-        <!-- 通知提醒范围弹窗 -->
-        <vue-custom-participate-scope :dom-scope-id="'reminder-scope-tree'" ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
-        <!--报名条件配置-->
-        <vue-sign-up-condition ref="signUpConfigDialogWindow" @callback="confirmSignUpConditionDetails"></vue-sign-up-condition>
-        <!--自定义富文本-->
-        <vue-rich-text ref="richTextEditDialogWindow" @callback="confirmRichTextEdit"></vue-rich-text>
-        <!--预览url复制容器-->
-        <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
-        <!--活动是线下但是没有选择地点的提示-->
-        <vue-confirm ref="offlineEmptyAddressWindow" :message="'未填写位置信息，展示页面中的地图位置可能不准确'" :cancel="'取消'" :sure="'继续保存'" @callback="ignoreOfflineEmptyAddress"></vue-confirm>
-        <!--重新选择门户模版-->
-        <vue-confirm ref="reSelectWebTemplateWindow" :message="'重新选择展示页面可能会导致部分数据丢失'" :cancel="'取消'" :sure="'继续'" @callback="sureReSelectWebTemplate"></vue-confirm>
         <!-- 编辑提醒内容弹窗 -->
         <div class="dialog-box5" v-if="remindContentShow">
             <div class="dailog dialog-wrap edit-remind">
@@ -838,6 +835,28 @@
                 </div>
             </div>
         </div>
+        <!-- 删除分类弹窗 -->
+        <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此' + activityClassifyTitle" :cancel="'保留'" :sure="'删除'" @callback="deleteClassifySubmit"></vue-confirm>
+        <!-- 活动地图弹窗 -->
+        <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
+        <!-- 活动发布范围弹窗 -->
+        <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
+        <!--报名参与角色-->
+        <sign-up-participate-role :dom-id="'sign-up-participate-role-tree'" :fid="fid" :area-code="areaCode" ref="signUpParticipateRoleWindow" @callback="sureSignUpParticipateRole"></sign-up-participate-role>
+        <!-- 报名参与范围弹窗 -->
+        <vue-custom-participate-scope :dom-scope-id="'sign-up-participate-scope-tree'" ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
+        <!-- 通知提醒范围弹窗 -->
+        <vue-custom-participate-scope :dom-scope-id="'reminder-scope-tree'" ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
+        <!--报名条件配置-->
+        <vue-sign-up-condition ref="signUpConfigDialogWindow" @callback="confirmSignUpConditionDetails"></vue-sign-up-condition>
+        <!--自定义富文本-->
+        <vue-rich-text ref="richTextEditDialogWindow" @callback="confirmRichTextEdit"></vue-rich-text>
+        <!--预览url复制容器-->
+        <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
+        <!--活动是线下但是没有选择地点的提示-->
+        <vue-confirm ref="offlineEmptyAddressWindow" :message="'未填写位置信息，展示页面中的地图位置可能不准确'" :cancel="'取消'" :sure="'继续保存'" @callback="ignoreOfflineEmptyAddress"></vue-confirm>
+        <!--重新选择门户模版-->
+        <vue-confirm ref="reSelectWebTemplateWindow" :message="'重新选择展示页面可能会导致部分数据丢失'" :cancel="'取消'" :sure="'继续'" @callback="sureReSelectWebTemplate"></vue-confirm>
     </div>
     <div v-show="showSignInListIframe">
         <div class="top flex">
@@ -906,6 +925,7 @@
     <script src="/static/pc/assets/component/sign-map.js" th:src="@{/pc/assets/component/sign-map.js}"></script>
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/vue-custom-participate-scope.js" th:src="@{/pc/assets/component/vue-custom-participate-scope.js}"></script>
+    <script src="/static/pc/assets/component/sign-up-participate-role.js" th:src="@{/pc/assets/component/sign-up-participate-role.js}"></script>
     <script src="/static/pc/assets/component/sign-up-condition.js" th:src="@{/pc/assets/component/sign-up-condition.js}"></script>
     <script src="/static/pc/assets/component/rich-text.js" th:src="@{/pc/assets/component/rich-text.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
@@ -927,6 +947,7 @@
                 isClone: [[${isClone}]],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${session._login_user_.fid}]],
+                areaCode: [[${areaCode}]],
                 templateId: [[${templateId}]],
                 marketId: [[${marketId}]],
                 defaultSignUpBtnName: [[${marketSignUpConfig != null ? marketSignUpConfig.signUpBtnName : ""}]],
@@ -1996,6 +2017,12 @@
                                 app.showMsg(signUp.name + "开始时间必须小于结束时间");
                                 return false;
                             }
+                            // 参与角色
+                            var openRoleLimit = signUp.openRoleLimit;
+                            if (openRoleLimit && signUp.roleParticipateScopes.length < 1) {
+                                app.showMsg(signUp.name + "的角色范围不能为空");
+                                return false;
+                            }
                             // 参与范围
                             var signUpTplComponent = $this.templateComponentMap[originId];
                             if (!signUpTplComponent) {
@@ -2463,7 +2490,18 @@
                     var groups = templateComponent.code == 'wfw_participation_scope' ? $this.wfwGroups : $this.contactGroups;
                     var signUp = $this.signUpMap[$this.operateSignUpOriginId];
                     var scopes = (signUp && ($this.currGroupType == 'wfw' ? signUp.wfwParticipateScopes : signUp.contactsParticipateScopes)) || [];
-                    $this.$refs.signUpParticipateScopeWindow.showWindow(groups, scopes, $this.currGroupType)
+                    $this.$refs.signUpParticipateScopeWindow.showWindow(groups, scopes, $this.currGroupType);
+                },
+                toAddSignUpParticipateRole: function (signUpTplComponentId, templateComponent) {
+                    var $this = this;
+                    $this.operateSignUpOriginId = signUpTplComponentId;
+                    var signUp = $this.signUpMap[$this.operateSignUpOriginId];
+                    var roleParticipateScopes = signUp.roleParticipateScopes;
+                    var roles = [];
+                    $(roleParticipateScopes).each(function () {
+                        roles.push(this.role);
+                    });
+                    $this.$refs.signUpParticipateRoleWindow.showWindow(roles);
                 },
                 // 确认选择报名参与范围
                 sureSignUpParticipateScope: function (scopes) {
@@ -2473,6 +2511,10 @@
                     } else {
                         $this.$set($this.signUpMap[$this.operateSignUpOriginId], "wfwParticipateScopes", scopes);
                     }
+                },
+                sureSignUpParticipateRole: function (roles) {
+                    var $this = this;
+                    $this.$set($this.signUpMap[$this.operateSignUpOriginId], "roleParticipateScopes", roles);
                 },
                 sureReminderReceiverScope: function (scopes) {
                     var $this = this;
@@ -2491,6 +2533,10 @@
                     } else {
                         $this.signUpMap[signUpTplComponentId].contactsParticipateScopes.splice(scopeIndex, 1);
                     }
+                },
+                deleteSignUpParticipateRole: function (signUpTplComponentId, templateComponent, index) {
+                    var $this = this;
+                    $this.signUpMap[signUpTplComponentId].roleParticipateScopes.splice(index, 1);
                 },
                 // 创建作品征集
                 addWork: function () {

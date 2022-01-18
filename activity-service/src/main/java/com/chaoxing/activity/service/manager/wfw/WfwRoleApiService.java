@@ -77,6 +77,7 @@ public class WfwRoleApiService {
 			return Lists.newArrayList();
 		}
 		for (WfwRoleDTO wfwRoleGroup : wfwRoleGroups) {
+			result.add(wfwRoleGroup);
 			List<WfwRoleDTO> wfwRoles = listRoleGroupRole(wfwRoleGroup.getId(), fid);
 			if (CollectionUtils.isNotEmpty(wfwRoles)) {
 				result.addAll(wfwRoles);
@@ -144,6 +145,9 @@ public class WfwRoleApiService {
 	*/
 	public List<WfwRoleDTO> listAreaRole(Integer fwId) {
 		List<WfwRoleDTO> wfwRoles = Lists.newArrayList();
+		if (fwId == null) {
+			return wfwRoles;
+		}
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		params.add("fwId", fwId);
 		params.add("enc", getAreaEnc(fwId));

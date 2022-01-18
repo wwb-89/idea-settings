@@ -37,19 +37,4 @@ public class ValidationApiService {
 		return RestRespDTO.success();
 	}
 
-	/**用户满足报名条件验证
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-11-10 13:08:46
-	 * @param uid
-	 * @param signId
-	 * @param templateComponentId
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@RequestMapping("match-sign-up-condition")
-	public RestRespDTO userMatchSignUpCondition(Integer uid, Integer signId, Integer templateComponentId) {
-		signUpConditionService.userMatchSignUpCondition(uid, signId, templateComponentId);
-		return RestRespDTO.success();
-	}
-
 }
