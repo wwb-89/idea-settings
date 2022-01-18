@@ -73,16 +73,16 @@
                     mainDomain: [[${mainDomain}]],
                     signWebDomain: [[${signWebDomain}]],
                     activity: [[${activity}]],
-                    activityMenuConfigs: [[${activityMenuConfigs}]],
+                    userActivityMenus: [[${userActivityMenus}]],
                     activityMenus: [],
                     signActivityManageIndex: [[${signActivityManageIndex}]],
                     loaded: true
                 },
                 created: function () {
                     var $this = this;
-                    var menuConfigs = $this.activityMenuConfigs || [];
-                    $(menuConfigs).each(function () {
-                        if (!$this.activityMenus.includes(this.code)) {
+                    var userActivityMenus = $this.userActivityMenus || [];
+                    $(userActivityMenus).each(function () {
+                        if (this.system && !$this.activityMenus.includes(this.code)) {
                             $this.activityMenus.push(this.code);
                         }
                     });

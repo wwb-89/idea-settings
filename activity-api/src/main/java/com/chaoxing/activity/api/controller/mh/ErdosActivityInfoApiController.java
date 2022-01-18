@@ -239,7 +239,7 @@ public class ErdosActivityInfoApiController {
         jsonObject.put("totalPages", page.getPages());
         jsonObject.put("totalRecords", page.getTotal());
         List<Activity> records = page.getRecords();
-        JSONArray activityJsonArray = activityMhService.packageActivities(records, urlParams);
+        JSONArray activityJsonArray = activityMhService.packageErdosActivities(records, urlParams);
         jsonObject.put("results", activityJsonArray);
         return RestRespDTO.success(jsonObject);
     }

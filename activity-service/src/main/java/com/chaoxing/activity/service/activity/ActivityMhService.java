@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.util.MhDataBuildUtil;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +45,13 @@ public class ActivityMhService {
     private ActivityCoverUrlSyncService activityCoverUrlSyncService;
 
 
+    public JSONArray packageActivities(List<Activity> activities, JSONObject urlParams) {
+        return packageActivities(false, activities, urlParams);
+    }
+    public JSONArray packageErdosActivities(List<Activity> activities, JSONObject urlParams) {
+        return packageActivities(true, activities, urlParams);
+    }
+
     /**封装活动数据为门户标准接收格式
      * @Description
      * @author huxiaolong
@@ -51,7 +59,7 @@ public class ActivityMhService {
      * @param activities
      * @return com.alibaba.fastjson.JSONArray
      */
-    public JSONArray packageActivities(List<Activity> activities, JSONObject urlParams) {
+    private JSONArray packageActivities(boolean isErdosActivities, List<Activity> activities, JSONObject urlParams) {
         JSONArray activityJsonArray = new JSONArray();
         if (CollectionUtils.isEmpty(activities)) {
             return activityJsonArray;
@@ -75,7 +83,7 @@ public class ActivityMhService {
             Integer activityId = record.getId();
             activity.put("id", activityId);
             activity.put("type", 3);
-            activity.put("orsUrl", record.getPreviewUrl());
+            activity.put("orsUrl", isErdosActivities ? buildWorkUrl(record.getWorkId()) : record.getPreviewUrl());
             JSONArray fields = new JSONArray();
             activity.put("fields", fields);
             int fieldFlag = 0;
@@ -156,6 +164,10 @@ public class ActivityMhService {
             activityJsonArray.add(activity);
         }
         return activityJsonArray;
+    }
+
+    private String buildWorkUrl(Integer workId) {
+        return DomainConstant.WORK +"/activity/" + workId + "?showSubButton=false&canInteraction=false";
     }
 
     /**从signStat报名时间获取报名的进行状态
