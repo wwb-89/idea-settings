@@ -211,8 +211,8 @@ public class ErdosActivityInfoApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 搜索内容
         String sw = urlParams.getString("sw");
-        Integer activityClassifyId = Optional.ofNullable(getClassifyIdFromParams(params)).map(Integer::valueOf).orElse(null);
-        String areaCode = Optional.ofNullable(getAreaCodeFromParams(params)).orElse(null);
+        Integer activityClassifyId = getClassifyIdFromParams(params);
+        String areaCode = getAreaCodeFromParams(params);
         // 状态
         String statusParams = urlParams.getString("status");
         List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
