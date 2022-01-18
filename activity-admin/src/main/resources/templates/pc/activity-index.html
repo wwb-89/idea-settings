@@ -25,7 +25,7 @@
                     <div class="clear"></div>
                 </div>
                 <div class="title-pop">
-                    <div class="img">
+                    <div class="img js-crop-img">
                         <img :src="activity | getCloudImgUrl(cloudDomain)" alt="">
                     </div>
                     <div class="pop-info">
@@ -205,8 +205,9 @@
                 var $this = this;
                 $this.$nextTick(function (){
                     $this.resizePageHeight();
-                    // 裁剪小封面
+                    // 裁剪封面
                     cropImgFun('.title-box');
+                    cropImgFun('.title-pop');
                     var url = $this.activity.previewUrl;
                     $('#qrCodeMini').qrcode({
                         text: url,

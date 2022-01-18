@@ -209,6 +209,7 @@ public class ActivityController {
 		// 查询出活动分类关联的模板组建id列表
 		List<ClassifyShowComponent> classifyShowComponents = classifyShowComponentQueryService.listByTemplateId(templateId);
 		model.addAttribute("classifyShowComponents", classifyShowComponents);
+		model.addAttribute("areaCode", areaCode);
 
 		model.addAttribute("workDomain", DomainConstant.WORK);
 		model.addAttribute("xueyaDomain", DomainConstant.XUEYA);

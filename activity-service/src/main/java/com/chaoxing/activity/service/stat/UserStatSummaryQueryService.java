@@ -13,7 +13,7 @@ import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwOrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
@@ -50,7 +50,7 @@ public class UserStatSummaryQueryService {
 	private UserStatSummaryMapper userStatSummaryMapper;
 
 	@Resource
-	private OrganizationalStructureApiService organizationalStructureApiService;
+	private WfwOrganizationalStructureApiService organizationalStructureApiService;
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 	@Resource

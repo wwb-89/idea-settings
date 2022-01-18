@@ -195,7 +195,7 @@
                                 </template>
                             </div>
                         </div>
-                        <!-- 特殊活动报名设置 -->
+                        <!-- 报名设置 -->
                         <template v-else-if="item.code == 'company_sign_up' || item.code == 'sign_up'">
                             <div class="form-item sort-item nopadding">
                                 <div class="drag-box-inner">
@@ -233,6 +233,10 @@
                                                         <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
                                                     </el-date-picker>
                                                     <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
+                                                </template>
+                                                <template v-else-if="it.code == 'sign_up_role_limit'">
+                                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                                    <p class="tips third">{{it.introduction}}</p>
                                                 </template>
                                                 <template v-else-if="it.code == 'wfw_participation_scope'">
                                                     <div class="type-item">

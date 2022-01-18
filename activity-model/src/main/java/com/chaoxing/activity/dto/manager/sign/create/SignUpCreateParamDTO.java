@@ -1,6 +1,7 @@
 package com.chaoxing.activity.dto.manager.sign.create;
 
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwRoleDTO;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.*;
 
@@ -82,11 +83,15 @@ public class SignUpCreateParamDTO {
 	private Boolean deleted;
 	/** 来源id。模版组件id */
 	private Integer originId;
+	/** 是否开启角色限制 */
+	private Boolean openRoleLimit;
 
 	/** 微服务参与范围列表 */
 	private List<SignUpParticipateScopeDTO> wfwParticipateScopes;
 	/** 通讯录参与范围列表 */
 	private List<SignUpParticipateScopeDTO> contactsParticipateScopes;
+	/** 限制角色 */
+	private List<WfwRoleDTO> roleParticipateScopes;
 
 	public static SignUpCreateParamDTO buildDefault() {
 		LocalDateTime startTime = LocalDateTime.now();
@@ -110,6 +115,7 @@ public class SignUpCreateParamDTO {
 				.contactOnlySelfUnit(false)
 				.deleted(false)
 				.customSignUpType(CustomSignUpTypeEnum.NORMAL.getValue())
+				.openRoleLimit(false)
 				.build();
 	}
 

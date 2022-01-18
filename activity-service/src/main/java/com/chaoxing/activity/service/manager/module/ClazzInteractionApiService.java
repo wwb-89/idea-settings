@@ -48,9 +48,12 @@ public class ClazzInteractionApiService {
      * @param formId
      * @param fid
      * @param flag
+     * @param startTime
+     * @param endTime
      * @return
      */
-    public ClazzInteractionDTO clazzCourseCreate(Integer activityId, String activityName, Integer uid, String coverUrl, Integer formId, Integer fid, String flag) {
+    public ClazzInteractionDTO clazzCourseCreate(Integer activityId, String activityName, Integer uid, String coverUrl,
+                                                 Integer formId, Integer fid, String flag, String startTime, String endTime) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, Object> params = new LinkedMultiValueMap();
@@ -61,6 +64,8 @@ public class ClazzInteractionApiService {
         params.add("formId", formId);
         params.add("fid", fid);
         params.add("flag", flag);
+        params.add("startTime", startTime);
+        params.add("endTime", endTime);
         String result = restTemplate.postForObject(COURSE_PUSH_URL, new HttpEntity(params, httpHeaders), String.class);
         JSONObject jsonObject = JSON.parseObject(result);
         String message = jsonObject.getString("message");

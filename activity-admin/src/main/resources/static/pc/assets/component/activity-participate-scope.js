@@ -85,12 +85,10 @@ Vue.component('vue-activity-participate-scope', {
                     if (activityApp.isEmpty(errorMessage)) {
                         errorMessage = "加载参与架构失败";
                     }
-                    app.showMsg("加载参与架构失败");
-                    console.log(errorMessage);
+                    app.showMsg(errorMessage);
                 }
             }, function () {
                 app.showMsg("加载参与架构失败");
-                console.log("加载参与架构失败");
             });
         },
         // 支持只选择父节点处理

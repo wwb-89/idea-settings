@@ -249,7 +249,7 @@ public class ActivityMhDataCenterApiController {
         String marketIdStr = urlParams.getString("marketId");
         List<Integer> marketIds = Lists.newArrayList();
         if (StringUtils.isNotBlank(marketIdStr)) {
-            marketIds = Arrays.stream(marketIdStr.split(",")).map(Integer::valueOf).collect(Collectors.toList());
+            marketIds = Arrays.stream(marketIdStr.split(CommonConstant.DEFAULT_SEPARATOR)).map(Integer::valueOf).collect(Collectors.toList());
         }
         Page<Activity> page = new Page(pageNum, pageSize);
         if (uid != null) {

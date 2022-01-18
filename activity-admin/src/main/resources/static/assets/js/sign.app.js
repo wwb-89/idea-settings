@@ -67,9 +67,11 @@
             participateScopes: [],
             wfwParticipateScopes: [],
             contactsParticipateScopes: [],
+            roleParticipateScopes: [],
             deleted: false,
             // deleted取反
-            enable: true
+            enable: true,
+            openRoleLimit: false
         };
     };
 

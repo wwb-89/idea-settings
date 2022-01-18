@@ -6,7 +6,7 @@ import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwOrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
@@ -42,7 +42,7 @@ public class UserApiController {
     @Resource
     private UcApiService ucApiService;
     @Resource
-    private OrganizationalStructureApiService organizationalStructureApiService;
+    private WfwOrganizationalStructureApiService organizationalStructureApiService;
 
     /**是否合格的描述
      * @Description

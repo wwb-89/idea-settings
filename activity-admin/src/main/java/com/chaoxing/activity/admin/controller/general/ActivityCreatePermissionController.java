@@ -5,7 +5,7 @@ import com.chaoxing.activity.dto.OrgRoleDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
-import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwOrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -31,7 +31,7 @@ import java.util.Optional;
 public class ActivityCreatePermissionController {
 
     @Resource
-    private OrganizationalStructureApiService organizationalStructureApiService;
+    private WfwOrganizationalStructureApiService organizationalStructureApiService;
     @Resource
     private ClassifyQueryService classifyQueryService;
     @Resource

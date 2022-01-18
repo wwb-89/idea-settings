@@ -234,6 +234,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	Page<Activity> pageSignedUpActivities(@Param("page") Page<?> page,
 										  @Param("signIds") List<Integer> signIds,
 										  @Param("activityClassifyId") Integer activityClassifyId,
+										  @Param("flag") String flag,
 										  @Param("marketIds") List<Integer> marketIds);
 
 	/**

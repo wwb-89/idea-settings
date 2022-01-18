@@ -26,8 +26,8 @@
     <div :class="{'activity-list': true, 'width1000': !isEmbedded}">
         <div :class="{'item-block': true, 'nopadding': true, 'minHeight800': true, 'no-border-radius':isEmbedded}">
             <div class="filter" style="height: 30px">
-                <div class="btns" v-show="managAble && flag == 'tcol'">
-                    <button class="btn-main-gradient" @click="toCreateActivity"><i class="addIcon"></i>{{addBtnName ? addBtnName : '添加'}}</button>
+                <div class="btns" v-show="managAble || !isEmptyAddUrl">
+                    <button class="btn-main-gradient" @click="toCreateActivity"><i class="addIcon" v-show="isEmptyAddBtnName"></i>{{addBtnName ? addBtnName : '添加'}}</button>
                 </div>
                 <el-radio-group v-model="currentTab.code" @change="radioChange" v-show="!managAble">
                     <el-radio v-for="(item, index) in tabList" :key="'tab' + index" :label="item.code">{{item.name}}</el-radio>
@@ -114,6 +114,7 @@
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
+    <script src="/static/pc/assets/lib/iframeResizer.contentWindow.min.js" th:src="@{/pc/assets/lib/iframeResizer.contentWindow.min.js}"></script>
     <script th:inline="javascript">
         Vue.filter("calSignedUpStatusDescription", function (activity) {
             var userSignUpStatus = activity.userSignUpStatus;
@@ -159,6 +160,16 @@
                     createActivity: false, //创建活动
                 }
             },
+            computed: {
+                isEmptyAddUrl: function () {
+                    var $this = this;
+                    return activityApp.isEmpty($this.addUrl);
+                },
+                isEmptyAddBtnName: function () {
+                    var $this = this;
+                    return activityApp.isEmpty($this.addBtnName);
+                }
+            },
             created: function () {
                 var $this = this;
                 // 解决跨域
@@ -168,7 +179,7 @@
                     $this.hideList = hideStr.split(',');
                 }
                 if ($this.managAble) {
-                    $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
+                        $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
                 } else {
                     if ($this.showTab('signedUp')) {
                         $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
@@ -471,8 +482,8 @@
                     });
                 },
                 toCreateActivity: function () {
-                    var $this = this;
-                    window.location.replace($this.addUrl)
+                    var $this = this
+                    window.open($this.addUrl);
                 },
                activityDetail: function (index) {
                    var $this = this;

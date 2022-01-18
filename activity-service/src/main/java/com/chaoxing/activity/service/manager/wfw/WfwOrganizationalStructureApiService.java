@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.manager;
+package com.chaoxing.activity.service.manager.wfw;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
+/**微服务组织架构api服务
  * @author wwb
  * @version ver 1.0
  * @className OrganizationalStructureApiService
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class OrganizationalStructureApiService {
+public class WfwOrganizationalStructureApiService {
 
 	/** 分页获取机构下角色URL */
 	private static final String ORG_ROLES_URL = DomainConstant.WFW_ORGANIZATION + "/apis/getrolebyfid?fid=%d&page=%d&pagesize=%d&enc=%s";
@@ -367,8 +367,10 @@ public class OrganizationalStructureApiService {
 	* @author huxiaolong
 	* @Date 2021-06-02 11:34:06
 	* @param fid
+	* @Deprecated 使用com.chaoxing.activity.service.manager.wfw.WfwRoleApiService
 	* @return java.util.List<com.chaoxing.activity.dto.OrgRoleDTO>
 	*/
+	@Deprecated
 	public List<OrgRoleDTO> listOrgRoles(Integer fid) {
 		String enc = getOrgRoleEnc(fid);
 		String url = String.format(ORG_ROLES_URL, fid, 1, Integer.MAX_VALUE, enc);

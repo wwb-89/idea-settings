@@ -211,8 +211,8 @@ public class ErdosActivityInfoApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 搜索内容
         String sw = urlParams.getString("sw");
-        Integer activityClassifyId = Optional.ofNullable(getClassifyIdFromParams(params)).map(Integer::valueOf).orElse(null);
-        String areaCode = Optional.ofNullable(getAreaCodeFromParams(params)).orElse(null);
+        Integer activityClassifyId = getClassifyIdFromParams(params);
+        String areaCode = getAreaCodeFromParams(params);
         // 状态
         String statusParams = urlParams.getString("status");
         List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
@@ -239,7 +239,7 @@ public class ErdosActivityInfoApiController {
         jsonObject.put("totalPages", page.getPages());
         jsonObject.put("totalRecords", page.getTotal());
         List<Activity> records = page.getRecords();
-        JSONArray activityJsonArray = activityMhService.packageActivities(records, urlParams);
+        JSONArray activityJsonArray = activityMhService.packageErdosActivities(records, urlParams);
         jsonObject.put("results", activityJsonArray);
         return RestRespDTO.success(jsonObject);
     }

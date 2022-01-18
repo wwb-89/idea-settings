@@ -273,6 +273,7 @@ public class ActivityManageController {
 		// 启用的自定义应用列表
 		List<Integer> enableCustomAppTplComponentIds = customAppConfigQueryService.listEnabledActivityCustomAppTplComponentId(activityId);
 		model.addAttribute("customAppEnableTplComponentIds", enableCustomAppTplComponentIds);
+		model.addAttribute("areaCode", areaCode);
 
 		model.addAttribute("workDomain", DomainConstant.WORK);
 		model.addAttribute("xueyaDomain", DomainConstant.XUEYA);
