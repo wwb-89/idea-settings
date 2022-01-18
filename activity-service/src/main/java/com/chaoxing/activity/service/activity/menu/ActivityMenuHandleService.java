@@ -43,16 +43,16 @@ public class ActivityMenuHandleService {
      * @Description
      * @author huxiaolong
      * @Date 2022-01-11 10:34:24
-     * @param realActivityId
+     * @param activityId
      * @param activityMenus
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public void configActivityDefaultMenu(Integer realActivityId, List<ActivityMenuConfig> activityMenus) {
+    public void configActivityDefaultMenu(Integer activityId, List<ActivityMenuConfig> activityMenus) {
         if (CollectionUtils.isEmpty(activityMenus)) {
             return;
         }
-        activityMenus.forEach(v -> v.setActivityId(realActivityId));
+        activityMenus.forEach(v -> v.setActivityId(activityId));
         activityMenuConfigMapper.batchAdd(activityMenus);
     }
 
@@ -75,7 +75,7 @@ public class ActivityMenuHandleService {
             activityMenuConfigMapper.insert(ActivityMenuConfig.builder()
                     .activityId(activityId)
                     .menu(inspectManage)
-                    .system(true)
+                    .dataOrigin(ActivityMenuConfig.DataOriginEnum.SYSTEM.getValue())
                     .enable(openInspectionConfig)
                     .build());
         } else {
@@ -111,11 +111,11 @@ public class ActivityMenuHandleService {
                 ActivityMenuEnum.BackendMenuEnum backendMenuEnum = ActivityMenuEnum.BackendMenuEnum.fromValue(menu);
                 if (backendMenuEnum == null) {
                     Integer tplComponentId = customAppConfigQueryService.getCustomAppTplComponentId(menu);
-                    menuConfig.setSystem(false);
+                    menuConfig.setDataOrigin(ActivityMenuConfig.DataOriginEnum.TEMPLATE.getValue());
                     menuConfig.setTemplateComponentId(tplComponentId);
                     menuConfig.setSequence(150);
                 } else {
-                    menuConfig.setSystem(true);
+                    menuConfig.setDataOrigin(ActivityMenuConfig.DataOriginEnum.SYSTEM.getValue());
                     menuConfig.setSequence(backendMenuEnum.getSequence());
                 }
                 waitAddConfigs.add(menuConfig);

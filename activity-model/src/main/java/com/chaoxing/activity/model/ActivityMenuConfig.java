@@ -28,16 +28,15 @@ public class ActivityMenuConfig {
     private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
-    /** 显示规则(no_limit, before_sign_up, after_sign_up); column: show_rule  */
-    private String showRule;
     /** 菜单; column: menu*/
     private String menu;
+    /**菜单来源：system-系统，template-模板，activity-活动; column: data_origin */
+    private String dataOrigin;
+    /**显示规则(no_limit, before_sign_up, after_sign_up); column: show_rule */
+    private String showRule;
     /** 是否启用; column: is_enable */
     @TableField(value = "is_enable")
     private Boolean enable;
-    /** 是否系统菜单; column: is_system */
-    @TableField(value = "is_system")
-    private Boolean system;
     /** 自定义应用模板组件id; column: template_component_id */
     private Integer templateComponentId;
     /** 排序 */
@@ -51,8 +50,8 @@ public class ActivityMenuConfig {
         /** 后台 */
         BACKEND("后台", "backend");
 
-        private String name;
-        private String value;
+        private final String name;
+        private final String value;
 
         UrlTypeEnum(String name, String value) {
             this.name = name;
