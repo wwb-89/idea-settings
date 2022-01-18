@@ -3,10 +3,7 @@ package com.chaoxing.activity.service.activity.engine;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.chaoxing.activity.mapper.CustomAppConfigMapper;
 import com.chaoxing.activity.mapper.CustomAppEnableMapper;
-import com.chaoxing.activity.model.Component;
-import com.chaoxing.activity.model.CustomAppConfig;
-import com.chaoxing.activity.model.CustomAppEnable;
-import com.chaoxing.activity.model.TemplateComponent;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -67,60 +64,27 @@ public class CustomAppConfigQueryService {
      * @Description
      * @author huxiaolong
      * @Date 2021-12-30 19:32:02
-     * @param containDeleted  true：数据deleted 均为0， 若false，数据中含有已删除的
-     * @param type
+     * @param containDeleted  true：数据中含有已删除的， 若false，数据deleted 均为0
      * @param customAppTplComponentIds
      * @return
      */
-    public List<CustomAppConfig> list(Boolean containDeleted, String type, List<Integer> customAppTplComponentIds) {
+    public List<CustomAppConfig> list(Boolean containDeleted, List<Integer> customAppTplComponentIds) {
         containDeleted = Optional.ofNullable(containDeleted).orElse(false);
         if (CollectionUtils.isEmpty(customAppTplComponentIds)) {
             return Lists.newArrayList();
         }
-        return customAppConfigMapper.listCustomAppConfigWithCloudId(containDeleted, type, customAppTplComponentIds);
+        return customAppConfigMapper.listCustomAppConfigWithCloudId(containDeleted, customAppTplComponentIds);
     }
 
-    public List<CustomAppConfig> list(String type, List<Integer> customAppTplComponentIds) {
+    public List<CustomAppConfig> list(List<Integer> customAppTplComponentIds) {
         if (CollectionUtils.isEmpty(customAppTplComponentIds)) {
             return Lists.newArrayList();
         }
-        return customAppConfigMapper.listCustomAppConfigWithCloudId(false, type, customAppTplComponentIds);
+        return customAppConfigMapper.listCustomAppConfigWithCloudId(false, customAppTplComponentIds);
     }
 
-    public List<CustomAppConfig> listBackendWithDeleted(List<Integer> customAppTplComponentIds) {
-        return list(CustomAppConfig.UrlTypeEnum.BACKEND.getValue(), customAppTplComponentIds);
-    }
-    public List<CustomAppConfig> listBackend(List<Integer> customAppTplComponentIds) {
-        return list(false, CustomAppConfig.UrlTypeEnum.BACKEND.getValue(), customAppTplComponentIds);
-    }
-
-    /**根据模板id查询后台应用配置列表
-     * @Description
-     * @author huxiaolong
-     * @Date 2022-01-11 14:34:13
-     * @param templateId
-     * @param containDeleted 是否含有已删除
-     * @return
-     */
-    public List<CustomAppConfig> listBackendAppConfigs(Integer templateId, Boolean containDeleted) {
-        List<Integer> customAppTplComponentIds = templateComponentService.listAllCustomTplComponent(templateId)
-                .stream()
-                .filter(v -> Objects.equals(v.getType(), Component.TypeEnum.CUSTOM_APP.getValue()))
-                .map(TemplateComponent::getId)
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(customAppTplComponentIds)) {
-            return Lists.newArrayList();
-        }
-        containDeleted = Optional.ofNullable(containDeleted).orElse(true);
-        if (containDeleted) {
-            return list(CustomAppConfig.UrlTypeEnum.BACKEND.getValue(), customAppTplComponentIds);
-        } else {
-            return listBackendWithDeleted(customAppTplComponentIds);
-        }
-    }
-
-    public List<CustomAppConfig> listBackend(Integer templateId) {
-        return listBackendAppConfigs(templateId, false);
+    public List<CustomAppConfig> listWithDeleted(List<Integer> customAppTplComponentIds) {
+        return list(true, customAppTplComponentIds);
     }
 
     /**根据活动id查询前台应用配置列表
@@ -135,8 +99,7 @@ public class CustomAppConfigQueryService {
         if (CollectionUtils.isEmpty(enableCustomAppTplComponentIds)) {
             return Lists.newArrayList();
         }
-        return list(CustomAppConfig.UrlTypeEnum.FRONTEND.getValue(), enableCustomAppTplComponentIds);
-
+        return list(enableCustomAppTplComponentIds).stream().filter(v -> Objects.equals(v.getType(), ActivityMenuConfig.UrlTypeEnum.FRONTEND.getValue())).collect(Collectors.toList());
     }
 
     /**获取菜单对应的模板组件id
@@ -152,5 +115,17 @@ public class CustomAppConfigQueryService {
         }
         CustomAppConfig customAppConfig = customAppConfigMapper.selectList(new LambdaQueryWrapper<CustomAppConfig>().eq(CustomAppConfig::getId, Integer.valueOf(menu))).stream().findFirst().orElse(null);
         return Optional.ofNullable(customAppConfig).map(CustomAppConfig::getTemplateComponentId).orElse(null);
+    }
+
+    public List<CustomAppConfig> listByTemplateId(Integer templateId) {
+        List<Integer> customAppTplComponentIds = templateComponentService.listAllCustomTplComponent(templateId)
+                .stream()
+                .filter(v -> Objects.equals(v.getType(), Component.TypeEnum.CUSTOM_APP.getValue()))
+                .map(TemplateComponent::getId)
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(customAppTplComponentIds)) {
+            return Lists.newArrayList();
+        }
+        return list(customAppTplComponentIds);
     }
 }

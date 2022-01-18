@@ -60,33 +60,4 @@ public class ActivityCustomAppConfig {
     @TableField(exist = false)
     private String activeIconCloudId;
 
-    @Getter
-    public enum ShowRuleEnum {
-
-        /** 不限 */
-        NO_LIMIT("不限", "no_limit"),
-        /** 报名前 */
-        BEFORE_SIGN_UP("报名前", "before_sign_up"),
-        /** 报名后 */
-        AFTER_SIGN_UP("报名后", "after_sign_up");
-
-        private final String name;
-        private final String value;
-
-        ShowRuleEnum(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public static ShowRuleEnum fromValue(String value) {
-            ShowRuleEnum[] values = ShowRuleEnum.values();
-            for (ShowRuleEnum ruleEnum : values) {
-                if (Objects.equals(ruleEnum.getValue(), value)) {
-                    return ruleEnum;
-                }
-            }
-            return null;
-        }
-    }
-
 }

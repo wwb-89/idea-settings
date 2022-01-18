@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OperateUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityUpdateParamDTO;
@@ -31,7 +30,8 @@ import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
-import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuHandleService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
@@ -111,7 +111,9 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityComponentValueService activityComponentValueService;
 	@Resource
-	private ActivityMenuService activityMenuService;
+	private ActivityMenuQueryService activityMenuQueryService;
+	@Resource
+	private ActivityMenuHandleService activityMenuHandleService;
 	@Resource
 	private ActivityMarketService activityMarketService;
 	@Resource
@@ -230,9 +232,9 @@ public class ActivityHandleService {
 		// 活动菜单配置
 		List<ActivityMenuConfig> activityMenus;
 		if (isClone && activity.getOriginActivityId() != null) {
-			activityMenus = activityMenuService.listByActivityId(activity.getOriginActivityId());
+			activityMenus = activityMenuQueryService.listByActivityId(activity.getOriginActivityId());
 		} else {
-			activityMenus = activityMenuService.listActivityAllDefaultMenus(activityId, activity.getTemplateId());
+			activityMenus = activityMenuQueryService.listActivityAllDefaultMenus(activityId, activity.getTemplateId());
 		}
 		if (disabledInspectionConfig) {
 			for (ActivityMenuConfig activityMenu : activityMenus) {
@@ -243,7 +245,7 @@ public class ActivityHandleService {
 			}
 		}
 		Integer realActivityId = isClone && activity.getOriginActivityId() != null ? activity.getOriginActivityId() : activityId;
-		activityMenuService.configActivityDefaultMenu(realActivityId, activityMenus);
+		activityMenuHandleService.configActivityDefaultMenu(realActivityId, activityMenus);
 		// 若活动由市场所建，新增活动市场与活动关联
 		activityMarketService.associate(activity);
 		// 默认添加活动市场管理
@@ -399,7 +401,7 @@ public class ActivityHandleService {
 			);
 			// 考核配置
 			boolean openInspectionConfig = Optional.ofNullable(activityUpdateParamDto.getOpenInspectionConfig()).orElse(false);
-			activityMenuService.updateActivityMenusByInspectionConfig(activityId, openInspectionConfig);
+			activityMenuHandleService.updateActivityMenusByInspectionConfig(activityId, openInspectionConfig);
 			// 班级互动
 			ApplicationContextHolder.getBean(ActivityHandleService.class).handleClazzInteraction(activity, signCreateParam, loginUser);
 			// 更新活动状态

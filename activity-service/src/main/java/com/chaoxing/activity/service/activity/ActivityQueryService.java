@@ -36,7 +36,7 @@ import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
-import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
@@ -120,7 +120,7 @@ public class ActivityQueryService {
 	@Resource
 	private InspectionConfigQueryService inspectionConfigQueryService;
 	@Resource
-	private ActivityMenuService activityMenuService;
+	private ActivityMenuQueryService activityMenuQueryService;
 	@Resource
 	private WorkApiService workApiService;
 	@Resource
@@ -1113,7 +1113,7 @@ public class ActivityQueryService {
 		if (inspectionConfig != null) {
 			activityCreateParam.setInspectionConfigId(inspectionConfig.getId());
 		}
-		List<String> menus = activityMenuService.listActivityEnableMenusDTO(activityId).stream().map(ActivityMenuDTO::getCode).collect(Collectors.toList());
+		List<String> menus = activityMenuQueryService.listActivityEnableMenusDTO(activityId).stream().map(ActivityMenuDTO::getCode).collect(Collectors.toList());
 		activityCreateParam.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.BackendMenuEnum.RESULTS_MANAGE.getValue()));
 	}
 

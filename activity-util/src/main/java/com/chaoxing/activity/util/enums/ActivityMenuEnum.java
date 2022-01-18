@@ -1,7 +1,10 @@
 package com.chaoxing.activity.util.enums;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 
 /**活动菜单
@@ -31,7 +34,7 @@ public enum ActivityMenuEnum {
         HOMEWORK("作业", "homework", "", 90),
         REVIEW_MANAGEMENT("评审", "review_management", "", 100),
 
-        SETTING("设置", "setting", "", 500);
+        SETTING("设置", "setting", "", 100000);
 
         private final String name;
         private final String value;
@@ -43,6 +46,23 @@ public enum ActivityMenuEnum {
             this.value = value;
             this.desc = desc;
             this.sequence = sequence;
+        }
+
+        public static BackendMenuEnum fromValue(String value) {
+            for (BackendMenuEnum backendMenuEnum : BackendMenuEnum.values()) {
+                if (Objects.equals(backendMenuEnum.getValue(), value)) {
+                    return backendMenuEnum;
+                }
+            }
+            return null;
+        }
+
+        public static Boolean isClazzInteractionMenu(String menu) {
+            if (StringUtils.isBlank(menu)) {
+                return false;
+            }
+            List<BackendMenuEnum> clazzInteractionMenus = Lists.newArrayList(BackendMenuEnum.task, BackendMenuEnum.HOMEWORK, BackendMenuEnum.DISCUSS, BackendMenuEnum.REVIEW_MANAGEMENT);
+            return clazzInteractionMenus.contains(BackendMenuEnum.fromValue(menu));
         }
     }
 
@@ -68,7 +88,7 @@ public enum ActivityMenuEnum {
             this.name = name;
             this.value = value;
         }
-        }
+    }
 
     @Getter
     public enum FrontendMenuEnum {
@@ -116,8 +136,8 @@ public enum ActivityMenuEnum {
         private final String icon;
         /** 是否是状态按钮 */
         private final Boolean statusBtn;
-        /** 按钮排序 */
-        private final Integer sequence;  // 作品征集排序 50 -- 70间, 自定义按钮相关 150 开始默认排序
+        /** 按钮排序 作品征集排序 50 -- 70间, 自定义按钮相关 150 开始默认排序 */
+        private final Integer sequence;
 
         FrontendMenuEnum(String name, String value, String icon, Boolean statusBtn, Integer sequence) {
             this.name = name;
@@ -126,16 +146,22 @@ public enum ActivityMenuEnum {
             this.statusBtn = statusBtn;
             this.sequence = sequence;
         }
+        public static FrontendMenuEnum fromValue(String value) {
+            for (FrontendMenuEnum frontendMenuEnum : FrontendMenuEnum.values()) {
+                if (Objects.equals(frontendMenuEnum.getValue(), value)) {
+                    return frontendMenuEnum;
+                }
+            }
+            return null;
+        }
+
+        public static Boolean isClazzInteractionMenu(String menu) {
+            return Objects.equals(FrontendMenuEnum.fromValue(menu), FrontendMenuEnum.TO_CLASS_INTERACTION_HOMEPAGE);
+        }
     }
 
-    public static BackendMenuEnum backendMenuFromValue(String value) {
-        BackendMenuEnum[] values = BackendMenuEnum.values();
-        for (BackendMenuEnum activityMenuEnum : values) {
-            if (Objects.equals(activityMenuEnum.getValue(), value)) {
-                return activityMenuEnum;
-            }
-        }
-        return null;
+    public static Boolean isClazzInteractionMenu(String menu) {
+        return BackendMenuEnum.isClazzInteractionMenu(menu) || FrontendMenuEnum.isClazzInteractionMenu(menu);
     }
 
 

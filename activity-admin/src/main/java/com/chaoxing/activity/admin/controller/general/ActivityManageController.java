@@ -19,7 +19,7 @@ import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
-import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
@@ -75,7 +75,7 @@ public class ActivityManageController {
 	@Resource
 	private TemplateComponentService templateComponentService;
 	@Resource
-	private ActivityMenuService activityMenuService;
+	private ActivityMenuQueryService activityMenuQueryService;
 	@Resource
 	private ActivityClassService activityClassService;
 	@Resource
@@ -114,7 +114,7 @@ public class ActivityManageController {
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		// 是不是创建者
 		boolean creator = activityValidationService.isCreator(activity, loginUser.getUid());
-		List<ActivityMenuDTO> userActivityMenus = activityMenuService.listUserActivityMenus(activity, loginUser, creator);
+		List<ActivityMenuDTO> userActivityMenus = activityMenuQueryService.listUserActivityMenus(activity, loginUser, creator);
 		model.addAttribute("isCreator", creator);
 		model.addAttribute("userActivityMenus", userActivityMenus);
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);

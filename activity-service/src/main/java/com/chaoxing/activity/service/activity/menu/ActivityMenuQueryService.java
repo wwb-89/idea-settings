@@ -16,14 +16,16 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-/**
+/**活动菜单查询服务
  * @author wwb
  * @version ver 1.0
  * @className ActivityMenuService
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class ActivityMenuService {
+public class ActivityMenuQueryService {
     @Resource
     private ActivityManagerValidationService activityManagerValidationService;
     @Resource
@@ -46,6 +48,8 @@ public class ActivityMenuService {
     private CustomAppConfigQueryService customAppConfigQueryService;
     @Resource
     private TemplateComponentService templateComponentService;
+    @Resource
+    private ActivityCustomAppConfigQueryService activityCustomAppConfigQueryService;
 
     /**创建时，查询全部菜单配置
      * @Description
@@ -56,23 +60,35 @@ public class ActivityMenuService {
      * @return
      */
     public List<ActivityMenuConfig> listActivityAllDefaultMenus(Integer activityId, Integer templateId) {
-        // 系统的默认全部菜单模块 + 班级互动
+        // 系统的默认全部菜单模块（前后端）
         List<ActivityMenuDTO> activityMenus = Lists.newArrayList(ActivityMenuDTO.listSystemModule());
         // 获取活动对应的模板，查看是否存在自定义模板应用，若有，则全部加入管理配置
         if (templateId != null) {
-            List<CustomAppConfig> customAppConfigs = customAppConfigQueryService.listBackend(templateId);
+            List<CustomAppConfig> customAppConfigs = customAppConfigQueryService.listByTemplateId(templateId);
             if (CollectionUtils.isNotEmpty(customAppConfigs)) {
-                activityMenus.addAll(ActivityMenuDTO.convertCustomApps2MenuDTO(customAppConfigs));
+                activityMenus.addAll(ActivityMenuDTO.convertTplCustomApps2MenuDTO(customAppConfigs));
             }
         }
-        return activityMenus.stream().map(v -> ActivityMenuConfig.builder()
+        return resortMenus(activityMenus).stream().map(v -> ActivityMenuConfig.builder()
                 .activityId(activityId)
                 .menu(v.getCode())
-                .system(v.getSystem())
+                .system(ActivityMenuConfig.DataOriginEnum.isSystem(v.getDataOrigin()))
                 .enable(Boolean.TRUE)
                 .templateComponentId(v.getTemplateComponentId())
                 .sequence(v.getSequence())
                 .build()).collect(Collectors.toList());
+    }
+
+    private List<ActivityMenuDTO> resortMenus(List<ActivityMenuDTO> waitSortedMenus) {
+        List<ActivityMenuDTO> frontendMenus = waitSortedMenus.stream().filter(v -> Objects.equals(v.getType(), ActivityMenuConfig.UrlTypeEnum.FRONTEND.getValue())).sorted().collect(Collectors.toList());
+        List<ActivityMenuDTO> backendMenus = waitSortedMenus.stream().filter(v -> Objects.equals(v.getType(), ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue())).sorted().collect(Collectors.toList());
+        AtomicInteger frontendSeq = new AtomicInteger(0);
+        AtomicInteger backendSeq = new AtomicInteger(0);
+        backendMenus.forEach(v -> v.setSequence(backendSeq.incrementAndGet() * 10));
+        frontendMenus.forEach(v -> v.setSequence(frontendSeq.incrementAndGet() * 10));
+        List<ActivityMenuDTO> activityMenus = Lists.newArrayList(backendMenus);
+        activityMenus.addAll(frontendMenus);
+        return activityMenus;
     }
 
     /**获取活动已配置的菜单列表
@@ -94,31 +110,46 @@ public class ActivityMenuService {
      * @return
      */
     public List<ActivityMenuDTO> listCanConfigMenus(Integer activityId) {
+        // 系统固有的菜单
+        List<ActivityMenuDTO> canConfigMenus = Lists.newArrayList(ActivityMenuDTO.listSystemModule());
         // 查询活动已配置自定义菜单中的templateComponentId
-        List<Integer> existMenuTplComponentIds = listByActivityId(activityId)
-                .stream()
-                .map(ActivityMenuConfig::getTemplateComponentId)
-                .filter(Objects::nonNull).distinct().collect(Collectors.toList());
+        List<ActivityMenuConfig> menuConfigs = listByActivityId(activityId);
+        List<Integer> existMenuTplComponentIds = menuConfigs.stream().map(ActivityMenuConfig::getTemplateComponentId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         List<CustomAppConfig> customAppConfigs = Lists.newArrayList();
         if (CollectionUtils.isNotEmpty(existMenuTplComponentIds)) {
             // 查询所有customAppConfigs含删除
-            List<CustomAppConfig> appConfigs = customAppConfigQueryService.listBackendWithDeleted(existMenuTplComponentIds);
+            List<CustomAppConfig> appConfigs = customAppConfigQueryService.listWithDeleted(existMenuTplComponentIds);
             customAppConfigs.addAll(appConfigs);
         }
         Activity activity = activityQueryService.getById(activityId);
-        // 系统固有的模板组件
-        List<ActivityMenuDTO> canConfigMenus = Lists.newArrayList(ActivityMenuDTO.listSystemModule());
+        boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
+        // 过滤掉班级互动
+        if (!openClazzInteraction) {
+            canConfigMenus = canConfigMenus.stream().filter(v -> !ActivityMenuEnum.isClazzInteractionMenu(v.getCode())).collect(Collectors.toList());
+        }
         // 获取模板的自定义应用组件templateComponentId
         List<Integer> customAppTplComponentIds = templateComponentService.listCustomAppComponentTplComponentIds(activity.getTemplateId());
         if (CollectionUtils.isNotEmpty(customAppTplComponentIds)) {
             customAppTplComponentIds.removeAll(existMenuTplComponentIds);
-            List<CustomAppConfig> appConfigs = customAppConfigQueryService.listBackend(customAppTplComponentIds);
+            List<CustomAppConfig> appConfigs = customAppConfigQueryService.list(customAppTplComponentIds);
             customAppConfigs.addAll(appConfigs);
         }
         if (CollectionUtils.isNotEmpty(customAppConfigs)) {
-            canConfigMenus.addAll(ActivityMenuDTO.convertCustomApps2MenuDTO(customAppConfigs));
+            canConfigMenus.addAll(ActivityMenuDTO.convertTplCustomApps2MenuDTO(customAppConfigs));
         }
-        return canConfigMenus;
+        List<ActivityCustomAppConfig> activityCustomApps = activityCustomAppConfigQueryService.listActivityCustomApp(activityId);
+        if (CollectionUtils.isNotEmpty(activityCustomApps)) {
+            canConfigMenus.addAll(ActivityMenuDTO.convertActivityCustomApps2MenuDTO(activityCustomApps));
+        }
+        Map<String, ActivityMenuConfig> menuConfigMap = menuConfigs.stream().collect(Collectors.toMap(ActivityMenuConfig::getMenu, v -> v, (v1, v2) -> v2));
+        canConfigMenus.forEach(v -> {
+            ActivityMenuConfig menuConfig = menuConfigMap.get(v.getCode());
+            Integer seq = Optional.ofNullable(menuConfig).map(ActivityMenuConfig::getSequence).orElse(1000);
+            Boolean enable = Optional.ofNullable(menuConfig).map(ActivityMenuConfig::getEnable).orElse(false);
+            v.setSequence(seq);
+            v.setEnable(enable);
+        });
+        return resortMenus(canConfigMenus);
     }
 
     /**查询活动启用的菜单列表
@@ -133,7 +164,7 @@ public class ActivityMenuService {
     }
 
     public List<ActivityMenuDTO> listActivityEnableMenusDTO(Integer activityId) {
-        return convertMenu2DTO(new Activity(), null, null, listActivityEnableMenus(activityId));
+        return convertMenu2DTO(listActivityEnableMenus(activityId));
     }
 
     /**查询当前用户可见的菜单配置列表(活动主页用户菜单列表查询)
@@ -160,20 +191,17 @@ public class ActivityMenuService {
                 activityMenus = activityMenus.stream().filter(v -> managerMenus.contains(v.getMenu())).collect(Collectors.toList());
             }
         }
-        return convertMenu2DTO(activity, uid, fid, activityMenus);
+        return convertMenu2DTO(activityMenus);
     }
 
     /**MenuConfig转换MenuDTO，携带上url和图标等信息
      * @Description
      * @author huxiaolong
      * @Date 2022-01-11 16:26:50
-     * @param activity
-     * @param uid
-     * @param fid
      * @param activityMenuConfigs
      * @return
      */
-    private List<ActivityMenuDTO> convertMenu2DTO(Activity activity, Integer uid, Integer fid, List<ActivityMenuConfig> activityMenuConfigs) {
+    private List<ActivityMenuDTO> convertMenu2DTO(List<ActivityMenuConfig> activityMenuConfigs) {
         if (CollectionUtils.isEmpty(activityMenuConfigs)) {
             return Lists.newArrayList();
         }
@@ -181,113 +209,30 @@ public class ActivityMenuService {
         Map<String, ActivityMenuDTO> systemModuleMap = ActivityMenuDTO.listSystemModule().stream().collect(Collectors.toMap(ActivityMenuDTO::getCode, v -> v, (v1, v2) -> v2));
         // 自定义组件菜单列表
         List<Integer> tplComponentIds = activityMenuConfigs.stream().map(ActivityMenuConfig::getTemplateComponentId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
-        List<ActivityMenuDTO> customAppMenus = ActivityMenuDTO.convertCustomApps2MenuDTO(customAppConfigQueryService.listBackendWithDeleted(tplComponentIds));
+        List<ActivityMenuDTO> customAppMenus = ActivityMenuDTO.convertTplCustomApps2MenuDTO(customAppConfigQueryService.listWithDeleted(tplComponentIds));
         Map<String, ActivityMenuDTO> customAppMap = customAppMenus.stream().collect(Collectors.toMap(ActivityMenuDTO::getCode, v -> v, (v1, v2) -> v2));
         List<ActivityMenuDTO> result = Lists.newArrayList();
+        int sequence = 1000;
         // 遍历菜单， 进行相关地址和图标属性进行填充
         for (ActivityMenuConfig menuConfig : activityMenuConfigs) {
             String menu = menuConfig.getMenu();
             ActivityMenuDTO menuDTO = systemModuleMap.get(menu);
+            Integer seq = Optional.ofNullable(menuConfig.getSequence()).orElse(sequence++);
             if (menuDTO != null) {
+                menuDTO.setSequence(seq);
                 result.add(menuDTO);
                 continue;
             }
             menuDTO = customAppMap.get(menu);
             if (menuDTO != null) {
-                menuDTO.setSequence(menuConfig.getSequence());
+                menuDTO.setSequence(seq);
                 result.add(menuDTO);
             }
         }
         return result.stream().sorted(Comparator.comparing(ActivityMenuDTO::getSequence)).collect(Collectors.toList());
     }
 
-    /**活动创建时，批量新增默认的菜单列表
-     * @Description 
-     * @author huxiaolong
-     * @Date 2022-01-11 10:34:24
-     * @param realActivityId
-     * @param activityMenus
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void configActivityDefaultMenu(Integer realActivityId, List<ActivityMenuConfig> activityMenus) {
-        if (CollectionUtils.isEmpty(activityMenus)) {
-            return;
-        }
-        activityMenus.forEach(v -> v.setActivityId(realActivityId));
-        activityMenuConfigMapper.batchAdd(activityMenus);
-    }
 
-    /**活动菜单配置
-     * @Description 
-     * @author huxiaolong
-     * @Date 2022-01-11 11:12:20
-     * @param activityId
-     * @param menuList
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void configActivityMenu(Integer activityId, List<String> menuList) {
-        // 查询活动现有的活动菜单配置
-        Map<String, ActivityMenuConfig> menuConfigMap = listByActivityId(activityId).stream().collect(Collectors.toMap(ActivityMenuConfig::getMenu, v -> v, (v1, v2) -> v2));
-        List<ActivityMenuConfig> waitAddConfigs = Lists.newArrayList();
-        List<ActivityMenuConfig> waitUpdateConfigs = Lists.newArrayList();
-        menuList.forEach(menu -> {
-            ActivityMenuConfig menuConfig = menuConfigMap.get(menu);
-            if (menuConfig == null) {
-                menuConfig = ActivityMenuConfig.builder().menu(menu).activityId(activityId).enable(true).build();
-                ActivityMenuEnum.BackendMenuEnum backendMenuEnum = ActivityMenuEnum.backendMenuFromValue(menu);
-                if (backendMenuEnum == null) {
-                    Integer tplComponentId = customAppConfigQueryService.getCustomAppTplComponentId(menu);
-                    menuConfig.setSystem(false);
-                    menuConfig.setTemplateComponentId(tplComponentId);
-                    menuConfig.setSequence(150);
-                } else {
-                    menuConfig.setSystem(true);
-                    menuConfig.setSequence(backendMenuEnum.getSequence());
-                }
-                waitAddConfigs.add(menuConfig);
-            }
-        });
-        menuConfigMap.values().forEach(v -> {
-            boolean isUpdated = (menuList.contains(v.getMenu()) && !v.getEnable()) || (!menuList.contains(v.getMenu()) && v.getEnable());
-            if (isUpdated) {
-                v.setEnable(!v.getEnable());
-                waitUpdateConfigs.add(v);
-            }
-        });
-        if (CollectionUtils.isNotEmpty(waitAddConfigs)) {
-            activityMenuConfigMapper.batchAdd(waitAddConfigs);
-        }
-        if (CollectionUtils.isNotEmpty(waitUpdateConfigs)) {
-            waitUpdateConfigs.forEach(v -> activityMenuConfigMapper.update(null, new LambdaUpdateWrapper<ActivityMenuConfig>()
-                    .eq(ActivityMenuConfig::getId, v.getId())
-                    .set(ActivityMenuConfig::getEnable, v.getEnable())));
-        }
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void updateActivityMenusByInspectionConfig(Integer activityId, boolean openInspectionConfig) {
-        String inspectManage = ActivityMenuEnum.BackendMenuEnum.RESULTS_MANAGE.getValue();
-        ActivityMenuConfig inspectConfigMenu = activityMenuConfigMapper.selectList(new LambdaQueryWrapper<ActivityMenuConfig>()
-                .eq(ActivityMenuConfig::getActivityId, activityId)
-                .eq(ActivityMenuConfig::getMenu, inspectManage)).stream().findFirst().orElse(null);
-        if (inspectConfigMenu == null) {
-            activityMenuConfigMapper.insert(ActivityMenuConfig.builder()
-                            .activityId(activityId)
-                            .menu(inspectManage)
-                            .system(true)
-                            .enable(openInspectionConfig)
-                            .build());
-        } else {
-            boolean isUpdated = (openInspectionConfig && !inspectConfigMenu.getEnable()) || (!openInspectionConfig && inspectConfigMenu.getEnable());
-            if (isUpdated) {
-                activityMenuConfigMapper.update(null, new LambdaUpdateWrapper<ActivityMenuConfig>()
-                        .eq(ActivityMenuConfig::getId, inspectConfigMenu.getId())
-                        .set(ActivityMenuConfig::getEnable, !inspectConfigMenu.getEnable()));
-            }
-        }
-    }
 
 
 }

@@ -10,7 +10,8 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuHandleService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,9 @@ public class ActivitySettingApiController {
     @Resource
     private ActivityHandleService activityHandleService;
     @Resource
-    private ActivityMenuService activityMenuService;
+    private ActivityMenuQueryService activityMenuQueryService;
+    @Resource
+    private ActivityMenuHandleService activityMenuHandleService;
     @Resource
     private SignApiService signApiService;
 
@@ -96,7 +99,7 @@ public class ActivitySettingApiController {
     @PostMapping("menu")
     public RestRespDTO updateMenus(Integer activityId, String menus) {
         List<String> menuList = JSONArray.parseArray(menus, String.class);
-        activityMenuService.configActivityMenu(activityId, menuList);
+        activityMenuHandleService.configActivityMenu(activityId, menuList);
         return RestRespDTO.success();
     }
 

@@ -5,13 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.mapper.ActivityManagerMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -43,7 +42,7 @@ public class ActivityManagerService {
     @Resource
     private ActivityValidationService activityValidationService;
     @Resource
-    private ActivityMenuService activityMenuService;
+    private ActivityMenuQueryService activityMenuQueryService;
 
     /**分页查询管理员列表
      * @Description 
@@ -108,7 +107,7 @@ public class ActivityManagerService {
                 .in(ActivityManager::getUid, uids));
         List<Integer> existUids = existActivityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList());
         List<ActivityManager> addActivityManagers = Lists.newArrayList();
-        List<String> activityMenus = activityMenuService.listActivityEnableMenus(activityId).stream()
+        List<String> activityMenus = activityMenuQueryService.listActivityEnableMenus(activityId).stream()
                 .map(ActivityMenuConfig::getMenu)
                 .filter(value -> !Objects.equals(value, ActivityMenuEnum.BackendMenuEnum.SETTING.getValue())).collect(Collectors.toList());
         for (ActivityManager activityManager : activityManagers) {

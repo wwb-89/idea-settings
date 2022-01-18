@@ -17,7 +17,7 @@ import com.chaoxing.activity.service.activity.IconQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
-import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
@@ -73,7 +73,7 @@ public class ActivitySettingController {
     @Resource
     private WfwContactApiService wfwContactApiService;
     @Resource
-    private ActivityMenuService activityMenuService;
+    private ActivityMenuQueryService activityMenuQueryService;
     @Resource
     private MarketSignupConfigService marketSignupConfigService;
     @Resource
@@ -205,7 +205,6 @@ public class ActivitySettingController {
                             .collect(Collectors.toList()),
                     (v1, v2) -> v2));
         }
-        model.addAttribute("icons", iconQueryService.list());
         model.addAttribute("formFieldStructures", formFieldStructures);
         model.addAttribute("sucTplComponentIds", signUpConditionService.listActivityEnabledTemplateComponentId(activityId));
         model.addAttribute("signUpConditions", signUpConditions);
@@ -216,7 +215,6 @@ public class ActivitySettingController {
         model.addAttribute("mainDomain", DomainConstant.MAIN);
         model.addAttribute("wfwFormDomain", DomainConstant.WFW_FORM_API);
         model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
-        model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
         return "pc/activity/setting/sign-up";
     }
 
@@ -231,9 +229,10 @@ public class ActivitySettingController {
     @RequestMapping("menu")
     public String menuSetting(Model model, @PathVariable Integer activityId) {
         model.addAttribute("activityId", activityId);
-        model.addAttribute("enableMenus", activityMenuService.listActivityEnableMenus(activityId));
-        model.addAttribute("canConfigMenus", activityMenuService.listCanConfigMenus(activityId));
+        model.addAttribute("icons", iconQueryService.list());
+        model.addAttribute("canConfigMenus", activityMenuQueryService.listCanConfigMenus(activityId));
         model.addAttribute("mainDomain", DomainConstant.MAIN);
+        model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
         return "pc/activity/setting/menu-new";
     }
 }

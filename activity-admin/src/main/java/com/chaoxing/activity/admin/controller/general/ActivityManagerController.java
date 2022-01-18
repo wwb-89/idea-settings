@@ -7,7 +7,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
-import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -40,7 +40,7 @@ public class ActivityManagerController {
 	@Resource
 	private WfwContactApiService wfwContactApiService;
 	@Resource
-	private ActivityMenuService activityMenuService;
+	private ActivityMenuQueryService activityMenuQueryService;
 
 	/**管理员主页
 	 * @Description 
@@ -63,7 +63,7 @@ public class ActivityManagerController {
 		// 查询以选择的uid列表
 		List<Integer> managerUids = activityManagerService.listUid(activityId);
 		// todo 管理员页面菜单需要替换
-		model.addAttribute("menus", activityMenuService.listActivityEnableMenusDTO(activityId));
+		model.addAttribute("menus", activityMenuQueryService.listActivityEnableMenusDTO(activityId));
 		model.addAttribute("managerUids", managerUids);
 		model.addAttribute("photoDomain", DomainConstant.PHOTO);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
@@ -92,7 +92,7 @@ public class ActivityManagerController {
 		ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
 		model.addAttribute("activityId", activityId);
 		model.addAttribute("manager", activityManager);
-		model.addAttribute("menus", activityMenuService.listActivityEnableMenusDTO(activityId));
+		model.addAttribute("menus", activityMenuQueryService.listActivityEnableMenusDTO(activityId));
 		return "mobile/activity-manager-menu";
 	}
 

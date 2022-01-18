@@ -22,12 +22,15 @@ public class ActivityCustomAppConfigQueryService {
     @Resource
     private ActivityCustomAppConfigMapper activityCustomAppConfigMapper;
 
-    public List<ActivityCustomAppConfig> listBackendByActivityId(Integer activityId) {
-        return activityCustomAppConfigMapper.listActivityAppWithCloudId(activityId, CustomAppConfig.UrlTypeEnum.BACKEND.getValue());
-    }
-
-    public List<ActivityCustomAppConfig> listFrontendByActivityId(Integer activityId) {
-        return activityCustomAppConfigMapper.listActivityAppWithCloudId(activityId, CustomAppConfig.UrlTypeEnum.FRONTEND.getValue());
+    /**查询活动自定义菜单
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-18 14:37:45
+     * @param activityId
+     * @return 
+     */
+    public List<ActivityCustomAppConfig> listActivityCustomApp(Integer activityId) {
+        return activityCustomAppConfigMapper.listActivityAppWithCloudId(activityId);
     }
 
 }

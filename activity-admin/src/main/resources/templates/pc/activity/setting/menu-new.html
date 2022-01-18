@@ -30,14 +30,13 @@
                 <li class="li-operate">操作</li>
             </ul>
             <div class="table-body" id="sortDragBox1">
-                <ul v-for="(item, index) in backendMenus" :key="'backend-menu-' + index"
-                    class="table-tr fs0 list-group-item">
+                <ul v-for="(item, index) in backendMenus" :key="'backend-menu-' + index" class="table-tr fs0 list-group-item">
                     <li class="table-td li-drag"><i class="icon-drag"></i></li>
                     <li class="table-td li-name">{{item.name}}</li>
                     <li class="table-td li-status">
                         <el-switch v-model="item.enable"></el-switch>
                     </li>
-                    <li class="table-td li-operate">
+                    <li class="table-td li-operate" v-show="item.dataOrigin == 'activity'">
                         <span class="btn btn-edit">编辑</span>
                         <span class="btn btn-delete" @click="ifDeletePop=true">删除</span>
                     </li>
@@ -68,9 +67,9 @@
                         </el-select>
                     </li>
                     <li class="table-td li-status">
-                        <el-switch v-model="item.enable"></el-switch>
+                        <el-switch v-model="item.enable" @change="changeFrontendMenuEnable($event, item)"></el-switch>
                     </li>
-                    <li class="table-td li-operate">
+                    <li class="table-td li-operate" v-show="item.dataOrigin == 'activity'">
                         <span class="btn btn-edit">编辑</span>
                         <span class="btn btn-delete" @click="ifDeletePop=true">删除</span>
                     </li>
@@ -82,7 +81,7 @@
             <div class="dailog">
                 <div class="dailog-header">
                     <span>添加模块</span>
-                    <i class="close" @click="showAddEditDialog = false"></i>
+                    <i class="close" @click="closeAddEditMenu"></i>
                 </div>
                 <div class="body">
                     <div class="form">
@@ -91,9 +90,9 @@
                                 <div class="link-list marginBottom16">
                                     <div class="left-box">
                                         <div class="line1 marginBottom16">
-                                            <div class="icon-img" @click="openIconDialog"><img
-                                                    :src="cloudDomain + '/star3/origin/' + addEditMenu.defaultIconCloudId"
-                                                    alt=""></div>
+                                            <div class="icon-img" @click="openIconDialog">
+                                                <img v-if="addEditMenu.defaultIconCloudId" :src="cloudDomain + '/star3/origin/' + addEditMenu.defaultIconCloudId" alt="">
+                                            </div>
                                             <el-input v-model="addEditMenu.name" type="text" placeholder="标题"
                                                       maxlength="4" show-word-limit></el-input>
                                         </div>
@@ -112,8 +111,8 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn" @click="showAddEditDialog = false">取消</div>
-                        <div class="normal-btn">确定</div>
+                        <div class="border-btn" @click="closeAddEditMenu">取消</div>
+                        <div class="normal-btn" @click="confirmAddEditMenu">确定</div>
                     </div>
                 </div>
             </div>
@@ -128,17 +127,22 @@
 </body>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
-    <script src="/static/pc/assets/lib/element-ui/lib/index.js"
-            th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/component/icon-select.js" th:src="@{/pc/assets/component/icon-select.js}"></script>
     <script src="/static/pc/assets/lib/Sortable.js" th:src="@{/pc/assets/lib/Sortable.js}"></script>
     <script th:inline="javascript">
+        var uuid = function () {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
         var vm = new Vue({
             el: '#vue',
             data: function () {
                 return {
                     cloudDomain: [[${cloudDomain}]],
-                    enableMenus: [[${enableMenus}]] || [],  //  可配置的菜单列表
                     canConfigMenus: [[${canConfigMenus}]] || [],  //  可配置的菜单列表
                     icons: [[${icons}]],
                     showRules: [
@@ -160,25 +164,21 @@
             },
             created: function () {
                 var $this = this;
-
-                var checkedMenus = $.map($this.enableMenus, function (item) {
-                    return item.menu;
-                });
                 $($this.canConfigMenus).each(function () {
-                    this.enable = checkedMenus.includes(this.code)
                     if (this.type == 'backend') {
                         $this.backendMenus.push(this);
                     } else if (this.type == 'frontend') {
-                        $this.frontendConfigs.push(this);
+                        $this.frontendMenus.push(this);
                     }
                 });
-                var backendLen = $this.backendMenus.length - 1;
-                var frontendLen = $this.frontendMenus.length - 1;
+                var backendLen = $this.backendMenus.length;
+                var frontendLen = $this.frontendMenus.length;
                 if (backendLen > 0) {
-
+                    $this.backendMenuMaxSeq = $this.backendMenus[backendLen - 1].sequence || 0;
                 }
-                $this.backendMenuMaxSeq = $this.backendMenus[backendLen] &&
-
+                if (frontendLen > 0) {
+                    $this.frontendMenuMaxSeq = $this.frontendMenus[backendLen - 1].sequence || 0;
+                }
             },
             mounted: function () {
                 var $this = this;
@@ -193,12 +193,38 @@
                         animation: 150,
                         handle: '.icon-drag',
                         group: '.list-group-item',
+                        onEnd: function ({oldIndex, newIndex}) {
+                            var temp = $this.backendMenus[oldIndex];
+                            if( oldIndex < newIndex ){//向下移动调整顺序
+                                for(var i = oldIndex ; i < newIndex ; i++){
+                                    $this.backendMenus[i] = $this.backendMenus[i+1];
+                                }
+                            } else if( oldIndex > newIndex ){//向上移动时调整顺序
+                                for(var j = oldIndex ; j > newIndex ; j--){
+                                    $this.backendMenus[j] = $this.backendMenus[j-1];
+                                }
+                            }
+                            $this.backendMenus[newIndex] = temp;
+                        }
                     });
 
                     $this.frontendSortable = new Sortable(document.getElementById('sortDragBox2'), {
                         handle: '.icon-drag',
                         animation: 150,
                         group: '.list-group-item',
+                        onEnd: function ({oldIndex, newIndex}) {
+                            var temp = $this.frontendMenus[oldIndex];
+                            if( oldIndex < newIndex ){//向下移动调整顺序
+                                for(var i = oldIndex ; i < newIndex ; i++){
+                                    $this.frontendMenus[i] = $this.frontendMenus[i+1];
+                                }
+                            } else if( oldIndex > newIndex ){//向上移动时调整顺序
+                                for(var j = oldIndex ; j > newIndex ; j--){
+                                    $this.frontendMenus[j] = $this.frontendMenus[j-1];
+                                }
+                            }
+                            $this.frontendMenus[newIndex] = temp;
+                        }
                     });
                 },
                 // 打开图标选择弹窗
@@ -236,21 +262,42 @@
                 toAddMenu: function (type) {
                     var $this = this;
                     var {id, defaultIconCloudId} = $this.icons[0] || {};
-                    var newMenu = {
+                    $this.frontendMenuMaxSeq = $this.frontendMenuMaxSeq + 1;
+                    $this.backendMenuMaxSeq = $this.backendMenuMaxSeq + 1;
+                    $this.addEditMenu = $.extend({}, {
+                        id: uuid(),
                         activityId: $this.activityId,
                         type: type,
-                        title: '',
+                        name: '',
                         iconId: id,
                         defaultIconCloudId: defaultIconCloudId,
                         url: '',
                         pc: true,
                         mobile: false,
                         showRule: 'no_limit',
-                        sequence:
-                    }
-                    if ($this.type == )
+                        sequence: type == 'frontend' ? $this.frontendMenuMaxSeq : $this.backendMenuMaxSeq,
+                        system: false
+                    });
                     $this.showAddEditDialog = true;
-                }
+                },
+                confirmAddEditMenu: function () {
+                    var $this = this;
+                    var addEditMenu = $.extend({}, $this.addEditMenu)
+                    if ($this.addEditMenu.type == 'frontend') {
+                        $this.frontendMenus.push(addEditMenu);
+                    } else {
+                        $this.backendMenus.push(addEditMenu);
+                    }
+                    $this.closeAddEditMenu();
+                },
+                closeAddEditMenu: function () {
+                    var $this = this;
+                    $this.addEditMenu = {};
+                    $this.showAddEditDialog = false;
+                },
+                changeFrontendMenuEnable: function (e, menu) {
+                    debugger
+                },
             }
         });
     </script>

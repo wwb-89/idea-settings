@@ -24,8 +24,7 @@ public interface ActivityCustomAppConfigMapper extends BaseMapper<ActivityCustom
      * @author huxiaolong
      * @Date 2022-01-17 10:45:33
      * @param activityId
-     * @param type
      * @return
      */
-    List<ActivityCustomAppConfig> listActivityAppWithCloudId(@Param("activityId") Integer activityId, @Param("type") String type);
+    List<ActivityCustomAppConfig> listActivityAppWithCloudId(@Param("activityId") Integer activityId);
 }

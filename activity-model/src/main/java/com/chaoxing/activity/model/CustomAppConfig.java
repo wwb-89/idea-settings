@@ -48,8 +48,6 @@ public class CustomAppConfig {
     /** 是否删除; column: is_deleted */
     @TableField(value = "is_deleted")
     private Boolean deleted;
-    /** 顺序; column: sequence */
-    private Integer sequence;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
@@ -61,32 +59,5 @@ public class CustomAppConfig {
     /** 激活图标cloudId */
     @TableField(exist = false)
     private String activeIconCloudId;
-
-    @Getter
-    public enum UrlTypeEnum {
-
-        /** 前台 */
-        FRONTEND("前台", "frontend"),
-        /** 后台 */
-        BACKEND("后台", "backend");
-
-        private String name;
-        private String value;
-
-        UrlTypeEnum(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public static UrlTypeEnum fromValue(String value) {
-            UrlTypeEnum[] values = UrlTypeEnum.values();
-            for (UrlTypeEnum typeEnum : values) {
-                if (Objects.equals(typeEnum.getValue(), value)) {
-                    return typeEnum;
-                }
-            }
-            return null;
-        }
-    }
 
 }
