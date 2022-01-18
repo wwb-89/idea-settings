@@ -1,7 +1,6 @@
 package com.chaoxing.activity.service.activity.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.TimeScopeDTO;
@@ -32,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -152,14 +150,12 @@ public class ActivityStatHandleService {
     public boolean handleTask(Integer taskId) {
         // 上锁、同一个任务同时只能一个线程处理
         String lockKey = getTaskExcuteLockKey(taskId);
-        Consumer<Exception> fail = (e) -> {
-            log.error("操作任务:{} error:{}", taskId, e.getMessage());
-            throw new BusinessException("操作任务失败");
-        };
         return distributedLock.lock(lockKey, () -> {
             ActivityStatTask task = activityStatTaskMapper.selectById(taskId);
             return handleActivityStat(task);
-        }, fail);
+        }, e -> {
+            throw new BusinessException(e.getMessage());
+        });
     }
 
     private boolean handleActivityStat(ActivityStatTask statTask) {
@@ -179,8 +175,7 @@ public class ActivityStatHandleService {
                     .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue())
             );
             // 根据任务id查询待处理任务详情
-            List<ActivityStatTaskDetail> notSuccessTaskDetailList = activityStatTaskDetailMapper.selectList(
-                    new LambdaQueryWrapper<ActivityStatTaskDetail>()
+            List<ActivityStatTaskDetail> notSuccessTaskDetailList = activityStatTaskDetailMapper.selectList(new LambdaQueryWrapper<ActivityStatTaskDetail>()
                     .eq(ActivityStatTaskDetail::getTaskId, taskId)
                     .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue())
             );
@@ -188,8 +183,7 @@ public class ActivityStatHandleService {
                 Integer execSuccessNum = 0;
                 for (ActivityStatTaskDetail detail : notSuccessTaskDetailList) {
                     // 判断活动id前面的任务是否执行成功，若未执行成功，该detail不做任何处理
-                    int count = activityStatTaskDetailMapper.selectCount(new QueryWrapper<ActivityStatTaskDetail>()
-                            .lambda()
+                    int count = activityStatTaskDetailMapper.selectCount(new LambdaQueryWrapper<ActivityStatTaskDetail>()
                             .lt(ActivityStatTaskDetail::getTaskId, taskId)
                             .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
                             .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue()));
@@ -200,11 +194,11 @@ public class ActivityStatHandleService {
                     if (result) {
                         execSuccessNum++;
                     }
-                    if (notSuccessNum.compareTo(execSuccessNum) <= 0) {
-                        status = ActivityStatTask.Status.SUCCESS.getValue();
-                    } else {
-                        status = ActivityStatTask.Status.FAIL.getValue();
-                    }
+                }
+                if (notSuccessNum.compareTo(execSuccessNum) <= 0) {
+                    status = ActivityStatTask.Status.SUCCESS.getValue();
+                } else {
+                    status = ActivityStatTask.Status.FAIL.getValue();
                 }
             } else {
                 status = ActivityStatTask.Status.SUCCESS.getValue();
