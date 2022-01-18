@@ -65,18 +65,20 @@ public class ActivityPushReminderService {
         if (waitHandleData == null || waitHandleData.getActivityId() == null) {
             return;
         }
-        ActivityPushReminder existData = getByActivityId(waitHandleData.getActivityId());
+        String receiveScope;
         if (CollectionUtils.isNotEmpty(waitHandleData.getReceiveScopes())) {
-            waitHandleData.setReceiveScope(JSON.toJSONString(waitHandleData.getReceiveScopes()));
+            receiveScope = JSON.toJSONString(waitHandleData.getReceiveScopes());
         } else {
-            existData.setReceiveScope("");
+            receiveScope = "";
         }
+        ActivityPushReminder existData = getByActivityId(waitHandleData.getActivityId());
         if (existData == null) {
+            waitHandleData.setReceiveScope(receiveScope);
             activityPushReminderMapper.insert(waitHandleData);
         } else {
             activityPushReminderMapper.update(null, new LambdaUpdateWrapper<ActivityPushReminder>()
                     .eq(ActivityPushReminder::getActivityId, waitHandleData.getActivityId())
-                    .set(ActivityPushReminder::getReceiveScope, waitHandleData.getReceiveScope())
+                    .set(ActivityPushReminder::getReceiveScope, receiveScope)
                     .set(ActivityPushReminder::getContent, waitHandleData.getContent()));
         }
     }
