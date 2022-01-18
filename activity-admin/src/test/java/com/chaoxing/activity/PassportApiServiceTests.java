@@ -24,7 +24,7 @@ public class PassportApiServiceTests {
 
 	@Test
 	public void getUser() {
-		Integer uid = 25418810;
+		Integer uid = 202698281;
 		PassportUserDTO user = passportApiService.getByUid(uid);
 		System.out.println(JSON.toJSONString(user));
 	}

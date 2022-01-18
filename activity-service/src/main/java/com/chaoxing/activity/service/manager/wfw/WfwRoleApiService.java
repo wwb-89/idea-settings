@@ -59,7 +59,7 @@ public class WfwRoleApiService {
 	}
 
 	private String getAreaEnc(Integer id) {
-		return DigestUtils.md5Hex(id + LocalDate.now().format(AREA_DATE_FORMAT) + AREA_KEY);
+		return DigestUtils.md5Hex(id + LocalDate.now().format(AREA_DATE_FORMAT) + AREA_KEY).toUpperCase();
 	}
 
 	/**查询机构下的角色列表（包含组）
