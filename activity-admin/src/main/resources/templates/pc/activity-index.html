@@ -236,8 +236,13 @@
                             $this.visibleMenus.push(this.code);
                         }
                         // 非系统模块菜单
-                        if (!this.system) {
-                            this.url += "?activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid;
+                        if (this.dataOrigin != 'system') {
+                            var additionalParams = "activityId=" + $this.activity.id + "&uid=" + $this.loginUser.uid + "&state=" + $this.loginUser.fid;
+                            if (this.url.indexOf("?") != -1) {
+                                this.url += "&" + additionalParams;
+                            } else {
+                                this.url += "?" + additionalParams;
+                            }
                             $this.customMenus.push(this);
                             $this.menus.push({
                                 name: this.name,

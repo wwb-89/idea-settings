@@ -7,7 +7,6 @@ import com.chaoxing.activity.mapper.ActivityMenuConfigMapper;
 import com.chaoxing.activity.model.ActivityCustomAppConfig;
 import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
-import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.google.common.collect.Lists;
@@ -18,10 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**活动菜单处理服务
@@ -258,4 +255,22 @@ public class ActivityMenuHandleService {
         activityMenuConfigMapper.deleteById(menuId);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void updateMenusSort(List<ActivityMenuDTO> activityMenus) {
+        AtomicInteger i = new AtomicInteger(1);
+        activityMenus.forEach(v -> {
+            Integer menuId = v.getId();
+            v.setSequence(i.incrementAndGet());
+            if (menuId == null) {
+                // 菜单id不存在，则需要新增活动菜单配置，仅仅活动菜单配置
+                ActivityMenuConfig activityMenuConfig = ActivityMenuConfig.buildFromMenuDTO(v);
+                activityMenuConfigMapper.insert(activityMenuConfig);
+                v.setId(activityMenuConfig.getId());
+                return;
+            }
+            activityMenuConfigMapper.update(null, new LambdaUpdateWrapper<ActivityMenuConfig>()
+                    .eq(ActivityMenuConfig::getId, menuId)
+                    .set(ActivityMenuConfig::getSequence, v.getSequence()));
+        });
+    }
 }

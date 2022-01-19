@@ -171,34 +171,33 @@ public class ActivityMenuQueryService {
     }
 
     public List<ActivityMenuDTO> listActivityEnableMenusDTO(Integer activityId) {
-        return convertMenu2DTO(listActivityEnableMenus(activityId));
+        return convertMenu2DTO(activityId, listActivityEnableMenus(activityId));
     }
 
-    /**查询当前用户可见的菜单配置列表(活动主页用户菜单列表查询)
+    /**当前用户活动管理主页菜单列表查询，仅查询启用的
      * @Description
      * @author huxiaolong
      * @Date 2022-01-10 14:46:05
      * @param activity
-     * @param loginUser
+     * @param uid
      * @param creator
      * @return
      */
-    public List<ActivityMenuDTO> listUserActivityMenus(Activity activity, LoginUserDTO loginUser, boolean creator) {
+    public List<ActivityMenuDTO> listUserActivityMenus(Activity activity, Integer uid, boolean creator) {
         Integer activityId = activity.getId();
-        Integer uid = loginUser.getUid();
-        Integer fid = loginUser.getFid();
 
-        // 查询活动配置的所有菜单
+        // 查询活动配置启用的所有菜单
         List<ActivityMenuConfig> activityMenus = listActivityEnableMenus(activityId);
         if (activityManagerValidationService.isManager(activityId, uid) && !creator) {
             ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
             if (activityManager != null && StringUtils.isNotBlank(activityManager.getMenu())) {
-                // 列出管理员配置的菜单
+                // 如果用户为管理员，且有menu配置，根据menu配置进一步过滤活动菜单配置列表
                 List<String> managerMenus = Arrays.asList(StringUtils.split(activityManager.getMenu(), ","));
                 activityMenus = activityMenus.stream().filter(v -> managerMenus.contains(v.getMenu())).collect(Collectors.toList());
             }
         }
-        return convertMenu2DTO(activityMenus);
+        return convertMenu2DTO(activityId, activityMenus).stream()
+                .filter(v -> Objects.equals(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue(), v.getType())).collect(Collectors.toList());
     }
 
     /**MenuConfig转换MenuDTO，携带上url和图标等信息
@@ -208,7 +207,7 @@ public class ActivityMenuQueryService {
      * @param activityMenuConfigs
      * @return
      */
-    private List<ActivityMenuDTO> convertMenu2DTO(List<ActivityMenuConfig> activityMenuConfigs) {
+    private List<ActivityMenuDTO> convertMenu2DTO(Integer activityId, List<ActivityMenuConfig> activityMenuConfigs) {
         if (CollectionUtils.isEmpty(activityMenuConfigs)) {
             return Lists.newArrayList();
         }
@@ -218,19 +217,20 @@ public class ActivityMenuQueryService {
         List<Integer> tplComponentIds = activityMenuConfigs.stream().map(ActivityMenuConfig::getTemplateComponentId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         List<ActivityMenuDTO> customAppMenus = ActivityMenuDTO.convertTplCustomApps2MenuDTO(customAppConfigQueryService.listWithDeleted(tplComponentIds));
         Map<String, ActivityMenuDTO> customAppMap = customAppMenus.stream().collect(Collectors.toMap(ActivityMenuDTO::getCode, v -> v, (v1, v2) -> v2));
+        // 活动自定义菜单列表
+        List<ActivityCustomAppConfig> activityCustomMenuConfigs = activityCustomAppConfigQueryService.listActivityCustomApp(activityId);
+        List<ActivityMenuDTO> activityCustomAppMenus = ActivityMenuDTO.convertActivityCustomApps2MenuDTO(activityCustomMenuConfigs);
+        Map<String, ActivityMenuDTO> activityCustomMenuMap = activityCustomAppMenus.stream().collect(Collectors.toMap(ActivityMenuDTO::getCode, v -> v, (v1, v2) -> v2));
         List<ActivityMenuDTO> result = Lists.newArrayList();
         int sequence = 1000;
         // 遍历菜单， 进行相关地址和图标属性进行填充
         for (ActivityMenuConfig menuConfig : activityMenuConfigs) {
             String menu = menuConfig.getMenu();
-            ActivityMenuDTO menuDTO = systemModuleMap.get(menu);
+            //  seq以活动配置了的为准
             Integer seq = Optional.ofNullable(menuConfig.getSequence()).orElse(sequence++);
-            if (menuDTO != null) {
-                menuDTO.setSequence(seq);
-                result.add(menuDTO);
-                continue;
-            }
-            menuDTO = customAppMap.get(menu);
+            ActivityMenuDTO menuDTO = Optional.ofNullable(systemModuleMap.get(menu))
+                    .orElse(Optional.ofNullable(customAppMap.get(menu))
+                            .orElse(activityCustomMenuMap.get(menu)));
             if (menuDTO != null) {
                 menuDTO.setSequence(seq);
                 result.add(menuDTO);

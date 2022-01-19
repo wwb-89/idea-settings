@@ -35,7 +35,7 @@
             </ul>
             <div class="table-body" id="sortDragBox1">
                 <ul v-for="(item, index) in backendMenus" :key="'backend-menu-' + index" class="table-tr fs0 list-group-item">
-                    <li class="table-td li-drag"><i class="icon-drag"></i></li>
+                    <li class="table-td li-drag"><i class="icon-drag" :menu-code="item.code"></i></li>
                     <li class="table-td li-name">{{item.name}}</li>
                     <li class="table-td li-status">
                         <el-switch v-model="item.enable" @change="changeBackendMenuEnable(index)"></el-switch>
@@ -62,7 +62,7 @@
             <div class="table-body" id="sortDragBox2">
                 <ul v-for="(item, index) in frontendMenus" :key="'frontend-menu-' + index"
                     class="table-tr fs0 list-group-item">
-                    <li class="table-td li-drag"><i class="icon-drag"></i></li>
+                    <li class="table-td li-drag"><i class="icon-drag" :menu-code="item.code"></i></li>
                     <li class="table-td li-button">{{item.name}}</li>
                     <li class="table-td li-rule">
                         <el-select v-model="item.showRule" placeholder="请选择" @change="changeFrontendShowRule(index)">
@@ -185,10 +185,10 @@
                 var backendLen = $this.backendMenus.length;
                 var frontendLen = $this.frontendMenus.length;
                 if (backendLen > 0) {
-                    $this.backendMenuMaxSeq = $this.backendMenus[backendLen - 1].sequence || 0;
+                    $this.backendMenuMaxSeq = $this.backendMenus[backendLen - 1].sequence || 10000;
                 }
                 if (frontendLen > 0) {
-                    $this.frontendMenuMaxSeq = $this.frontendMenus[backendLen - 1].sequence || 0;
+                    $this.frontendMenuMaxSeq = $this.frontendMenus[backendLen - 1].sequence || 10000;
                 }
             },
             mounted: function () {
@@ -205,18 +205,21 @@
                         animation: 150,
                         handle: '.icon-drag',
                         group: '.list-group-item',
-                        onEnd: function ({oldIndex, newIndex}) {
-                            var temp = $this.backendMenus[oldIndex];
-                            if( oldIndex < newIndex ){//向下移动调整顺序
-                                for(var i = oldIndex ; i < newIndex ; i++){
-                                    $this.backendMenus[i] = $this.backendMenus[i+1];
-                                }
-                            } else if( oldIndex > newIndex ){//向上移动时调整顺序
-                                for(var j = oldIndex ; j > newIndex ; j--){
-                                    $this.backendMenus[j] = $this.backendMenus[j-1];
-                                }
-                            }
-                            $this.backendMenus[newIndex] = temp;
+                        onEnd: function () {
+                            var sequence = 0;
+                            var menuMap = {};
+                            $($this.backendMenus).each(function () {
+                                menuMap[this.code] = this;
+                            });
+                            var menus = [];
+                            $("#sortDragBox1 .icon-drag[menu-code]").each(function () {
+                                var menuCode = $(this).attr("menu-code");
+                                var menu = menuMap[menuCode];
+                                menu.sequence = ++sequence;
+                                menus.push(menu);
+                            })
+                            $this.backendMenuMaxSeq = menus.length || 10000;
+                            $this.updateMenuSort(menus);
                         }
                     });
 
@@ -224,18 +227,21 @@
                         handle: '.icon-drag',
                         animation: 150,
                         group: '.list-group-item',
-                        onEnd: function ({oldIndex, newIndex}) {
-                            var temp = $this.frontendMenus[oldIndex];
-                            if( oldIndex < newIndex ){//向下移动调整顺序
-                                for(var i = oldIndex ; i < newIndex ; i++){
-                                    $this.frontendMenus[i] = $this.frontendMenus[i+1];
-                                }
-                            } else if( oldIndex > newIndex ){//向上移动时调整顺序
-                                for(var j = oldIndex ; j > newIndex ; j--){
-                                    $this.frontendMenus[j] = $this.frontendMenus[j-1];
-                                }
-                            }
-                            $this.frontendMenus[newIndex] = temp;
+                        onEnd: function () {
+                            var sequence = 0;
+                            var menuMap = {};
+                            $($this.frontendMenus).each(function () {
+                                menuMap[this.code] = this;
+                            });
+                            var menus = [];
+                            $("#sortDragBox2 .icon-drag[menu-code]").each(function () {
+                                var menuCode = $(this).attr("menu-code");
+                                var menu = menuMap[menuCode];
+                                menu.sequence = ++sequence;
+                                menus.push(menu);
+                            })
+                            $this.frontendMenuMaxSeq = menus.length || 10000;
+                            $this.updateMenuSort(menus);
                         }
                     });
                 },
@@ -473,12 +479,27 @@
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "删除活动失败";
+                                errorMessage = "删除菜单失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("删除活动失败");
+                        app.showMsg("删除菜单失败");
+                    });
+                },
+                updateMenuSort: function (menus) {
+                    var $this = this;
+                    var url = ctx + "/api/activity/menu/update/sort";
+                    app.ajaxPostWithLoading(url, { menusJsonStr: activityApp.getJsonStr(menus) }, function (data) {
+                        if (!data.success) {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "更新菜单排序失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("更新菜单排序失败");
                     });
                 }
             }
