@@ -53,16 +53,11 @@
             <iframe id="content" src=""></iframe>
         </div>
         <!--正常二维码-->
-        <el-dialog
-                :visible.sync="activityHomeQrcodeShow"
-                    custom-class="qrCode-dialog"
-                width="428px"
-                center>
+        <el-dialog :visible.sync="activityHomeQrcodeShow" custom-class="qrCode-dialog" width="428px" center>
             <div class="inner">
                 <div id="qrCode"></div>
                 <p class="tips">扫码访问</p>
             </div>
-
         </el-dialog>
     </div>
 </body>
@@ -203,8 +198,8 @@
             },
             mounted: function () {
                 var $this = this;
+                $this.initHeight();
                 $this.$nextTick(function (){
-                    $this.resizePageHeight();
                     // 裁剪封面
                     cropImgFun('.title-box');
                     cropImgFun('.title-pop');
@@ -214,14 +209,14 @@
                         width: 62,
                         height: 62
                     });
-                    window.onresize = function () {
-                        $this.resizePageHeight();
-                    };
                     $this.selectMenu(0);
                 });
 
             },
             methods: {
+                initHeight: function () {
+                    $("#activity-vue").height($(window).height() - 40);
+                },
                 handleActivityMenus: function () {
                     var $this = this;
                     // 初始化
@@ -312,33 +307,6 @@
                         return;
                     }
                     $("#content")[0].src = url;
-                    $("#content")[0].onload = function() {
-                        $this.resizePageHeight();
-                    };
-                },
-                resizePageHeight: function () {
-                    // container的最小高度
-                    var containerMinHeight = $(".container").css("min-height");
-                    containerMinHeight = containerMinHeight.replace(/px/gi, "");
-                    var containerHeight = $(".container").height();
-                    // 窗口的高度
-                    var windowHeight = $(window).height() - 40;
-                    // iframe的高度
-                    var iframeHeight = $("#content").height();
-                    // iframe中内容的真实高度
-                    var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height() + 24;
-                    // container应该取最大高度
-                    var maxHeight = containerMinHeight > containerHeight ? containerMinHeight : containerHeight;
-                    maxHeight = maxHeight > windowHeight ? maxHeight : windowHeight;
-                    maxHeight = maxHeight > iframeHeight ? maxHeight : iframeHeight;
-                    maxHeight = maxHeight > iframeContentHeight ? maxHeight : iframeContentHeight;
-                    // 如果窗口高度能满足最大高度就是用窗口高度
-                    if (windowHeight > iframeContentHeight) {
-                        maxHeight = windowHeight;
-                    }
-                    $(".container").height(maxHeight);
-                    $("#content").height(maxHeight);
-                    $("#content").contents().find("body").height(maxHeight);
                 },
                 showActivityHomeQrcode: function () {
                     var $this = this;

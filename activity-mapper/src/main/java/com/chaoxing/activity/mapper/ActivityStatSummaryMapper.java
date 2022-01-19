@@ -2,6 +2,7 @@ package com.chaoxing.activity.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.activity.ActivityRankDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.ActivityStatSummary;
@@ -63,12 +64,27 @@ public interface ActivityStatSummaryMapper extends BaseMapper<ActivityStatSummar
                                                           @Param("marketId") Integer marketId,
                                                           @Param("fid") Integer fid);
 
-    /**统计万能表单活动市场活动的报名人数
-     * @Description 
-     * @author wwb
-     * @Date 2022-01-17 10:14:37
+    /**
+     * 统计万能表单活动市场活动的报名人数
+     *
      * @param formId
      * @return java.lang.Integer
-    */
+     * @Description
+     * @author wwb
+     * @Date 2022-01-17 10:14:37
+     */
     Integer countWfwFormMarketActivitySignedUpNum(@Param("formId") Integer formId);
+
+    /**
+     * 活动市场活动pv排行
+     *
+     * @param marketId
+     * @param limit
+     * @return java.util.List<com.chaoxing.activity.dto.activity.ActivityRankDTO>
+     * @Description
+     * @author wwb
+     * @Date 2022-01-19 16:32:43
+     */
+    List<ActivityRankDTO> marketActivityPvRank(@Param("marketId") Integer marketId, @Param("limit") Integer limit);
+
 }

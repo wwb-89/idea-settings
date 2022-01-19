@@ -33,18 +33,23 @@ public class HbqygActivityPvStatTask {
 
 	@Scheduled(cron = "0 10 0 * * ?")
 	public void handle() {
-		List<Activity> activities = activityMapper.selectList(new LambdaQueryWrapper<Activity>()
-				.eq(Activity::getMarketId, MARKET_ID)
-				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
-				.orderByDesc(Activity::getId)
-				.last("LIMIT 1000")
-		);
-		if (CollectionUtils.isEmpty(activities)) {
-			return;
-		}
-		for (Activity activity : activities) {
-			ActivityPvStatQueue.QueueParamDTO queueParam = new ActivityPvStatQueue.QueueParamDTO(activity.getId(), activity.getWebsiteId());
-			activityPvStatQueue.push(queueParam);
+		log.info("湖北群艺馆活动pv统计任务 start");
+		try {
+			List<Activity> activities = activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+					.eq(Activity::getMarketId, MARKET_ID)
+					.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+					.orderByDesc(Activity::getId)
+					.last("LIMIT 1000")
+			);
+			if (CollectionUtils.isEmpty(activities)) {
+				return;
+			}
+			for (Activity activity : activities) {
+				ActivityPvStatQueue.QueueParamDTO queueParam = new ActivityPvStatQueue.QueueParamDTO(activity.getId(), activity.getWebsiteId());
+				activityPvStatQueue.push(queueParam);
+			}
+		} finally {
+			log.info("湖北群艺馆活动pv统计任务 end");
 		}
 	}
 

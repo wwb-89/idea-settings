@@ -1,7 +1,5 @@
 package com.chaoxing.activity.dto.activity;
 
-import com.chaoxing.activity.dto.module.ClazzInteractionDTO;
-import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.CustomAppConfig;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
