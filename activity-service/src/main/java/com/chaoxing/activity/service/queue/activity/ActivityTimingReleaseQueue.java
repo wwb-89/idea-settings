@@ -3,16 +3,16 @@ package com.chaoxing.activity.service.queue.activity;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.service.queue.IDelayedQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
 
 /**活动定时发布队列
  * @author wwb
@@ -32,24 +32,11 @@ public class ActivityTimingReleaseQueue implements IDelayedQueue<ActivityTimingR
 	private RedissonClient redissonClient;
 
 	public void push(QueueParamDTO queueParam) {
-		remove(queueParam.getActivityId());
 		push(redissonClient, CACHE_KEY, queueParam, queueParam.getReleaseTime());
 	}
 
 	public QueueParamDTO pop() throws InterruptedException {
 		return pop(redissonClient, CACHE_KEY);
-	}
-
-	public void remove(Integer activityId) {
-		List<QueueParamDTO> queueParams = list(redissonClient, CACHE_KEY);
-		if (CollectionUtils.isEmpty(queueParams)) {
-			return;
-		}
-		for (QueueParamDTO queueParam : queueParams) {
-			if (Objects.equals(queueParam.getActivityId(), activityId)) {
-				remove(redissonClient, CACHE_KEY, queueParam);
-			}
-		}
 	}
 
 	@Data
