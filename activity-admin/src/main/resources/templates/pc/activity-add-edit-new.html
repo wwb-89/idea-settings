@@ -831,7 +831,7 @@
                 <div class="footer">
                     <div class="btn btn-border" @click="remindContentShow = false">取消</div>
                     <!-- 当前弹窗值不为空时加上 btn-normal 类-->
-                    <div class="btn" :class="canConfirmReminder ? 'btn-normal' : 'btn-forbid'" @click="confirmReminderDialog">完成</div>
+                    <div class="btn btn-normal" @click="confirmReminderDialog">完成</div>
                 </div>
             </div>
         </div>
@@ -1993,6 +1993,18 @@
                         app.showMsg("请选择展示页");
                         return false;
                     }
+                    if ($this.activity.openPushReminder) {
+                        var content = $this.activity.activityPushReminder && $this.activity.activityPushReminder.content;
+                        var scopes = $this.activity.activityPushReminder && $this.activity.activityPushReminder.receiveScopes;
+                        if (activityApp.isEmpty(content)) {
+                            app.showMsg("请填写提醒内容");
+                            return false;
+                        }
+                        if (scopes && scopes.length < 1) {
+                            app.showMsg("请选择提醒范围");
+                            return false;
+                        }
+                    }
                     // 自定义组件的校验
                     var customComponentValueValid = $this.validateCustomComponentValues();
                     if (!customComponentValueValid) {
@@ -2522,6 +2534,14 @@
                 },
                 confirmReminderDialog: function () {
                     var $this = this;
+                    if (activityApp.isEmpty($this.activityPushReminder.content)) {
+                        app.showMsg("请填写提醒内容");
+                        return;
+                    }
+                    if ($this.activityPushReminder.receiveScopes && $this.activityPushReminder.receiveScopes.length < 1) {
+                        app.showMsg("请选择提醒范围");
+                        return;
+                    }
                     $this.remindContentShow = false;
                     // 将数据拷贝
                     $this.activity.activityPushReminder = $.extend({}, $this.activityPushReminder);
@@ -2774,7 +2794,7 @@
                         $this.activity.activityPushReminder = {
                             receiveScope: '',
                             receiveScopes: [],
-                            content: ''
+                            content: '有新的活动，快来看看吧!'
                         };
                     }
                     if ($this.activity.activityPushReminder.receiveScopes) {
