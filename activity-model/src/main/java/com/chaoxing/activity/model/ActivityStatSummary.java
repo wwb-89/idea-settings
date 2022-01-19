@@ -46,6 +46,8 @@ public class ActivityStatSummary {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+    /** pv; column: pv*/
+    private Integer pv;
 
     /** 活动对应的报名签到Id */
     @TableField(exist = false)

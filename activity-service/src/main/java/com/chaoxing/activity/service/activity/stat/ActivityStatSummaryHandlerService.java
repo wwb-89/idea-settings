@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
@@ -108,5 +109,20 @@ public class ActivityStatSummaryHandlerService {
         for (Integer activityId : activityIds) {
             activityStatSummaryQueueService.push(activityId);
         }
+    }
+
+    /**更新活动pv
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-19 15:54:32
+     * @param activityId
+     * @param pv
+     * @return void
+    */
+    public void updatePv(Integer activityId, Integer pv) {
+        activityStatSummaryMapper.update(null, new LambdaUpdateWrapper<ActivityStatSummary>()
+                .eq(ActivityStatSummary::getActivityId, activityId)
+                .set(ActivityStatSummary::getPv, pv)
+        );
     }
 }

@@ -11,9 +11,10 @@
         <result column="avg_participate_time_length" jdbcType="INTEGER" property="avgParticipateTimeLength" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="pv" jdbcType="TIMESTAMP" property="pv" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.activity_id, t.signed_in_num, t.sign_in_rate, t.qualified_num,  t.signed_up_num, t.avg_participate_time_length, t.create_time, t.update_time
+        t.id, t.activity_id, t.signed_in_num, t.sign_in_rate, t.qualified_num,  t.signed_up_num, t.avg_participate_time_length, t.create_time, t.update_time, t.pv
     </sql>
 
     <sql id="activityStatColumnList">
