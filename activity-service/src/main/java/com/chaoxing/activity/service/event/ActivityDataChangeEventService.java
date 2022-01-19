@@ -323,12 +323,25 @@ public class ActivityDataChangeEventService {
 	 * @return void
 	*/
 	private void activityTimeChangeHandle(Activity activity, Activity oldActivity) {
-		if (oldActivity == null || activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0 || activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0) {
-			// 新增活动或者时间发生了改变
-			Integer activityId = activity.getId();
-			LocalDateTime now = LocalDateTime.now();
-			Long timestamp = DateUtils.date2Timestamp(now);
-			if (oldActivity == null || activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0) {
+		LocalDateTime newStartTime = activity.getStartTime();
+		LocalDateTime newEndTime = activity.getEndTime();
+		LocalDateTime oldStartTime = Optional.ofNullable(oldActivity).map(Activity::getStartTime).orElse(LocalDateTime.MIN);
+		LocalDateTime oldEndTime = Optional.ofNullable(oldActivity).map(Activity::getEndTime).orElse(LocalDateTime.MIN);
+
+		boolean startTimeChanged = newStartTime.compareTo(oldStartTime) != 0;
+		boolean endTimeChanged = newEndTime.compareTo(oldEndTime) != 0;
+		Integer activityId = activity.getId();
+		LocalDateTime now = LocalDateTime.now();
+		Long timestamp = DateUtils.date2Timestamp(now);
+		if (startTimeChanged) {
+			ActivityStartTimeReachEventOrigin activityStartTimeReachEventOrigin = ActivityStartTimeReachEventOrigin.builder()
+					.activityId(activityId)
+					.startTime(activity.getStartTime())
+					.timestamp(timestamp)
+					.build();
+			activityStartTimeReachEventQueue.push(activityStartTimeReachEventOrigin);
+			if (newStartTime.isAfter(now)) {
+				// 活动即将开始
 				ActivityAboutStartEventOrigin activityAboutStartEventOrigin = ActivityAboutStartEventOrigin.builder()
 						.activityId(activityId)
 						.startTime(activity.getStartTime())
@@ -336,29 +349,22 @@ public class ActivityDataChangeEventService {
 						.build();
 				activityAboutStartEventQueue.push(activityAboutStartEventOrigin);
 			}
-			if (oldActivity == null || activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0) {
+		}
+		if (endTimeChanged) {
+			ActivityEndTimeReachEventOrigin activityEndTimeReachEventOrigin = ActivityEndTimeReachEventOrigin.builder()
+					.activityId(activityId)
+					.endTime(activity.getEndTime())
+					.timestamp(timestamp)
+					.build();
+			activityEndTimeReachEventQueue.push(activityEndTimeReachEventOrigin);
+			if (newEndTime.isAfter(now)) {
+				// 活动即将结束
 				ActivityAboutEndEventOrigin activityAboutEndEventOrigin = ActivityAboutEndEventOrigin.builder()
 						.activityId(activityId)
 						.endTime(activity.getEndTime())
 						.timestamp(timestamp)
 						.build();
 				activityAboutEndEventQueue.push(activityAboutEndEventOrigin);
-			}
-			if (activity.getStartTime().isAfter(now)) {
-				ActivityStartTimeReachEventOrigin activityStartTimeReachEventOrigin = ActivityStartTimeReachEventOrigin.builder()
-						.activityId(activityId)
-						.startTime(activity.getStartTime())
-						.timestamp(timestamp)
-						.build();
-				activityStartTimeReachEventQueue.push(activityStartTimeReachEventOrigin);
-			}
-			if (activity.getEndTime().isAfter(now)) {
-				ActivityEndTimeReachEventOrigin activityEndTimeReachEventOrigin = ActivityEndTimeReachEventOrigin.builder()
-						.activityId(activityId)
-						.endTime(activity.getEndTime())
-						.timestamp(timestamp)
-						.build();
-				activityEndTimeReachEventQueue.push(activityEndTimeReachEventOrigin);
 			}
 		}
 	}
