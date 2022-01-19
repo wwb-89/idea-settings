@@ -1,5 +1,6 @@
 package com.chaoxing.activity;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import org.junit.jupiter.api.Test;
@@ -23,9 +24,9 @@ public class PassportApiServiceTests {
 
 	@Test
 	public void getUser() {
-		Integer uid = 25418810;
+		Integer uid = 202698281;
 		PassportUserDTO user = passportApiService.getByUid(uid);
-		System.out.println(user);
+		System.out.println(JSON.toJSONString(user));
 	}
 
 }

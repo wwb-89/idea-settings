@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivityChangeDTO;
 import com.chaoxing.activity.dto.event.activity.*;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueue;
@@ -10,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
 /**活动数据改变事件服务
@@ -66,24 +65,25 @@ public class ActivityDataChangeEventService {
 	 * @return void
 	*/
 	public void dataChange(Activity activity, Activity oldActivity, LoginUserDTO loginUser) {
+		ActivityChangeDTO activityChange = ActivityChangeDTO.build(oldActivity, activity);
 		// 活动标题修改
-		activityNameChangeHandle(activity, oldActivity);
+		activityNameChangeHandle(activityChange);
 		// 活动积分改变处理
-		activityIntegralChangeHandle(activity, oldActivity);
+		activityIntegralChangeHandle(activityChange);
 		// 活动学时改变处理
-		activityPeriodChangeHandle(activity, oldActivity);
+		activityPeriodChangeHandle(activityChange);
 		// 活动学分改变处理
-		activityCreditChangeHandle(activity, oldActivity);
+		activityCreditChangeHandle(activityChange);
 		// 活动时间改变处理
-		activityTimeChangeHandle(activity, oldActivity);
+		activityTimeChangeHandle(activityChange);
 		// 活动定时发布处理
-		activityTimingReleaseHandle(activity, oldActivity, loginUser);
+		activityTimingReleaseHandle(activityChange, loginUser);
 		// 活动地点时间改变处理
-		activityAddressTimeChangeHandle(activity, oldActivity);
+		activityAddressTimeChangeHandle(activityChange);
 		// 活动名称、时间改变处理
-		activityNameTimeChangeHandle(activity, oldActivity);
+		activityNameTimeChangeHandle(activityChange);
 		// 门户模版改变
-		activityWebTemplateIdChangeHandle(activity, oldActivity);
+		activityWebTemplateIdChangeHandle(activityChange);
 		// 活动改变处理
 		ActivityChangeEventOrigin activityChangeEventOrigin = ActivityChangeEventOrigin.builder()
 				.activityId(activity.getId())
@@ -91,64 +91,57 @@ public class ActivityDataChangeEventService {
 				.build();
 		activityChangeEventQueue.push(activityChangeEventOrigin);
 		// 活动封面改变处理
-		activityCoverChangeHandle(activity, oldActivity);
+		activityCoverChangeHandle(activityChange);
 	}
 
 	/**活动封面改变处理
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-10-26 18:30:59
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityCoverChangeHandle(Activity activity, Activity oldActivity) {
-		if (oldActivity != null && Objects.equals(activity.getCoverCloudId(), oldActivity.getCoverCloudId())) {
-			return;
+	private void activityCoverChangeHandle(ActivityChangeDTO activityChange) {
+		if (activityChange.getCoverChanged()) {
+			ActivityCoverChangeEventOrigin eventOrigin = ActivityCoverChangeEventOrigin.builder()
+					.activityId(activityChange.getNewActivity().getId())
+					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+					.build();
+			activityCoverChangeEventQueue.push(eventOrigin);
 		}
-		ActivityCoverChangeEventOrigin eventOrigin = ActivityCoverChangeEventOrigin.builder()
-				.activityId(activity.getId())
-				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
-				.build();
-		activityCoverChangeEventQueue.push(eventOrigin);
+
 	}
 	/**活动名称改变处理
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-10-26 17:47:31
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityNameChangeHandle(Activity activity, Activity oldActivity) {
-		if (oldActivity != null && Objects.equals(activity.getName(), oldActivity.getName())) {
-			// 活动名称没改变
-			return;
+	private void activityNameChangeHandle(ActivityChangeDTO activityChange) {
+		if (activityChange.getNameChanged()) {
+			ActivityNameChangedEventOrigin eventOrigin = ActivityNameChangedEventOrigin.builder()
+					.activityId(activityChange.getNewActivity().getId())
+					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+					.build();
+			activityNameChangeEventQueue.push(eventOrigin);
 		}
-		ActivityNameChangedEventOrigin eventOrigin = ActivityNameChangedEventOrigin.builder()
-				.activityId(activity.getId())
-				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
-				.build();
-		activityNameChangeEventQueue.push(eventOrigin);
+
 	}
 	/**活动积分改变处理
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-10-26 17:29:58
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityIntegralChangeHandle(Activity activity, Activity oldActivity) {
-		if (activity == null || oldActivity == null) {
+	private void activityIntegralChangeHandle(ActivityChangeDTO activityChange) {
+		if (activityChange.getAdd()) {
 			return;
 		}
-		BigDecimal integral = Optional.ofNullable(activity.getIntegral()).orElse(BigDecimal.ZERO);
-		BigDecimal oldIntegral = Optional.ofNullable(oldActivity.getIntegral()).orElse(BigDecimal.ZERO);
-		if (integral.compareTo(oldIntegral) != 0) {
-			// 积分改变了
+		if (activityChange.getIntegralChanged()) {
 			ActivityIntegralChangeEventOrigin eventOrigin = ActivityIntegralChangeEventOrigin.builder()
-					.activityId(activity.getId())
+					.activityId(activityChange.getNewActivity().getId())
 					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
 					.build();
 			activityIntegralChangeEventQueue.push(eventOrigin);
@@ -158,20 +151,16 @@ public class ActivityDataChangeEventService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2022-01-14 10:14:26
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityPeriodChangeHandle(Activity activity, Activity oldActivity) {
-		if (activity == null || oldActivity == null) {
+	private void activityPeriodChangeHandle(ActivityChangeDTO activityChange) {
+		if (activityChange.getAdd()) {
 			return;
 		}
-		BigDecimal period = Optional.ofNullable(activity.getPeriod()).orElse(BigDecimal.ZERO);
-		BigDecimal oldPeriod = Optional.ofNullable(oldActivity.getPeriod()).orElse(BigDecimal.ZERO);
-		if (period.compareTo(oldPeriod) != 0) {
-			// 积分改变了
+		if (activityChange.getPeriodChanged()) {
 			ActivityPeriodChangeEventOrigin eventOrigin = ActivityPeriodChangeEventOrigin.builder()
-					.activityId(activity.getId())
+					.activityId(activityChange.getNewActivity().getId())
 					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
 					.build();
 			activityPeriodChangeEventQueue.push(eventOrigin);
@@ -181,20 +170,16 @@ public class ActivityDataChangeEventService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2022-01-14 10:14:42
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityCreditChangeHandle(Activity activity, Activity oldActivity) {
-		if (activity == null || oldActivity == null) {
+	private void activityCreditChangeHandle(ActivityChangeDTO activityChange) {
+		if (activityChange.getAdd()) {
 			return;
 		}
-		BigDecimal credit = Optional.ofNullable(activity.getCredit()).orElse(BigDecimal.ZERO);
-		BigDecimal oldCredit = Optional.ofNullable(oldActivity.getCredit()).orElse(BigDecimal.ZERO);
-		if (credit.compareTo(oldCredit) != 0) {
-			// 积分改变了
+		if (activityChange.getCreditChanged()) {
 			ActivityCreditChangeEventOrigin eventOrigin = ActivityCreditChangeEventOrigin.builder()
-					.activityId(activity.getId())
+					.activityId(activityChange.getNewActivity().getId())
 					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
 					.build();
 			activityCreditChangeEventQueue.push(eventOrigin);
@@ -204,13 +189,14 @@ public class ActivityDataChangeEventService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-10-26 17:45:57
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @param loginUser
 	 * @return void
 	*/
-	private void activityTimingReleaseHandle(Activity activity, Activity oldActivity, LoginUserDTO loginUser) {
-		Integer activityId = activity.getId();
+	private void activityTimingReleaseHandle(ActivityChangeDTO activityChange, LoginUserDTO loginUser) {
+		Activity activity = activityChange.getNewActivity();
+		Activity oldActivity = activityChange.getOldActivity();
+
 		// 活动定时发布
 		Boolean released = Optional.ofNullable(activity.getReleased()).orElse(false);
 		if (released) {
@@ -236,99 +222,83 @@ public class ActivityDataChangeEventService {
 				// 定时发布
 				activityTimingReleaseQueueService.push(queueParam);
 			}
-		} else {
-			// 取消定时发布
-			activityTimingReleaseQueueService.remove(activityId);
 		}
 	}
 	/**活动地点时间改变处理
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-10-27 15:51:11
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityAddressTimeChangeHandle(Activity activity, Activity oldActivity) {
-		if (oldActivity == null) {
+	private void activityAddressTimeChangeHandle(ActivityChangeDTO activityChange) {
+		if (activityChange.getAdd()) {
 			return;
 		}
-		boolean changed;
-		changed = !Objects.equals(activity.getAddress(), oldActivity.getAddress()) || !Objects.equals(activity.getDetailAddress(), oldActivity.getDetailAddress());
-		if (!changed) {
-			changed = activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0 || activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0;
+		if (activityChange.getAddressChanged() || activityChange.getTimeChanged()) {
+			ActivityAddressTimeChangeEventOrigin eventOrigin = ActivityAddressTimeChangeEventOrigin.builder()
+					.activityId(activityChange.getNewActivity().getId())
+					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+					.build();
+			activityAddressTimeChangeEventQueue.push(eventOrigin);
 		}
-		boolean activityEnded = activity.getEndTime().isBefore(LocalDateTime.now());
-		if (!changed || activityEnded) {
-			return;
-		}
-		ActivityAddressTimeChangeEventOrigin eventOrigin = ActivityAddressTimeChangeEventOrigin.builder()
-				.activityId(activity.getId())
-				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
-				.build();
-		activityAddressTimeChangeEventQueue.push(eventOrigin);
 	}
 
 	/**活动名称、时间改变处理
-	 * @Description 
+	 * @Description 目前更新作品征集信息
 	 * @author wwb
 	 * @Date 2021-10-27 16:01:50
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityNameTimeChangeHandle(Activity activity, Activity oldActivity) {
-		if (oldActivity != null) {
-			boolean changed;
-			changed = !Objects.equals(activity.getName(), oldActivity.getName());
-			if (!changed) {
-				changed = activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0 || activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0;
-			}
-			if (!changed) {
-				return;
-			}
+	private void activityNameTimeChangeHandle(ActivityChangeDTO activityChange) {
+		if (activityChange.getNameChanged() || activityChange.getTimeChanged()) {
+			ActivityNameTimeChangeEventOrigin eventOrigin = ActivityNameTimeChangeEventOrigin.builder()
+					.activityId(activityChange.getNewActivity().getId())
+					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+					.build();
+			activityNameTimeChangeEventQueue.push(eventOrigin);
 		}
-		ActivityNameTimeChangeEventOrigin eventOrigin = ActivityNameTimeChangeEventOrigin.builder()
-				.activityId(activity.getId())
-				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
-				.build();
-		activityNameTimeChangeEventQueue.push(eventOrigin);
 	}
 
 	/**处理门户模版的改变
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-11-08 20:55:34
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityWebTemplateIdChangeHandle(Activity activity, Activity oldActivity) {
-		if (oldActivity != null && Objects.equals(activity.getPageId(), oldActivity.getPageId()) && activity.getWebsiteId() != null) {
-			return;
+	private void activityWebTemplateIdChangeHandle(ActivityChangeDTO activityChange) {
+		if (activityChange.getWebTemplateChanged()) {
+			ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
+					.activityId(activityChange.getNewActivity().getId())
+					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+					.build();
+			activityWebTemplateChangeEventQueue.push(eventOrigin);
 		}
-		ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
-				.activityId(activity.getId())
-				.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
-				.build();
-		activityWebTemplateChangeEventQueue.push(eventOrigin);
 	}
 
 	/**活动时间改变处理
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-10-26 18:50:34
-	 * @param activity
-	 * @param oldActivity
+	 * @param activityChange
 	 * @return void
 	*/
-	private void activityTimeChangeHandle(Activity activity, Activity oldActivity) {
-		if (oldActivity == null || activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0 || activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0) {
-			// 新增活动或者时间发生了改变
-			Integer activityId = activity.getId();
-			LocalDateTime now = LocalDateTime.now();
-			Long timestamp = DateUtils.date2Timestamp(now);
-			if (oldActivity == null || activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0) {
+	private void activityTimeChangeHandle(ActivityChangeDTO activityChange) {
+		LocalDateTime now = LocalDateTime.now();
+		Long timestamp = DateUtils.date2Timestamp(now);
+		Activity activity = activityChange.getNewActivity();
+		Integer activityId = activity.getId();
+		if (activityChange.getStartTimeChanged()) {
+			ActivityStartTimeReachEventOrigin activityStartTimeReachEventOrigin = ActivityStartTimeReachEventOrigin.builder()
+					.activityId(activityId)
+					.startTime(activity.getStartTime())
+					.timestamp(timestamp)
+					.build();
+			activityStartTimeReachEventQueue.push(activityStartTimeReachEventOrigin);
+			if (activity.getStartTime().isAfter(now)) {
+				// 活动即将开始
 				ActivityAboutStartEventOrigin activityAboutStartEventOrigin = ActivityAboutStartEventOrigin.builder()
 						.activityId(activityId)
 						.startTime(activity.getStartTime())
@@ -336,7 +306,16 @@ public class ActivityDataChangeEventService {
 						.build();
 				activityAboutStartEventQueue.push(activityAboutStartEventOrigin);
 			}
-			if (oldActivity == null || activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0) {
+		}
+		if (activityChange.getEndTimeChanged()) {
+			ActivityEndTimeReachEventOrigin activityEndTimeReachEventOrigin = ActivityEndTimeReachEventOrigin.builder()
+					.activityId(activityId)
+					.endTime(activity.getEndTime())
+					.timestamp(timestamp)
+					.build();
+			activityEndTimeReachEventQueue.push(activityEndTimeReachEventOrigin);
+			if (activity.getEndTime().isAfter(now)) {
+				// 活动即将结束
 				ActivityAboutEndEventOrigin activityAboutEndEventOrigin = ActivityAboutEndEventOrigin.builder()
 						.activityId(activityId)
 						.endTime(activity.getEndTime())
@@ -344,23 +323,8 @@ public class ActivityDataChangeEventService {
 						.build();
 				activityAboutEndEventQueue.push(activityAboutEndEventOrigin);
 			}
-			if (activity.getStartTime().isAfter(now)) {
-				ActivityStartTimeReachEventOrigin activityStartTimeReachEventOrigin = ActivityStartTimeReachEventOrigin.builder()
-						.activityId(activityId)
-						.startTime(activity.getStartTime())
-						.timestamp(timestamp)
-						.build();
-				activityStartTimeReachEventQueue.push(activityStartTimeReachEventOrigin);
-			}
-			if (activity.getEndTime().isAfter(now)) {
-				ActivityEndTimeReachEventOrigin activityEndTimeReachEventOrigin = ActivityEndTimeReachEventOrigin.builder()
-						.activityId(activityId)
-						.endTime(activity.getEndTime())
-						.timestamp(timestamp)
-						.build();
-				activityEndTimeReachEventQueue.push(activityEndTimeReachEventOrigin);
-			}
 		}
+
 	}
 
 }

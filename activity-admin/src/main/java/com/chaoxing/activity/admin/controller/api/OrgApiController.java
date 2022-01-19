@@ -8,6 +8,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwRoleApiService;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +61,7 @@ public class OrgApiController {
 	*/
 	@RequestMapping("{fid}/roles")
 	public RestRespDTO listRoles(@PathVariable Integer fid, String areaCode) {
-		List<WfwRoleDTO> orgWfwRoles = wfwRoleApiService.listFidRole(fid);
+		List<WfwRoleDTO> result = Lists.newArrayList();
 		if (StringUtils.isNotBlank(areaCode)) {
 			List<WfwAreaDTO> wfwAreas = wfwAreaApiService.listByFid(fid);
 			Integer fwId = Optional.ofNullable(wfwAreas).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getCode(), areaCode)).findFirst().map(WfwAreaDTO::getId).orElse(null);
@@ -76,10 +77,14 @@ public class OrgApiController {
 			for (WfwRoleDTO wfwRole : wfwRoles) {
 				wfwRole.setRoleGroupId(areaRoleGroupId);
 			}
-			orgWfwRoles.add(areaRoleGroup);
-			orgWfwRoles.addAll(wfwRoles);
+			result.add(areaRoleGroup);
+			result.addAll(wfwRoles);
 		}
-		return RestRespDTO.success(orgWfwRoles);
+		List<WfwRoleDTO> orgWfwRoles = wfwRoleApiService.listFidRole(fid);
+		if (CollectionUtils.isNotEmpty(orgWfwRoles)) {
+			result.addAll(orgWfwRoles);
+		}
+		return RestRespDTO.success(result);
 	}
 
 }

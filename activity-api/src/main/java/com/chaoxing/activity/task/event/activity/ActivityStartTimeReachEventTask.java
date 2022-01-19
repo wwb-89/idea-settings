@@ -35,7 +35,9 @@ public class ActivityStartTimeReachEventTask {
             return;
         }
         try {
+            log.info("根据参数:{} 处理活动开始时间到达事件任务", JSON.toJSONString(eventOrigin));
             activityStartTimeReachEventQueueService.handle(eventOrigin);
+            log.info("处理活动开始时间到达事件任务 success");
         } catch (Exception e) {
             log.error("根据参数:{} 处理活动开始时间到达事件任务error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();

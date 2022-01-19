@@ -32,6 +32,8 @@ public class PassportUserDTO {
 	private String mobile;
 	/** 邮箱 */
 	private String email;
+	/** schoolid */
+	private Integer schoolid;
 	/** 所属机构列表 */
 	private List<OrgDTO> affiliations;
 

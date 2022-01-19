@@ -36,6 +36,9 @@ public class ActivityTimingReleaseQueueService {
         if (activity == null) {
             return;
         }
+        if (activity.getReleased()) {
+            return;
+        }
         Boolean timingRelease = Optional.ofNullable(activity.getTimingRelease()).orElse(false);
         if (!timingRelease) {
             return;

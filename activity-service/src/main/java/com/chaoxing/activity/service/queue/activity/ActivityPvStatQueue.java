@@ -1,10 +1,8 @@
 package com.chaoxing.activity.service.queue.activity;
 
-import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.service.queue.IDelayedQueue;
+import com.chaoxing.activity.service.queue.IQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,45 +10,46 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 
-/**活动定时发布队列
+/**活动pv统计队列
  * @author wwb
  * @version ver 1.0
- * @className ActivityTimingReleaseQueue
+ * @className ActivityPvStatQueue
  * @description
  * @blame wwb
- * @date 2021-06-08 10:00:10
+ * @date 2022-01-19 15:45:56
  */
 @Slf4j
 @Service
-public class ActivityTimingReleaseQueue implements IDelayedQueue<ActivityTimingReleaseQueue.QueueParamDTO> {
+public class ActivityPvStatQueue implements IQueue<ActivityPvStatQueue.QueueParamDTO> {
 
-	private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_timing_release";
+	/** 签到、签到率 */
+	private static final String SIGN_IN_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_pv_stat";
 
 	@Resource
 	private RedissonClient redissonClient;
 
 	public void push(QueueParamDTO queueParam) {
-		push(redissonClient, CACHE_KEY, queueParam, queueParam.getReleaseTime());
+		push(redissonClient, SIGN_IN_CACHE_KEY, queueParam);
+	}
+
+	public void delayPush(QueueParamDTO queueParam) {
+		delayPush(redissonClient, SIGN_IN_CACHE_KEY, queueParam);
 	}
 
 	public QueueParamDTO pop() throws InterruptedException {
-		return pop(redissonClient, CACHE_KEY);
+		return pop(redissonClient, SIGN_IN_CACHE_KEY);
 	}
 
 	@Data
-	@Builder
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class QueueParamDTO {
 
 		/** 活动id */
 		private Integer activityId;
-		/** 活动发布时间 */
-		private LocalDateTime releaseTime;
-		/** 登录用户 */
-		private LoginUserDTO loginUser;
+		/** websiteId */
+		private Integer websiteId;
 
 	}
 

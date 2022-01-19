@@ -167,7 +167,7 @@ public class ActivityMhService {
     }
 
     private String buildWorkUrl(Integer workId) {
-        return DomainConstant.WORK +"/activity/" + workId + "?showSubButton=false&canInteraction=false";
+        return DomainConstant.WORK +"/zj/activity/" + workId + "?showSubButton=false&canInteraction=false";
     }
 
     /**从signStat报名时间获取报名的进行状态

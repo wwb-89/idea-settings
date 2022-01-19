@@ -1252,6 +1252,7 @@ public class ActivityQueryService {
 				.in(Activity::getStatus, Lists.newArrayList(Activity.StatusEnum.RELEASED.getValue(), Activity.StatusEnum.ENDED.getValue()))
 				.eq(Activity::getReleased, true)
 				.le(Activity::getStartTime, LocalDateTime.now())
+				.ge(Activity::getEndTime, LocalDateTime.now())
 		);
 	}
 

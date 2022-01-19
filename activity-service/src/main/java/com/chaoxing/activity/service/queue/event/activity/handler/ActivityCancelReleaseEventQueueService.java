@@ -5,7 +5,6 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.bigdata.BigDataPointApiService;
 import com.chaoxing.activity.service.queue.BigDataPointQueue;
-import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +25,6 @@ public class ActivityCancelReleaseEventQueueService {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private ActivityTimingReleaseQueue activityTimingReleaseQueue;
-    @Resource
     private BigDataPointQueue bigDataPointQueue;
 
     public void handle(ActivityCancelReleaseEventOrigin eventOrigin) {
@@ -39,8 +36,6 @@ public class ActivityCancelReleaseEventQueueService {
         if (activity == null) {
             return;
         }
-        // 取消定时发布
-        activityTimingReleaseQueue.remove(activityId);
         // 大数据积分（举办活动）
         bigDataPointQueue.push(new BigDataPointQueue.QueueParamDTO(activity.getCreateUid(), activity.getCreateFid(), activityId, BigDataPointApiService.PointTypeEnum.CANCEL_ORGANIZE_ACTIVITY.getValue()));
     }
