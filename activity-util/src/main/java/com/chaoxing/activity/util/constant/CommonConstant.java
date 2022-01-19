@@ -79,4 +79,9 @@ public class CommonConstant {
 	/** 换行符号 */
 	public static final String NEW_LINE_CHAR = "\n";
 
+
+	/** 模板自定义菜单前缀 */
+	public static final String TEMPLATE_MENU_PREFIX = "template_";
+	/** 模板自定义菜单前缀 */
+	public static final String ACTIVITY_MENU_PREFIX = "activity_";
 }

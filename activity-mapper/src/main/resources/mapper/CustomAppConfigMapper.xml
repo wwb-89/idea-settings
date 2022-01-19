@@ -7,7 +7,7 @@
         <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="type" jdbcType="VARCHAR" property="type" />
         <result column="title" jdbcType="VARCHAR" property="title" />
-        <result column="icon_id" jdbcType="VARCHAR" property="iconId" />
+        <result column="icon_id" jdbcType="INTEGER" property="iconId" />
         <result column="url" jdbcType="VARCHAR" property="url" />
         <result column="is_show_after_sign_up" jdbcType="BIT" property="showAfterSignUp" />
         <result column="is_open_blank" jdbcType="BIT" property="openBlank" />

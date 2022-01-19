@@ -5,6 +5,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityCustomAppConfig;
 import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.model.CustomAppConfig;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.google.common.collect.Lists;
@@ -32,6 +33,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
 
+    /** 活动菜单配置id */
+    private Integer id;
+    /** 活动id */
+    private Integer activityId;
     /** 系统菜单、模板自定义菜单、活动自定义菜单通用字段 */
     /** 菜单名称 */
     private String name;
@@ -61,12 +66,17 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
     private Integer templateComponentId;
 
     /** 活动自定义菜单字段 */
+    /** 活动自定义菜单id */
+    private Integer activityMenuId;
     /** 显示规则 */
     private String showRule;
     /** 是否pc端菜单 */
     private Boolean pc;
     /** 是否移动端菜单 */
     private Boolean mobile;
+
+    /** 新增修改自定义活动菜单时回带字段 */
+    private Integer iconId;
 
 
     /**列出所有系统菜单模块（含前后端）
@@ -118,7 +128,7 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
         }
         return customAppConfigs.stream().map(v -> ActivityMenuDTO.builder()
                 .name(v.getTitle())
-                .code(String.valueOf(v.getId()))
+                .code(CommonConstant.TEMPLATE_MENU_PREFIX + v.getId())
                 .type(v.getType())
                 .dataOrigin(ActivityMenuConfig.DataOriginEnum.TEMPLATE.getValue())
                 .openBlank(Optional.ofNullable(v.getOpenBlank()).orElse(false))
@@ -138,7 +148,7 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
         }
         return activityCustomApps.stream().map(v -> ActivityMenuDTO.builder()
                 .name(v.getTitle())
-                .code(String.valueOf(v.getId()))
+                .code(CommonConstant.ACTIVITY_MENU_PREFIX + v.getId())
                 .type(v.getType())
                 .dataOrigin(ActivityMenuConfig.DataOriginEnum.ACTIVITY.getValue())
                 .openBlank(false)
@@ -147,6 +157,9 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
                 .defaultIconUrl(Optional.ofNullable(v.getDefaultIconCloudId()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
                 .activeIconUrl(Optional.ofNullable(v.getActiveIconCloudId()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
                 .showRule(Optional.ofNullable(v.getShowRule()).orElse(ActivityMenuConfig.ShowRuleEnum.NO_LIMIT.getValue()))
+                .activityId(v.getActivityId())
+                .activityMenuId(v.getId())
+                .iconId(v.getIconId())
                 .pc(v.getPc())
                 .mobile(v.getMobile())
                 .build()).collect(Collectors.toList());

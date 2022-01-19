@@ -28,13 +28,14 @@ public enum ActivityMenuEnum {
         CERTIFICATE("证书发放", "certificate", "", 40),
         NOTICE("发通知", "notice", "", 50),
         STAT("统计", "stat", "", 60),
+
         /** 班级互动 */
         task("任务", "task", "", 70),
         DISCUSS("讨论", "discuss", "", 80),
         HOMEWORK("作业", "homework", "", 90),
         REVIEW_MANAGEMENT("评审", "review_management", "", 100),
 
-        SETTING("设置", "setting", "", 100000);
+        SETTING("设置", "setting", "", 110);
 
         private final String name;
         private final String value;

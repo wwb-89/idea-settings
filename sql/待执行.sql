@@ -39,4 +39,6 @@ ALTER TABLE t_activity_menu_config ADD COLUMN `data_origin` varchar(50) DEFAULT 
 -- 刷数据
 UPDATE t_activity_menu_config SET data_origin = 'system' WHERE template_component_id IS NULL;
 UPDATE t_activity_menu_config SET data_origin = 'template' WHERE template_component_id IS NOT NULL;
+-- 模板自定义菜单增加前缀
+UPDATE t_activity_menu_config SET menu = CONCAT('template_', menu) WHERE template_component_id IS NOT NULL;
 

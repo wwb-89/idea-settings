@@ -36,7 +36,7 @@ public class CustomAppConfig {
     /** 链接标题; column: title */
     private String title;
     /** 图标id; column: icon_id */
-    private String iconId;
+    private Integer iconId;
     /** 链接; column: url */
     private String url;
     /** 是否在报名后显示，仅对前台链接生效; column: is_show_after_sign_up */

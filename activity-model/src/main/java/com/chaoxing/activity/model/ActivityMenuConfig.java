@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
@@ -129,4 +131,17 @@ public class ActivityMenuConfig {
         }
     }
 
+
+    public static ActivityMenuConfig buildFromMenuDTO(ActivityMenuDTO menu) {
+        String showRule = StringUtils.isBlank(menu.getShowRule()) ? ShowRuleEnum.NO_LIMIT.getValue() : menu.getShowRule();
+        return ActivityMenuConfig.builder()
+                .activityId(menu.getActivityId())
+                .menu(menu.getCode())
+                .dataOrigin(menu.getDataOrigin())
+                .showRule(showRule)
+                .enable(true)
+                .sequence(menu.getSequence())
+                .templateComponentId(menu.getTemplateComponentId())
+                .build();
+    }
 }

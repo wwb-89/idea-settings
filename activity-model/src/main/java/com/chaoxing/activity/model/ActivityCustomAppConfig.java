@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 活动自定义应用配置表
@@ -34,7 +36,7 @@ public class ActivityCustomAppConfig {
     /** 链接标题; column: title */
     private String title;
     /** 图标id; column: icon_id */
-    private String iconId;
+    private Integer iconId;
     /** 链接; column: url */
     private String url;
     /** 是否pc端菜单; column: is_pc  */
@@ -59,5 +61,19 @@ public class ActivityCustomAppConfig {
     /** 激活图标cloudId */
     @TableField(exist = false)
     private String activeIconCloudId;
+
+    public static ActivityCustomAppConfig buildFromMenuDTO(ActivityMenuDTO menu) {
+        return ActivityCustomAppConfig.builder()
+                .id(menu.getActivityMenuId())
+                .activityId(menu.getActivityId())
+                .type(menu.getType())
+                .title(menu.getName())
+                .iconId(menu.getIconId())
+                .url(menu.getUrl())
+                .showRule(menu.getShowRule())
+                .pc(Optional.ofNullable(menu.getPc()).orElse(true))
+                .mobile(Optional.ofNullable(menu.getMobile()).orElse(false))
+                .build();
+    }
 
 }

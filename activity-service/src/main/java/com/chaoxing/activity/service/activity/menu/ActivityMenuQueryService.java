@@ -147,6 +147,12 @@ public class ActivityMenuQueryService {
             ActivityMenuConfig menuConfig = menuConfigMap.get(v.getCode());
             Integer seq = Optional.ofNullable(menuConfig).map(ActivityMenuConfig::getSequence).orElse(1000);
             Boolean enable = Optional.ofNullable(menuConfig).map(ActivityMenuConfig::getEnable).orElse(false);
+            if (menuConfig != null) {
+                String showRule = StringUtils.isBlank(menuConfig.getShowRule()) ? ActivityMenuConfig.ShowRuleEnum.NO_LIMIT.getValue() : menuConfig.getShowRule();
+                v.setShowRule(showRule);
+            }
+            v.setId(Optional.ofNullable(menuConfig).map(ActivityMenuConfig::getId).orElse(null));
+            v.setActivityId(activityId);
             v.setSequence(seq);
             v.setEnable(enable);
         });

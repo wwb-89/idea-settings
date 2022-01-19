@@ -4,18 +4,24 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.mapper.ActivityMenuConfigMapper;
+import com.chaoxing.activity.model.ActivityCustomAppConfig;
 import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
+import com.chaoxing.activity.util.ApplicationContextHolder;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**活动菜单处理服务
@@ -142,26 +148,114 @@ public class ActivityMenuHandleService {
      * @Description
      * @author huxiaolong
      * @Date 2022-01-18 16:40:55
-     * @param activityId
-     * @param activityMenuDTO
-     * @return
+     * @param menu
+     * @return 返回menuId
      */
-    public void updateMenuShowRule(Integer activityId, ActivityMenuDTO activityMenuDTO) {
-
+    @Transactional(rollbackFor = Exception.class)
+    public Integer updateMenuShowRule(ActivityMenuDTO menu) {
+        Integer menuId = menu.getId();
+        // menuId 为空仅出现在系统菜单或者模板菜单为添加的历史活动上
+        if (menuId == null) {
+            // 菜单id不存在，则需要新增活动菜单配置，仅仅活动菜单配置
+            ActivityMenuConfig activityMenuConfig = ActivityMenuConfig.buildFromMenuDTO(menu);
+            activityMenuConfigMapper.insert(activityMenuConfig);
+            return activityMenuConfig.getId();
+        }
+        // 若菜单配置存在，则获取显示规则，判断菜单来源进行更新
+        String showRule = StringUtils.isBlank(menu.getShowRule()) ? ActivityMenuConfig.ShowRuleEnum.NO_LIMIT.getValue() : menu.getShowRule();
+        activityMenuConfigMapper.update(null, new LambdaUpdateWrapper<ActivityMenuConfig>()
+                .eq(ActivityMenuConfig::getId, menuId)
+                .set(ActivityMenuConfig::getShowRule, showRule));
+        // 如果是活动自定义菜单，连同更新
+        Integer activityMenuId = menu.getActivityMenuId();
+        boolean isActivityDataOrigin = Objects.equals(ActivityMenuConfig.DataOriginEnum.ACTIVITY.getValue(), menu.getDataOrigin());
+        if (activityMenuId != null && isActivityDataOrigin) {
+            activityCustomAppConfigHandleService.updateMenuShowRule(activityMenuId, showRule);
+        }
+        return menuId;
     }
 
     /**更新菜单启用状态
      * @Description
      * @author huxiaolong
      * @Date 2022-01-18 16:29:13
-     * @param activityId
-     * @param activityMenu
+     * @param menu
      * @return
      */
-    public void updateMenuEnableStatus(Integer activityId, ActivityMenuDTO activityMenu) {
-
+    public Integer updateMenuEnableStatus(ActivityMenuDTO menu) {
+        Integer menuId = menu.getId();
+        // menuId 为空仅出现在系统菜单或者模板菜单为历史的活动上
+        if (menuId == null) {
+            // 菜单id不存在，则需要新增活动菜单配置，仅仅活动菜单配置
+            ActivityMenuConfig activityMenuConfig = ActivityMenuConfig.buildFromMenuDTO(menu);
+            activityMenuConfigMapper.insert(activityMenuConfig);
+            return activityMenuConfig.getId();
+        }
+        Boolean enable = Optional.ofNullable(menu.getEnable()).orElse(false);
+        activityMenuConfigMapper.update(null, new LambdaUpdateWrapper<ActivityMenuConfig>()
+                .eq(ActivityMenuConfig::getId, menuId)
+                .set(ActivityMenuConfig::getEnable, enable));
+        return menuId;
     }
 
+    /**新增活动自定义菜单
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-19 11:26:06
+     * @param menu
+     * @return com.chaoxing.activity.dto.activity.ActivityMenuDTO
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ActivityMenuDTO addActivityCustomMenu(ActivityMenuDTO menu) {
+        // 新增活动自定义菜单
+        ActivityCustomAppConfig activityCustomMenu = ActivityCustomAppConfig.buildFromMenuDTO(menu);
+        activityCustomAppConfigHandleService.addActivityCustomMenu(activityCustomMenu);
 
+        // 根据活动自定义菜单，拼接活动menuCode
+        Integer activityMenuId = activityCustomMenu.getId();
+        String menuCode = CommonConstant.ACTIVITY_MENU_PREFIX + activityMenuId;
+
+        ActivityMenuConfig activityMenuConfig = ActivityMenuConfig.buildFromMenuDTO(menu);
+        activityMenuConfig.setMenu(menuCode);
+        // 新增菜单配置
+        activityMenuConfigMapper.insert(activityMenuConfig);
+        // 补充数据，用于返回页面显示
+        Integer menuId = activityMenuConfig.getId();
+        menu.setId(menuId);
+        menu.setActivityMenuId(activityMenuId);
+        menu.setEnable(true);
+        return menu;
+    }
+    
+    /**更新活动自定义菜单
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-19 15:15:58
+     * @param menu
+     * @return 
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateActivityCustomMenu(ActivityMenuDTO menu) {
+        if (menu == null) {
+            return;
+        }
+        ActivityCustomAppConfig activityCustomMenu = ActivityCustomAppConfig.buildFromMenuDTO(menu);
+        activityCustomAppConfigHandleService.updateMenu(activityCustomMenu);
+    }
+
+    /**移除活动自定义菜单
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-01-19 14:23:34
+     * @param activityMenuId
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void removeActivityMenu(Integer menuId, Integer activityMenuId) {
+        // 活动自定义菜单删除
+        activityCustomAppConfigHandleService.removeById(activityMenuId);
+        // 活动菜单配置删除
+        activityMenuConfigMapper.deleteById(menuId);
+    }
 
 }

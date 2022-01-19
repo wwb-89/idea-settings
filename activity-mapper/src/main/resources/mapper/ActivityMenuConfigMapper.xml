@@ -19,7 +19,7 @@
         INSERT INTO t_activity_menu_config ( activity_id, menu, data_origin, show_rule, template_component_id, sequence )
         VALUES
             <foreach collection="activityMenuConfigs" index="key" item="value" open="" close="" separator=",">
-                ( #{value.activityId}, #{value.menu}, #{value.dataOrigin}, #{value.showRule} #{value.templateComponentId}, #{value.sequence} )
+                ( #{value.activityId}, #{value.menu}, #{value.dataOrigin}, #{value.showRule}, #{value.templateComponentId}, #{value.sequence} )
             </foreach>
     </insert>
 
