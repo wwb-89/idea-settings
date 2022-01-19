@@ -132,7 +132,7 @@ public class ActivityChangeDTO {
 		}
 		String newAddress = Optional.ofNullable(newActivity.getAddress()).orElse("") + Optional.ofNullable(newActivity.getDetailAddress()).orElse("");
 		String oldAddress = Optional.ofNullable(oldActivity.getAddress()).orElse("") + Optional.ofNullable(oldActivity.getDetailAddress()).orElse("");
-		return Objects.equals(newAddress, oldAddress);
+		return !Objects.equals(newAddress, oldAddress);
 	}
 
 	private static boolean webTemplateChanged(Activity oldActivity, Activity newActivity) {
