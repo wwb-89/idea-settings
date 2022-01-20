@@ -44,6 +44,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -103,7 +104,7 @@ public class ActivityManageController {
 	 * @return java.lang.String
 	*/
 	@RequestMapping("{activityId}")
-	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
+	public String activityIndex(Model model, @PathVariable Integer activityId, Integer style, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 //		todo 暂时屏蔽校验
 //		Activity activity = activityValidationService.manageAble(activityId, operateUid);
@@ -125,7 +126,11 @@ public class ActivityManageController {
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {
-			return "pc/activity-index";
+			style = Optional.ofNullable(style).orElse(1);
+			if (style == 2) {
+				return "pc/activity-index-2";
+			}
+			return "pc/activity-index-1";
 		}
 	}
 

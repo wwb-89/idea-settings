@@ -86,7 +86,7 @@ public class ActivitySettingController {
     private IconQueryService iconQueryService;
 
     @RequestMapping("index")
-    public String settingIndex(Model model, @PathVariable Integer activityId) {
+    public String settingIndex(Model model, @PathVariable Integer activityId, Integer style) {
 //		todo 暂时屏蔽校验
 //		Activity activity = activityValidationService.manageAble(activityId, operateUid);
         Activity activity = activityValidationService.activityExist(activityId);
@@ -94,7 +94,11 @@ public class ActivitySettingController {
         model.addAttribute("activityId", activityId);
         model.addAttribute("openSignUp", templateComponentService.exitSignUpComponent(activity.getTemplateId()));
         model.addAttribute("mainDomain", DomainConstant.MAIN);
-        return "pc/activity/setting/index";
+        style = Optional.ofNullable(style).orElse(1);
+        if (style == 2) {
+            return "pc/activity/setting/index-2";
+        }
+        return "pc/activity/setting/index-1";
     }
 
     /**基本信息设置页面

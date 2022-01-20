@@ -65,18 +65,7 @@
                 }
             },
             methods: {
-                tabChange:function (index){
-                    var $this = this;
-                    var tab = $this.tabs[index];
-                    if (tab.active) {
-                        return;
-                    }
-                    $($this.tabs).each(function (i) {
-                        $this.$set($this.tabs[i], "active", false);
-                    });
-                    $this.$set($this.tabs[index], "active", true);
-                    $this.url = tab.url;
-                },
+
 
             }
         });
