@@ -2,6 +2,7 @@ package com.chaoxing.activity.web.resolver;
 
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ExceptionConstant;
+import com.chaoxing.activity.util.constant.HttpRequestHeaderConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
@@ -39,7 +40,7 @@ public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 	@SneakyThrows
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-		log.error("请求url:{}, 请求参数:{}", request.getRequestURI(), request.getQueryString());
+		log.error("请求url:{}, 请求参数:{}, 来源:{}", request.getRequestURI(), request.getQueryString(), request.getHeader(HttpRequestHeaderConstant.REFERER));
 		log.error(ExceptionUtils.getStackTrace(ex));
 		if (isPageRequest(handler)) {
 			if (ex instanceof LoginRequiredException) {
