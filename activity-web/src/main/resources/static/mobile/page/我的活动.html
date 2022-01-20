@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../assets/lib/layui/css/layui.css" />
     <link rel="stylesheet" href="../assets/css/public.css" />
     <link rel="stylesheet" href="../assets/css/activity-list.css"/>
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
 <div class="activity-list" id="activity-list" v-cloak>
@@ -44,7 +45,7 @@
                                 <p class="tips color2">自建</p>
                             </div>
                             <div class="js-crop-img">
-                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                                <img src="">
                             </div>
                         </div>
                         <div class="card-info">
@@ -87,6 +88,22 @@
                             <p class="address">浙江图书馆</p>
                         </div>
                     </div>
+                    <div class="btn-box border-top">
+                        <el-dropdown class="more fl" trigger="click" placement="top-start">
+                            <span class="el-dropdown-link">
+                              更多
+                            </span>
+                            <el-dropdown-menu slot="dropdown" class="mydropdown">
+                              <el-dropdown-item>最长八个字最长八</el-dropdown-item>
+                              <el-dropdown-item >评价</el-dropdown-item>
+                              <el-dropdown-item class="border-top">报名信息</el-dropdown-item>
+                            </el-dropdown-menu>
+                          </el-dropdown>
+                        <button class="btn-normal">最长五个字</button>
+                        <button class="btn-normal">最长五个字</button>
+                        <button class="btn-second">最长五个字提交作品</button>
+                        <div class="clear"></div>
+                    </div>
                     <div class="handel numTotal3">
                         <a class="cancel" v-on:click="cancelFun"><span class="text2">置顶</span></a>
                         <a class="manage"><span class="text2">管理</span></a>
@@ -101,7 +118,7 @@
                                 <p class="tips color1">自建</p>
                             </div>
                             <div class="js-crop-img">
-                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                                <img src="">
                             </div>
                         </div>
                         <div class="card-info">
@@ -282,7 +299,9 @@
 </body>
 </html>
 <script src="../assets/lib/jquery.1.8.2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="../../pc/assets/lib/vue.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+<script src="../assets/lib/element-ui/lib/index.js"></script>
 <script src="../assets/lib/layui/layui.js"></script>
 <script src="../assets/lib/jqthumb.min.js"></script>
 <script src="../assets/js/common.js"></script>
@@ -291,8 +310,8 @@
         el: '#activity-list',
         data: function () {
             return {
-                tipsDialogShow:true,
-                tipsDialogShow1:true,
+                tipsDialogShow:false,
+                tipsDialogShow1:false,
                 inputShowStatus:false,
                 inputValue:'',
                 inputDeleteShow:false,
