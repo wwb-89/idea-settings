@@ -1104,7 +1104,7 @@ body {
 .tab-content-box .tab-item {
   position: relative;
   overflow: hidden;
-  padding: 16px 24px 48px 24px;
+  padding: 16px 24px;
 }
 
 .el-popper .popper__arrow {

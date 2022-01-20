@@ -8,7 +8,7 @@
 	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/activity-market.css" th:href="@{/pc/assets/css/activity-market.css}">
 	<link rel="stylesheet" href="/static/assets/lib/mescroll/mescroll.css" th:href="@{/assets/lib/mescroll/mescroll.css}">
-	<style type="text/css">
+	<style>
         [v-cloak] {
             display: none;
         }
@@ -123,11 +123,6 @@
 			},
 			mounted:function() {
 				var $this = this;
-				//图片高度根据尺寸等比例变化
-				$this.picHeight();
-				$(window).resize(function () {
-					$this.picHeight();
-				});
 				$this.resetQueryParams();
 				$this.initMescroll();
 			},
@@ -236,14 +231,6 @@
 					var $this = this;
 					var url = ctx + "/my";
 					window.open(url);
-				},
-				picHeight:function (){
-					var widthPic = $(".card-list ul li:first-child").find(".js-crop-img").width();
-					var heightPic = 14/27*widthPic;
-					$(".card-list ul li").each(function () {
-						$(this).find(".js-crop-img").css('height', heightPic + 'px');
-						$(this).find(".img-box").css('height', heightPic + 'px');
-					});
 				},
 				initMescroll: function () {
 					var $this = this;

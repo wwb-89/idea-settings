@@ -3,7 +3,6 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.ParserConfig;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.stat.MhViewNumDailyStatDTO;
@@ -12,6 +11,7 @@ import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -88,6 +88,7 @@ public class MhApiService {
 			JSONObject data = jsonObject.getJSONObject("data");
 			return MhCloneResultDTO.builder()
 					.pageId(data.getInteger("pageId"))
+					.websiteId(data.getInteger("websiteId"))
 					.previewUrl(data.getString("preview"))
 					.editUrl(data.getString("edit"))
 					.build();
@@ -179,7 +180,6 @@ public class MhApiService {
 		if (Objects.equals(code, 1)) {
 			JSONArray data = jsonObject.getJSONArray("data");
 			if (data != null && jsonObject.size() > 0) {
-				ParserConfig config = new ParserConfig();
 				dailyStats = JSON.parseArray(jsonObject.getString("data"), MhViewNumDailyStatDTO.class);
 			}
 			return dailyStats;
@@ -193,19 +193,21 @@ public class MhApiService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-12-21 16:38:30
-	 * @param formUserId
-	 * @param formId
-	 * @param url
+	 * @param formUserId 表单记录id
+	 * @param formId 表单id
+	 * @param url 请求的源url
+	 * @param loginUrl 登录的url
 	 * @return java.lang.String
 	*/
-	public String getEvaluationUrl(Integer formUserId, Integer formId, String url) {
+	public String getEvaluationUrl(Integer formUserId, Integer formId, String url, String loginUrl) {
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		params.add("shopId", 0);
 		params.add("goodsId", formId);
 		params.add("goodsRowId", formUserId);
 		params.add("resourceType", 6);
 		params.add("url", url);
-		params.add("loginUrl", UrlUtils.extractDomain(url) + "/login");
+		loginUrl = Optional.ofNullable(loginUrl).filter(StringUtils::isNotBlank).orElse(UrlUtils.extractDomain(url) + "/login");
+		params.add("loginUrl", loginUrl);
 		String result = restTemplate.postForObject(GET_EVALUATION_URL, params, String.class);
 		return result;
 	}

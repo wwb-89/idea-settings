@@ -30,7 +30,7 @@ body {
 }
 .container {
     border-radius: 8px;
-    min-height: 860px;
+    /*min-height: 860px;*/
     height: 100%;
 }
 

@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.activity.stat;
 import cn.hutool.http.HtmlUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.ActivityCollectionDTO;
+import com.chaoxing.activity.dto.activity.ActivityRankDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -25,10 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -305,6 +303,19 @@ public class ActivityStatSummaryQueryService {
     */
     public Integer countWfwFormMarketActivitySignedUpNum(Integer formId) {
         return activityStatSummaryMapper.countWfwFormMarketActivitySignedUpNum(formId);
+    }
+
+    /**活动市场下活动的pv排行
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-19 16:35:50
+     * @param marketId
+     * @param limit
+     * @return java.util.List<com.chaoxing.activity.dto.activity.ActivityRankDTO>
+    */
+    public List<ActivityRankDTO> marketActivityPvRank(Integer marketId, Integer limit) {
+        limit = Optional.ofNullable(limit).orElse(10);
+        return activityStatSummaryMapper.marketActivityPvRank(marketId, limit);
     }
 
 }

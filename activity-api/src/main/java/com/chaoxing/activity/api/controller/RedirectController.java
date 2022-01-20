@@ -16,7 +16,6 @@ import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
-import com.chaoxing.activity.util.constant.HttpRequestHeaderConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
@@ -325,27 +324,6 @@ public class RedirectController {
 
         }
         return marketId;
-    }
-
-    /**重定向到评价url
-     * @Description 
-     * @author wwb
-     * @Date 2021-12-21 16:40:04
-     * @param request
-     * @param websiteId
-     * @return java.lang.String
-    */
-    @RequestMapping("evaluation")
-    public String redirectToEvaluationUrl(HttpServletRequest request, @RequestParam Integer websiteId) {
-        String redirectUrl = "";
-        String url = request.getHeader(HttpRequestHeaderConstant.REFERER);
-        Activity activity = activityQueryService.getByWebsiteId(websiteId);
-        String origin = Optional.ofNullable(activity).map(Activity::getOrigin).orElse(null);
-        Integer originFormUserId = Optional.ofNullable(activity).map(Activity::getOriginFormUserId).orElse(null);
-        if (StringUtils.isNotBlank(origin) && originFormUserId != null) {
-            redirectUrl = mhApiService.getEvaluationUrl(originFormUserId, Integer.parseInt(origin), url);
-        }
-        return "redirect:" + redirectUrl;
     }
 
 }

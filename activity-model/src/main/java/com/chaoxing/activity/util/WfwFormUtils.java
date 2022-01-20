@@ -12,6 +12,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -334,11 +335,14 @@ public class WfwFormUtils {
 		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
 		if (jsonValue != null) {
 			String address = jsonValue.getString("address");
+			BigDecimal lng = jsonValue.getBigDecimal("lng");
+			BigDecimal lat = jsonValue.getBigDecimal("lat");
+			CoordinateUtils.Coordinate coordinate = CoordinateUtils.gcj02tobd09(lng.doubleValue(), lat.doubleValue());
 			if (StringUtils.isNotBlank(address)) {
 				addressDto = AddressDTO.builder()
 						.address(address)
-						.lat(jsonValue.getBigDecimal("lat"))
-						.lng(jsonValue.getBigDecimal("lng"))
+						.lng(coordinate.getLng())
+						.lat(coordinate.getLat())
 						.build();
 			}
 		}

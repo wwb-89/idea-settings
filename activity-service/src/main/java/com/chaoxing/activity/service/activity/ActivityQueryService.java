@@ -5,16 +5,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.ButtonDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.*;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.query.ActivityReleasePlatformActivityQueryDTO;
 import com.chaoxing.activity.dto.activity.query.result.ActivityReleasePlatformActivityQueryResultDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUpAbleSignDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
-import com.chaoxing.activity.dto.manager.sign.UserSignUpStatusStatDTO;
+import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
@@ -23,6 +22,7 @@ import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
+import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivityRatingDetailMapper;
@@ -47,12 +47,11 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tag.TagQueryService;
+import com.chaoxing.activity.service.util.MhDataBuildUtil;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.constant.CommonConstant;
-import com.chaoxing.activity.util.constant.DateFormatConstant;
-import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
-import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.constant.*;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
+import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -616,7 +615,98 @@ public class ActivityQueryService {
 			pageSignedUpActivities(page, signedUpRecords, flag, uid, loadWaitAudit);
 		}
 		packageActivitySignedStat(page);
+		packageActivityButtons(uid, page);
 		return page;
+	}
+
+	private void packageActivityButtons(Integer uid, Page<ActivitySignedUpDTO> page) {
+		if (CollectionUtils.isEmpty(page.getRecords())) {
+			return;
+		}
+		for (ActivitySignedUpDTO activity : page.getRecords()) {
+			List<ButtonDTO> buttons = Lists.newArrayList();
+			Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(activity.getStatus());
+			boolean activityEnded = Objects.equals(Activity.StatusEnum.ENDED, statusEnum);
+			if (!activityEnded && activity.getUserSignUpStatus() == 1) {
+				Integer activityId = activity.getId();
+				Integer activityCreateFid = activity.getCreateFid();
+				UserSignParticipationStatDTO userSignParticipationStat = signApiService.userParticipationStat(activity.getSignId(), uid);
+				// 如果开启了学生报名则需要报名（报名任意一个报名）才能看见"进入会场"
+				if (activity.isDualSelect()) {
+					// 双选会
+					List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
+					boolean openedStudengSignUp = false;
+					if (CollectionUtils.isNotEmpty(signUps)) {
+						for (SignUpCreateParamDTO signUp : signUps) {
+							if (!Objects.equals(SignUpCreateParamDTO.CustomSignUpTypeEnum.DUAL_SELECT_COMPANY.getValue(), signUp.getCustomSignUpType())) {
+								openedStudengSignUp = true;
+								break;
+							}
+						}
+					}
+					if (openedStudengSignUp) {
+						// 必须要报名
+						if (userSignParticipationStat.getSignedUp()) {
+							buttons.add(ButtonDTO.build("进入会场", UrlConstant.getDualSelectIndexUrl(activityId, activityCreateFid), ButtonDTO.BtnSequenceEnum.SIGN_IN));
+						}
+					} else {
+						buttons.add(ButtonDTO.build("进入会场", UrlConstant.getDualSelectIndexUrl(activityId, activityCreateFid), ButtonDTO.BtnSequenceEnum.SIGN_IN));
+					}
+				}
+				if (CollectionUtils.isNotEmpty(userSignParticipationStat.getSignInIds())) {
+					buttons.add(ButtonDTO.build("去签到", userSignParticipationStat.getSignInUrl(), ButtonDTO.BtnSequenceEnum.SIGN_IN));
+				}
+				if (CollectionUtils.isNotEmpty(userSignParticipationStat.getFormCollectionIds())) {
+					buttons.add(ButtonDTO.build("去填写", userSignParticipationStat.getFormCollectionUrl(), ButtonDTO.BtnSequenceEnum.FORM_COLLECTION));
+				}
+				Boolean openWork = Optional.ofNullable(activity.getOpenWork()).orElse(false);
+				Integer workId = activity.getWorkId();
+				if (openWork && workId != null) {
+					List<WorkBtnDTO> workBtnDtos = workApiService.listBtns(workId, uid, activityCreateFid);
+					for (WorkBtnDTO workBtnDto : workBtnDtos) {
+						Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
+						if (enable) {
+							buttons.add(ButtonDTO.build(workBtnDto.getButtonName(), workBtnDto.getLinkUrl(), ButtonDTO.BtnSequenceEnum.WORK));
+						}
+					}
+				}
+				// 讨论小组
+				Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
+				String groupBbsid = activity.getGroupBbsid();
+				if (openGroup && StringUtils.isNotBlank(groupBbsid)) {
+					buttons.add(ButtonDTO.build("讨论小组", UrlConstant.getGroupUrl(groupBbsid), ButtonDTO.BtnSequenceEnum.GROUP));
+				}
+				boolean isManager = activityValidationService.isManageAble(activity, uid);
+				// 是不是管理员
+				if (isManager) {
+					buttons.add(ButtonDTO.build("管理", activity.getManageUrl(), ButtonDTO.BtnSequenceEnum.MANAGE));
+				}
+				// 评价
+				Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(Boolean.FALSE);
+				if (openRating) {
+					buttons.add(ButtonDTO.build("评价", activity.getRatingUrl(), ButtonDTO.BtnSequenceEnum.RATING));
+
+				}
+				buttons.add(ButtonDTO.build("报名信息", userSignParticipationStat.getSignUpResultUrl(), ButtonDTO.BtnSequenceEnum.SIGN_UP_INFO));
+
+				// 阅读测评
+				Boolean openReading = Optional.ofNullable(activity.getOpenReading()).orElse(false);
+				if (openReading && activity.getReadingId() != null) {
+					buttons.add(ButtonDTO.build("阅读测评", UrlConstant.getReadingTestUrl(activity.getReadingId(), activity.getReadingModuleId()), ButtonDTO.BtnSequenceEnum.READING_TEST));
+				}
+				// 班级互动
+				Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
+				if (openClazzInteraction) {
+					String homePageURL= DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activityId;
+					buttons.add(ButtonDTO.build("进入主页", homePageURL, ButtonDTO.BtnSequenceEnum.ACTIVITY));
+				}
+				// 查询菜单配置前端按钮
+
+				// 排序
+				buttons.sort(Comparator.comparingInt(ButtonDTO::getSequence));
+			}
+			activity.setButtons(buttons);
+		}
 	}
 
 	/**封装报名的活动
@@ -747,17 +837,6 @@ public class ActivityQueryService {
 		page = activityMapper.pageCollectedActivityId(page, loginUser.getUid(), sw, marketId);
 		packageActivitySignedStat(page);
 		return page;
-	}
-
-	/**阅读测评的地址
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-12-28 15:18:08
-	 * @param activity
-	 * @return java.lang.String
-	*/
-	public String getReadingTestUrl(Activity activity) {
-		return String.format(UrlConstant.READING_TEST_URL, activity.getReadingId(), activity.getReadingModuleId());
 	}
 
 	/**查询所有的活动

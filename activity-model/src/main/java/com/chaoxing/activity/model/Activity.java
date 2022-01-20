@@ -542,4 +542,16 @@ public class Activity {
         return String.format(UrlConstant.ACTIVITY_RATING_URL, getId());
     }
 
+    /**是不是双选会活动
+     * @Description
+     * @author wwb
+     * @Date 2021-04-02 16:44:33
+     * @param
+     * @return boolean
+     */
+    public boolean isDualSelect() {
+        Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(getActivityFlag());
+        return Objects.equals(activityFlag, Activity.ActivityFlagEnum.DUAL_SELECT);
+    }
+
 }

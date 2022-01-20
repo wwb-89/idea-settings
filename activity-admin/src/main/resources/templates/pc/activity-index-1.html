@@ -53,11 +53,7 @@
             <iframe id="content" src=""></iframe>
         </div>
         <!--正常二维码-->
-        <el-dialog
-                :visible.sync="activityHomeQrcodeShow"
-                    custom-class="qrCode-dialog"
-                width="428px"
-                center>
+        <el-dialog :visible.sync="activityHomeQrcodeShow" custom-class="qrCode-dialog" width="428px" center>
             <div class="inner">
                 <div id="qrCode"></div>
                 <p class="tips">扫码访问</p>
@@ -73,11 +69,6 @@
     <script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.js" th:src="@{/pc/assets/lib/jqthumb.js}"></script>
     <script th:inline="javascript">
-        var signWebSimpleDomain = [[${signWebDomain}]];
-        signWebSimpleDomain = signWebSimpleDomain.replace(/http(|s):\/\//, "");
-        var xiamenTrainingPlatformDomain = [[${xiamenTrainingPlatformDomain}]];
-        xiamenTrainingPlatformDomain = xiamenTrainingPlatformDomain.replace(/http(|s):\/\//, "")
-
         var vm = new Vue({
             el: '#activity-vue',
             data: function () {
@@ -97,49 +88,49 @@
                             name: [[${signActivityManageIndex.signUpKeyword == null || signActivityManageIndex.signUpKeyword == '' ? '报名' : signActivityManageIndex.signUpKeyword}]] + "名单",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-project-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-project-active.png",
-                            url: "//" + signWebSimpleDomain + "/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]],
+                            url: [[${signWebDomain}]] + "/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]],
                             selected: false
                         },
                         sign_in: {
                             name: "签到管理",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-sign-in-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-sign-in-active.png",
-                            url: "//" + signWebSimpleDomain + "/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]],
+                            url: [[${signWebDomain}]] + "/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]],
                             selected: false
                         },
                         form_collection: {
                             name: "表单采集",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-active.png",
-                            url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
+                            url: [[${signWebDomain}]] + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
                             selected: false
                         },
                         task: {
                             name: "任务",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-active.png",
-                            url: "//" + xiamenTrainingPlatformDomain + "/activity/task?activityId=" + [[${activity.id}]],
+                            url: [[${xiamenTrainingPlatformDomain}]]+ "/activity/task?activityId=" + [[${activity.id}]],
                             selected: false
                         },
                         discuss: {
                             name: "讨论",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-active.png",
-                            url: "//" + xiamenTrainingPlatformDomain + "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                            url: [[${xiamenTrainingPlatformDomain}]]+ "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
                             selected: false
                         },
                         homework: {
                             name: "作业",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-active.png",
-                            url: "//" + xiamenTrainingPlatformDomain + "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                            url: [[${xiamenTrainingPlatformDomain}]]+ "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
                             selected: false
                         },
                         review_management: {
                             name: "评审",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-active.png",
-                            url: "//" + xiamenTrainingPlatformDomain + "/review/list?activityId=" + [[${activity.id}]],
+                            url: [[${xiamenTrainingPlatformDomain}]]+ "/review/list?activityId=" + [[${activity.id}]],
                             selected: false
                         },
                         results_manage: {
@@ -162,7 +153,7 @@
                             name: "发通知",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-volume-notice-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-volume-notice-active.png",
-                            url: "//" + signWebSimpleDomain + "/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]],
+                            url: [[${signWebDomain}]] + "/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]],
                             selected: false
                         },
                         // 统计
@@ -202,8 +193,8 @@
             },
             mounted: function () {
                 var $this = this;
+                $this.initHeight();
                 $this.$nextTick(function (){
-                    $this.resizePageHeight();
                     // 裁剪封面
                     cropImgFun('.title-box');
                     cropImgFun('.title-pop');
@@ -213,14 +204,14 @@
                         width: 62,
                         height: 62
                     });
-                    window.onresize = function () {
-                        $this.resizePageHeight();
-                    };
                     $this.selectMenu(0);
                 });
 
             },
             methods: {
+                initHeight: function () {
+                    $("#activity-vue").height($(window).height() - 40);
+                },
                 handleActivityMenus: function () {
                     var $this = this;
                     // 初始化
@@ -316,33 +307,6 @@
                         return;
                     }
                     $("#content")[0].src = url;
-                    $("#content")[0].onload = function() {
-                        $this.resizePageHeight();
-                    };
-                },
-                resizePageHeight: function () {
-                    // container的最小高度
-                    var containerMinHeight = $(".container").css("min-height");
-                    containerMinHeight = containerMinHeight.replace(/px/gi, "");
-                    var containerHeight = $(".container").height();
-                    // 窗口的高度
-                    var windowHeight = $(window).height() - 40;
-                    // iframe的高度
-                    var iframeHeight = $("#content").height();
-                    // iframe中内容的真实高度
-                    var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height() + 24;
-                    // container应该取最大高度
-                    var maxHeight = containerMinHeight > containerHeight ? containerMinHeight : containerHeight;
-                    maxHeight = maxHeight > windowHeight ? maxHeight : windowHeight;
-                    maxHeight = maxHeight > iframeHeight ? maxHeight : iframeHeight;
-                    maxHeight = maxHeight > iframeContentHeight ? maxHeight : iframeContentHeight;
-                    // 如果窗口高度能满足最大高度就是用窗口高度
-                    if (windowHeight > iframeContentHeight) {
-                        maxHeight = windowHeight;
-                    }
-                    $(".container").height(maxHeight);
-                    $("#content").height(maxHeight);
-                    $("#content").contents().find("body").height(maxHeight);
                 },
                 showActivityHomeQrcode: function () {
                     var $this = this;

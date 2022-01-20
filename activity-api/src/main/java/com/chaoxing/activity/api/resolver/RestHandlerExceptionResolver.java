@@ -3,6 +3,7 @@ package com.chaoxing.activity.api.resolver;
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.util.constant.ExceptionConstant;
+import com.chaoxing.activity.util.constant.HttpRequestHeaderConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -31,7 +32,7 @@ public class RestHandlerExceptionResolver implements HandlerExceptionResolver {
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-		log.error("请求url:{}, 请求参数:{}", request.getRequestURI(), request.getQueryString());
+		log.error("请求url:{}, 请求参数:{}, 来源:{}", request.getRequestURI(), request.getQueryString(), request.getHeader(HttpRequestHeaderConstant.REFERER));
 		log.error(ExceptionUtils.getStackTrace(ex));
 		// 是Rest请求 并且 接受该异常类型
 		if(isRestRequest(handler) && isAcceptException(ex)){

@@ -25,7 +25,8 @@ public class MhApiServiceTests {
         Integer formUserId = 1;
         Integer formId = 1;
         String url = "https://www.baidu.com";
-        String evaluationUrl = mhApiService.getEvaluationUrl(formUserId, formId, url);
+        String loginUrl = "https://www.baidu.com/login";
+        String evaluationUrl = mhApiService.getEvaluationUrl(formUserId, formId, url, loginUrl);
         System.out.println(evaluationUrl);
     }
 

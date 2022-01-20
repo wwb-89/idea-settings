@@ -21,6 +21,8 @@ public class MhCloneResultDTO {
 
 	/** 网页id */
 	private Integer pageId;
+	/** 网站id */
+	private Integer websiteId;
 	/** 预览url */
 	private String previewUrl;
 	/** 编辑url */

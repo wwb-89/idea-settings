@@ -42,8 +42,6 @@ public class ActivityChangeDTO {
 	private Boolean creditChanged;
 	/** 地点改变 */
 	private Boolean addressChanged;
-	/** 网页模版改变 */
-	private Boolean webTemplateChanged;
 
 	private ActivityChangeDTO() {
 
@@ -63,7 +61,6 @@ public class ActivityChangeDTO {
 		activityChange.setPeriodChanged(periodChanged(oldActivity, newActivity));
 		activityChange.setCreditChanged(creditChanged(oldActivity, newActivity));
 		activityChange.setAddressChanged(addressChanged(oldActivity, newActivity));
-		activityChange.setWebTemplateChanged(webTemplateChanged(oldActivity, newActivity));
 		return activityChange;
 	}
 
@@ -132,16 +129,7 @@ public class ActivityChangeDTO {
 		}
 		String newAddress = Optional.ofNullable(newActivity.getAddress()).orElse("") + Optional.ofNullable(newActivity.getDetailAddress()).orElse("");
 		String oldAddress = Optional.ofNullable(oldActivity.getAddress()).orElse("") + Optional.ofNullable(oldActivity.getDetailAddress()).orElse("");
-		return Objects.equals(newAddress, oldAddress);
-	}
-
-	private static boolean webTemplateChanged(Activity oldActivity, Activity newActivity) {
-		if (oldActivity == null) {
-			return true;
-		}
-		Integer newPageId = newActivity.getPageId();
-		Integer oldPageId = oldActivity.getPageId();
-		return !Objects.equals(newPageId, oldPageId);
+		return !Objects.equals(newAddress, oldAddress);
 	}
 
 }

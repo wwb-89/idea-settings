@@ -580,17 +580,19 @@ public class ActivityMhAppController {
 	 * @Date 2022-01-05 15:15:41
 	 * @param request
 	 * @param websiteId
+	 * @param url
+	 * @param loginUrl
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("evaluation/url")
-	public RestRespDTO evaluation(HttpServletRequest request, @RequestParam Integer websiteId) {
+	public RestRespDTO evaluation(HttpServletRequest request, @RequestParam Integer websiteId, String url, String loginUrl) {
 		String redirectUrl = "";
-		String url = request.getHeader(HttpRequestHeaderConstant.REFERER);
+		url = Optional.ofNullable(url).filter(StringUtils::isNotBlank).orElse(request.getHeader(HttpRequestHeaderConstant.REFERER));
 		Activity activity = activityQueryService.getByWebsiteId(websiteId);
 		String origin = Optional.ofNullable(activity).map(Activity::getOrigin).orElse(null);
 		Integer originFormUserId = Optional.ofNullable(activity).map(Activity::getOriginFormUserId).orElse(null);
 		if (StringUtils.isNotBlank(origin) && originFormUserId != null) {
-			redirectUrl = mhApiService.getEvaluationUrl(originFormUserId, Integer.parseInt(origin), url);
+			redirectUrl = mhApiService.getEvaluationUrl(originFormUserId, Integer.parseInt(origin), url, loginUrl);
 		}
 		return RestRespDTO.success(redirectUrl);
 	}

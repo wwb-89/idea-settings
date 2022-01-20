@@ -50,4 +50,28 @@ public class UrlConstant {
 		return DomainConstant.API + "/redirect/group/" + bbsid;
 	}
 
+	/**获取双选会主页地址
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-02 16:48:20
+	 * @param activityId
+	 * @param fid
+	 * @return java.lang.String
+	 */
+	public static String getDualSelectIndexUrl(Integer activityId, Integer fid) {
+		return String.format(DUAL_SELECT_INDEX_URL, activityId, fid);
+	}
+
+	/**阅读测评的地址
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-12-28 15:18:08
+	 * @param readingId
+	 * @param readingModuleId
+	 * @return java.lang.String
+	 */
+	public static String getReadingTestUrl(Integer readingId, Integer readingModuleId) {
+		return String.format(UrlConstant.READING_TEST_URL, readingId, readingModuleId);
+	}
+
 }

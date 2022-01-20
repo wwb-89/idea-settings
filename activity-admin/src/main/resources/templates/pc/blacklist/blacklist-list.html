@@ -22,7 +22,7 @@
 </head>
 <body>
 <div class="tab-page" id="vm" v-cloak>
-	<div class="page-header">{{market.name}}黑名单</div>
+	<div class="page-header" v-if="!embedded">{{market.name}}黑名单</div>
 	<div style="display: block">
 		<!-- 选项卡内容 -->
 		<div class="tab-content-box">
@@ -122,7 +122,8 @@
 				selectedNum: 0,
 				bodyHeight: $(window).height(),
 				tbodyHeight: 0,
-				operateUid: 0
+				operateUid: 0,
+				embedded: activityApp.isEmbedded()
 			},
 			mounted: function () {
 				var $this = this;
