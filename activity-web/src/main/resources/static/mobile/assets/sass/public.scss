@@ -209,6 +209,7 @@ a:visited {
   }
 }
 
+
 .msgDialog.layui-layer-msg {
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
@@ -304,6 +305,9 @@ input{
     height: 0.9375rem;
   }
 }
+.border-top {
+  border-top: 1px solid #E9E9E9;
+}
 .border-bottom {
   border-bottom: 1px solid #E9E9E9;
 }
@@ -311,32 +315,43 @@ input{
   border: 1px solid #E9E9E9;
 }
 @media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .border-top { border-top: 0.5px solid #E9E9E9; }
   .border-bottom { border-bottom: 0.5px solid #E9E9E9; }
-  .border {
-      border: 0.5px solid #E9E9E9;
-    }
-    .textSkin {
-      &.layui-layer{
-        .layui-layer-btn{
-          a {
-            border: 0.5px solid #E9E9E9;
-          }
-        }
-      }
-    }
+  .border { border: 0.5px solid #E9E9E9; }
+  .textSkin.layui-layer .layui-layer-btn a {
+    border: 0.5px solid #E9E9E9;
+  }
 }
 @media screen and (-webkit-min-device-pixel-ratio: 3) {
+  .border-top { border-top: 0.333333px solid #E9E9E9; }
   .border-bottom { border-bottom: 0.333333px solid #E9E9E9; }
   .border { border: 0.333333px solid #E9E9E9; }
-  .textSkin {
-    &.layui-layer{
-      .layui-layer-btn{
-        a {
-          border: 0.333333px solid #E9E9E9;
-        }
-      }
-    }
+  .textSkin.layui-layer .layui-layer-btn a {
+    border: 0.333333px solid #E9E9E9;
   }
+}
+.btn-normal {
+  border: 1px solid #DDDDDD;
+  background: #ffffff;
+  box-sizing: border-box;
+  border-radius: 1.25rem;
+  height: 1.75rem;
+  color: #666666;
+  font-size: .8125rem;
+  padding: 0 .75rem;
+  box-sizing: border-box;
+}
+.btn-second {
+  border: 1px solid #82C3FF;
+  background: #ffffff;
+  box-sizing: border-box;
+  border-radius: 1.25rem;
+  height: 1.75rem;
+  color: #0084FF;
+  font-weight: 500;
+  font-size: .8125rem;
+  padding: 0 .75rem;
+  box-sizing: border-box;
 }
 
 // 弹窗样式
