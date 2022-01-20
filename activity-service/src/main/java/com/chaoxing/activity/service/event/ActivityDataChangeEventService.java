@@ -82,8 +82,6 @@ public class ActivityDataChangeEventService {
 		activityAddressTimeChangeHandle(activityChange);
 		// 活动名称、时间改变处理
 		activityNameTimeChangeHandle(activityChange);
-		// 门户模版改变
-		activityWebTemplateIdChangeHandle(activityChange);
 		// 活动改变处理
 		ActivityChangeEventOrigin activityChangeEventOrigin = ActivityChangeEventOrigin.builder()
 				.activityId(activity.getId())
@@ -258,23 +256,6 @@ public class ActivityDataChangeEventService {
 					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
 					.build();
 			activityNameTimeChangeEventQueue.push(eventOrigin);
-		}
-	}
-
-	/**处理门户模版的改变
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-11-08 20:55:34
-	 * @param activityChange
-	 * @return void
-	*/
-	private void activityWebTemplateIdChangeHandle(ActivityChangeDTO activityChange) {
-		if (activityChange.getWebTemplateChanged()) {
-			ActivityWebTemplateChangeEventOrigin eventOrigin = ActivityWebTemplateChangeEventOrigin.builder()
-					.activityId(activityChange.getNewActivity().getId())
-					.timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
-					.build();
-			activityWebTemplateChangeEventQueue.push(eventOrigin);
 		}
 	}
 

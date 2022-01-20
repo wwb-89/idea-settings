@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OperateUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityUpdateParamDTO;
@@ -736,7 +735,7 @@ public class ActivityHandleService {
 				.set(Activity::getPageId, mhCloneResult.getPageId())
 				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
-				.set(Activity::getWebsiteId, null)
+				.set(Activity::getWebsiteId, mhCloneResult.getWebsiteId())
 		);
 	}
 
@@ -755,9 +754,6 @@ public class ActivityHandleService {
 		// 克隆
 		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
 		MhCloneResultDTO mhCloneResult = mhApiService.cloneTemplate(mhCloneParam);
-		Integer pageId = mhCloneResult.getPageId();
-		// 获取websiteId
-		Integer websiteId = mhApiService.getWebsiteIdByPageId(pageId);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
 				.eq(Activity::getId, activity.getId())
@@ -765,7 +761,7 @@ public class ActivityHandleService {
 				.set(Activity::getPageId, mhCloneResult.getPageId())
 				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
-				.set(Activity::getWebsiteId, websiteId)
+				.set(Activity::getWebsiteId, mhCloneResult.getWebsiteId())
 		);
 	}
 

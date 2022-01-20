@@ -88,6 +88,7 @@ public class MhApiService {
 			JSONObject data = jsonObject.getJSONObject("data");
 			return MhCloneResultDTO.builder()
 					.pageId(data.getInteger("pageId"))
+					.websiteId(data.getInteger("websiteId"))
 					.previewUrl(data.getString("preview"))
 					.editUrl(data.getString("edit"))
 					.build();
