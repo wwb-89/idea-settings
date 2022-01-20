@@ -164,6 +164,7 @@ body {
 .activity-list .card-list ul li .inner {
   position: relative;
   padding-left: 8.25rem;
+  min-height: 5.5rem;
 }
 
 .activity-list .card-list ul li .img-box {
