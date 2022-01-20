@@ -1,8 +1,6 @@
 package com.chaoxing.activity.service.activity.menu;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.mapper.ActivityMenuConfigMapper;
 import com.chaoxing.activity.model.*;
@@ -16,9 +14,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -77,6 +73,7 @@ public class ActivityMenuQueryService {
                 .enable(Boolean.TRUE)
                 .templateComponentId(v.getTemplateComponentId())
                 .sequence(v.getSequence())
+                .type(v.getType())
                 .build()).collect(Collectors.toList());
     }
 
@@ -166,12 +163,23 @@ public class ActivityMenuQueryService {
      * @param activityId
      * @return 
      */
-    public List<ActivityMenuConfig> listActivityEnableMenus(Integer activityId) {
-        return listByActivityId(activityId).stream().filter(v -> Objects.equals(v.getEnable(), Boolean.TRUE)).collect(Collectors.toList());
+    public List<ActivityMenuConfig> listActivityEnableMenuConfigs(Integer activityId) {
+        return activityMenuConfigMapper.selectList(new LambdaQueryWrapper<ActivityMenuConfig>()
+                .eq(ActivityMenuConfig::getActivityId, activityId)
+                .eq(ActivityMenuConfig::getEnable, true)
+                .orderByAsc(ActivityMenuConfig::getSequence));
     }
 
-    public List<ActivityMenuDTO> listActivityEnableMenusDTO(Integer activityId) {
-        return convertMenu2DTO(activityId, listActivityEnableMenus(activityId));
+    /**
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-01-20 11:32:05
+     * @param activityId
+     * @return 
+     */
+    public List<ActivityMenuDTO> listActivityEnableBackendMenus(Integer activityId) {
+        List<ActivityMenuDTO> result = convertMenu2DTO(activityId, listActivityEnableMenuConfigs(activityId));
+        return result.stream().filter(v -> Objects.equals(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue(), v.getType())).collect(Collectors.toList());
     }
 
     /**当前用户活动管理主页菜单列表查询，仅查询启用的
@@ -187,7 +195,7 @@ public class ActivityMenuQueryService {
         Integer activityId = activity.getId();
 
         // 查询活动配置启用的所有菜单
-        List<ActivityMenuConfig> activityMenus = listActivityEnableMenus(activityId);
+        List<ActivityMenuConfig> activityMenus = listActivityEnableMenuConfigs(activityId);
         if (activityManagerValidationService.isManager(activityId, uid) && !creator) {
             ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
             if (activityManager != null && StringUtils.isNotBlank(activityManager.getMenu())) {

@@ -54,11 +54,14 @@ public class ActivityManager {
     * @return com.chaoxing.activity.model.ActivityManager
     */
     public static ActivityManager buildCreator(Activity activity, List<ActivityMenuConfig> activityMenus) {
+        List<String> backendMenus = activityMenus.stream()
+                .filter(v -> Objects.equals(v.getEnable(), Boolean.TRUE) && Objects.equals(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue(), v.getType()))
+                .map(ActivityMenuConfig::getMenu).collect(Collectors.toList());
         return ActivityManager.builder()
                 .activityId(activity.getId())
                 .uid(activity.getCreateUid())
                 .userName(activity.getCreateUserName())
-                .menu(StringUtils.join(activityMenus.stream().filter(v -> Objects.equals(v.getEnable(), Boolean.TRUE)).map(ActivityMenuConfig::getMenu).collect(Collectors.toList()), ","))
+                .menu(StringUtils.join(backendMenus, ","))
                 .build();
     }
 

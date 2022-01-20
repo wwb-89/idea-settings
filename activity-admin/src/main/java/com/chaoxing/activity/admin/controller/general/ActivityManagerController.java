@@ -63,7 +63,7 @@ public class ActivityManagerController {
 		// 查询以选择的uid列表
 		List<Integer> managerUids = activityManagerService.listUid(activityId);
 		// todo 管理员页面菜单需要替换
-		model.addAttribute("menus", activityMenuQueryService.listActivityEnableMenusDTO(activityId));
+		model.addAttribute("menus", activityMenuQueryService.listActivityEnableBackendMenus(activityId));
 		model.addAttribute("managerUids", managerUids);
 		model.addAttribute("photoDomain", DomainConstant.PHOTO);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
@@ -92,7 +92,7 @@ public class ActivityManagerController {
 		ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
 		model.addAttribute("activityId", activityId);
 		model.addAttribute("manager", activityManager);
-		model.addAttribute("menus", activityMenuQueryService.listActivityEnableMenusDTO(activityId));
+		model.addAttribute("menus", activityMenuQueryService.listActivityEnableBackendMenus(activityId));
 		return "mobile/activity-manager-menu";
 	}
 

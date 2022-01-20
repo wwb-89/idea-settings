@@ -44,6 +44,9 @@ public class ActivityMenuConfig {
     /** 排序 */
     private Integer sequence;
 
+    @TableField(exist = false)
+    private String type;
+
     @Getter
     public enum UrlTypeEnum {
 

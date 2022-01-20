@@ -32,20 +32,20 @@
                 </div>
             </div>
             <div class="menu">
-                <div :class="{ 'menu-item': true, active: menu.selected }" v-for="(menu, index) in menus" :key="'activity-menu-' + index" v-if="index < 9">
+                <div :class="{ 'menu-item': true, active: menu.selected }" v-for="(menu, index) in menus" :key="'activity-menu-' + index" v-if="index < limitNum">
                     <a href="#" @click="selectMenu(index)">{{menu.name}}</a>
                 </div>
             </div>
             <!--更多-->
-            <el-dropdown class="right-more-drop" @command="handleCommand" v-if="menus.length > 9">
+            <el-dropdown class="right-more-drop" @command="handleCommand" v-if="menus.length > limitNum">
                   <span class="el-dropdown-link">
                     <i class="el-icon-more"></i>
                   </span>
                 <el-dropdown-menu slot="dropdown" class="header-more-drop" >
                     <el-dropdown-item v-for="(menu, index) in menus"
                                       :key="'activity-menu-' + index"
-                                      v-if="index >= 8"
-                                      :command="menu.code" :class="dropActive == menu.code ? 'drop-active' : ''">
+                                      v-if="index >= limitNum"
+                                      :command="index" :class="menu.selected ? 'drop-active' : ''">
                         {{menu.name}}
                     </el-dropdown-item>
                 </el-dropdown-menu>
@@ -86,6 +86,7 @@
             el: '#vue',
             data: function () {
                 return {
+                    limitNum: 9,
                     mainDomain: [[${mainDomain}]],
                     signWebDomain: [[${signWebDomain}]],
                     cloudDomain: [[${cloudDomain}]],
@@ -375,6 +376,10 @@
                         window.open(home);
                     }
                 },
+                handleCommand(index) {
+                    var $this = this;
+                    $this.selectMenu(index);
+                }
             }
         });
 

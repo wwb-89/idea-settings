@@ -17,6 +17,10 @@
         [v-cloak] {
             display: none;
         }
+        .el-dialog__body {
+            height: 400px;
+            overflow: auto;
+        }
     </style>
 </head>
 <body>
@@ -66,8 +70,7 @@
     </div>
 
     <!-- 权限设置弹出框 -->
-    <el-dialog class="manageStatusDialog" title="权限设置" :visible.sync="permissionDialogShow" width="422px"
-               :before-close="handleClose" style="background: rgba(255, 255, 255, 0.6)">
+    <el-dialog class="manageStatusDialog" title="权限设置" :visible.sync="permissionDialogShow" width="422px" :before-close="handleClose" style="background: rgba(255, 255, 255, 0.6)">
         <div class="manage-name">
             <span>{{operateManagerName}}</span> 拥有以下模块的管理权限
         </div>
@@ -104,7 +107,7 @@
                 activity: [[${activity}]],
                 activityId: [[${activity.id}]],
                 managerUids: [[${managerUids}]],
-                menus: [[${menus}]],
+                menus: [],
                 // 管理员
                 managers: [],
                 managerQueryParams: {
@@ -155,10 +158,17 @@
             methods: {
                 initMenu: function (existMenus) {
                     var $this = this;
+                    $this.menus = [];
+                    var menus = [[${menus}]] || [];
+                    var interactionMenus = ['task', 'discuss', 'homework', 'review_management']
                     existMenus = existMenus || "";
-                    $($this.menus).each(function () {
+                    $(menus).each(function () {
+                        if (!$this.activity.openClazzInteraction && interactionMenus.includes(this.code)) {
+                            return true;
+                        }
                         // 临时active属性初始化为false
                         $this.$set(this, 'active', existMenus.indexOf(this.code) != -1)
+                        $this.menus.push(this);
                     });
                 },
                 loadManagers: function () {

@@ -107,7 +107,7 @@ public class ActivityManagerService {
                 .in(ActivityManager::getUid, uids));
         List<Integer> existUids = existActivityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList());
         List<ActivityManager> addActivityManagers = Lists.newArrayList();
-        List<String> activityMenus = activityMenuQueryService.listActivityEnableMenus(activityId).stream()
+        List<String> activityMenus = activityMenuQueryService.listActivityEnableMenuConfigs(activityId).stream()
                 .map(ActivityMenuConfig::getMenu)
                 .filter(value -> !Objects.equals(value, ActivityMenuEnum.BackendMenuEnum.SETTING.getValue())).collect(Collectors.toList());
         for (ActivityManager activityManager : activityManagers) {

@@ -1091,7 +1091,8 @@ public class ActivityQueryService {
 		if (inspectionConfig != null) {
 			activityCreateParam.setInspectionConfigId(inspectionConfig.getId());
 		}
-		List<String> menus = activityMenuQueryService.listActivityEnableMenusDTO(activityId).stream().map(ActivityMenuDTO::getCode).collect(Collectors.toList());
+		// 查看活动启用的菜单中是否含有考核管理
+		List<String> menus = activityMenuQueryService.listActivityEnableMenuConfigs(activityId).stream().map(ActivityMenuConfig::getMenu).collect(Collectors.toList());
 		activityCreateParam.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.BackendMenuEnum.RESULTS_MANAGE.getValue()));
 	}
 
