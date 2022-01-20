@@ -67,12 +67,19 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="handel">
-                                <template v-if="currentTab.code == 'signedUp'">
-                                    <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)">取消报名</a>
-                                    <a class="cancel" href="javascript:" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)">撤销申请</a>
-                                </template>
-                                <template v-else-if="currentTab.code == 'collected'">
+                            <div class="btn-box" v-if="currentTab.code == 'signedUp' && activity.buttons && activity.buttons.length > 0">
+                                <button class="btn-secondary" @click="buttonEventHandle(index, 0)">{{activity.buttons[0].name}}</button>
+                                <div class="more-vertical" v-if="activity.buttons.length > 1">
+                                    <i class="icon-more-vertical"></i>
+                                    <dl>
+                                        <dd v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" @click="buttonEventHandle(index, btnIndex)" v-if="btnIndex > 0">
+                                            {{button.name}}
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="handel" v-else>
+                                <template v-if="currentTab.code == 'collected'">
                                     <a class="cancel" href="javascript:" @click="cancelCollect(index, $event)">取消收藏</a>
                                 </template>
                                 <template v-else-if="currentTab.code == 'managing'">
@@ -300,7 +307,28 @@
                         app.showMsg("加载活动列表失败");
                     });
                 },
-
+                buttonEventHandle: function (activityIndex, buttonIndex) {
+                    var $this = this;
+                    var buttons = ($this.activities[activityIndex] && $this.activities[activityIndex].buttons) || [];
+                    var button = buttons[buttonIndex];
+                    if (button.ajax) {
+                        app.ajaxPostWithLoading(button.url, {}, function (data) {
+                            if (data.success) {
+                                app.showMsg("操作成功", function () {
+                                    window.location.reload();
+                                });
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "操作失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {});
+                    } else {
+                        window.open(button.url);
+                    }
+                },
                 // 取消报名
                 cancelSignUp: function (index, e) {
                     var $this = this;

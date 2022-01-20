@@ -24,6 +24,7 @@ import com.chaoxing.activity.service.util.MhDataBuildUtil;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -128,7 +129,7 @@ public class ErdosActivityInfoApiController {
             String flag = getFlag(availableFlags);
             mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                     .key("阅读测评")
-                    .value(activityQueryService.getReadingTestUrl(activity))
+                    .value(UrlConstant.getReadingTestUrl(readingId, activity.getReadingModuleId()))
                     .flag(flag)
                     .build());
             Integer intFlag = Integer.parseInt(flag);

@@ -11,7 +11,6 @@ import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
@@ -54,8 +53,6 @@ public class ActivityMhV2ApiController {
 	private SignApiService signApiService;
 	@Resource
 	private ActivityValidationService activityValidationService;
-	@Resource
-	private ActivityFlagValidateService activityFlagValidateService;
 	@Resource
 	private WorkApiService workApiService;
 
@@ -224,7 +221,7 @@ public class ActivityMhV2ApiController {
 		boolean signedUp = true;
 		if (existSignUp) {
 			// 如果开启了学生报名则需要报名（报名任意一个报名）才能看见"进入会场"
-			if (activityFlagValidateService.isDualSelect(activity)) {
+			if (activity.isDualSelect()) {
 				// 双选会
 				List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
 				boolean openedStudengSignUp = false;
@@ -282,7 +279,7 @@ public class ActivityMhV2ApiController {
 				}
 			}
 		}else {
-			if (activityFlagValidateService.isDualSelect(activity)) {
+			if (activity.isDualSelect()) {
 				result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
 			}
 			if (CollectionUtils.isNotEmpty(signInIds)) {

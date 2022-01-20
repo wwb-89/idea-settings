@@ -1,9 +1,13 @@
 package com.chaoxing.activity.dto.activity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.chaoxing.activity.dto.ButtonDTO;
 import com.chaoxing.activity.model.Activity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**已报名的活动
  * @author wwb
@@ -24,5 +28,9 @@ public class ActivitySignedUpDTO extends Activity {
 	private Integer signUpId;
 	/** 报名状态 */
 	private Integer userSignUpStatus;
+
+	/** 我的活动中可见报名活动buttons */
+	@TableField(exist = false)
+	private List<ButtonDTO> buttons;
 
 }

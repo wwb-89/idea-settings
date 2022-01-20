@@ -18,7 +18,6 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
-import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
@@ -62,8 +61,6 @@ public class ActivityMhV3ApiController {
     private ActivityQueryService activityQueryService;
     @Resource
     private ActivityValidationService activityValidationService;
-    @Resource
-    private ActivityFlagValidateService activityFlagValidateService;
     @Resource
     private ActivityRatingQueryService activityRatingQueryService;
     @Resource
@@ -387,6 +384,8 @@ public class ActivityMhV3ApiController {
         if (userSignParticipationStat == null) {
             return result;
         }
+        Integer activityId = activity.getId();
+        Integer activityCreateFid = activity.getCreateFid();
         List<Integer> signInIds = userSignParticipationStat.getSignInIds();
         List<Integer> formCollectionIds = userSignParticipationStat.getFormCollectionIds();
         List<Integer> signUpIds = userSignParticipationStat.getSignUpIds();
@@ -401,7 +400,7 @@ public class ActivityMhV3ApiController {
         String signUpKeyword = getSignUpKeyword(activity.getMarketId());
         if (existSignUp) {
             // 如果开启了学生报名则需要报名（报名任意一个报名）才能看见"进入会场"
-            if (activityFlagValidateService.isDualSelect(activity)) {
+            if (activity.isDualSelect()) {
                 // 双选会
                 List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
                 boolean openedStudengSignUp = false;
@@ -416,10 +415,10 @@ public class ActivityMhV3ApiController {
                 if (openedStudengSignUp) {
                     // 必须要报名
                     if (userSignParticipationStat.getSignedUp()) {
-                        result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                        result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.getDualSelectIndexUrl(activityId, activityCreateFid), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                     }
                 } else {
-                    result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.getDualSelectIndexUrl(activityId, activityCreateFid), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
             }
             if (userSignParticipationStat.getSignedUp()) {
@@ -468,9 +467,9 @@ public class ActivityMhV3ApiController {
                     }
                 }
             }
-        }else {
-            if (activityFlagValidateService.isDualSelect(activity)) {
-                result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+        } else {
+            if (activity.isDualSelect()) {
+                result.add(MhDataBuildUtil.buildBtnField("进入会场", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.getDualSelectIndexUrl(activityId, activityCreateFid), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
             if (CollectionUtils.isNotEmpty(signInIds)) {
                 result.add(MhDataBuildUtil.buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
@@ -524,15 +523,15 @@ public class ActivityMhV3ApiController {
         // 阅读测评
         Boolean openReading = Optional.ofNullable(activity.getOpenReading()).orElse(false);
         if (openReading && activity.getReadingId() != null) {
-            result.add(MhDataBuildUtil.buildBtnField("阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), activityQueryService.getReadingTestUrl(activity), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("阅读测评", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.READING_TEST.getValue()), UrlConstant.getReadingTestUrl(activity.getReadingId(), activity.getReadingModuleId()), "1", false, MhBtnSequenceEnum.READING_TEST.getSequence()));
         }
         // 班级互动
         Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
         if (openClazzInteraction && signedUp) {
-            result.add(MhDataBuildUtil.buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activity.getId(), "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+            result.add(MhDataBuildUtil.buildBtnField("进入主页", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activityId, "1", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
         }
         // 查询自定义配置列表中的前端按钮地址
-        List<CustomAppConfig> frontendAppConfigs = customAppConfigQueryService.listFrontendAppConfigsByActivity(activity.getId());
+        List<CustomAppConfig> frontendAppConfigs = customAppConfigQueryService.listFrontendAppConfigsByActivity(activityId);
         for (CustomAppConfig config : frontendAppConfigs) {
             boolean showAfterSignUp = Optional.ofNullable(config.getShowAfterSignUp()).orElse(false);
             String iconCloudUrl = StringUtils.isBlank(config.getDefaultIconCloudId()) ? "" : cloudApiService.buildImageUrl(config.getDefaultIconCloudId());
@@ -579,17 +578,6 @@ public class ActivityMhV3ApiController {
         Integer websiteId = params.getInteger("websiteId");
         // 根据websiteId查询活动id
         return activityQueryService.getByWebsiteId(websiteId);
-    }
-
-    /**获取双选会主页地址
-     * @Description
-     * @author wwb
-     * @Date 2021-04-02 16:48:20
-     * @param activity
-     * @return java.lang.String
-     */
-    private String getDualSelectIndexUrl(Activity activity) {
-        return String.format(UrlConstant.DUAL_SELECT_INDEX_URL, activity.getId(), activity.getCreateFid());
     }
 
     private String getSignUpKeyword(Integer marketId) {

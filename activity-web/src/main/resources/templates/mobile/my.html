@@ -9,8 +9,10 @@
 	<meta http-equiv="cache-control" content="no-cache" />
 	<link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
 	<link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
-	<link rel="stylesheet" href="/static/mobile/assets/css/activity-list.css" th:href="@{/mobile/assets/css/activity-list.css}"/>
 	<link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
+	<link rel="stylesheet" href="/static/mobile/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/mobile/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/mobile/assets/css/activity-list.css" th:href="@{/mobile/assets/css/activity-list.css}"/>
+
 	<style>
 		[v-cloak] {
 			display: none;
@@ -40,8 +42,8 @@
 	<div class="tabContent" v-show="activeTabIndex == 0">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadSignedUp" infinite-scroll-disabled="signedUpLoading" infinite-scroll-distance="10">
-				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="signedupDetail(index)">
-					<div class="inner">
+				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+					<div class="inner" @click="signedupDetail(index)">
 						<div class="img-box border">
 							<div class="tips-box">
 								<p :class="calSignedUpClass(activity)">{{activity | calSignedUpStatusDescription}}</p>
@@ -59,10 +61,24 @@
 							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
 						</div>
 					</div>
-					<div class="handel numTotal1">
-						<a class="cancel" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)"><span>取消<br>报名</span></a>
-						<a class="cancel" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)"><span>撤销<br>申请</span></a>
+					<div class="btn-box border-top">
+						<el-dropdown class="more fl" trigger="click" placement="top-start" v-if="activity.buttons.length > 1" @command="dropDownCmd($event, index)">
+                            <span class="el-dropdown-link">
+                              更多
+                            </span>
+							<el-dropdown-menu slot="dropdown" class="mydropdown">
+								<el-dropdown-item v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" :command="btnIndex" v-if="btnIndex > 0">
+									{{button.name}}
+								</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
+						<button class="btn-normal" v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" @click="buttonEventHandle(index, btnIndex)" v-if="btnIndex <= 0">{{button.name}}</button>
+						<div class="clear"></div>
 					</div>
+<!--					<div class="handel numTotal1">-->
+<!--						<a class="cancel" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)"><span>取消<br>报名</span></a>-->
+<!--						<a class="cancel" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)"><span>撤销<br>申请</span></a>-->
+<!--					</div>-->
 				</li>
 			</ul>
 		</div>
@@ -137,6 +153,7 @@
 	<div class="noMore" v-show="(signedUpNoMore && signedUps.length > 0 &&  activeTabIndex == 0) || (collectedNoMore && collecteds.length > 0 && activeTabIndex == 1) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)"><span>没有更多</span></div>
 </div>
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+	<script src="/static/mobile/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
 	<script src="/static/mobile/assets/lib/vue-infinite-scroll.js" th:src="@{/mobile/assets/lib/vue-infinite-scroll.js}"></script>
 	<script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
 	<script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
@@ -445,6 +462,22 @@
 							$this.managingLoading = false;
 							app.showMsg("加载管理的活动失败");
 						});
+					},
+					dropDownCmd: function (btnIndex, activityIndex) {
+						var $this = this;
+						$this.buttonEventHandle(activityIndex, btnIndex);
+					},
+					buttonEventHandle: function (activityIndex, buttonIndex) {
+						var $this = this;
+						var buttons = ($this.signedUps[activityIndex] && $this.signedUps[activityIndex].buttons) || [];
+						var button = buttons[buttonIndex];
+						if (button.ajax) {
+							app.ajaxPostLoading(button.url, {}, function () {
+								window.location.reload();
+							}, function () {}, "操作失败");
+						} else {
+							app.openUrl(button.url);
+						}
 					},
 					// 取消报名
 					cancelSignUp: function (index, e) {
