@@ -298,6 +298,9 @@
      * @param activityName
      */
     activityApp.prototype.integralPush = function (activityId, activityName) {
+        if (!activityId) {
+            return;
+        }
         var url = ctx + "/api/integral/push/activity/" + activityId + "/view";
         var params = {
             activityName: activityName
