@@ -42,7 +42,7 @@
 	<div class="tabContent" v-show="activeTabIndex == 0">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadSignedUp" infinite-scroll-disabled="signedUpLoading" infinite-scroll-distance="10">
-				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" class="list-item" data-type="0">
 					<div class="inner" @click="signedupDetail(index)">
 						<div class="img-box border">
 							<div class="tips-box">
@@ -62,12 +62,12 @@
 						</div>
 					</div>
 					<div class="btn-box border-top">
-						<el-dropdown class="more fl" trigger="click" placement="top-start" v-if="activity.buttons.length > 1" @command="dropDownCmd($event, index)">
+						<el-dropdown class="more fl" trigger="click" placement="top-start" v-if="activity.buttons.length > 3" @command="dropDownCmd($event, index)">
                             <span class="el-dropdown-link">
                               更多
                             </span>
 							<el-dropdown-menu slot="dropdown" class="mydropdown">
-								<el-dropdown-item v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" :command="btnIndex" v-if="btnIndex > 0">
+								<el-dropdown-item v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" :command="btnIndex" v-if="btnIndex > 2">
 									{{button.name}}
 								</el-dropdown-item>
 							</el-dropdown-menu>

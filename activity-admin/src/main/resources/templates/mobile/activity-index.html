@@ -82,7 +82,7 @@
                     var $this = this;
                     var userActivityMenus = $this.userActivityMenus || [];
                     $(userActivityMenus).each(function () {
-                        if (this.system && !$this.activityMenus.includes(this.code)) {
+                        if (this.dataOrigin == 'system' && !$this.activityMenus.includes(this.code)) {
                             $this.activityMenus.push(this.code);
                         }
                     });
