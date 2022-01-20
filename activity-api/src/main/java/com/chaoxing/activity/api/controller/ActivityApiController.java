@@ -2,8 +2,6 @@ package com.chaoxing.activity.api.controller;
 
 import cn.hutool.http.HtmlUtil;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.api.vo.ActivityStatSummaryVO;
 import com.chaoxing.activity.api.vo.UserResultVO;
@@ -46,7 +44,6 @@ import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQue
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
-import com.chaoxing.activity.util.CoordinateUtils;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -836,31 +833,6 @@ public class ActivityApiController {
 						.formUserId(originFormUserId)
 						.build();
 				wfwFormActivityDataUpdateQueue.push(queueParam);
-			}
-		}
-		return RestRespDTO.success();
-	}
-
-	@Deprecated
-	@RequestMapping("wfw-form/coordinate/fix")
-	public RestRespDTO wfwformActivityCoordinateFix() {
-		List<Activity> activities = activityMapper.selectList(new LambdaQueryWrapper<Activity>()
-				.eq(Activity::getOriginType, Activity.OriginTypeEnum.WFW_FORM.getValue())
-				.isNotNull(Activity::getOrigin)
-				.isNotNull(Activity::getOriginFormUserId)
-				.isNotNull(Activity::getLongitude)
-				.isNotNull(Activity::getDimension)
-		);
-		if (CollectionUtils.isNotEmpty(activities)) {
-			for (Activity activity : activities) {
-				BigDecimal lng = activity.getLongitude();
-				BigDecimal lat = activity.getDimension();
-				CoordinateUtils.Coordinate coordinate = CoordinateUtils.gcj02tobd09(lng.doubleValue(), lat.doubleValue());
-				activityMapper.update(null, new LambdaUpdateWrapper<Activity>()
-						.eq(Activity::getId, activity.getId())
-						.set(Activity::getLongitude, coordinate.getLng())
-						.set(Activity::getDimension, coordinate.getLat())
-				);
 			}
 		}
 		return RestRespDTO.success();
