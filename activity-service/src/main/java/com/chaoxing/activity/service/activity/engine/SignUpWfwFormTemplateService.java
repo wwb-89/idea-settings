@@ -108,4 +108,22 @@ public class SignUpWfwFormTemplateService {
         );
     }
 
+    /**根据名称查询
+     * @Description 
+     * @author wwb
+     * @Date 2022-01-20 16:51:28
+     * @param name
+     * @return com.chaoxing.activity.model.SignUpWfwFormTemplate
+    */
+    public SignUpWfwFormTemplate getByName(String name) {
+        if (StringUtils.isNotBlank(name)) {
+            return null;
+        }
+        List<SignUpWfwFormTemplate> signUpWfwFormTemplates = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+                .eq(SignUpWfwFormTemplate::getName, name.trim())
+                .eq(SignUpWfwFormTemplate::getDeleted, false)
+        );
+        return signUpWfwFormTemplates.stream().findFirst().orElse(null);
+    }
+
 }
