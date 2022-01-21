@@ -457,7 +457,19 @@ public class WfwFormSyncActivityQueueService {
         WfwAreaDTO orgInfo = Optional.ofNullable(defaultPublishAreas).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgInfo.getName());
         // 根据表单记录数据，更新活动数据
-        return activityHandleService.edit(activityUpdateParam, sign, defaultPublishAreas, loginUser);
+        activity = activityHandleService.edit(activityUpdateParam, sign, defaultPublishAreas, loginUser);
+        String releaseStatus = WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS);
+        // 发布状态值不存在或不为未发布，发布活动
+        if (Objects.equals(releaseStatus, "未发布")) {
+            if (activity.getReleased()) {
+                activityHandleService.cancelRelease(activityId, loginUser.buildOperateUserDTO());
+            }
+        } else {
+            if (!activity.getReleased()) {
+                activityHandleService.release(activityId, loginUser.buildOperateUserDTO());
+            }
+        }
+        return activity;
     }
 
     /**从表单数据中获取参与人uids
