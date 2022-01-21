@@ -134,10 +134,6 @@ public class WfwFormActivityDataUpdateQueueService {
                     item.put("val", data);
                     result.add(item);
                 }
-            } else if (Objects.equals(WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS, alias)) {
-                data.add(wfwFormActivityWriteBackData.getActivityReleaseStatus());
-                item.put("val", data);
-                result.add(item);
             }
         }
         if (result.isEmpty()) {
@@ -198,16 +194,6 @@ public class WfwFormActivityDataUpdateQueueService {
                     return true;
                 }
             }
-            /** 发布状态是否改变 */
-            if (WfwFormUtils.isExistField(formRecord, WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS)) {
-                String releaseStatus = formRecord.getStringValue(WfwFormAliasConstant.ACTIVITY_RELEASE_STATUS);
-                String localReleaseStatus = wfwFormActivityWriteBackData.getActivityReleaseStatus();
-                if (!Objects.equals(localReleaseStatus, releaseStatus)) {
-                    log.info("万能表单活动:{} 发布状态改变 {} -> {}", localActivityId, releaseStatus, localReleaseStatus);
-                    return true;
-                }
-            }
-            log.info("根据fid:{}, formId:{}, formUserId:{}, 数据:{} 验证万能表单活动是否需要更新:数据没有改变", fid,formId, formUserId, JSON.toJSONString(wfwFormActivityWriteBackData));
             return false;
         } finally {
             log.info("根据fid:{}, formId:{}, formUserId:{}, 数据:{} 验证万能表单活动是否需要更新 end", fid,formId, formUserId, JSON.toJSONString(wfwFormActivityWriteBackData));
