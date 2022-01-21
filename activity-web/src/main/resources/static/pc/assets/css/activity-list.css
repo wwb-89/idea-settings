@@ -430,7 +430,7 @@ body {
   border-radius: 2px;
   width: 100px;
   background: #ffffff;
-  right: 0;
+  right: -32px;
   top: 30px;
   display: none;
 }
@@ -444,6 +444,13 @@ body {
 
 .item-block .card-list1 ul li .btn-box dl dd:hover {
   color: #0084FF;
+}
+
+.item-block .card-list1 ul li .btn-box .icon-zhanwei {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-left: 8px;
 }
 
 .item-block .card-list1 ul li .btn-box .icon-more-vertical {

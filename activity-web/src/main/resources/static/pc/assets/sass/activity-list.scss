@@ -363,7 +363,7 @@ body {
             border-radius: 2px;
             width: 100px;
             background: #ffffff;
-            right: 0;
+            right: -32px;
             top: 30px;
             display: none;
             dd{
@@ -375,6 +375,12 @@ body {
                 color: #0084FF;
               }
             }
+          }
+          .icon-zhanwei {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            margin-left: 8px;
           }
           .icon-more-vertical {
             font-size: 16px;

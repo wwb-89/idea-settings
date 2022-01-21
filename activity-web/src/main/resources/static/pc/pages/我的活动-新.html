@@ -125,8 +125,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="btn-box">
+                            <div class="btn-box" style="z-index: 1">
                                 <button class="btn-secondary">最长八个字最长八</button>
+                                <div class="more-vertical">
+                                    <i class="icon-more-vertical"></i>
+                                    <dl>
+                                        <dd>按钮名称</dd>
+                                        <dd>最长八个字最长八</dd>
+                                        <dd>按钮名称</dd>
+                                    </dl>
+                                </div>
                             </div>
                             <div class="handel">
                                 <a class="cancel">取消收藏</a>
@@ -162,22 +170,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="btn-box">
+<!--                            z-index :按个数依次-1-->
+                            <div class="btn-box" style="z-index: 0">
                                 <button class="btn-secondary">最长八个字最长八</button>
-                                <div class="more-vertical">
-                                    <i class="icon-more-vertical"></i>
-                                    <dl>
-                                        <dd>按钮名称</dd>
-                                        <dd>最长八个字最长八</dd>
-                                        <dd>按钮名称</dd>
-                                    </dl>
-                                </div>
+                                <i class="icon-zhanwei"></i>
                             </div>
                             <div class="handel">
                                 <a class="cancel">取消收藏</a>
                                 <a class="cancel" v-on:click="cancelFun('删除后，将清空该活动的相关信息和记录，确定删除吗？','删除')">删除</a>
                             </div>
                         </li>
+
                     </ul>
                 </div>
             </div>
