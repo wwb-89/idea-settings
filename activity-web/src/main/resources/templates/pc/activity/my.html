@@ -68,11 +68,11 @@
                                 </div>
                             </div>
                             <div class="btn-box" v-if="currentTab.code == 'signedUp' && activity.buttons && activity.buttons.length > 0">
-                                <button class="btn-secondary" @click="buttonEventHandle(index, 0)">{{activity.buttons[0].name}}</button>
+                                <button class="btn-secondary" @click="buttonEventHandle(index, 0, $event)">{{activity.buttons[0].name}}</button>
                                 <div class="more-vertical" v-if="activity.buttons.length > 1">
                                     <i class="icon-more-vertical"></i>
                                     <dl>
-                                        <dd v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" @click="buttonEventHandle(index, btnIndex)" v-if="btnIndex > 0">
+                                        <dd v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" @click="buttonEventHandle(index, btnIndex, $event)" v-if="btnIndex > 0">
                                             {{button.name}}
                                         </dd>
                                     </dl>
@@ -307,7 +307,8 @@
                         app.showMsg("加载活动列表失败");
                     });
                 },
-                buttonEventHandle: function (activityIndex, buttonIndex) {
+                buttonEventHandle: function (activityIndex, buttonIndex, e) {
+                    e.stopPropagation();
                     var $this = this;
                     var buttons = ($this.activities[activityIndex] && $this.activities[activityIndex].buttons) || [];
                     var button = buttons[buttonIndex];
