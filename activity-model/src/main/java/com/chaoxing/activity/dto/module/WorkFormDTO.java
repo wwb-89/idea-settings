@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**作品征集表单对象
+/**创建作品征集对象
  * @author wwb
  * @version ver 1.0
  * @className WorkFormDTO

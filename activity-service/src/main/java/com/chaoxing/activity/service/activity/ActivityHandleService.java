@@ -18,6 +18,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.module.ClazzInteractionDTO;
+import com.chaoxing.activity.dto.module.WorkFormDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
@@ -187,6 +188,8 @@ public class ActivityHandleService {
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos) && CollectionUtils.isEmpty(releaseClassIds)) {
 			throw new BusinessException(CollectionUtils.isEmpty(releaseClassIds) ? "请完善发布班级" : "请完善发布范围");
 		}
+		// 处理作品征集
+		handleWork(activity, loginUser);
 		// 添加小组
 		handleGroup(activity, loginUser.getUid());
 		// 添加报名签到
@@ -265,6 +268,31 @@ public class ActivityHandleService {
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
 		return activityId;
+	}
+
+	/**处理作品征集
+	 * @Description 如果开启了作品征集且没有创建则需要创建
+	 * @author wwb
+	 * @Date 2022-01-21 09:58:17
+	 * @param activity
+	 * @param loginUser
+	 * @return void
+	*/
+	public void handleWork(Activity activity, LoginUserDTO loginUser) {
+		Boolean openWork = Optional.ofNullable(activity.getOpenWork()).orElse(false);
+		if (openWork && activity.getWorkId() == null) {
+			WorkFormDTO workForm = WorkFormDTO.builder()
+					.id(activity.getId())
+					.name(activity.getName())
+					.uid(loginUser.getUid())
+					.wfwfid(loginUser.getFid())
+					.startTime(DateUtils.date2Timestamp(activity.getStartTime()))
+					.endTime(DateUtils.date2Timestamp(activity.getEndTime()))
+					.build();
+			Integer workId = workApiService.create(workForm);
+			activity.setWorkId(workId);
+		}
+
 	}
 
 	/**处理班级互动
