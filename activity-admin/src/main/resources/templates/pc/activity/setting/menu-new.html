@@ -50,7 +50,7 @@
                     <li class="table-td li-drag"><i class="icon-drag" :menu-code="item.code"></i></li>
                     <li class="table-td li-name">{{item.name}}</li>
                     <li class="table-td li-status">
-                        <el-switch v-model="item.enable" @change="changeBackendMenuEnable(index)"></el-switch>
+                        <el-switch v-model="item.enable" :disabled="item.code == 'setting'" @change="changeBackendMenuEnable(index)"></el-switch>
                     </li>
                     <li class="table-td li-operate" v-show="item.dataOrigin == 'activity'">
                         <span class="btn btn-edit" @click="toEditBackendMenu(index)">编辑</span>
@@ -141,7 +141,7 @@
 
     <!-- 图标选择弹窗 -->
     <vue-icon-select ref="iconSelectWindow" :cloud-domain="cloudDomain" :icons="icons" @callback="confirmIconChoose"></vue-icon-select>
-    <vue-confirm-common ref="deleteWindow" :message="'确认删除?'" :reverse="true" :cancel="'删除'" :sure="'保留'" @callback="removeMenu"></vue-confirm-common>
+    <vue-confirm-common ref="deleteWindow" :message="'确认删除?'" :cancel="'保留'" :sure="'删除'" @callback="removeMenu"></vue-confirm-common>
 
 </div>
 </body>

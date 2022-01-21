@@ -93,41 +93,30 @@ public enum ActivityMenuEnum {
 
     @Getter
     public enum FrontendMenuEnum {
-        /** 进入班级互动主页 */
-        TO_CLASS_INTERACTION_HOMEPAGE("进入主页", "to_class_interaction_homepage", IconEnum.UNIVERSAL.getValue(), false, 10, true, "after_sign_up"),
         /** 去报名 */
-        TO_SIGN_UP("报名参加", "to_sign_up", IconEnum.UNIVERSAL.getValue(), false, 20, true, "before_sign_up"),
+        TO_SIGN_UP("报名参与", "to_sign_up", IconEnum.UNIVERSAL.getValue(), false, 1, "before_sign_up"),
         /** 进入会场 */
-        ENTER_VENUE("进入会场", "enter_venue", IconEnum.UNIVERSAL.getValue(), false, 30, true, "no_limit"),
+        ENTER_VENUE("进入会场", "enter_venue", IconEnum.UNIVERSAL.getValue(), false, 2, "no_limit"),
         /** 去签到，点击跳转签到列表页 */
-        TO_SIGN_IN("去签到", "to_sign_in", IconEnum.SIGN_IN.getValue(), false, 30, true, "no_limit"),
+        TO_SIGN_IN("去签到", "to_sign_in", IconEnum.SIGN_IN.getValue(), false, 3, "after_sign_up"),
         /** 去填写，点击跳转表单采集填写列表页 */
-        TO_FILL_FORM_COLLECTION("去填写", "to_fill_form_collection", IconEnum.UNIVERSAL.getValue(), false, 40, true, "no_limit"),
+        TO_FILL_FORM_COLLECTION("去填写", "to_fill_form_collection", IconEnum.UNIVERSAL.getValue(), false, 4, "after_sign_up"),
         /** 阅读测评 */
-        TO_READING("阅读测评", "to_reading", IconEnum.READING_TEST.getValue(), false, 70, true, "no_limit"),
+        TO_READING("阅读测评", "to_reading", IconEnum.READING_TEST.getValue(), false, 5, "after_sign_up"),
         /** 讨论小组 */
-        TO_DISCUSSION_GROUP("讨论小组", "to_discussion_group", IconEnum.UNIVERSAL.getValue(), false, 80, true, "no_limit"),
+        TO_DISCUSSION_GROUP("讨论小组", "to_discussion_group", IconEnum.UNIVERSAL.getValue(), false, 6, "after_sign_up"),
         /** 评价 */
-        TO_RATE("评价", "to_rate", IconEnum.RATING.getValue(), false, 90, true, "no_limit"),
+        TO_RATE("评价", "to_rate", IconEnum.RATING.getValue(), false, 7, "after_sign_up"),
         /** 活动管理 */
-        TO_MANAGE("管理", "to_manage", IconEnum.MANAGEMENT.getValue(), false, 100, true, "no_limit"),
+        TO_MANAGE("管理", "to_manage", IconEnum.MANAGEMENT.getValue(), false, 8, "no_limit"),
         /** 查看报名信息 */
-        TO_SIGN_UP_INFO("报名信息", "to_sign_up_info", IconEnum.SIGN_UP_INFO.getValue(), false, 110, true, "after_sign_up"),
+        TO_SIGN_UP_INFO("报名信息", "to_sign_up_info", IconEnum.SIGN_UP_INFO.getValue(), false, 9, "after_sign_up"),
+        /** 进入班级互动主页 */
+        TO_CLASS_INTERACTION_HOMEPAGE("进入主页", "to_class_interaction_homepage", IconEnum.UNIVERSAL.getValue(), false, 10, "after_sign_up"),
 
         /** 状态按钮，不可点击 */
         /** 活动已结束 */
-        ACTIVITY_ENDED("活动已结束", "activity_ended", IconEnum.UNIVERSAL.getValue(), true, 1, true, "no_limit"),
-        /** 报名审核中 */
-        SIGN_UP_UNDER_REVIEW("报名审核中", "sign_up_under_review", IconEnum.UNIVERSAL.getValue(), true, 20, true, "no_limit"),
-        /** 报名已结束 */
-        SIGN_UP_ENDED("报名已结束", "sign_up_ended", IconEnum.UNIVERSAL.getValue(), true, 20, true, "no_limit"),
-        /** 报名未开始 */
-        SIGN_UP_NOT_START("报名未开始", "sign_up_not_start", IconEnum.UNIVERSAL.getValue(), true, 20, true, "no_limit"),
-        /** 不在参与范围内 */
-        NOT_WITHIN_PARTICIPATION_SCOPE("不在参与范围内", "not_within_participation_scope", IconEnum.UNIVERSAL.getValue(), true, 20, true, "no_limit"),
-        /** 名额已满 */
-        FULL_QUOTA("名额已满", "full_quota", IconEnum.UNIVERSAL.getValue(), true, 20, true, "no_limit");
-
+        ACTIVITY_ENDED("活动已结束", "activity_ended", IconEnum.UNIVERSAL.getValue(), true, 11, "no_limit");
 
         /** 按钮名称 */
         private final String name;
@@ -139,18 +128,15 @@ public enum ActivityMenuEnum {
         private final Boolean statusBtn;
         /** 按钮排序 作品征集排序 50 -- 70间, 自定义按钮相关 150 开始默认排序 */
         private final Integer sequence;
-        /** 默认启用状态 */
-        private final Boolean enable;
         /** 默认显示规则 */
         private final String showRule;
 
-        FrontendMenuEnum(String name, String value, String icon, Boolean statusBtn, Integer sequence, Boolean enable, String showRule) {
+        FrontendMenuEnum(String name, String value, String icon, Boolean statusBtn, Integer sequence, String showRule) {
             this.name = name;
             this.value = value;
             this.icon = icon;
             this.statusBtn = statusBtn;
             this.sequence = sequence;
-            this.enable = enable;
             this.showRule = showRule;
         }
         public static FrontendMenuEnum fromValue(String value) {
