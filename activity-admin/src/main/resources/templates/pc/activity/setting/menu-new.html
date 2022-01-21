@@ -17,6 +17,18 @@
         .header {
             width: inherit;
         }
+        .terminal-select .label {
+            display: inline-block;
+            vertical-align: top;
+            font-size: 14px;
+            line-height: 20px;
+            color: #333333;
+            margin-right: 15px;
+        }
+
+        .terminal-select .switch {
+            margin-right: 32px;
+        }
     </style>
 </head>
 <body>
@@ -108,6 +120,10 @@
                                 <div class="terminal-select">
                                     <el-checkbox v-model="addEditMenu.pc">电脑端</el-checkbox>
                                     <el-checkbox v-model="addEditMenu.mobile">移动端</el-checkbox>
+                                </div>
+                                <div class="terminal-select" style="margin-top: 15px" v-show="operateMenuType == 'backend'">
+                                    <label class="label color666">新页面打开</label>
+                                    <el-switch class="switch" v-model="addEditMenu.openBlank"></el-switch>
                                 </div>
                             </div>
                         </div>
@@ -303,6 +319,7 @@
                         url: '',
                         pc: true,
                         mobile: false,
+                        openBlank: true,
                         showRule: 'no_limit',
                         dataOrigin: 'activity',
                         sequence: $this.operateMenuType == 'frontend' ? $this.frontendMenuMaxSeq : $this.backendMenuMaxSeq,

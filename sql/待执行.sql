@@ -34,3 +34,7 @@ UPDATE t_activity_menu_config SET data_origin = 'template' WHERE template_compon
 -- 模板自定义菜单增加前缀
 UPDATE t_activity_menu_config SET menu = CONCAT('template_', menu) WHERE template_component_id IS NOT NULL;
 
+
+ALTER TABLE t_activity_custom_app_config ADD COLUMN `is_open_blank` tinyint(1) DEFAULT 1 COMMENT '是否新页面打开菜单';
+
+
