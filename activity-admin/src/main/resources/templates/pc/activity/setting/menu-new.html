@@ -141,7 +141,7 @@
 
     <!-- 图标选择弹窗 -->
     <vue-icon-select ref="iconSelectWindow" :cloud-domain="cloudDomain" :icons="icons" @callback="confirmIconChoose"></vue-icon-select>
-    <vue-confirm-common ref="deleteWindow" :message="'是否确认删除该活动菜单'" :cancel="'取消'" :sure="'删除'" @callback="removeMenu"></vue-confirm-common>
+    <vue-confirm-common ref="deleteWindow" :message="'确认删除?'" :reverse="true" :cancel="'删除'" :sure="'保留'" @callback="removeMenu"></vue-confirm-common>
 
 </div>
 </body>
@@ -348,23 +348,25 @@
                                 } else {
                                     $this.backendMenus.push(data.data);
                                 }
+                                app.showMsg("菜单添加成功");
                             } else {
                                 if ($this.operateMenuType == 'frontend') {
                                     $this.frontendMenus[$this.operateMenuIndex] = $.extend({}, addEditMenu);
                                 } else {
                                     $this.backendMenus[$this.operateMenuIndex] = $.extend({}, addEditMenu);
-                                }                            }
-
+                                }
+                                app.showMsg("菜单更新成功");
+                            }
                             $this.closeAddEditMenu();
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "新增活动菜单失败";
+                                errorMessage = "操作失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("新增活动菜单失败");
+                        app.showMsg("操作失败");
                     });
                 },
                 // 关闭菜单创建编辑
