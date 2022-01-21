@@ -106,9 +106,10 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
                 .type(ActivityMenuConfig.UrlTypeEnum.FRONTEND.getValue())
                 .dataOrigin(ActivityMenuConfig.DataOriginEnum.SYSTEM.getValue())
                 .openBlank(true)
+                .enable(v.getEnable())
                 .url("")
                 .desc("")
-                .showRule(ActivityMenuConfig.ShowRuleEnum.NO_LIMIT.getValue())
+                .showRule(v.getShowRule())
                 .sequence(v.getSequence())
                 .build()).collect(Collectors.toList()));
         return systemMenus;
@@ -151,7 +152,7 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
                 .code(CommonConstant.ACTIVITY_MENU_PREFIX + v.getId())
                 .type(v.getType())
                 .dataOrigin(ActivityMenuConfig.DataOriginEnum.ACTIVITY.getValue())
-                .openBlank(false)
+                .openBlank(Optional.ofNullable(v.getOpenBlank()).orElse(true))
                 .url(v.getUrl())
                 .desc("")
                 .defaultIconUrl(Optional.ofNullable(v.getDefaultIconCloudId()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))

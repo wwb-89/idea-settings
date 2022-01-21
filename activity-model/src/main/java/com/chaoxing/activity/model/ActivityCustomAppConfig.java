@@ -47,6 +47,9 @@ public class ActivityCustomAppConfig {
     private Boolean mobile;
     /** 显示规则(no_limit, before_sign_up, after_sign_up); column: show_rule  */
     private String showRule;
+    /** 是否新页面打开菜单 */
+    @TableField(value = "is_open_blank")
+    private Boolean openBlank;
     /** 是否删除; column: is_deleted */
     @TableField(value = "is_deleted")
     private Boolean deleted;
@@ -73,6 +76,7 @@ public class ActivityCustomAppConfig {
                 .showRule(menu.getShowRule())
                 .pc(Optional.ofNullable(menu.getPc()).orElse(true))
                 .mobile(Optional.ofNullable(menu.getMobile()).orElse(false))
+                .openBlank(Optional.ofNullable(menu.getOpenBlank()).orElse(true))
                 .build();
     }
 

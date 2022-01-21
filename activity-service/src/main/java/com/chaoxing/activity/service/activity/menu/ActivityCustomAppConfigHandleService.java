@@ -75,12 +75,14 @@ public class ActivityCustomAppConfigHandleService {
     public void updateMenu(ActivityCustomAppConfig menu) {
         Boolean pc = Optional.ofNullable(menu.getPc()).orElse(false);
         Boolean mobile = Optional.ofNullable(menu.getMobile()).orElse(false);
+        Boolean openBlank = Optional.ofNullable(menu.getOpenBlank()).orElse(true);
         activityCustomAppConfigMapper.update(null, new LambdaUpdateWrapper<ActivityCustomAppConfig>()
                 .eq(ActivityCustomAppConfig::getId, menu.getId())
                 .set(ActivityCustomAppConfig::getTitle, menu.getTitle())
                 .set(ActivityCustomAppConfig::getIconId, menu.getIconId())
                 .set(ActivityCustomAppConfig::getUrl, menu.getUrl())
                 .set(ActivityCustomAppConfig::getPc, pc)
-                .set(ActivityCustomAppConfig::getMobile, mobile));
+                .set(ActivityCustomAppConfig::getMobile, mobile)
+                .set(ActivityCustomAppConfig::getOpenBlank, openBlank));
     }
 }

@@ -62,17 +62,17 @@
 						</div>
 					</div>
 					<div class="btn-box border-top">
-						<el-dropdown class="more fl" trigger="click" placement="top-start" v-if="activity.buttons.length > 3" @command="dropDownCmd($event, index)">
+						<el-dropdown class="more fl" trigger="click" placement="top-start" v-if="activity.buttons.length > limitBtnNum" @command="dropDownCmd($event, index)">
                             <span class="el-dropdown-link">
                               更多
                             </span>
 							<el-dropdown-menu slot="dropdown" class="mydropdown">
-								<el-dropdown-item v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" :command="btnIndex" v-if="btnIndex > 2">
+								<el-dropdown-item v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" :command="btnIndex" v-if="btnIndex > (limitBtnNum - 1)">
 									{{button.name}}
 								</el-dropdown-item>
 							</el-dropdown-menu>
 						</el-dropdown>
-						<button class="btn-normal" v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" @click="buttonEventHandle(index, btnIndex)" v-if="btnIndex <= 0">{{button.name}}</button>
+						<button :class="btnIndex == 0 ? 'btn-second' : 'btn-normal'" v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" @click="buttonEventHandle(index, btnIndex)" v-if="btnIndex < limitBtnNum">{{button.name}}</button>
 						<div class="clear"></div>
 					</div>
 <!--					<div class="handel numTotal1">-->
@@ -171,6 +171,7 @@
 			vm = new Vue({
 				el: "#activity-vue",
 				data: {
+					limitBtnNum: 3,
                     adminDomain: [[${adminDomain}]],
                     cloudDomain: [[${cloudDomain}]],
 					activeTabIndex: 0,
