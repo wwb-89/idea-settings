@@ -14,6 +14,7 @@ import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RedissonClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +64,9 @@ public class QueueApiController {
 	private UserStatSummaryQueryService userStatSummaryQueryService;
 	@Resource
 	private ActivityStatHandleService activityStatHandleService;
+
+	@Resource
+	private RedissonClient redissonClient;
 
 	/**初始化活动的汇总统计队列
 	 * @Description
@@ -191,8 +195,8 @@ public class QueueApiController {
 	@RequestMapping("init/activity_start_time_reach")
 	public RestRespDTO initActivityStartTimeReach() {
 		List<Activity> activities = activityQueryService.listOngoingButStatusError();
+		Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 		if (CollectionUtils.isNotEmpty(activities)) {
-			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 			for (Activity activity : activities) {
 				ActivityStartTimeReachEventOrigin eventOrigin = ActivityStartTimeReachEventOrigin.builder()
 						.activityId(activity.getId())
@@ -200,6 +204,23 @@ public class QueueApiController {
 						.timestamp(timestamp)
 						.build();
 				activityStartTimeReachEventQueue.push(eventOrigin);
+			}
+		}
+		// 未开始的活动
+		List<Activity> notStartedActivities = activityQueryService.listNotStarted();
+		if (CollectionUtils.isNotEmpty(notStartedActivities)) {
+			List<ActivityEndTimeReachEventOrigin> eventOrigins = activityEndTimeReachEventQueue.list(redissonClient, ActivityStartTimeReachEventQueue.KEY);
+			List<Integer> existIds = eventOrigins.stream().map(ActivityEndTimeReachEventOrigin::getActivityId).collect(Collectors.toList());
+			for (Activity activity : activities) {
+				Integer activityId = activity.getId();
+				if (!existIds.contains(activityId)) {
+					ActivityStartTimeReachEventOrigin eventOrigin = ActivityStartTimeReachEventOrigin.builder()
+							.activityId(activity.getId())
+							.startTime(activity.getStartTime())
+							.timestamp(timestamp)
+							.build();
+					activityStartTimeReachEventQueue.push(eventOrigin);
+				}
 			}
 		}
 		return RestRespDTO.success();
@@ -214,8 +235,8 @@ public class QueueApiController {
 	@RequestMapping("init/activity_end_time_reach")
 	public RestRespDTO initActivityEndTimeReach() {
 		List<Activity> activities = activityQueryService.listEndedButStatusError();
+		Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 		if (CollectionUtils.isNotEmpty(activities)) {
-			Long timestamp = DateUtils.date2Timestamp(LocalDateTime.now());
 			for (Activity activity : activities) {
 				ActivityEndTimeReachEventOrigin eventOrigin = ActivityEndTimeReachEventOrigin.builder()
 						.activityId(activity.getId())
@@ -223,6 +244,23 @@ public class QueueApiController {
 						.timestamp(timestamp)
 						.build();
 				activityEndTimeReachEventQueue.push(eventOrigin);
+			}
+		}
+		// 进行中的活动列表
+		List<Activity> ingActivities = activityQueryService.listIng();
+		if (CollectionUtils.isNotEmpty(ingActivities)) {
+			List<ActivityEndTimeReachEventOrigin> eventOrigins = activityEndTimeReachEventQueue.list(redissonClient, ActivityEndTimeReachEventQueue.KEY);
+			List<Integer> existIds = eventOrigins.stream().map(ActivityEndTimeReachEventOrigin::getActivityId).collect(Collectors.toList());
+			for (Activity activity : activities) {
+				Integer activityId = activity.getId();
+				if (!existIds.contains(activityId)) {
+					ActivityEndTimeReachEventOrigin eventOrigin = ActivityEndTimeReachEventOrigin.builder()
+							.activityId(activity.getId())
+							.endTime(activity.getEndTime())
+							.timestamp(timestamp)
+							.build();
+					activityEndTimeReachEventQueue.push(eventOrigin);
+				}
 			}
 		}
 		return RestRespDTO.success();

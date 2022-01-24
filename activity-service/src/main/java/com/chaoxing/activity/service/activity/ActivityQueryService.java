@@ -1364,6 +1364,32 @@ public class ActivityQueryService {
 		);
 	}
 
+	/**查询进行中的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-24 17:51:34
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listIng() {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getStatus, Activity.StatusEnum.ONGOING.getValue())
+		);
+	}
+
+	/**查询未开始的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-24 17:51:58
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listNotStarted() {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getStatus, Activity.StatusEnum.RELEASED.getValue())
+		);
+	}
+
 	/**查询机构创建的活动列表
 	 * @Description
 	 * @author wwb

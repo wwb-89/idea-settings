@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 @Service
 public class ActivityStartTimeReachEventQueue implements IDelayedQueue<ActivityStartTimeReachEventOrigin> {
 
-    private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "activity_start_time_reach";
+    public static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "event" + CacheConstant.CACHE_KEY_SEPARATOR + "activity_start_time_reach";
 
     @Resource
     private RedissonClient redissonClient;
