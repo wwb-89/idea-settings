@@ -7,12 +7,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.ButtonDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.*;
+import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
+import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
+import com.chaoxing.activity.dto.activity.ActivityTagNameDTO;
+import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.query.ActivityReleasePlatformActivityQueryDTO;
 import com.chaoxing.activity.dto.activity.query.result.ActivityReleasePlatformActivityQueryResultDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
@@ -47,11 +49,9 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tag.TagQueryService;
-import com.chaoxing.activity.service.util.MhDataBuildUtil;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.*;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
-import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -723,7 +723,7 @@ public class ActivityQueryService {
 		waitAuditSignIds.removeAll(successSignIds);
 		int additionalTotal = 0;
 		if (loadWaitAudit && CollectionUtils.isNotEmpty(waitAuditSignIds)) {
-			Page<Activity> waitAuditPage= activityMapper.pageSignedUpActivities(new Page<>(1, Integer.MAX_VALUE), waitAuditSignIds, null, flag, null);
+			Page<Activity> waitAuditPage= activityMapper.pageSignedUpActivities(new Page<>(1, waitAuditSignIds.size()), waitAuditSignIds, null, flag, null);
 			result = activitiesConvert2ActivitySignedUp(waitAuditPage.getRecords(), userSignUpStatuses, uid);
 			additionalTotal = result.size();
 		}
