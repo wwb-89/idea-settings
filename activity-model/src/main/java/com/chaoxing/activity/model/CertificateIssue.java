@@ -71,7 +71,7 @@ public class CertificateIssue {
     }
 
     public static String getDownloadUrl(Integer uid, Integer activityId) {
-        return DomainConstant.ADMIN + "/api/certificate/download?uid=" + uid + "&activityId=" + activityId;
+        return DomainConstant.API + "/certificate/download?uid=" + uid + "&activityId=" + activityId;
     }
 
 }

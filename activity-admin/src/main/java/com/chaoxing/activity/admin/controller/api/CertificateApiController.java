@@ -89,8 +89,10 @@ public class CertificateApiController {
      * @param activityId
      * @param uid
      * @param response
+     * @deprecated 有需要登录的问题
      * @return void
     */
+    @Deprecated
     @RequestMapping("download")
     public void download(@RequestParam Integer activityId, @RequestParam Integer uid, HttpServletResponse response) throws IOException {
         byte[] bytes = certificateHandleService.download(activityId, uid);
