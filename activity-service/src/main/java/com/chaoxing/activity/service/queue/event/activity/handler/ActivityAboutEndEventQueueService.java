@@ -10,6 +10,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,17 +53,21 @@ public class ActivityAboutEndEventQueueService {
         }
         if (Objects.equals(Activity.StatusEnum.ENDED.getValue(), activity.getStatus())) {
             // 活动已结束，忽略
+            log.info("忽略活动即将结束的处理, 活动已结束");
             return;
         }
-        if (!Objects.equals(activity.getEndTime(), eventOrigin.getEndTime())) {
+        if (activity.getEndTime().compareTo(eventOrigin.getEndTime()) != 0) {
+            log.info("忽略活动即将结束的处理, 记录的活动结束时间:{}, 当前活动的结束时间:{}", DateUtils.date2Timestamp(eventOrigin.getEndTime()), DateUtils.date2Timestamp(activity.getEndTime()));
             return;
         }
         Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(false);
         if (!openRating) {
+            log.info("忽略活动即将结束的处理, 活动未开启评价");
             return;
         }
         List<Integer> noRateSignedUpUids = activityQueryService.listNoRateSignedUpUid(activity);
         if (CollectionUtils.isEmpty(noRateSignedUpUids)) {
+            log.info("忽略活动即将结束的处理, 没有评价的报名人员为空");
             return;
         }
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_END.getValue());

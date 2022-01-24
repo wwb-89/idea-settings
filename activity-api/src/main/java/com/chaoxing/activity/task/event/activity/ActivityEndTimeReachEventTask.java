@@ -41,7 +41,7 @@ public class ActivityEndTimeReachEventTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理活动结束时间到达任务处理 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
-            activityEndTimeReachEventQueue.push(eventOrigin);
+            activityEndTimeReachEventQueue.rePush(eventOrigin);
         } finally {
             log.info("处理活动结束时间到达任务处理 end");
         }

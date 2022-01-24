@@ -41,7 +41,7 @@ public class ActivityAboutEndEventTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理活动即将结束任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
-            activityAboutEndEventQueue.push(eventOrigin);
+            activityAboutEndEventQueue.rePush(eventOrigin);
         } finally {
             log.info("处理活动即将结束任务 end");
         }

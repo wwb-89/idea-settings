@@ -11,6 +11,7 @@ import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
 import com.chaoxing.activity.service.queue.notice.ActivityCollectedUserNoticeQueue;
 import com.chaoxing.activity.service.queue.notice.ActivitySignedUpUserNoticeQueue;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -50,7 +51,7 @@ public class ActivityAboutStartEventQueueService {
     public void handle(ActivityAboutStartEventOrigin eventOrigin) {
         Activity activity = activityQueryService.getById(eventOrigin.getActivityId());
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_START.getValue());
-        if (!needHandle(eventOrigin.getStartTime(), activity, noticeTemplate)) {
+        if (!needHandle(eventOrigin.getStartTime(), activity)) {
             return;
         }
         NoticeTemplateFieldDTO noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
@@ -100,17 +101,19 @@ public class ActivityAboutStartEventQueueService {
         activityCollectedUserNoticeQueue.push(queueParam);
     }
 
-    private boolean needHandle(LocalDateTime activityStartTime, Activity activity, MarketNoticeTemplateDTO noticeTemplate) {
+    private boolean needHandle(LocalDateTime activityStartTime, Activity activity) {
         if (activity == null) {
             return false;
         }
         if (!Objects.equals(Activity.StatusEnum.RELEASED.getValue(), activity.getStatus())) {
+            log.info("忽略活动即将开始队列处理服务, 活动未发布");
             return false;
         }
-        if (!noticeTemplate.getSupportTimeConfig()) {
-            return true;
+        if (activity.getStartTime().compareTo(activityStartTime) != 0) {
+            log.info("忽略活动即将开始队列处理服务, 记录的活动开始时间:{}, 当前活动时间:{}", DateUtils.date2Timestamp(activityStartTime), DateUtils.date2Timestamp(activity.getStartTime()));
+            return false;
         }
-        return Objects.equals(activity.getStartTime(), activityStartTime);
+        return true;
     }
 
     private String generateSignedUpNoticeTitle(NoticeTemplateFieldDTO noticeTemplateField) {

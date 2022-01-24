@@ -9,14 +9,11 @@ import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.queue.IDelayedQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**活动即将开始事件队列
@@ -43,7 +40,15 @@ public class ActivityAboutStartEventQueue implements IDelayedQueue<ActivityAbout
     private RedissonClient redissonClient;
 
     public void push(ActivityAboutStartEventOrigin eventOrigin) {
-        remove(eventOrigin);
+        LocalDateTime delayTime = getDelayTime(eventOrigin);
+        if (delayTime.isBefore(LocalDateTime.now())) {
+            // 通知时间已经过了，忽略
+            return;
+        }
+        push(redissonClient, KEY, eventOrigin, delayTime);
+    }
+
+    private LocalDateTime getDelayTime(ActivityAboutStartEventOrigin eventOrigin) {
         // 根据活动id，查询活动市场id及对应的市场通知模板，若市场通知模板不存在，则采用对应的系统通知模板
         Activity activity = activityQueryService.getById(eventOrigin.getActivityId());
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_START.getValue());
@@ -51,27 +56,16 @@ public class ActivityAboutStartEventQueue implements IDelayedQueue<ActivityAbout
         Integer delayHour = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getDelayHour).orElse(ABOUT_START_HOURS);
         Integer delayMinute = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getDelayMinute).orElse(0);
         LocalDateTime noticeTime = startTime.minusHours(delayHour).minusMinutes(delayMinute);
-        if (noticeTime.isBefore(LocalDateTime.now())) {
-            // 通知时间已经过了，忽略
-            return;
-        }
-        push(redissonClient, KEY, eventOrigin, noticeTime);
+        return noticeTime;
+    }
+
+    public void rePush(ActivityAboutStartEventOrigin eventOrigin) {
+        LocalDateTime delayTime = getDelayTime(eventOrigin);
+        rePush(redissonClient, KEY, eventOrigin, delayTime);
     }
 
     public ActivityAboutStartEventOrigin pop() throws InterruptedException {
         return pop(redissonClient, KEY);
-    }
-
-    private void remove(ActivityAboutStartEventOrigin eventOrigin) {
-        List<ActivityAboutStartEventOrigin> eventOrigins = list(redissonClient, KEY);
-        if (CollectionUtils.isEmpty(eventOrigins)) {
-            return;
-        }
-        for (ActivityAboutStartEventOrigin origin : eventOrigins) {
-            if (Objects.equals(origin.getActivityId(), eventOrigin.getActivityId())) {
-                remove(redissonClient, KEY, origin);
-            }
-        }
     }
 
 }

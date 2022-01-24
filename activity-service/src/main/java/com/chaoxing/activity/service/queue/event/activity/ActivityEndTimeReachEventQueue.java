@@ -4,13 +4,10 @@ import com.chaoxing.activity.dto.event.activity.ActivityEndTimeReachEventOrigin;
 import com.chaoxing.activity.service.queue.IDelayedQueue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
 
 /**活动结束事件到达事件任务队列
  * @author wwb
@@ -30,24 +27,15 @@ public class ActivityEndTimeReachEventQueue implements IDelayedQueue<ActivityEnd
     private RedissonClient redissonClient;
 
     public void push(ActivityEndTimeReachEventOrigin eventOrigin) {
-        remove(eventOrigin.getActivityId());
         push(redissonClient, KEY, eventOrigin, eventOrigin.getEndTime());
+    }
+
+    public void rePush(ActivityEndTimeReachEventOrigin eventOrigin) {
+        rePush(redissonClient, KEY, eventOrigin, eventOrigin.getEndTime());
     }
 
     public ActivityEndTimeReachEventOrigin pop() throws InterruptedException {
         return pop(redissonClient, KEY);
-    }
-
-    private void remove(Integer activityId) {
-        List<ActivityEndTimeReachEventOrigin> eventOrigins = list(redissonClient, KEY);
-        if (CollectionUtils.isEmpty(eventOrigins)) {
-            return;
-        }
-        for (ActivityEndTimeReachEventOrigin eventOrigin : eventOrigins) {
-            if (Objects.equals(eventOrigin.getActivityId(), activityId)) {
-                remove(redissonClient, KEY, eventOrigin);
-            }
-        }
     }
 
 }

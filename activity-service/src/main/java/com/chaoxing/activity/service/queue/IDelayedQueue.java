@@ -45,6 +45,20 @@ public interface IDelayedQueue<T> {
 		delayedQueue.offer(value, delay.toMillis(), TimeUnit.MILLISECONDS);
 	}
 
+	/**重新放到延时队列中
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-24 14:48:35
+	 * @param redissonClient
+	 * @param key
+	 * @param value
+	 * @param time
+	 * @return void
+	*/
+	default void rePush(RedissonClient redissonClient, String key, T value, LocalDateTime time) {
+		push(redissonClient, key, value, time.plusMinutes(1));
+	}
+
 	/**从队列里面获取数据
 	 * @Description 
 	 * @author wwb

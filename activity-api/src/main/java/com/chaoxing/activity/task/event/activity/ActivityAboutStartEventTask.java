@@ -41,7 +41,7 @@ public class ActivityAboutStartEventTask {
         } catch (Exception e) {
             log.error("根据参数:{} 处理活动即将开始任务 error:{}", JSON.toJSONString(eventOrigin), e.getMessage());
             e.printStackTrace();
-            activityAboutStartEventQueue.push(eventOrigin);
+            activityAboutStartEventQueue.rePush(eventOrigin);
         } finally {
             log.info("处理活动即将开始任务 end");
         }
