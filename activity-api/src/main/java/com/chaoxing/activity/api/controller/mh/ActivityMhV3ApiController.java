@@ -535,12 +535,16 @@ public class ActivityMhV3ApiController {
         for (CustomAppConfig config : frontendAppConfigs) {
             boolean showAfterSignUp = Optional.ofNullable(config.getShowAfterSignUp()).orElse(false);
             String iconCloudUrl = StringUtils.isBlank(config.getDefaultIconCloudId()) ? "" : cloudApiService.buildImageUrl(config.getDefaultIconCloudId());
+            String url = Optional.ofNullable(config.getUrl()).orElse("");
+            if (StringUtils.isNotBlank(url)) {
+                url += "?activityId=" + activityId + "&uid=" + uid + "&state=" + activityCreateFid;
+            }
             if (showAfterSignUp) {
                 if (signedUp) {
-                    result.add(MhDataBuildUtil.buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
+                    result.add(MhDataBuildUtil.buildBtnField(config.getTitle(), iconCloudUrl, url, "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
                 }
             } else {
-                result.add(MhDataBuildUtil.buildBtnField(config.getTitle(), iconCloudUrl, Optional.ofNullable(config.getUrl()).orElse(""), "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
+                result.add(MhDataBuildUtil.buildBtnField(config.getTitle(), iconCloudUrl, url, "1", false, MhBtnSequenceEnum.CUSTOM_APP.getSequence()));
             }
         }
         // 排序
