@@ -43,6 +43,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ActivityCreateParamDTO {
 
+	private static final String DEFAULT_ACTIVITY_NAME = "活动";
+
 	private Integer id;
 	/** 活动名称 */
 	private String name;
@@ -177,11 +179,21 @@ public class ActivityCreateParamDTO {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity buildActivity() {
-		LocalDateTime startTime = DateUtils.startTimestamp2Time(getStartTimeStamp());
-		LocalDateTime endTime = DateUtils.endTimestamp2Time(getEndTimeStamp());
+		Long startTimeStamp = getStartTimeStamp();
+		Long endTimeStamp = getEndTimeStamp();
+		if (startTimeStamp == null) {
+			startTimeStamp = DateUtils.date2Timestamp(LocalDateTime.now());
+		}
+		LocalDateTime startTime = DateUtils.startTimestamp2Time(startTimeStamp);
+		LocalDateTime endTime;
+		if (endTimeStamp == null) {
+			endTime = startTime.plusMonths(1);
+		} else {
+			endTime = DateUtils.endTimestamp2Time(getEndTimeStamp());
+		}
 		defaultValue();
 		return Activity.builder()
-				.name(getName())
+				.name(Optional.ofNullable(getName()).filter(StringUtils::isNotBlank).orElse(DEFAULT_ACTIVITY_NAME))
 				.startTime(startTime)
 				.endTime(endTime)
 				.startDate(startTime.toLocalDate())

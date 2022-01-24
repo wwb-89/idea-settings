@@ -1193,7 +1193,7 @@
                     var firstActivityClassifyId = $this.activityClassifies[0] && $this.activityClassifies[0].id;
                     $this.activity = {
                         id: null,
-                        name: "活动",
+                        name: "",
                         startTimeStamp: null,
                         endTimeStamp: null,
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
@@ -1961,24 +1961,39 @@
                     $this.deleteActivityClassifyId = activityClassify.id;
                     $this.$refs.deleteClassifyWindow.show = true;
                 },
+                getSingleTemplateComponentByCode: function (code) {
+                    var $this = this;
+                    var templateComponet = null;
+                    $($this.templateComponents).each(function () {
+                        if (this.code == code) {
+                            templateComponet = this;
+                            return false;
+                        }
+                    });
+                    return templateComponet;
+                },
                 // 验证输入
                 validateForm: function (validateOfflineAddress) {
                     var $this = this;
-                    if (activityApp.isEmpty($this.activity.name)) {
+                    var activityNameTemplateComponent = $this.getSingleTemplateComponentByCode("activity_name");
+                    if (activityNameTemplateComponent && activityApp.isEmpty($this.activity.name)) {
                         app.showMsg("活动名称不能为空");
                         return false;
                     }
-                    if (activityApp.isEmpty($this.activity.startTimeStamp)) {
-                        app.showMsg("活动开始时间不能为空");
-                        return false;
-                    }
-                    if (activityApp.isEmpty($this.activity.endTimeStamp)) {
-                        app.showMsg("活动结束时间不能为空");
-                        return false;
-                    }
-                    if ($this.activity.startTimeStamp >= $this.activity.endTimeStamp) {
-                        app.showMsg("活动开始时间必须小于结束时间");
-                        return false;
+                    var activityTimeScopeTemplateComponent = $this.getSingleTemplateComponentByCode("activity_time_scope");
+                    if (activityTimeScopeTemplateComponent) {
+                        if (activityApp.isEmpty($this.activity.startTimeStamp)) {
+                            app.showMsg("活动开始时间不能为空");
+                            return false;
+                        }
+                        if (activityApp.isEmpty($this.activity.endTimeStamp)) {
+                            app.showMsg("活动结束时间不能为空");
+                            return false;
+                        }
+                        if ($this.activity.startTimeStamp >= $this.activity.endTimeStamp) {
+                            app.showMsg("活动开始时间必须小于结束时间");
+                            return false;
+                        }
                     }
                     if (activityApp.isEmpty($this.activity.coverCloudId)) {
                         app.showMsg("请上传封面");
