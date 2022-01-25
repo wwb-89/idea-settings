@@ -39,7 +39,7 @@
 		<div class="clear"></div>
 	</div>
 	<!--报名的-->
-	<div class="tabContent" v-show="activeTabIndex == 0 && tabIndexList.includes(0)">
+	<div class="tabContent" v-if="activeTabIndex == 0 && tabIndexList.includes(0)">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadSignedUp" infinite-scroll-disabled="signedUpLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" class="list-item" data-type="0">
@@ -84,7 +84,7 @@
 		</div>
 	</div>
 	<!--收藏的-->
-	<div class="tabContent" v-show="activeTabIndex == 1 && tabIndexList.includes(1)">
+	<div class="tabContent" v-if="activeTabIndex == 1 && tabIndexList.includes(1)">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadCollected" infinite-scroll-disabled="collectedLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
@@ -114,7 +114,7 @@
 		</div>
 	</div>
 	<!--管理的-->
-	<div class="tabContent" v-show="activeTabIndex == 2 && tabIndexList.includes(2)">
+	<div class="tabContent" v-if="activeTabIndex == 2 && tabIndexList.includes(2)">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadManaging" infinite-scroll-disabled="managingLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of managings" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="managingDetail(index)">
