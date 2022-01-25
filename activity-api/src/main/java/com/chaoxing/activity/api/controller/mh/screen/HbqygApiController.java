@@ -63,7 +63,7 @@ public class HbqygApiController {
 				fields.add(name);
 
 				JSONObject num = new JSONObject();
-				num.put("flag", "1");
+				num.put("flag", "2");
 				num.put("key", "pv");
 				num.put("value", activityRank.getNum());
 				fields.add(num);

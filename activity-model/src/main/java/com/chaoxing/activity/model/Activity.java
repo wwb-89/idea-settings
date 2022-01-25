@@ -554,4 +554,8 @@ public class Activity {
         return Objects.equals(activityFlag, Activity.ActivityFlagEnum.DUAL_SELECT);
     }
 
+    public boolean isWfwFormActivity() {
+        return Objects.equals(Activity.OriginTypeEnum.WFW_FORM.getValue(), originType);
+    }
+
 }

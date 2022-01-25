@@ -4,16 +4,19 @@ import com.chaoxing.activity.dto.event.activity.ActivityChangeEventOrigin;
 import com.chaoxing.activity.dto.event.activity.ActivityDeletedEventOrigin;
 import com.chaoxing.activity.dto.event.activity.ActivityEndEventOrigin;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
 import com.chaoxing.activity.service.queue.event.activity.ActivityChangeEventQueue;
 import com.chaoxing.activity.service.queue.event.activity.ActivityDeletedEventQueue;
 import com.chaoxing.activity.service.queue.event.activity.ActivityEndEventQueue;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 /**活动状态改变事件服务
  * @author wwb
@@ -33,6 +36,8 @@ public class ActivityStatusChangeEventService {
     private ActivityDeletedEventQueue activityDeletedEventQueue;
     @Resource
     private ActivityChangeEventQueue activityChangeEventQueue;
+    @Resource
+    private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
 
     /**活动状态变更
      * @Description
@@ -74,6 +79,20 @@ public class ActivityStatusChangeEventService {
                 .timestamp(timestamp)
                 .build();
         activityChangeEventQueue.push(activityChangeEventOrigin);
+        // 万能表单活动数据更新
+        if (activity.isWfwFormActivity()) {
+            Integer formId = Optional.ofNullable(activity.getOrigin()).filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null);
+            Integer formUserId = activity.getOriginFormUserId();
+            if (formId != null && formUserId != null) {
+                WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
+                        .activityId(activityId)
+                        .fid(activity.getCreateFid())
+                        .formId(formId)
+                        .formUserId(activity.getOriginFormUserId())
+                        .build();
+                wfwFormActivityDataUpdateQueue.push(queueParam);
+            }
+        }
     }
 
 }
