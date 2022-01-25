@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.MarketSignUpConfig;
 import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
@@ -19,6 +20,7 @@ import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.enums.SignUpBtnEnum;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
@@ -34,8 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -73,6 +74,14 @@ public class IndexController {
 	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private MarketSignupConfigService marketSignupConfigService;
+	@Resource
+	private ActivityQueryService activityQueryService;
+
+	private static final String DEFAULT_HIDE = "signedUp,collected,managing";
+
+	private static final String SIGNED_UP_TAB = "signedUp";
+
+	private static final String MANAGING_TAB = "managing";
 
 	/**通用
 	 * @Description
@@ -285,10 +294,29 @@ public class IndexController {
 	@LoginRequired
 	@RequestMapping("my")
 	public String my(HttpServletRequest request, Model model, MyActivityParamDTO myActivityParam) throws UnsupportedEncodingException {
-		model.addAttribute("flag", myActivityParam.getFlag());
-		model.addAttribute("hide", myActivityParam.getHide());
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Integer uid = loginUser.getUid();
+		Integer fid = myActivityParam.getFid();
+		String flag = myActivityParam.getFlag();
+
+		String hide = Optional.ofNullable(myActivityParam.getHide()).orElse(DEFAULT_HIDE);
+		List<String> hideList = Arrays.asList(hide.split(CommonConstant.DEFAULT_SEPARATOR));
+		int countWaitAudit = 0;
+		int countManageActivity = 0;
+		if (hideList.size() <= 1 && !hideList.contains(SIGNED_UP_TAB)) {
+			// 隐藏的tab只有最多只有一个，且其中隐藏的不包含signedUp，查询我报名的活动中是否有待审批，若无，则tab名称更名为已报名，若有，则保持原有的报名
+			countWaitAudit = activityQueryService.countApprovalSignedUpActivity(uid, fid, flag);
+		}
+		if (!hideList.contains(MANAGING_TAB)) {
+			// 隐藏的tab不包含管理，则查询一下当前用户是否存在管理的活动
+			countManageActivity = activityQueryService.countUserManaged(uid, fid, flag);
+		}
+		model.addAttribute("hasWaitApprovalSignUp", countWaitAudit > 0);
+		model.addAttribute("hasManageActivity", countManageActivity > 0);
+		model.addAttribute("fid", fid);
+		model.addAttribute("flag", flag);
+		model.addAttribute("hide", hide);
 		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
-		model.addAttribute("managAble", myActivityParam.getManagAble());
 		if (StringUtils.isNotBlank(myActivityParam.getAddUrl())) {
 			model.addAttribute("addUrl", myActivityParam.getAddUrl());
 		}

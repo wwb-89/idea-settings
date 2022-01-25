@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
-	<title>我的活动</title>
+	<title th:text="${title == null ? '我的活动' : title}">我的活动</title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
 	<meta name="format-detection" content="telephone=no, email=no">
@@ -30,16 +30,16 @@
 			<div class="cancle">取消</div>
 		</div>
 	</div>
-	<div class="tab" id="road-tab">
+	<div class="tab" id="road-tab" v-if="tabIndexList.length > 1">
 		<ul>
-			<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)">报名</li>
-			<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)">收藏</li>
-			<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)">管理</li>
+			<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)" v-show="showTab('signedUp')">{{hasWaitApprovalSignUp ? '报名' : '已报名'}}</li>
+			<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)" v-show="showTab('collected')">收藏</li>
+			<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)" v-show="showTab('managing')">管理</li>
 		</ul>
 		<div class="clear"></div>
 	</div>
 	<!--报名的-->
-	<div class="tabContent" v-show="activeTabIndex == 0">
+	<div class="tabContent" v-show="activeTabIndex == 0 && showTab('signedUp')">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadSignedUp" infinite-scroll-disabled="signedUpLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" class="list-item" data-type="0">
@@ -84,7 +84,7 @@
 		</div>
 	</div>
 	<!--收藏的-->
-	<div class="tabContent" v-show="activeTabIndex == 1">
+	<div class="tabContent" v-show="activeTabIndex == 1 && showTab('collected')">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadCollected" infinite-scroll-disabled="collectedLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
@@ -114,7 +114,7 @@
 		</div>
 	</div>
 	<!--管理的-->
-	<div class="tabContent" v-show="activeTabIndex == 2">
+	<div class="tabContent" v-show="activeTabIndex == 2 && showTab('managing')">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadManaging" infinite-scroll-disabled="managingLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of managings" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="managingDetail(index)">
@@ -171,15 +171,27 @@
 			vm = new Vue({
 				el: "#activity-vue",
 				data: {
-					limitBtnNum: 3,
-                    adminDomain: [[${adminDomain}]],
-                    cloudDomain: [[${cloudDomain}]],
+					// domain
+					mainDomain: [[${mainDomain}]],
+					adminDomain: [[${adminDomain}]],
+					cloudDomain: [[${cloudDomain}]],
+					// other model params
+					title: [[${title}]],
+					addBtnName: [[${addBtnName}]],
+					addUrl: [[${addUrl}]],
+					hasWaitApprovalSignUp: [[${hasWaitApprovalSignUp}]],    // 是否含有待审核的报名
+					hasManageActivity: [[${hasManageActivity}]],    // 是否含有管理的活动
+
+					// 当前激活的tab索引
 					activeTabIndex: 0,
+					// 我报名的活动上展示按钮限制数
+					limitBtnNum: 3,
 					signedUps: [],
 					collecteds: [],
 					managings: [],
 
 					sw: "",
+					// 报名的活动
 					signedUpLoading: false,
 					signedUpNoMore: false,
 					signedUpLock: false,
@@ -188,20 +200,25 @@
 						pageSize: 10,
 						sw: "",
 						flag: [[${flag}]],
+						fid: [[${fid}]],
 						loadWaitAudit: true
 					},
 					signedUpLoaded: false,
 
+					// 收藏的活动
 					collectedLoading: false,
 					collectedNoMore: false,
 					collectedLock: false,
 					collectedQueryParams: {
 						pageNum: 1,
 						pageSize: 10,
-						sw: ""
+						sw: "",
+						flag: [[${flag}]],
+						fid: [[${fid}]]
 					},
 					collectedLoaded: false,
 
+					// 管理的活动
 					managingLoading: false,
 					managingNoMore: false,
 					managingLock: false,
@@ -209,9 +226,36 @@
 						pageNum: 1,
 						pageSize: 10,
 						sw: "",
-						flag: [[${flag}]]
+						flag: [[${flag}]],
+						fid: [[${fid}]]
 					},
-					managingLoaded: false
+					managingLoaded: false,
+
+					// 隐藏tab列表
+					hideList: [],
+					tabIndexList: []
+				},
+				created: function () {
+					var $this = this;
+					// 解决跨域
+					document.domain = $this.mainDomain;
+					var hideStr = [[${hide}]];
+					if (!activityApp.isEmpty(hideStr)) {
+						$this.hideList = hideStr.split(',');
+					}
+					if ($this.showTab('signedUp')) {
+						$this.tabIndexList.push(0);
+					}
+					if ($this.showTab('collected')) {
+						$this.tabIndexList.push(1);
+					}
+					if ($this.showTab('managing') && $this.hasManageActivity) {
+						$this.tabIndexList.push(2);
+					}
+					if ($this.tabIndexList.length === 0) {
+						$this.tabIndexList.push(0);
+					}
+					$this.activeTabIndex = $this.tabIndexList[0];
 				},
 				mounted: function () {
 					var $this = this;
@@ -242,12 +286,20 @@
 						}
 						return scrollTop;
 					}
-					$this.loadCollected();
-					$this.collectedLock = true;
-					$this.loadManaging();
-					$this.managingLock = true;
+					if ($this.tabIndexList.includes(1)) {
+						$this.loadCollected();
+						$this.collectedLock = true;
+					}
+					if ($this.tabIndexList.includes(2)) {
+						$this.loadManaging();
+						$this.managingLock = true;
+					}
 				},
 				methods: {
+					showTab: function (tabName) {
+						var $this = this;
+						return $this.hideList.indexOf(tabName) == -1;
+					},
 					calSignedUpClass: function (activity) {
 						var userSignUpStatus = activity.userSignUpStatus;
 						if (1 != userSignUpStatus) {
@@ -256,7 +308,7 @@
 						var status = activity.status;
 						if (3 == status) {
 							return "tips color1";
-						}else if (4 == status) {
+						} else if (4 == status) {
 							return "tips color3";
 						} else {
 							return "tips color2";
@@ -266,7 +318,7 @@
 						var status = activity.status;
 						if (3 == status) {
 							return "tips color1";
-						}else if (4 == status) {
+						} else if (4 == status) {
 							return "tips color3";
 						} else {
 							return "tips color2";

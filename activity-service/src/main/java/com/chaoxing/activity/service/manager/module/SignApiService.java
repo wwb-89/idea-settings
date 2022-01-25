@@ -331,9 +331,6 @@ public class SignApiService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
-	public Page pageUserSignedUp(Page page, Integer uid, String sw) {
-		return pageUserSignedUp(page, uid, sw, null);
-	}
 	public Page pageUserSignedUp(Page page, Integer uid, String sw, Integer specificFid) {
 		String url = String.format(USER_SIGNED_UP_URL, uid);
 		HttpHeaders httpHeaders = new HttpHeaders();

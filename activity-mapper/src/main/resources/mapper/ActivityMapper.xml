@@ -683,14 +683,13 @@
             t_activity t
             INNER JOIN t_activity_manager t1 ON t.id = t1.activity_id
             AND t1.uid = #{uid}
-        <if test="marketId != null">
-        LEFT JOIN
-            t_activity_market t2 ON t2.activity_id = t.id
-        </if>
         WHERE
             t.`status` IN ( 1, 2, 3, 4 )
-            <if test="marketId != null">
-                AND t2.market_id = #{marketId}
+            <if test="fid != null">
+                AND t.create_fid = #{fid}
+            </if>
+            <if test="flag != null and flag != ''">
+                AND t.activity_flag = #{flag}
             </if>
             <if test="sw != null and sw != ''">
                 AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
@@ -700,6 +699,29 @@
         ORDER BY
             t.create_time DESC
     </select>
+
+    <!--  统计用户管理的  -->
+    <select id="countUserManaged" resultType="java.lang.Integer">
+        SELECT count(1) FROM (
+            SELECT
+                t.id
+            FROM
+                t_activity t
+            INNER JOIN
+                t_activity_manager t1 ON t.id = t1.activity_id AND t1.uid = #{uid}
+            WHERE
+                t.`status` IN ( 1, 2, 3, 4 )
+                <if test="fid != null">
+                    AND t.create_fid = #{fid}
+                </if>
+                <if test="flag != null and flag != ''">
+                    AND t.activity_flag = #{flag}
+                </if>
+            GROUP BY
+                t.id
+        ) tmp
+    </select>
+
 
     <select id="pageActivityCalendarParticipate" resultMap="BaseResultMap">
         SELECT
@@ -853,7 +875,7 @@
             ,t.start_time DESC
     </select>
 
-    <select id="pageSignedUpActivities" resultMap="BaseResultMap">
+    <select id="mhPageSignedUpActivities" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
@@ -889,24 +911,61 @@
             ,t.start_time DESC
     </select>
 
+    <select id="pageSignedUpActivities" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="flag != null and flag != ''">
+                AND t.activity_flag = #{flag}
+            </if>
+            AND t.`status` IN (1, 2, 3, 4)
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 1, 4 )
+            ,t.start_time DESC
+    </select>
+
+    <!-- 统计signIds下的活动数量 -->
+    <select id="countSignedUpActivity" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            t_activity t
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="flag != null and flag != ''">
+                AND t.activity_flag = #{flag}
+            </if>
+            AND t.`status` IN (1, 2, 3, 4)
+    </select>
+
     <select id="pageCollectedActivityId" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
-        t_activity t
+            t_activity t
         INNER JOIN t_activity_collection t1 ON t.id = t1.activity_id
-            AND t1.uid = #{uid}
+            AND t1.uid = #{params.uid}
             AND t1.is_deleted = 0
-        <if test="marketId != null">
-        LEFT JOIN
-            t_activity_market t2 ON t2.activity_id = t.id
-        </if>
         WHERE
             t.`status` IN ( 1, 2, 3, 4 )
-        <if test="marketId != null">
-            AND t2.market_id = #{marketId}
-        </if>
-            AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
+            <if test="params.fid != null">
+                AND t.create_fid = #{params.fid}
+            </if>
+            <if test="params.flag != null and params.flag != ''">
+                AND t.activity_flag = #{params.flag}
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND t.`name` LIKE CONCAT( '%', #{params.sw}, '%' )
+            </if>
         ORDER BY t1.create_time DESC
     </select>
 

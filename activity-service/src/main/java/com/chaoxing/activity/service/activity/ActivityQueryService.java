@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.ButtonDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
-import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
-import com.chaoxing.activity.dto.activity.ActivityTagNameDTO;
-import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.activity.*;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.query.ActivityReleasePlatformActivityQueryDTO;
 import com.chaoxing.activity.dto.activity.query.result.ActivityReleasePlatformActivityQueryResultDTO;
@@ -511,19 +508,29 @@ public class ActivityQueryService {
 	 * @author wwb
 	 * @Date 2021-04-08 18:00:51
 	 * @param page
+	 * @param uid
 	 * @param sw
+	 * @param fid
+	 * @param flag
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 */
-	public Page<Activity> pageManaged(Page<Activity> page, LoginUserDTO loginUser, String sw, String flag) {
-		Integer marketId = marketQueryService.getMarketIdByFlag(loginUser.getFid(), flag);
-		// 若flag不为空且市场id不存在，则查询结果为空
-		if (StringUtils.isNotBlank(flag) && marketId == null) {
-			page.setRecords(Lists.newArrayList());
-			return page;
-		}
-		page = activityMapper.pageUserManaged(page, loginUser.getUid(), sw, marketId);
+	public Page<Activity> pageManaged(Page<Activity> page, Integer uid, String sw, Integer fid, String flag) {
+		page = activityMapper.pageUserManaged(page, uid, sw, fid, flag);
 		packageActivitySignedStat(page);
 		return page;
+	}
+
+	/**统计用户管理的活动数
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2022-01-25 14:06:22
+	 * @param uid
+	 * @param fid
+	 * @param flag
+	 * @return
+	 */
+	public int countUserManaged(Integer uid, Integer fid, String flag) {
+		return activityMapper.countUserManaged(uid, fid, flag);
 	}
 
 	/**根据活动id查询活动
@@ -602,17 +609,18 @@ public class ActivityQueryService {
 	 * @author wwb
 	 * @Date 2021-01-27 20:30:46
 	 * @param page
-	 * @param loginUser
-	 * @param sw
+	 * @param myActivityParam
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	 */
-	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag, Boolean loadWaitAudit) {
-		Integer uid = loginUser.getUid();
+	public Page pageSignedUp(Page page, MyActivityParamDTO myActivityParam) {
+		Integer uid = myActivityParam.getUid();
+		Integer fid = myActivityParam.getFid();
+		String sw = myActivityParam.getSw();
 		// 查询用户全部待审核或成功报名的报名签到信息
-		Page signedUpPage = signApiService.pageUserSignedUp(new Page<>(1, Integer.MAX_VALUE), uid, sw);
+		Page signedUpPage = signApiService.pageUserSignedUp(new Page<>(1, Integer.MAX_VALUE), uid, sw, fid);
 		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
 			List<UserSignUpStatusStatDTO> signedUpRecords = JSONArray.parseArray(JSON.toJSONString(signedUpPage.getRecords()), UserSignUpStatusStatDTO.class);
-			pageSignedUpActivities(page, signedUpRecords, flag, uid, loadWaitAudit);
+			pageSignedUpActivities(page, signedUpRecords, myActivityParam);
 		}
 		packageActivitySignedStat(page);
 		packageActivityButtons(uid, page);
@@ -716,25 +724,50 @@ public class ActivityQueryService {
 	 * @param page
 	 * @return void
 	 */
-	private void pageSignedUpActivities(Page page, List<UserSignUpStatusStatDTO> userSignUpStatuses,String flag, Integer uid, Boolean loadWaitAudit) {
+	private void pageSignedUpActivities(Page page, List<UserSignUpStatusStatDTO> userSignUpStatuses, MyActivityParamDTO myActivityParam) {
+		String flag = myActivityParam.getFlag();
+		Integer uid = myActivityParam.getFid();
+		Boolean loadWaitAudit = Optional.ofNullable(myActivityParam.getLoadWaitAudit()).orElse(false);
+
 		List<ActivitySignedUpDTO> result = Lists.newArrayList();
 		List<Integer> successSignIds = userSignUpStatuses.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 1)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
 		List<Integer> waitAuditSignIds = userSignUpStatuses.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 2)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
 		waitAuditSignIds.removeAll(successSignIds);
 		int additionalTotal = 0;
 		if (loadWaitAudit && CollectionUtils.isNotEmpty(waitAuditSignIds)) {
-			Page<Activity> waitAuditPage= activityMapper.pageSignedUpActivities(new Page<>(1, waitAuditSignIds.size()), waitAuditSignIds, null, flag, null);
+			Page<Activity> waitAuditPage= activityMapper.pageSignedUpActivities(new Page<>(1, waitAuditSignIds.size()), waitAuditSignIds, flag);
 			result = activitiesConvert2ActivitySignedUp(waitAuditPage.getRecords(), userSignUpStatuses, uid);
 			additionalTotal = result.size();
 		}
 		if (CollectionUtils.isNotEmpty(successSignIds)) {
-			page = activityMapper.pageSignedUpActivities(page, successSignIds, null,flag, null);
+			page = activityMapper.pageSignedUpActivities(page, successSignIds, flag);
 		}
 		List<ActivitySignedUpDTO> records = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatuses, uid);
 		result.addAll(records);
 
 		page.setRecords(result);
 		page.setTotal(page.getTotal() + additionalTotal);
+	}
+
+	/**统计用户在fid下活动标识为flag的报名待审核的活动数
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2022-01-25 14:23:28
+	 * @param uid
+	 * @param fid
+	 * @param flag
+	 * @return
+	 */
+	public int countApprovalSignedUpActivity(Integer uid, Integer fid, String flag) {
+		Page signedUpPage = signApiService.pageUserSignedUp(new Page<>(1, Integer.MAX_VALUE), uid, null, fid);
+		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
+			List<UserSignUpStatusStatDTO> signedUpRecords = JSONArray.parseArray(JSON.toJSONString(signedUpPage.getRecords()), UserSignUpStatusStatDTO.class);
+			List<Integer> signIds = signedUpRecords.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 2)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(signIds)) {
+				return activityMapper.countSignedUpActivity(signIds, flag);
+			}
+		}
+		return 0;
 	}
 
 	/**门户我报名的活动查询
@@ -776,7 +809,7 @@ public class ActivityQueryService {
 		}
 		List<UserSignUpStatusStatDTO> userSignUpStatusStatuses = JSONArray.parseArray(JSON.toJSONString(records), UserSignUpStatusStatDTO.class);
 		List<Integer> signIds = userSignUpStatusStatuses.stream().map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
-		page = activityMapper.pageSignedUpActivities(page, signIds, activityClassifyId, flag, marketIds);
+		page = activityMapper.mhPageSignedUpActivities(page, signIds, activityClassifyId, flag, marketIds);
 		List<ActivitySignedUpDTO> activitySignedUps = activitiesConvert2ActivitySignedUp(page.getRecords(), userSignUpStatusStatuses, uid);
 		page.setRecords(activitySignedUps);
 	}
@@ -823,18 +856,11 @@ public class ActivityQueryService {
 	 * @author wwb
 	 * @Date 2021-01-27 20:58:26
 	 * @param page
-	 * @param loginUser
-	 * @param sw
+	 * @param myActivityParam
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 */
-	public Page<Activity> pageCollected(Page page, LoginUserDTO loginUser, String sw, String flag) {
-		Integer marketId = marketQueryService.getMarketIdByFlag(loginUser.getFid(), flag);
-		// 若flag不为空且市场id不存在，则查询结果为空
-		if (StringUtils.isNotBlank(flag) && marketId == null) {
-			page.setRecords(Lists.newArrayList());
-			return page;
-		}
-		page = activityMapper.pageCollectedActivityId(page, loginUser.getUid(), sw, marketId);
+	public Page<Activity> pageCollected(Page page, MyActivityParamDTO myActivityParam) {
+		page = activityMapper.pageCollectedActivityId(page, myActivityParam);
 		packageActivitySignedStat(page);
 		return page;
 	}

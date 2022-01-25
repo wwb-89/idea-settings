@@ -26,10 +26,10 @@
     <div :class="{'activity-list': true, 'width1000': !isEmbedded}">
         <div :class="{'item-block': true, 'nopadding': true, 'minHeight800': true, 'no-border-radius':isEmbedded}">
             <div class="filter" style="height: 30px">
-                <div class="btns" v-show="managAble || !isEmptyAddUrl">
+                <div class="btns" v-show="!isEmptyAddUrl">
                     <button class="btn-main-gradient" @click="toCreateActivity"><i class="addIcon" v-show="isEmptyAddBtnName"></i>{{addBtnName ? addBtnName : '添加'}}</button>
                 </div>
-                <el-radio-group v-model="currentTab.code" @change="radioChange" v-show="!managAble">
+                <el-radio-group v-model="currentTab.code" @change="radioChange" v-if="tabList.length > 1">
                     <el-radio v-for="(item, index) in tabList" :key="'tab' + index" :label="item.code">{{item.name}}</el-radio>
                 </el-radio-group>
                 <div class="searchDiv" style="position:absolute; right: 40px">
@@ -143,9 +143,9 @@
                     // other model params
                     title: [[${title}]],
                     addBtnName: [[${addBtnName}]],
-                    managAble: [[${managAble}]],
-                    flag: [[${flag}]],
                     addUrl: [[${addUrl}]],
+                    hasWaitApprovalSignUp: [[${hasWaitApprovalSignUp}]],    // 是否含有待审核的报名
+                    hasManageActivity: [[${hasManageActivity}]],    // 是否含有管理的活动
                     hideList: [],
                     currentTab: {},
                     dataLoading: false,
@@ -160,10 +160,6 @@
                     isEmbedded: activityApp.isEmbedded(),
                     mescroll: null,
 
-                    inputValue:'',
-                    dialogVisible:false,
-                    tipsHtml:'',
-                    btnTxt:'确定',
                     createActivity: false, //创建活动
                 }
             },
@@ -185,27 +181,25 @@
                 if (!activityApp.isEmpty(hideStr)) {
                     $this.hideList = hideStr.split(',');
                 }
-                if ($this.managAble) {
-                        $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
-                } else {
-                    if ($this.showTab('signedUp')) {
-                        $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
-                    }
-                    if ($this.showTab('collected')) {
-                        $this.tabList.push({name: '收藏', code: 'collected', url: ctx + '/api/activity/collected'});
-                    }
-                    if ($this.showTab('managing')) {
-                        $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
-                    }
+                if ($this.showTab('signedUp')) {
+                    $this.tabList.push({name: $this.hasWaitApprovalSignUp ? '报名' : '已报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
+                }
+                if ($this.showTab('collected')) {
+                    $this.tabList.push({name: '收藏', code: 'collected', url: ctx + '/api/activity/collected'});
+                }
+                if ($this.showTab('managing') && $this.hasManageActivity) {
+                    $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
                 }
 
-                if ($this.tabList.length > 0) {
-                    $this.currentTab = $.extend({}, $this.tabList[0]);
+                if ($this.tabList.length === 0) {
+                    $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
                 }
+                $this.currentTab = $.extend({}, $this.tabList[0]);
                 $this.queryParams = {
                     pageNum: 1,
                     pageSize: 10,
                     sw: "",
+                    fid: [[${fid}]],
                     flag: [[${flag}]],
                     loadWaitAudit: true
                 }
@@ -527,19 +521,6 @@
                     var $this = this;
                     var activity = $this.activities[index];
                     window.open(activityApp.getActivityManageIndexUrl(activity.id, $this.adminDomain));
-                },
-                //输入框的交互
-                inputDeleteFun:function (){
-                    this.inputValue="";
-                },
-                tabChangeFun:function(num){
-                    this.activeNum = num
-                },
-                cancelFun:function (html,txt){
-                    this.tipsHtml = html;
-                    this.btnTxt = txt;
-                    this.dialogVisible = !this.dialogVisible;
-
                 },
                 // 重载mescroll依旧会请求数据
                 reloadMescoll: function () {

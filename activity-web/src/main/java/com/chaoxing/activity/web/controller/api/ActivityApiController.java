@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.activity.MyActivityParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
@@ -191,17 +192,16 @@ public class ActivityApiController {
 	 * @author wwb
 	 * @Date 2021-01-27 19:34:56
 	 * @param request
-	 * @param sw
-	 * @param flag	活动标识
-	 * @param loadWaitAudit	是否直接加载待审核报名
+	 * @param myActivityParam
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@LoginRequired
 	@RequestMapping("signed-up")
-	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag, Boolean loadWaitAudit) {
+	public RestRespDTO pageSignedUp(HttpServletRequest request,  MyActivityParamDTO myActivityParam) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		myActivityParam.setUid(loginUser.getUid());
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, loadWaitAudit);
+		page = activityQueryService.pageSignedUp(page, myActivityParam);
 		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}
@@ -211,15 +211,16 @@ public class ActivityApiController {
 	 * @author wwb
 	 * @Date 2021-01-27 20:45:13
 	 * @param request
-	 * @param sw
+	 * @param myActivityParam
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@LoginRequired
 	@RequestMapping("collected")
-	public RestRespDTO pageCollected(HttpServletRequest request, String sw, String flag) {
+	public RestRespDTO pageCollected(HttpServletRequest request, MyActivityParamDTO myActivityParam) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		myActivityParam.setUid(loginUser.getUid());
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageCollected(page, loginUser, sw, flag);
+		page = activityQueryService.pageCollected(page, myActivityParam);
 		activityQueryService.fillTagNames(page.getRecords());
 		return RestRespDTO.success(page);
 	}

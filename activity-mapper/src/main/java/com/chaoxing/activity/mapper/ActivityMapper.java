@@ -2,6 +2,7 @@ package com.chaoxing.activity.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.activity.MyActivityParamDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityCreateParticipateQueryDTO;
@@ -150,14 +151,31 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @param page
 	 * @param uid
 	 * @param sw
-	 * @param marketId 市场id
+	 * @param fid
+	 * @param flag
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-08 18:01:23
 	 */
-	Page<Activity> pageUserManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw, @Param("marketId") Integer marketId);
+	Page<Activity> pageUserManaged(@Param("page") Page<?> page,
+								   @Param("uid") Integer uid,
+								   @Param("sw") String sw,
+								   @Param("fid") Integer fid,
+								   @Param("flag") String flag);
 
+	/**统计用户管理的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2022-01-25 14:04:59
+	 * @param uid
+	 * @param fid
+	 * @param flag
+	 * @return
+	 */
+	int countUserManaged(@Param("uid") Integer uid,
+						 @Param("fid") Integer fid,
+						 @Param("flag") String flag);
 	/**
 	 * 活动日历查询
 	 *
@@ -224,32 +242,53 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 *
 	 * @param page
 	 * @param signIds
-	 * @param activityClassifyId
-	 * @param marketIds
+	 * @param flag
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-11-23 18:07:07
 	 */
 	Page<Activity> pageSignedUpActivities(@Param("page") Page<?> page,
-										  @Param("signIds") List<Integer> signIds,
-										  @Param("activityClassifyId") Integer activityClassifyId,
-										  @Param("flag") String flag,
-										  @Param("marketIds") List<Integer> marketIds);
+											@Param("signIds") List<Integer> signIds,
+											@Param("flag") String flag);
 
+	/**门户我的活动数据源分页查询已报名的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2022-01-25 14:38:49
+	 * @param page
+	 * @param signIds
+	 * @param activityClassifyId
+	 * @param flag
+	 * @param marketIds
+	 * @return
+	 */
+	Page<Activity> mhPageSignedUpActivities(@Param("page") Page<?> page,
+											@Param("signIds") List<Integer> signIds,
+											@Param("activityClassifyId") Integer activityClassifyId,
+											@Param("flag") String flag,
+											@Param("marketIds") List<Integer> marketIds);
+
+	/**统计signIds下flag对应的活动数量
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2022-01-25 14:19:55
+	 * @param signIds
+	 * @param flag
+	 * @return
+	 */
+	int countSignedUpActivity(@Param("signIds") List<Integer> signIds,  @Param("flag") String flag);
 	/**
 	 * 分页查询报名的活动列表
 	 *
 	 * @param page
-	 * @param uid
-	 * @param sw
-	 * @param marketId
+	 * @param params
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-27 20:55:30
 	 */
-	Page<Activity> pageCollectedActivityId(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw, @Param("marketId") Integer marketId);
+	Page<Activity> pageCollectedActivityId(@Param("page") Page<?> page, @Param("params")MyActivityParamDTO params);
 
 	/**
 	 * 根据报名签到id查询活动
