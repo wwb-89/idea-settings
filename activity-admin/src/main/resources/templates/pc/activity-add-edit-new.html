@@ -90,8 +90,10 @@
                 </template>
             </div>
             <div class="name-txt">{{isClone ? '复制' : activity.id ? '设置' : '新建'}}</div>
-            <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit(true)">保存</button>
-            <button v-else type="button" class="create-btn" @click="addSubmit(true)">保存</button>
+
+            <button v-if="activity.id" type="button" class="btn-second-normal btn-width-80 margin-left-auto" @click="editSubmit(true)">保存</button>
+            <button v-else type="button" class="btn-second-normal btn-width-80 margin-left-auto" @click="addSubmit(true)">保存</button>
+            <button v-if="!activity.released" type="button" class="create-btn btn-width-80" @click="release">发布</button>
         </div>
         <!-- 创建活动头部 -->
         <div v-show="templateComponents && activity">
@@ -2224,8 +2226,17 @@
                         $this.editSubmit(false);
                     }
                 },
+                // 发布
+                release: function () {
+                    var $this = this;
+                    if ($this.activity.id) {
+                        $this.editSubmit(true, true);
+                    } else {
+                        $this.addSubmit(true, true);
+                    }
+                },
                 // 下一步（创建活动）
-                addSubmit: function (validateOfflineAddress) {
+                addSubmit: function (validateOfflineAddress, release) {
                     var $this = this;
                     if (!$this.validateForm(validateOfflineAddress)) {
                         return;
@@ -2252,9 +2263,13 @@
                         participateScopeJsonStr: participateScopeJsonStr,
                         releaseClassIdJsonStr: releaseClassIdJsonStr,
                         signJsonStr: activityApp.getJsonStr(sign),
-                        isClone: $this.isClone
+                        isClone: $this.isClone,
+                        release: release ? true : false
                     }
                     var action = "创建";
+                    if (release) {
+                        action = "发布";
+                    }
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             app.noticeActivityChange($this.activity.id);
@@ -2275,7 +2290,7 @@
                     });
                 },
                 // 编辑活动提交
-                editSubmit: function (validateOfflineAddress) {
+                editSubmit: function (validateOfflineAddress, release) {
                     var $this = this;
                     if (!$this.validateForm(validateOfflineAddress)) {
                         return;
@@ -2301,25 +2316,30 @@
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: participateScopeJsonStr,
                         releaseClassIdJsonStr: releaseClassIdJsonStr,
-                        signJsonStr: activityApp.getJsonStr(sign)
+                        signJsonStr: activityApp.getJsonStr(sign),
+                        release: release ? true : false
                     };
+                    var action = "修改";
+                    if (release) {
+                        action = "发布";
+                    }
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             app.noticeActivityChange($this.activity.id);
                             var activityData = data.data;
                             $this.$set($this.sign, "id", activityData.signId);
-                            app.showMsg("修改成功", function () {
+                            app.showMsg(action + "成功", function () {
                                 $this.returnBack();
                             });
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "修改失败";
+                                errorMessage = action + "失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("修改失败");
+                        app.showMsg(action + "失败");
                     });
                 },
                 returnBack: function () {

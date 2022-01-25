@@ -45,22 +45,29 @@ public class ActivityApiController {
 	 * @Description 需要活动对象
 	 * @author wwb
 	 * @Date 2020-11-13 09:45:31
-	 * @param request
-	 * @param activityJsonStr
-	 * @param participateScopeJsonStr
-	 * @param signJsonStr
+	 * @param request request
+	 * @param activityJsonStr 活动信息json字符串
+	 * @param participateScopeJsonStr 活动参与范围json字符串
+	 * @param signJsonStr 报名签到json字符串
+	 * @param release 是否发布
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@LoginRequired
 	@PostMapping("new")
-	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr, Boolean isClone) {
+	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr, Boolean isClone, Boolean release) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityCreateParamDTO activityCreateParamDto = JSON.parseObject(activityJsonStr, ActivityCreateParamDTO.class);
 		List<WfwAreaDTO> wfwRegionalArchitectures = StringUtils.isBlank(participateScopeJsonStr) ? null : JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
 		List<Integer> releaseClassIds = StringUtils.isBlank(releaseClassIdJsonStr) ? null : JSON.parseArray(releaseClassIdJsonStr, Integer.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
 		isClone = Optional.ofNullable(isClone).orElse(false);
-		Integer activityId = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser, isClone);
+		release = Optional.ofNullable(release).orElse(false);
+		Integer activityId;
+		if (release) {
+			activityId = activityHandleService.addAndRelease(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser, isClone);
+		} else {
+			activityId = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser, isClone);
+		}
 		return RestRespDTO.success(activityId);
 	}
 
@@ -68,21 +75,27 @@ public class ActivityApiController {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-17 20:18:16
-	 * @param request
-	 * @param activityJsonStr
-	 * @param participateScopeJsonStr
-	 * @param signJsonStr
+	 * @param request request
+	 * @param activityJsonStr 活动信息json字符串
+	 * @param participateScopeJsonStr 活动参与范围json字符串
+	 * @param signJsonStr 报名签到json字符串
+	 * @param release 是否发布
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@LoginRequired
 	@PostMapping("edit")
-	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr) {
+	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr, Boolean release) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityUpdateParamDTO activityUpdateParamDto = JSON.parseObject(activityJsonStr, ActivityUpdateParamDTO.class);
 		List<Integer> releaseClassIds = StringUtils.isBlank(releaseClassIdJsonStr) ? null : JSON.parseArray(releaseClassIdJsonStr, Integer.class);
 		List<WfwAreaDTO> wfwRegionalArchitectures = StringUtils.isBlank(participateScopeJsonStr) ? null : JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
-		activityHandleService.edit(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser);
+		release = Optional.ofNullable(release).orElse(false);release = Optional.ofNullable(release).orElse(false);
+		if (release) {
+			activityHandleService.editAndRelease(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser);
+		} else {
+			activityHandleService.edit(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser);
+		}
 		return RestRespDTO.success(activityUpdateParamDto);
 	}
 

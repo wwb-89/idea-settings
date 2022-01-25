@@ -164,6 +164,8 @@ public class ActivityCreateParamDTO {
 	private Integer certificateTemplateId;
 	/** 是否开启推送提醒 */
 	private Boolean openPushReminder;
+	/** 是否已发布 */
+	private Boolean released;
 
 	private ActivityPushReminder activityPushReminder;
 
@@ -236,6 +238,7 @@ public class ActivityCreateParamDTO {
 				.courseId(getCourseId())
 				.certificateTemplateId(getCertificateTemplateId())
 				.openPushReminder(getOpenPushReminder())
+				.released(getReleased())
 				.build();
 	}
 
@@ -315,6 +318,7 @@ public class ActivityCreateParamDTO {
 				.courseId(activity.getCourseId())
 				.certificateTemplateId(activity.getCertificateTemplateId())
 				.openPushReminder(activity.getOpenPushReminder())
+				.released(activity.getReleased())
 				.build();
 	}
 

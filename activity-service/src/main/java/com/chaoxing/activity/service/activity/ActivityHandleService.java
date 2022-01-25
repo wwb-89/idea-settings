@@ -270,6 +270,25 @@ public class ActivityHandleService {
 		return activityId;
 	}
 
+	/**新增并发布
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-25 17:18:51
+	 * @param activityCreateParamDto
+	 * @param signCreateParamDto
+	 * @param wfwRegionalArchitectureDtos
+	 * @param releaseClassIds
+	 * @param loginUser
+	 * @param isClone
+	 * @return java.lang.Integer
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public Integer addAndRelease(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser, boolean isClone) {
+		Integer activityId = add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, releaseClassIds, loginUser, isClone);
+		release(activityId, loginUser.buildOperateUserDTO());
+		return activityId;
+	}
+
 	/**处理作品征集
 	 * @Description 如果开启了作品征集且没有创建则需要创建
 	 * @author wwb
@@ -473,6 +492,27 @@ public class ActivityHandleService {
 			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
 			throw new BusinessException("更新活动失败");
 		});
+	}
+
+	/**修改并发布
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-01-25 17:21:45
+	 * @param activityUpdateParamDto
+ * @param signCreateParam
+ * @param wfwRegionalArchitectureDtos
+ * @param releaseClassIds
+ * @param loginUser
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public Activity editAndRelease(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser) {
+		Activity activity = edit(activityUpdateParamDto, signCreateParam, wfwRegionalArchitectureDtos, releaseClassIds, loginUser);
+		if (!activity.getReleased()) {
+			release(activity.getId(), loginUser.buildOperateUserDTO());
+			activity.setReleased(true);
+		}
+		return activity;
 	}
 
 	/**更新报名设置信息
