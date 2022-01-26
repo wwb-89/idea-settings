@@ -52,6 +52,27 @@ body {
   padding: 0 24px;
   box-sizing: border-box;
   border-bottom: 1px solid #F0F0F0;
+  .back-style {
+    display: flex;
+    align-items: center;
+    float: left;
+    padding: 12px 0;
+    line-height: 38px;
+    a{
+      text-decoration: none;
+      color: #999999;
+    }
+    .icon-back {
+      margin-right: 6px;
+    }
+    .line {
+      display: inline-block;
+      width: 1px;
+      height: 13px;
+      background: #E9E9E9;
+      margin: 0 8px;
+    }
+  }
   .title {
     position: relative;
     color: #333333;
@@ -115,7 +136,7 @@ body {
   }
   .menu {
     float: left;
-    max-width: calc(100% - 440px);
+    max-width: calc(100% - 540px);
     overflow: hidden;
     white-space: nowrap;
     .menu-item {

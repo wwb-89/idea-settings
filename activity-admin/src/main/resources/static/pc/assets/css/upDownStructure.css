@@ -56,6 +56,37 @@ body {
   border-bottom: 1px solid #F0F0F0;
 }
 
+.header .back-style {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  float: left;
+  padding: 12px 0;
+  line-height: 38px;
+}
+
+.header .back-style a {
+  text-decoration: none;
+  color: #999999;
+}
+
+.header .back-style .icon-back {
+  margin-right: 6px;
+}
+
+.header .back-style .line {
+  display: inline-block;
+  width: 1px;
+  height: 13px;
+  background: #E9E9E9;
+  margin: 0 8px;
+}
+
 .header .title {
   position: relative;
   color: #333333;
@@ -134,7 +165,7 @@ body {
 
 .header .menu {
   float: left;
-  max-width: calc(100% - 440px);
+  max-width: calc(100% - 540px);
   overflow: hidden;
   white-space: nowrap;
 }
