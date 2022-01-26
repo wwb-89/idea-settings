@@ -5,6 +5,7 @@
     <title th:text="${activity.name}">活动主页</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/upDownStructure.css" th:href="@{/pc/assets/css/upDownStructure.css}">
     <style>
@@ -17,6 +18,10 @@
 <body>
     <div class="container" id="vue" v-cloak>
         <div class="header">
+            <div class="back-style" v-if="isEmbedded">
+                <a href="javascript:" @click="returnBack"><i class="icon-back"></i>返回</a>
+                <span class="line"></span>
+            </div>
             <div class="title">
                 <div class="title-box" style="cursor: pointer" @click="activityHome">{{activity.name}}</div>
                 <div class="title-pop">
@@ -189,7 +194,8 @@
                     menus: [],
                     iframeUrl: "",
                     activityHomeQrcodeShow: false,
-                    activityHomeQrcodeGenerated: false
+                    activityHomeQrcodeGenerated: false,
+                    isEmbedded: activityApp.isEmbedded()
                 }
             },
             created: function () {
@@ -379,6 +385,14 @@
                 handleCommand(index) {
                     var $this = this;
                     $this.selectMenu(index);
+                },
+                returnBack: function () {
+                    var $this = this;
+                    if ($this.isEmbedded) {
+                        window.history.back();
+                    } else {
+                        window.close();
+                    }
                 }
             }
         });
