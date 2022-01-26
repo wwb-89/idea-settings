@@ -330,11 +330,11 @@
                     containerMinHeight = containerMinHeight.replace(/px/gi, "");
                     var containerHeight = $(".container").height();
                     // 窗口的高度
-                    var windowHeight = $(window).height() - 40;
+                    var windowHeight = $(window).height() - 40 - 62;
                     // iframe的高度
                     var iframeHeight = $("#content").height();
                     // iframe中内容的真实高度
-                    var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height() + 24;
+                    var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height();
                     // container应该取最大高度
                     var maxHeight = containerMinHeight > containerHeight ? containerMinHeight : containerHeight;
                     maxHeight = maxHeight > windowHeight ? maxHeight : windowHeight;
