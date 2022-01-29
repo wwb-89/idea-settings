@@ -173,6 +173,8 @@ public class Activity {
     /** 是否开启推送提醒 */
     @TableField(value = "is_open_push_reminder")
     private Boolean openPushReminder;
+    /** 顺序; column: sequence */
+    private Integer sequence;
 
     // 附加
     /** 开始时间字符串 */
