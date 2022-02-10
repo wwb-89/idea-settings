@@ -1,13 +1,16 @@
 package com.chaoxing.activity.vo;
 
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -80,7 +83,7 @@ public class ActivityVO {
     }
 
     public static ActivityVO activityConvert2Vo(Activity activity) {
-        return ActivityVO.builder()
+        ActivityVO result = ActivityVO.builder()
                 .id(activity.getId())
                 .name(activity.getName())
                 .coverCloudId(activity.getCoverCloudId())
@@ -99,5 +102,9 @@ public class ActivityVO {
                 .createFid(activity.getCreateFid())
                 .createOrgName(activity.getCreateOrgName())
                 .build();
+        if (StringUtils.isBlank(result.getCoverUrl()) && StringUtils.isNotBlank(result.getCoverCloudId())) {
+            result.setCoverUrl(DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + result.getCoverCloudId());
+        }
+        return result;
     }
 }
