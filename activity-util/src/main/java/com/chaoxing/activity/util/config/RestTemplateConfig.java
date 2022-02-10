@@ -27,7 +27,8 @@ public class RestTemplateConfig {
 	@Resource
 	private ProxyProperties proxyProperties;
 
-	private static final int CONNECT_TIMEOUT = 60 * 1000;
+	private static final int CONNECT_TIMEOUT = 10 * 1000;
+	private static final int READ_TIMEOUT = 60 * 1000;
 
 	@Bean
 	@Primary
@@ -35,6 +36,7 @@ public class RestTemplateConfig {
 		OkHttp3ClientHttpRequestFactory okHttp3ClientHttpRequestFactory = new OkHttp3ClientHttpRequestFactory();
 		// 连接超时时间60s
 		okHttp3ClientHttpRequestFactory.setConnectTimeout(CONNECT_TIMEOUT);
+		okHttp3ClientHttpRequestFactory.setReadTimeout(READ_TIMEOUT);
 		return new RestTemplate(okHttp3ClientHttpRequestFactory);
 	}
 
@@ -42,7 +44,10 @@ public class RestTemplateConfig {
 	public RestTemplate restTemplateProxy(){
 		if (proxyProperties.getEnable()) {
 			Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(proxyProperties.getHost(), proxyProperties.getPort()));
-			OkHttpClient okHttpClient = new OkHttpClient().newBuilder().connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS).build().newBuilder().proxy(proxy).build();
+			OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+					.connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+					.readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+					.build().newBuilder().proxy(proxy).build();
 			OkHttp3ClientHttpRequestFactory okHttp3ClientHttpRequestFactory = new OkHttp3ClientHttpRequestFactory(okHttpClient);
 			// 连接超时时间60s
 			okHttp3ClientHttpRequestFactory.setConnectTimeout(CONNECT_TIMEOUT);
