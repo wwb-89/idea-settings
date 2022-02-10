@@ -132,6 +132,8 @@ public class SignApiService {
 	private static final String CREATE_FORM_BY_FIELD_NAMES_URL = DomainConstant.SIGN_API + "/form/create";
 	/** 根据uid、signIds查询用户能报名的 */
 	private static final String USER_SIGN_UP_ABLE_SIGN_URL = DomainConstant.SIGN_API + "/sign/sign-up-able";
+	/** 根据signIds查询报名的状态信息 */
+	private static final String SIGN_UP_STATUS_INFO_URL = DomainConstant.SIGN_API + "/sign/sign-up/status-info";
 
 	/** 根据万能表单id查询报名签到id */
 	private static final String GET_SIGN_ID_BY_WFW_FORM_ID_URL = DomainConstant.SIGN_API + "/sign/id/from-wfw-form-id";
@@ -865,6 +867,23 @@ public class SignApiService {
 		return resultHandle(jsonObject, () -> JSONArray.parseArray(jsonObject.getString("data"), SignUpAbleSignDTO.class), (message) -> {
 			throw new BusinessException(message);
 		});
+	}
+
+	public List<SignUpAbleSignDTO> listSignUpStatusInfo(Integer uid, List<Integer> signIds) {
+		if (CollectionUtils.isEmpty(signIds)) {
+			return Lists.newArrayList();
+		}
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("signIds", String.join(CommonConstant.DEFAULT_SEPARATOR, signIds.stream().map(String::valueOf).collect(Collectors.toList())));
+		String result = restTemplate.postForObject(SIGN_UP_STATUS_INFO_URL, params, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		List<SignUpAbleSignDTO> signUps = resultHandle(jsonObject, () -> JSONArray.parseArray(jsonObject.getString("data"), SignUpAbleSignDTO.class), (message) -> {
+			throw new BusinessException(message);
+		});
+		if (CollectionUtils.isNotEmpty(signUps)) {
+			signUps.forEach(v -> v.setUid(uid));
+		}
+		return signUps;
 	}
 
 	/**分组查询用户uids列表的已填写表单统计状况

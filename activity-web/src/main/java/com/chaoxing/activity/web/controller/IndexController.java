@@ -246,7 +246,9 @@ public class IndexController {
 		String signUpKeyword = SignUpBtnEnum.BTN_1.getKeyword();
 		if (StringUtils.isBlank(areaCode) && marketId != null) {
 			MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
-			signUpKeyword = StringUtils.isNotBlank(marketSignUpConfig.getSignUpKeyword()) ? marketSignUpConfig.getSignUpKeyword() : signUpKeyword;
+			if (marketSignUpConfig != null) {
+				signUpKeyword = StringUtils.isNotBlank(marketSignUpConfig.getSignUpKeyword()) ? marketSignUpConfig.getSignUpKeyword() : signUpKeyword;
+			}
 		}
 		model.addAttribute("regions", groupRegionFilters);
 		model.addAttribute("activityQueryDates", activityQueryDates);

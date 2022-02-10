@@ -177,7 +177,7 @@ public class ActivityQueryService {
 		}
 		page = activityMapper.pageParticipate(page, activityQuery);
 		List<Activity> records = Optional.ofNullable(page.getRecords()).orElse(Lists.newArrayList());
-		packageActivitySignUpStatus(currentUid, records);
+		packageActivitySignUpSignUpAble(currentUid, records);
 		List<Activity> activities = records.stream().filter(v -> null != v.getHasSignUp() && v.getHasSignUp()).collect(Collectors.toList());
 		page.setRecords(activities);
 		page.setTotal(activities.size());
@@ -190,26 +190,42 @@ public class ActivityQueryService {
 	 * @Date 2021-12-13 17:07:49
 	 * @param currentUid
 	 * @param records
+	 * @param signUpAble 是否查询可报名的
 	 * @return
 	 */
-	private void packageActivitySignUpStatus(Integer currentUid, List<Activity> records) {
+	private void packageActivitySignUpStatus(Integer currentUid, List<Activity> records, Boolean signUpAble) {
 		if (currentUid == null || CollectionUtils.isEmpty(records)) {
 			return;
 		}
 		// 只查询能报名的
 		List<Integer> signIds = records.stream().map(Activity::getSignId).filter(Objects::nonNull).collect(Collectors.toList());
-		List<SignUpAbleSignDTO> signUpAbleSigns = signApiService.listSignUpAbleSign(currentUid, signIds);
+		List<SignUpAbleSignDTO> signUpAbleSigns;
+		if (signUpAble) {
+			signUpAbleSigns = signApiService.listSignUpAbleSign(currentUid, signIds);
+		} else {
+			signUpAbleSigns = signApiService.listSignUpStatusInfo(currentUid, signIds);
+		}
 		if (CollectionUtils.isNotEmpty(signUpAbleSigns)) {
 			Map<Integer, SignUpAbleSignDTO> signIdSignUpAbleSignMap = signUpAbleSigns.stream().collect(Collectors.toMap(SignUpAbleSignDTO::getSignId, v -> v, (v1, v2) -> v2));
 			for (Activity record : records) {
 				SignUpAbleSignDTO signUpAbleSign = signIdSignUpAbleSignMap.get(record.getSignId());
 				if (signUpAbleSign != null) {
-					record.setHasSignUp(true);
+					if (signUpAble) {
+						record.setHasSignUp(true);
+					}
 					record.setSignUpStatus(signUpAbleSign.getSignUpStatus());
 					record.setSignUpStatusDescribe(signUpAbleSign.getSignUpStatusDescribe());
 				}
 			}
 		}
+	}
+
+	private void packageActivitySignUpSignUpAble(Integer currentUid, List<Activity> records) {
+		packageActivitySignUpStatus(currentUid, records, true);
+	}
+
+	private void packageActivitySignUpStatus(Integer currentUid, List<Activity> records) {
+		packageActivitySignUpStatus(currentUid, records, false);
 	}
 
 	/**查询flag下的所有活动
