@@ -66,8 +66,8 @@ public class CertificateApiService {
      * @Description 
      * @author wwb
      * @Date 2021-12-15 10:46:31
-     * @param uid
-     * @param fid
+     * @param uid 创建者id
+     * @param fid 创建者fid
      * @return java.lang.Integer
     */
     public Integer copyTemplate(Integer uid, Integer fid) {

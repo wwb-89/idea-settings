@@ -31,6 +31,7 @@ import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
+import com.chaoxing.activity.service.manager.module.CertificateApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -106,6 +107,8 @@ public class WfwFormSyncActivityQueueService {
     private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
     @Resource
     private ActivityPushReminderService activityPushReminderService;
+    @Resource
+    private CertificateApiService certificateApiService;
 
     /**
     * @Description
@@ -245,6 +248,9 @@ public class WfwFormSyncActivityQueueService {
         if (signInCreateParam != null) {
             signCreateParam.setSignIns(Lists.newArrayList(signInCreateParam));
         }
+        // 默认添加证书模板
+        Integer certificateTemplateId = certificateApiService.copyTemplate(loginUser.getUid(), loginUser.getFid());
+        activityCreateParam.setCertificateTemplateId(certificateTemplateId);
         // 新增活动
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
