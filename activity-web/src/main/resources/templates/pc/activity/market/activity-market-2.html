@@ -228,6 +228,23 @@
 					}
 				}
 				$this.initMescroll();
+				// 监听父页面的滚动条是否到底
+				if (activityApp.isEmbedded()) {
+					window.parent.onscroll = function(){
+						//scrollTop是滚动条滚动时，距离顶部的距离
+						var scrollTop = window.parent.document.documentElement.scrollTop || window.parent.document.body.scrollTop;
+						//windowHeight是可视区的高度
+						var windowHeight = window.parent.document.documentElement.clientHeight || window.parent.document.body.clientHeight;
+						//scrollHeight是滚动条的总高度
+						var scrollHeight = window.parent.document.documentElement.scrollHeight || window.parent.document.body.scrollHeight;
+						//滚动条到底部的条件
+						if (scrollTop + windowHeight == scrollHeight) {
+							if ($this.mescroll) {
+								$this.mescroll.triggerUpScroll();
+							}
+						}
+					}
+				}
 			},
 			methods: {
 				changeSignUpAbleCheckedStatus: function (value) {
