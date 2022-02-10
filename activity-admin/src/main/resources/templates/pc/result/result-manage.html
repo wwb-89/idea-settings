@@ -472,10 +472,14 @@
                 },
                 // 提交评审结果: 合格、不合格、批量合格、批量不合格
                 submitReviewResult: function (url, params) {
+                    var $this = this;
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
-                            app.showMsg("评审成功");
-                            window.location.reload();
+                            app.showMsg("评审成功", function () {
+                                // 隐藏批量合格弹窗
+                                $this.ifModifyPop = false;
+                                $this.loadData();
+                            });
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
