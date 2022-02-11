@@ -2103,7 +2103,7 @@
                                 }
                             } else {
                                 // 给没有开启报名填报信息的报名设置万能表单
-                                if (activityApp.isEmpty(signUp.fillInfoFormId)) {
+                                if (activityApp.isEmpty(signUp.fillInfoFormId) && signUp.formType != "form") {
                                     var wfwFormInfo = $this.signUpFillInfoDefaultWfwFormMap[originId];
                                     $this.$set($this.signUpMap[originId], "formType", "wfw_form");
                                     $this.$set($this.signUpMap[originId], "openAddr", wfwFormInfo.openAddr);
