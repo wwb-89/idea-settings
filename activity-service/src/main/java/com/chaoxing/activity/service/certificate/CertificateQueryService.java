@@ -9,6 +9,7 @@ import com.chaoxing.activity.model.CertificateIssue;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,20 @@ public class CertificateQueryService {
             userCertificate.setIssueTimestamp(DateUtils.date2Timestamp(userCertificate.getIssueTime()));
         }
         return userCertificate;
+    }
+
+    /**获取活动activityId下的证书发放用户信息列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-11 14:49:40
+     * @param activityId
+     * @return
+     */
+    public List<UserCertificateDTO> listUserCertificateIssueByActivity(Integer activityId) {
+        if (activityId == null) {
+            return Lists.newArrayList();
+        }
+        return certificateIssueMapper.listUserCertificateIssueByActivity(activityId);
     }
 
     /**查询证书发放记录

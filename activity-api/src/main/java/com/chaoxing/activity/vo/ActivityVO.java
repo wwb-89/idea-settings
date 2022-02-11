@@ -60,6 +60,8 @@ public class ActivityVO {
     private Integer createFid;
     /** 活动创建机构 */
     private String createOrgName;
+    /** 活动标识 */
+    private String activityFlag;
 
     /** 活动简介 */
     private String introduction;
@@ -101,6 +103,7 @@ public class ActivityVO {
                 .createUsername(activity.getCreateUserName())
                 .createFid(activity.getCreateFid())
                 .createOrgName(activity.getCreateOrgName())
+                .activityFlag(activity.getActivityFlag())
                 .build();
         if (StringUtils.isBlank(result.getCoverUrl()) && StringUtils.isNotBlank(result.getCoverCloudId())) {
             result.setCoverUrl(DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + result.getCoverCloudId());

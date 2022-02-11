@@ -53,6 +53,15 @@ public interface CertificateIssueMapper extends BaseMapper<CertificateIssue> {
      * @return
      */
     UserCertificateDTO getUserCertificate(@Param("uid") Integer uid, @Param("activityId") Integer activityId);
+
+    /**获取活动activityId下的证书发放用户信息列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-11 14:48:43
+     * @param activityId
+     * @return
+     */
+    List<UserCertificateDTO> listUserCertificateIssueByActivity(@Param("activityId") Integer activityId);
     /**
      * 批量新增
      *
