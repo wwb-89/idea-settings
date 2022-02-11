@@ -58,6 +58,7 @@ public interface IQueue<T> {
     */
     default T pop(RedissonClient redissonClient, String key) throws InterruptedException {
         RBlockingDeque<T> blockingDeque = redissonClient.getBlockingDeque(key);
+        redissonClient.getDelayedQueue(blockingDeque);
         return blockingDeque.poll(CommonConstant.QUEUE_GET_WAIT_TIME.toMillis(), TimeUnit.MILLISECONDS);
     }
 
