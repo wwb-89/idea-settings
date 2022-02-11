@@ -15,7 +15,6 @@ import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
@@ -59,8 +58,6 @@ public class ActivityMhV3ApiController {
 
     @Resource
     private ActivityQueryService activityQueryService;
-    @Resource
-    private ActivityValidationService activityValidationService;
     @Resource
     private ActivityRatingQueryService activityRatingQueryService;
     @Resource
@@ -392,7 +389,7 @@ public class ActivityMhV3ApiController {
         Boolean openWork = activity.getOpenWork();
         openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
         Integer workId = activity.getWorkId();
-        boolean isManager = activityValidationService.isManageAble(activity, uid);
+        /*boolean isManager = activityValidationService.isManageAble(activity, uid);*/
         boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
         boolean signedUp = true;
         // 报名信息
@@ -489,7 +486,7 @@ public class ActivityMhV3ApiController {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.MY_WORK.getValue());
                 } else if (Objects.equals(btnName, "全部作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.ALL_WORK.getValue());
-                } else if (Objects.equals(btnName, "征集管理") || Objects.equals(btnName, "提交作品")) {
+                } else if (/*Objects.equals(btnName, "征集管理") || */Objects.equals(btnName, "提交作品")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SUBMIT_WORK.getValue());
                 } else if (Objects.equals(btnName, "作品审核")) {
                     buttonIcon = cloudApiService.buildImageUrl(MhAppIconEnum.THREE.WORK_REVIEW.getValue());
@@ -508,9 +505,9 @@ public class ActivityMhV3ApiController {
             result.add(MhDataBuildUtil.buildBtnField("讨论小组", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), UrlConstant.getGroupUrl(groupBbsid), "1", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员
-        if (isManager) {
+        /*if (isManager) {
             result.add(MhDataBuildUtil.buildBtnField("管理", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.MANAGE_TRANSPARENT.getValue()), activity.getManageUrl(), "1", false, MhBtnSequenceEnum.MANAGE.getSequence()));
-        }
+        }*/
         // 评价
         Boolean openRating = activity.getOpenRating();
         openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);

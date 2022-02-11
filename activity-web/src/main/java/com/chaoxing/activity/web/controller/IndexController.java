@@ -77,9 +77,7 @@ public class IndexController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 
-	private static final String DEFAULT_HIDE = "signedUp,collected,managing";
-
-	private static final String SIGNED_UP_TAB = "signedUp";
+	private static final String DEFAULT_HIDE = "collected";
 
 	private static final String MANAGING_TAB = "managing";
 
@@ -303,17 +301,11 @@ public class IndexController {
 
 		String hide = Optional.ofNullable(myActivityParam.getHide()).orElse(DEFAULT_HIDE);
 		List<String> hideList = Arrays.asList(hide.split(CommonConstant.DEFAULT_SEPARATOR));
-		int countWaitAudit = 0;
 		int countManageActivity = 0;
-		if (hideList.size() <= 1 && !hideList.contains(SIGNED_UP_TAB)) {
-			// 隐藏的tab只有最多只有一个，且其中隐藏的不包含signedUp，查询我报名的活动中是否有待审批，若无，则tab名称更名为已报名，若有，则保持原有的报名
-			countWaitAudit = activityQueryService.countApprovalSignedUpActivity(uid, fid, flag);
-		}
 		if (!hideList.contains(MANAGING_TAB)) {
 			// 隐藏的tab不包含管理，则查询一下当前用户是否存在管理的活动
 			countManageActivity = activityQueryService.countUserManaged(uid, fid, flag);
 		}
-		model.addAttribute("hasWaitApprovalSignUp", countWaitAudit > 0);
 		model.addAttribute("hasManageActivity", countManageActivity > 0);
 		model.addAttribute("fid", fid);
 		model.addAttribute("flag", flag);
