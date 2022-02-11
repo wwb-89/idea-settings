@@ -808,6 +808,19 @@ public class ActivityApiController {
 	public RestRespDTO getUserCertificateInfo(@RequestParam Integer activityId, @RequestParam Integer uid) {
 		return RestRespDTO.success(certificateQueryService.getUserCertificateInfo(uid, activityId));
 	}
+	
+	/**获取活动activityId下的证书发放的用户信息列表
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2022-02-11 14:44:40
+	 * @param activityId
+	 * @return 
+	 */
+	@CrossOrigin
+	@RequestMapping("/outer/user-certificate/list")
+	public RestRespDTO listActivityCertificateIssueUserInfo(@RequestParam Integer activityId) {
+		return RestRespDTO.success(certificateQueryService.listUserCertificateIssueByActivity(activityId));
+	}
 
 	/**活动重新绑定模版
 	 * @Description 

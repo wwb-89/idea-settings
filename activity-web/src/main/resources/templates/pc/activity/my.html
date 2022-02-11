@@ -144,7 +144,6 @@
                     title: [[${title}]],
                     addBtnName: [[${addBtnName}]],
                     addUrl: [[${addUrl}]],
-                    hasWaitApprovalSignUp: [[${hasWaitApprovalSignUp}]],    // 是否含有待审核的报名
                     hasManageActivity: [[${hasManageActivity}]],    // 是否含有管理的活动
                     hideList: [],
                     currentTab: {},
@@ -189,17 +188,17 @@
                     $this.hideList = hideStr.split(',');
                 }
                 if ($this.showTab('signedUp')) {
-                    $this.tabList.push({name: $this.hasWaitApprovalSignUp ? '报名' : '已报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
+                    $this.tabList.push({name: '我报名的', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
                 }
                 if ($this.showTab('collected')) {
                     $this.tabList.push({name: '收藏', code: 'collected', url: ctx + '/api/activity/collected'});
                 }
                 if ($this.showTab('managing') && $this.hasManageActivity) {
-                    $this.tabList.push({name: '管理', code: 'managing', url: ctx + '/api/manage/activity/list'});
+                    $this.tabList.push({name: '我管理的', code: 'managing', url: ctx + '/api/manage/activity/list'});
                 }
 
                 if ($this.tabList.length === 0) {
-                    $this.tabList.push({name: '报名', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
+                    $this.tabList.push({name: '我报名的', code: 'signedUp', url: ctx + '/api/activity/signed-up'});
                 }
                 $this.currentTab = $.extend({}, $this.tabList[0]);
                 $this.queryParams = {

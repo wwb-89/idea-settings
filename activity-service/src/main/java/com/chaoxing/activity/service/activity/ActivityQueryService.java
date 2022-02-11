@@ -688,6 +688,9 @@ public class ActivityQueryService {
 				if (openWork && workId != null) {
 					List<WorkBtnDTO> workBtnDtos = workApiService.listBtns(workId, uid, activityCreateFid);
 					for (WorkBtnDTO workBtnDto : workBtnDtos) {
+						if (Objects.equals(workBtnDto.getButtonName(), "征集管理")) {
+							continue;
+						}
 						Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
 						if (enable) {
 							buttons.add(ButtonDTO.build(workBtnDto.getButtonName(), workBtnDto.getLinkUrl(), ButtonDTO.BtnSequenceEnum.WORK));
@@ -699,11 +702,6 @@ public class ActivityQueryService {
 				String groupBbsid = activity.getGroupBbsid();
 				if (openGroup && StringUtils.isNotBlank(groupBbsid)) {
 					buttons.add(ButtonDTO.build("讨论小组", UrlConstant.getGroupUrl(groupBbsid), ButtonDTO.BtnSequenceEnum.GROUP));
-				}
-				boolean isManager = activityValidationService.isManageAble(activity, uid);
-				// 是不是管理员
-				if (isManager) {
-					buttons.add(ButtonDTO.build("管理", activity.getManageUrl(), ButtonDTO.BtnSequenceEnum.MANAGE));
 				}
 				// 评价
 				Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(Boolean.FALSE);
@@ -763,27 +761,6 @@ public class ActivityQueryService {
 
 		page.setRecords(result);
 		page.setTotal(page.getTotal() + additionalTotal);
-	}
-
-	/**统计用户在fid下活动标识为flag的报名待审核的活动数
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2022-01-25 14:23:28
-	 * @param uid
-	 * @param fid
-	 * @param flag
-	 * @return
-	 */
-	public int countApprovalSignedUpActivity(Integer uid, Integer fid, String flag) {
-		Page signedUpPage = signApiService.pageUserSignedUp(new Page<>(1, Integer.MAX_VALUE), uid, null, fid);
-		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
-			List<UserSignUpStatusStatDTO> signedUpRecords = JSONArray.parseArray(JSON.toJSONString(signedUpPage.getRecords()), UserSignUpStatusStatDTO.class);
-			List<Integer> signIds = signedUpRecords.stream().filter(v -> Objects.equals(v.getUserSignUpStatus(), 2)).map(UserSignUpStatusStatDTO::getSignId).collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(signIds)) {
-				return activityMapper.countSignedUpActivity(signIds, flag);
-			}
-		}
-		return 0;
 	}
 
 	/**门户我报名的活动查询
