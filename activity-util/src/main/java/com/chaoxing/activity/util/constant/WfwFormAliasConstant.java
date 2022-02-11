@@ -36,5 +36,7 @@ public class WfwFormAliasConstant {
     public static final String SIGN_UP_STATUS = "sign_up_status";
     /** 活动预览地址 */
     public static final String ACTIVITY_PREVIEW_URL = "preview_url";
+    /** 活动pv */
+    public static final String ACTIVITY_PV = "pv";
 
 }

@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.stat;
 
 import cn.hutool.http.HtmlUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.ActivityCollectionDTO;
 import com.chaoxing.activity.dto.activity.ActivityRankDTO;
@@ -316,6 +317,20 @@ public class ActivityStatSummaryQueryService {
     public List<ActivityRankDTO> marketActivityPvRank(Integer marketId, Integer limit) {
         limit = Optional.ofNullable(limit).orElse(10);
         return activityStatSummaryMapper.marketActivityPvRank(marketId, limit);
+    }
+
+    /**查询活动的统计汇总信息
+     * @Description 
+     * @author wwb
+     * @Date 2022-02-11 14:29:17
+     * @param activityId
+     * @return com.chaoxing.activity.model.ActivityStatSummary
+    */
+    public ActivityStatSummary getByActivityId(Integer activityId) {
+        List<ActivityStatSummary> activityStatSummaries = activityStatSummaryMapper.selectList(new LambdaQueryWrapper<ActivityStatSummary>()
+                .eq(ActivityStatSummary::getActivityId, activityId)
+        );
+        return activityStatSummaries.stream().findFirst().orElse(null);
     }
 
 }

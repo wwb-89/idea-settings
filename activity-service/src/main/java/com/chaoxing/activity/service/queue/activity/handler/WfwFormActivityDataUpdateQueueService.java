@@ -8,7 +8,9 @@ import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormActivityWriteBackDataDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
@@ -44,6 +46,8 @@ public class WfwFormActivityDataUpdateQueueService {
     private SignApiService signApiService;
     @Resource
     private WfwFormApiService wfwFormApiService;
+    @Resource
+    private ActivityStatSummaryQueryService activityStatSummaryQueryService;
 
     public void handle(WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam) {
         Integer activityId = queueParam.getActivityId();
@@ -134,6 +138,12 @@ public class WfwFormActivityDataUpdateQueueService {
                     item.put("val", data);
                     result.add(item);
                 }
+            } else if (Objects.equals(alias, WfwFormAliasConstant.ACTIVITY_PV)) {
+                ActivityStatSummary activityStatSummary = activityStatSummaryQueryService.getByActivityId(wfwFormActivityWriteBackData.getActivityId());
+                Integer pv = Optional.ofNullable(activityStatSummary).map(ActivityStatSummary::getPv).orElse(null);
+                data.add(pv);
+                item.put("val", data);
+                result.add(item);
             }
         }
         if (result.isEmpty()) {
