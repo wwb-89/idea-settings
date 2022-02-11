@@ -39,7 +39,6 @@ public class HbqygActivityPvStatTask {
 					.eq(Activity::getMarketId, MARKET_ID)
 					.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
 					.orderByDesc(Activity::getId)
-					.last("LIMIT 1000")
 			);
 			if (CollectionUtils.isEmpty(activities)) {
 				return;
