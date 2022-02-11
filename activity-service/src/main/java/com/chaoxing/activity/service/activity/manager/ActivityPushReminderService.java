@@ -10,8 +10,10 @@ import com.chaoxing.activity.mapper.ActivityPushReminderMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityPushReminder;
 import com.chaoxing.activity.model.OrgConfig;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
+import com.chaoxing.activity.service.queue.notice.ActivityReminderNoticeQueue;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -35,10 +37,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ActivityPushReminderService {
 
-    @Autowired
+    @Resource
     private ActivityPushReminderMapper activityPushReminderMapper;
     @Resource
+    private ActivityReminderNoticeQueue activityReminderNoticeQueue;
+    @Resource
     private WfwContactApiService wfwContactApiService;
+    @Resource
+    private ActivityQueryService activityQueryService;
     @Resource
     private XxtNoticeApiService xxtNoticeApiService;
 
@@ -124,7 +130,7 @@ public class ActivityPushReminderService {
     }
 
 
-    /**
+    /**推送提醒通知
      * @Description
      * @author huxiaolong
      * @Date 2021-12-22 16:50:36
@@ -132,7 +138,22 @@ public class ActivityPushReminderService {
      * @return
      */
     public void sendNotice(Activity activity) {
-        Integer activityId = activity.getId();
+        Boolean openPushReminder = activity.getOpenPushReminder();
+        if (!openPushReminder) {
+            return;
+        }
+        activityReminderNoticeQueue.push(ActivityReminderNoticeQueue.QueueParamDTO.builder().activityId(activity.getId()).build());
+    }
+
+    /**推送提醒通知
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-22 16:50:36
+     * @param activityId
+     * @return
+     */
+    public void sendNotice(Integer activityId) {
+        Activity activity = activityQueryService.getById(activityId);
         Integer fid = activity.getCreateFid();
         // 活动开启了消息提醒推送才进行通知
         if (activity.getOpenPushReminder()) {
@@ -142,7 +163,7 @@ public class ActivityPushReminderService {
                 log.error(errMsg);
                 return;
             }
-            String content = StringUtils.isNotBlank(activityPushReminder.getContent()) ? activityPushReminder.getContent() : "请查看";
+            String content = activityPushReminder.getContent();
             String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
             // 查询机构下的通讯录部门列表
             List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
