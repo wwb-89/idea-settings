@@ -185,5 +185,6 @@ UPDATE t_activity_menu_config SET menu = CONCAT('template_', menu) WHERE templat
 
 
 ALTER TABLE t_activity_custom_app_config ADD COLUMN `is_open_blank` tinyint(1) DEFAULT 1 COMMENT '是否新页面打开菜单';
-
+-- 2022-01-28
+ALTER TABLE t_activity ADD `sequence` INT(11) DEFAULT 1 COMMENT '顺序';
 
