@@ -513,11 +513,11 @@ body {
 }
 
 /*选择应用---链接--弹窗*/
-.selectLinkPop .body {
+.selectLinkPop.selectLinkPopCopy .body {
   padding: 21px 32px;
 }
 
-.selectLinkPop .body .form .el-input__inner {
+.selectLinkPop.selectLinkPopCopy .body .form .el-input__inner {
   color: #333333;
   height: 32px;
   line-height: 32px;
@@ -526,31 +526,39 @@ body {
   padding: 0 11px;
 }
 
-.selectLinkPop .body .content-switch-box {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box {
   line-height: 32px;
+  background-color: white;
+  padding: 0;
 }
 
-.selectLinkPop .body .content-switch-box .switch-box .label {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .switch-box .label {
   color: #666666;
+  line-height: inherit;
 }
 
-.selectLinkPop .body .content-switch-box .switch-box .switch {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .switch-box .switch {
   margin-right: 0;
 }
 
-.selectLinkPop .body .content-switch-box .link-lists .link-list {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists {
+  padding-top: 0;
+}
+
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists .link-list {
   position: relative;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+  padding-right: 0;
 }
 
-.selectLinkPop .body .content-switch-box .link-lists .link-list .left-box .line1 {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists .link-list .left-box .line1 {
   overflow: hidden;
   width: 100%;
 }
 
-.selectLinkPop .body .content-switch-box .link-lists .link-list .left-box .line1 .icon-img {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists .link-list .left-box .line1 .icon-img {
   width: 32px;
   height: 32px;
   border: 1px solid #E7E7E7;
@@ -564,28 +572,28 @@ body {
   background-color: white;
 }
 
-.selectLinkPop .body .content-switch-box .link-lists .link-list .left-box .line1 .icon-img img {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists .link-list .left-box .line1 .icon-img img {
   width: 16px;
   margin-top: 8px;
 }
 
-.selectLinkPop .body .content-switch-box .link-lists .link-list .left-box .line1 .el-input {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists .link-list .left-box .line1 .el-input {
   width: calc(100% - 48px);
   float: right;
 }
 
-.selectLinkPop .body .content-switch-box .link-lists .terminal-select-box {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists .terminal-select-box {
   height: 32px;
 }
 
-.selectLinkPop .body .content-switch-box .link-lists .terminal-select-box .box-title {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists .terminal-select-box .box-title {
   float: left;
   margin-right: 16px;
   display: inline-block;
   width: 70px;
 }
 
-.selectLinkPop .body .content-switch-box .link-lists .terminal-select .el-checkbox__label {
+.selectLinkPop.selectLinkPopCopy .body .content-switch-box .link-lists .terminal-select .el-checkbox__label {
   color: #333333;
 }
 

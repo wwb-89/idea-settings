@@ -416,7 +416,7 @@ body{
 }
 
 /*选择应用---链接--弹窗*/
-.selectLinkPop {
+.selectLinkPop.selectLinkPopCopy {
   .body {
     padding: 21px 32px;
     .form {
@@ -432,9 +432,12 @@ body{
     }
     .content-switch-box {
       line-height: 32px;
+      background-color: white;
+      padding: 0;
       .switch-box {
         .label {
           color: #666666;
+          line-height: inherit;
         }
         .switch {
           margin-right: 0;
@@ -442,9 +445,11 @@ body{
 
       }
       .link-lists {
+        padding-top: 0;
         .link-list {
           position: relative;
           box-sizing: border-box;
+          padding-right: 0;
           .left-box {
             .line1 {
               overflow: hidden;
