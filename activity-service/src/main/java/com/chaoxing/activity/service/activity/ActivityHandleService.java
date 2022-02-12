@@ -254,7 +254,7 @@ public class ActivityHandleService {
 		activityMarketService.associate(activity);
 		// 默认添加活动市场管理
 		// 添加管理员
-		ActivityManager activityManager = ActivityManager.buildCreator(activity, activityMenus);
+		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
 
 		// 处理发布范围
@@ -325,8 +325,9 @@ public class ActivityHandleService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void handleClazzInteraction(Activity activity, SignCreateParamDTO signCreateParamDto, LoginUserDTO loginUser) {
+		boolean isTeachFlag = Activity.isTeachFlag(activity.getActivityFlag());
 		boolean needCreateClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false) && (activity.getClazzId() == null || activity.getCourseId() == null);
-		if (needCreateClazzInteraction) {
+		if (isTeachFlag && needCreateClazzInteraction) {
 			SignUpCreateParamDTO signUp = Optional.ofNullable(signCreateParamDto.getSignUps()).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 			Integer fillFormId = Optional.ofNullable(signUp).map(SignUpCreateParamDTO::getFillInfoFormId).orElse(null);
 			String activityName = activity.getName();

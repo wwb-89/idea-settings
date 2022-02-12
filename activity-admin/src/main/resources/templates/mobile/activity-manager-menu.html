@@ -56,11 +56,17 @@
                     el: "#limit-manage",
                     data: {
                         activityId: [[${activityId}]],
+                        isCreator: [[${isCreator}]],
                         manager: [[${manager}]],
                         operateUid: [[${manager.uid}]],
                         operateUserName: [[${manager.userName}]],
                         menus: [[${menus}]],
-                        menuForm: {}
+                        menuForm: {},
+                        settingMenuItem: {
+                            active: false,
+                            code: 'setting',
+                            name: '设置'
+                        }
                     },
                     created: function () {
                         var $this = this;
@@ -87,6 +93,15 @@
                         initMenu: function () {
                             var $this = this;
                             var existMenus = $this.manager.menu || "";
+                            var settingMenu = $.extend({}, $this.settingMenuItem);
+                            // 当前用户为活动创建者，并且existMenus不含setting，则补充setting
+                            if ($this.isCreator && existMenus.indexOf($this.settingMenuItem.code) == -1) {
+                                $this.menus.push(settingMenu)
+                            } else if (existMenus.indexOf($this.settingMenuItem.code) != -1) {
+                                // 若当前existMenus存在setting，则menus添加setting，并且为激活状态
+                                settingMenu.active = true;
+                                $this.menus.push(settingMenu)
+                            }
                             $($this.menus).each(function () {
                                 // 临时active属性初始化为false
                                 $this.menuForm[this.code] = existMenus.indexOf(this.code) != -1;

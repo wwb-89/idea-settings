@@ -105,6 +105,7 @@
             data: {
                 mainDomain: [[${mainDomain}]],
                 activity: [[${activity}]],
+                loginUser: [[${session._login_user_}]],
                 activityId: [[${activity.id}]],
                 managerUids: [[${managerUids}]],
                 menus: [],
@@ -119,7 +120,12 @@
                 permissionDialogShow: false,
                 allChecked: false,
                 loaded: false,
-                photoDomain: [[${photoDomain}]]
+                photoDomain: [[${photoDomain}]],
+                settingMenuItem: {
+                    active: false,
+                    code: 'setting',
+                    name: '设置'
+                }
             },
             created: function () {
                 var $this = this;
@@ -162,6 +168,16 @@
                     var menus = [[${menus}]] || [];
                     var interactionMenus = ['task', 'discuss', 'homework', 'review_management']
                     existMenus = existMenus || "";
+                    var creator = $this.activity.createUid == $this.loginUser.uid;
+                    var settingMenu = $.extend({}, $this.settingMenuItem);
+                    // 当前用户为活动创建者，并且existMenus不含setting，则补充setting
+                    if (creator && existMenus.indexOf($this.settingMenuItem.code) == -1) {
+                        menus.push(settingMenu)
+                    } else if (existMenus.indexOf($this.settingMenuItem.code) != -1) {
+                        // 若当前existMenus存在setting，则menus添加setting，并且为激活状态
+                        settingMenu.active = true;
+                        menus.push(settingMenu)
+                    }
                     $(menus).each(function () {
                         if (!$this.activity.openClazzInteraction && interactionMenus.includes(this.code)) {
                             return true;

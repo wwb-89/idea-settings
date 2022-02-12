@@ -12,6 +12,9 @@ import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.enums.ActivityMenuEnum;
+import com.chaoxing.activity.util.exception.BusinessException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 /**活动管理员
  * @author wwb
@@ -81,15 +85,24 @@ public class ActivityManagerController {
 	* @param model
 	* @param request
 	* @param activityId
-	* @param uid
+	* @param uid	被操作用户的uid
 	* @return java.lang.String
 	*/
 	@LoginRequired
 	@RequestMapping("{uid}/menu")
 	public String managerMenuView(Model model, HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer uid) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityValidationService.isCreator(activityId, loginUser.getUid());
+		Integer loginUid = loginUser.getUid();
+		boolean isCreator = activityValidationService.isCreator(activityId, loginUid);
+		if (!isCreator) {
+			ActivityManager loginManager = activityManagerService.getByActivityUid(activityId, loginUid);
+			String canAccessMenu = Optional.ofNullable(loginManager).map(ActivityManager::getMenu).orElse(null);
+			if (StringUtils.isNotBlank(canAccessMenu) && !canAccessMenu.contains(ActivityMenuEnum.BackendMenuEnum.SETTING.getValue())) {
+				throw new BusinessException("无权限");
+			}
+		}
 		ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
+		model.addAttribute("isCreator", isCreator);
 		model.addAttribute("activityId", activityId);
 		model.addAttribute("manager", activityManager);
 		model.addAttribute("menus", activityMenuQueryService.listActivityEnableBackendMenus(activityId));

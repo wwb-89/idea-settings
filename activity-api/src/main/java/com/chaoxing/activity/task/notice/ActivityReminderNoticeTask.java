@@ -1,9 +1,7 @@
 package com.chaoxing.activity.task.notice;
 
-import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.queue.notice.ActivityReminderNoticeQueue;
-import com.chaoxing.activity.service.queue.notice.ActivitySignedUpUserNoticeQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

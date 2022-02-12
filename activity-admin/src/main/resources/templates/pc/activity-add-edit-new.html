@@ -811,15 +811,9 @@
                                 <ul class="add-box" style="height: 28px">
                                     <li v-for="(scope, scopeIndex) of activityPushReminder.receiveScopes" :key="'receiver-scope-' + scopeIndex">
                                         <span>{{scope.externalName}}</span>
-                                        <i class="del-btn" @click=""></i>
+                                        <i class="del-btn" @click="removeRemindScope(scopeIndex)"></i>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
-                        <div class="form-items">
-                            <label class="label">发送时间</label>
-                            <div class="items">
-                                <span class="tips-txt">活动发布时</span>
                             </div>
                         </div>
                         <div class="form-items">
@@ -2580,6 +2574,10 @@
                     $this.remindContentShow = false;
                     // 将数据拷贝
                     $this.activity.activityPushReminder = $.extend({}, $this.activityPushReminder);
+                },
+                removeRemindScope: function (scopeIndex) {
+                    var $this = this;
+                    $this.activityPushReminder.receiveScopes.splice(scopeIndex, 1);
                 },
                 deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex) {
                     var $this = this;

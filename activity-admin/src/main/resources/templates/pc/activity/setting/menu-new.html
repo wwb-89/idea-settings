@@ -17,18 +17,6 @@
         .header {
             width: inherit;
         }
-        .terminal-select .label {
-            display: inline-block;
-            vertical-align: top;
-            font-size: 14px;
-            line-height: 20px;
-            color: #333333;
-            margin-right: 15px;
-        }
-
-        .terminal-select .switch {
-            margin-right: 32px;
-        }
     </style>
 </head>
 <body>
@@ -46,11 +34,11 @@
                 <li class="li-operate">操作</li>
             </ul>
             <div class="table-body" id="sortDragBox1">
-                <ul v-for="(item, index) in backendMenus" :key="'backend-menu-' + index" class="table-tr fs0 list-group-item">
+                <ul v-for="(item, index) in backendMenus" :key="'backend-menu-' + index" class="table-tr fs0 list-group-item" v-if="item.code != 'setting'">
                     <li class="table-td li-drag"><i class="icon-drag" :menu-code="item.code"></i></li>
                     <li class="table-td li-name">{{item.name}}</li>
                     <li class="table-td li-status">
-                        <el-switch v-model="item.enable" :disabled="item.code == 'setting'" @change="changeBackendMenuEnable(index)"></el-switch>
+                        <el-switch v-model="item.enable" @change="changeBackendMenuEnable(index)"></el-switch>
                     </li>
                     <li class="table-td li-operate" v-show="item.dataOrigin == 'activity'">
                         <span class="btn btn-edit" @click="toEditBackendMenu(index)">编辑</span>
@@ -101,7 +89,7 @@
                 </div>
                 <div class="body">
                     <div class="form">
-                        <div class="content-switch-box marginBottom20">
+                        <div class="content-switch-box">
                             <div class="link-lists link-lists1">
                                 <div class="link-list marginBottom16">
                                     <div class="left-box">
@@ -117,13 +105,16 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="terminal-select">
-                                    <el-checkbox v-model="addEditMenu.pc">电脑端</el-checkbox>
-                                    <el-checkbox v-model="addEditMenu.mobile">移动端</el-checkbox>
-                                </div>
-                                <div class="terminal-select" style="margin-top: 15px" v-show="operateMenuType == 'backend'">
-                                    <label class="label color666">新页面打开</label>
-                                    <el-switch class="switch" v-model="addEditMenu.openBlank"></el-switch>
+                                <div class="terminal-select-box marginBottom16">
+                                    <label class="box-title color333 font14">显示终端</label>
+                                    <div class="terminal-select">
+                                        <el-checkbox v-model="addEditMenu.pc">电脑端</el-checkbox>
+                                        <el-checkbox v-model="addEditMenu.mobile">移动端</el-checkbox>
+                                    </div>
+                                    <div class="switch-box">
+                                        <label class="label color666">新页面打开</label>
+                                        <el-switch class="switch" v-model="addEditMenu.openBlank"></el-switch>
+                                    </div>
                                 </div>
                             </div>
                         </div>

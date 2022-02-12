@@ -24,7 +24,7 @@ public enum ActivityMenuEnum {
         SIGN_UP("报名名单", "sign_up", "管理报名名单、报名审核等功能", 1),
         SIGN_IN("签到管理", "sign_in", "管理签到、发布签到", 10),
         FORM_COLLECTION("表单采集", "form_collection", "管理表单采集、发布表单采集", 20),
-        RESULTS_MANAGE("考核管理", "results_manage", "审核用户参与活动的成绩是否为合格", 30),
+        RESULTS_MANAGE("考核管理", "results_manage", "审核用户的成绩是否为合格", 30),
         CERTIFICATE("证书发放", "certificate", "", 40),
         NOTICE("发通知", "notice", "", 50),
         STAT("统计", "stat", "", 60),
@@ -35,7 +35,7 @@ public enum ActivityMenuEnum {
         HOMEWORK("作业", "homework", "", 90),
         REVIEW_MANAGEMENT("评审", "review_management", "", 100),
 
-        SETTING("设置", "setting", "", 110);
+        SETTING("设置", "setting", "", 10000);
 
         private final String name;
         private final String value;

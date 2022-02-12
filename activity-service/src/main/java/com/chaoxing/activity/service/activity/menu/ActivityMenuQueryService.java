@@ -193,9 +193,21 @@ public class ActivityMenuQueryService {
      */
     public List<ActivityMenuDTO> listUserActivityMenus(Activity activity, Integer uid, boolean creator) {
         Integer activityId = activity.getId();
-
         // 查询活动配置启用的所有菜单
         List<ActivityMenuConfig> activityMenus = listActivityEnableMenuConfigs(activityId);
+        // 旧数据中可能没有设置配置，所以在此添加上设置，并置为启用状态，若用户不为创建者，在下面的管理员的判断中会自动过滤掉该多余配置
+        ActivityMenuEnum.BackendMenuEnum settingEnum = ActivityMenuEnum.BackendMenuEnum.SETTING;
+        ActivityMenuConfig settingMenu = activityMenus.stream().filter(v -> Objects.equals(v.getMenu(), ActivityMenuEnum.BackendMenuEnum.SETTING.getValue())).findFirst().orElse(null);
+        if (settingMenu == null) {
+            activityMenus.add(ActivityMenuConfig.builder()
+                    .menu(settingEnum.getValue())
+                    .showRule(ActivityMenuConfig.ShowRuleEnum.NO_LIMIT.getValue())
+                    .enable(true)
+                    .dataOrigin(ActivityMenuConfig.DataOriginEnum.SYSTEM.getValue())
+                    .type(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue())
+                    .sequence(settingEnum.getSequence())
+                    .build());
+        }
         if (activityManagerValidationService.isManager(activityId, uid) && !creator) {
             ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
             if (activityManager != null && StringUtils.isNotBlank(activityManager.getMenu())) {

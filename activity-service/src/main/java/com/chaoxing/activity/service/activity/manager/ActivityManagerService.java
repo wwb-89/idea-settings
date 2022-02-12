@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** 管理员服务
@@ -190,9 +191,16 @@ public class ActivityManagerService {
     * @return void
     */
     public void updateActivityManageMenu(Integer activityId, ActivityManager activityManager, LoginUserDTO loginUser) {
+        Integer loginUid = loginUser.getUid();
         // 活动创建者权限校验
-        activityValidationService.creator(activityId, loginUser.getUid());
-
+        boolean isCreator = activityValidationService.isCreator(activityId, loginUid);
+        if (!isCreator) {
+            ActivityManager loginManager = getByActivityUid(activityId, loginUid);
+            String canAccessMenu = Optional.ofNullable(loginManager).map(ActivityManager::getMenu).orElse(null);
+            if (StringUtils.isNotBlank(canAccessMenu) && !canAccessMenu.contains(ActivityMenuEnum.BackendMenuEnum.SETTING.getValue())) {
+                throw new BusinessException("无权限");
+            }
+        }
         activityManagerMapper.update(null, new UpdateWrapper<ActivityManager>()
                 .lambda()
                 .eq(ActivityManager::getActivityId, activityId)

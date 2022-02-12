@@ -1,7 +1,5 @@
 package com.chaoxing.activity.dto.activity;
 
-import com.chaoxing.activity.dto.module.ClazzInteractionDTO;
-import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityCustomAppConfig;
 import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.model.CustomAppConfig;
@@ -12,11 +10,7 @@ import com.google.common.collect.Lists;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

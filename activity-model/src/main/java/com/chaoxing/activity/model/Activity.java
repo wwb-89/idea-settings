@@ -10,6 +10,7 @@ import com.chaoxing.activity.util.LocalDateTimeSerializer;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -560,4 +561,20 @@ public class Activity {
         return Objects.equals(Activity.OriginTypeEnum.WFW_FORM.getValue(), originType);
     }
 
+    /**是否教发标识
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-12 16:12:19
+     * @param activityFlag
+     * @return
+     */
+    public static boolean isTeachFlag(String activityFlag) {
+        if (StringUtils.isBlank(activityFlag)) {
+            return false;
+        }
+        return Objects.equals(activityFlag, ActivityFlagEnum.TEACHER.getValue()) ||
+                Objects.equals(activityFlag, ActivityFlagEnum.TRAINING.getValue()) ||
+                Objects.equals(activityFlag, ActivityFlagEnum.SUBJECT.getValue()) ||
+                Objects.equals(activityFlag, ActivityFlagEnum.STUDIO.getValue());
+    }
 }
