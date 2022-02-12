@@ -13,7 +13,7 @@
     margin: 0;
   }
   .uplode-list {
-    //font-size: 0;
+    font-size: 0;
     .uplode-img {
       display: inline-block;
       vertical-align: top;
@@ -21,6 +21,9 @@
       margin-right: 10px;
       width: 76px;
       height: 76px;
+      &:hover .webuploader-pick{
+        background: url(../images/yq-design/uplode-hover.png) !important;
+      }
     }
     .webuploader-pick {
       //z-index: 2;
