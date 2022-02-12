@@ -486,8 +486,8 @@
                                             <el-switch v-model="signUpMap[item.id].openRoleLimit"></el-switch>
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
-                                        <div class="join-box" style="margin-left: 115px;margin-top: 12px;">
-                                            <div class="join-select" v-show="signUpMap[item.id].openRoleLimit">
+                                        <div class="join-box" v-show="signUpMap[item.id].openRoleLimit" style="margin-left: 115px;margin-top: 12px;">
+                                            <div class="join-select">
                                                 <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateRole(item.id, it)">
                                                 <span v-if="signUpMap[item.id].roleParticipateScopes.length < 1">请选择</span>
                                                 <div class="add-tags" v-else>
