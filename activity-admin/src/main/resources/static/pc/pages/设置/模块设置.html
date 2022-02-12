@@ -80,20 +80,12 @@
     <div class="dialog-mask selectLinkPop" v-show="selectLinkDialog">
       <div class="dailog">
         <div class="dailog-header">
-          <span>添加模块</span>
+          <span>管理功能菜单</span>
           <i class="close" @click="selectLinkDialog=false"></i>
         </div>
         <div class="body">
           <div class="form">
-            <el-input v-model="linkName" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom20"></el-input>
-            <div class="content-switch-box marginBottom20">
-              <div class="switch-title">
-                <span class="color333 font14">管理员菜单</span>
-                <div class="switch-box fr">
-                  <label class="label color666">报名后显示</label>
-                  <el-switch class="switch" v-model="linkSwitch1" @change="changeLinkShow(1)"></el-switch>
-                </div>
-              </div>
+            <div class="content-switch-box">
               <div class="link-lists link-lists1">
                 <div class="link-list marginBottom16" v-for="(item ,index) in linkLists1" :key="index">
                   <div class="left-box">
@@ -106,27 +98,16 @@
                     </div>
                   </div>
                 </div>
-                <div class="terminal-select">
-                  <el-checkbox v-model="checkedPc">电脑端</el-checkbox>
-                  <el-checkbox v-model="checkedApp">移动端</el-checkbox>
-                </div>
-              </div>
-            </div>
-            <div class="content-switch-box">
-              <div class="switch-title">
-                <span class="color333 font14">用户端菜单</span>
-              </div>
-              <div class="link-lists link-lists2">
-                <div class="link-list marginBottom16" v-for="(item ,index) in linkLists2" :key="index">
-                  <div class="left-box">
-                    <div class="line1 marginBottom16">
-                      <div class="icon-img" @click="showSelectIconFunc()"><img :src="item.icon" alt=""></div>
-                      <el-input v-model="item.name" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
-                    </div>
-                    <div class="line2">
-                      <el-input v-model="item.link" type="text" placeholder="链接"></el-input>
-                    </div>
+                <div class="terminal-select-box marginBottom16">
+                  <label class="box-title color333 font14">显示终端</label>
+                  <div class="terminal-select">
+                    <el-checkbox v-model="checkedPc">电脑端</el-checkbox>
+                    <el-checkbox v-model="checkedApp">移动端</el-checkbox>
                   </div>
+                </div>
+                <div class="switch-box">
+                  <label class="label color666">新页面打开</label>
+                  <el-switch class="switch" v-model="linkSwitch1"></el-switch>
                 </div>
               </div>
             </div>
@@ -218,14 +199,6 @@
         linkName: '班级互动',
         linkSwitch1: true,
         linkLists1:[
-          {
-            icon: '../../assets/images/link-icon/link1.png',
-            name:'班级互动',
-            link: 'https://www.iconfont.cn/collections/detail'
-          }
-        ],
-        linkSwitch2: true,
-        linkLists2:[
           {
             icon: '../../assets/images/link-icon/link1.png',
             name:'班级互动',

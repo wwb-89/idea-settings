@@ -1,3 +1,6 @@
+body{
+  background-color: white;
+}
 .fs0 {
   font-size: 0;
 }
@@ -54,12 +57,13 @@
       li {
         line-height: 32px;
         color: #333333;
-        padding: 16px 8px;
+        padding: 10px 8px;
         &.li-drag {
           i {
             margin-top: 6px;
             font-size: 16px;
             cursor: pointer;
+            color: #cccccc;
           }
         }
         &.li-operate {
@@ -107,7 +111,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .dailog {
@@ -118,9 +122,10 @@
   transform: translate(-50%, -50%);
   width: 488px;
   background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  border: 1px solid #E9E9E9;
   box-sizing: border-box;
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12), 0px 4px 20px rgba(0, 0, 0, 0.12);
   .dailog-header {
     position: relative;
     height: 58px;
@@ -169,7 +174,7 @@
         display: inline-block;
         vertical-align: top;
         font-size: 14px;
-        line-height: 20px;
+        //line-height: 20px;
         color: #333333;
         margin-right: 15px;
       }
@@ -426,9 +431,7 @@
       }
     }
     .content-switch-box {
-      background: #F8F8F8;
-      border-radius: 4px;
-      padding: 16px;
+      line-height: 32px;
       .switch-box {
         .label {
           color: #666666;
@@ -439,7 +442,6 @@
 
       }
       .link-lists {
-        padding-top: 16px;
         .link-list {
           position: relative;
           box-sizing: border-box;
@@ -467,6 +469,15 @@
                 float: right;
               }
             }
+          }
+        }
+        .terminal-select-box{
+          height: 32px;
+          .box-title{
+            float: left;
+            margin-right: 16px;
+            display: inline-block;
+            width: 70px;
           }
         }
         .terminal-select {
