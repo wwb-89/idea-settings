@@ -6,6 +6,7 @@ CREATE TABLE `t_notice_record` (
     `activity_create_fid` int(11) DEFAULT NULL COMMENT '活动创建机构id',
     `activity_flag` varchar(50) DEFAULT NULL COMMENT '活动标识',
     `content` text DEFAULT NULL COMMENT '通知内容',
+    `time` datetime COMMENT '通知时间',
     `create_time` datetime DEFAULT current_timestamp() COMMENT '创建时间',
     `update_time` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
     PRIMARY KEY (`id`),

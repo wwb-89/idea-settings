@@ -9,21 +9,24 @@ import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.mapper.ActivityPushReminderMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityPushReminder;
+import com.chaoxing.activity.model.NoticeRecord;
 import com.chaoxing.activity.model.OrgConfig;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.queue.notice.ActivityReminderNoticeQueue;
+import com.chaoxing.activity.service.queue.notice.NoticeRecordSaveQueue;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,8 @@ public class ActivityPushReminderService {
     private ActivityQueryService activityQueryService;
     @Resource
     private XxtNoticeApiService xxtNoticeApiService;
+    @Resource
+    private NoticeRecordSaveQueue noticeRecordSaveQueue;
 
     /**根据活动id查询活动的推送提醒
      * @Description 
@@ -155,41 +160,50 @@ public class ActivityPushReminderService {
     public void sendNotice(Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
         Integer fid = activity.getCreateFid();
-        // 活动开启了消息提醒推送才进行通知
-        if (activity.getOpenPushReminder()) {
-            ActivityPushReminder activityPushReminder = getByActivityId(activityId);
-            if (activityPushReminder == null || StringUtils.isBlank(activityPushReminder.getReceiveScope())) {
-                String errMsg = activityPushReminder == null ? "活动不存在对应的活动推送提醒" : "活动推送提醒无对应的推送范围";
-                log.error(errMsg);
-                return;
-            }
-            String content = activityPushReminder.getContent();
-            String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
-            // 查询机构下的通讯录部门列表
-            List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
-            // 非叶子节点
-            List<SignUpParticipateScopeDTO> participateScopes = JSON.parseArray(activityPushReminder.getReceiveScope(), SignUpParticipateScopeDTO.class);
-            List<Integer> nonLeafDeptIds = participateScopes.stream().filter(v -> Objects.equals(v.getLeaf(), false)).map(SignUpParticipateScopeDTO::getExternalId).collect(Collectors.toList());
-            Set<Integer> allGroupIds = Sets.newHashSet();
-            if (CollectionUtils.isNotEmpty(nonLeafDeptIds)) {
-                // 获取非叶子节点的子节点部门列表
-                List<WfwGroupDTO> matchWfwGroups = wfwGroups.stream().filter(v -> nonLeafDeptIds.contains(Integer.parseInt(v.getId()))).collect(Collectors.toList());
-                for (WfwGroupDTO matchWfwGroup : matchWfwGroups) {
-                    allGroupIds.add(Integer.valueOf(matchWfwGroup.getId()));
-                    List<WfwGroupDTO> children = wfwContactApiService.listAllSubWfwGroups(matchWfwGroup, wfwGroups);
-                    allGroupIds.addAll(children.stream().map(WfwGroupDTO::getId).map(Integer::valueOf).collect(Collectors.toSet()));
-                }
-            }
-            // 获取非叶子节点
-            List<Integer> leafDeptIds = participateScopes.stream().filter(SignUpParticipateScopeDTO::getLeaf).map(SignUpParticipateScopeDTO::getExternalId).collect(Collectors.toList());
-            allGroupIds.addAll(leafDeptIds);
-            // 获取推送人员列表
-            Set<Integer> uidSet = Sets.newHashSet();
-            allGroupIds.forEach(v -> {
-                List<Integer> uids = wfwContactApiService.listDepartmentUid(v);
-                uidSet.addAll(uids);
-            });
-            xxtNoticeApiService.sendNotice(activity.getName(), content, attachment, CommonConstant.NOTICE_SEND_UID, new ArrayList<>(uidSet));
+        Boolean openPushReminder = Optional.ofNullable(activity.getOpenPushReminder()).orElse(false);
+        if (!openPushReminder) {
+            return;
         }
+        ActivityPushReminder activityPushReminder = getByActivityId(activityId);
+        if (activityPushReminder == null || StringUtils.isBlank(activityPushReminder.getReceiveScope())) {
+            String errMsg = activityPushReminder == null ? "活动不存在对应的活动推送提醒" : "活动推送提醒无对应的推送范围";
+            log.error(errMsg);
+            return;
+        }
+        String content = activityPushReminder.getContent();
+        String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
+        // 查询机构下的通讯录部门列表
+        List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
+        // 非叶子节点
+        List<SignUpParticipateScopeDTO> participateScopes = JSON.parseArray(activityPushReminder.getReceiveScope(), SignUpParticipateScopeDTO.class);
+        List<Integer> nonLeafDeptIds = participateScopes.stream().filter(v -> Objects.equals(v.getLeaf(), false)).map(SignUpParticipateScopeDTO::getExternalId).collect(Collectors.toList());
+        Set<Integer> allGroupIds = Sets.newHashSet();
+        if (CollectionUtils.isNotEmpty(nonLeafDeptIds)) {
+            // 获取非叶子节点的子节点部门列表
+            List<WfwGroupDTO> matchWfwGroups = wfwGroups.stream().filter(v -> nonLeafDeptIds.contains(Integer.parseInt(v.getId()))).collect(Collectors.toList());
+            for (WfwGroupDTO matchWfwGroup : matchWfwGroups) {
+                allGroupIds.add(Integer.valueOf(matchWfwGroup.getId()));
+                List<WfwGroupDTO> children = wfwContactApiService.listAllSubWfwGroups(matchWfwGroup, wfwGroups);
+                allGroupIds.addAll(children.stream().map(WfwGroupDTO::getId).map(Integer::valueOf).collect(Collectors.toSet()));
+            }
+        }
+        // 获取非叶子节点
+        List<Integer> leafDeptIds = participateScopes.stream().filter(SignUpParticipateScopeDTO::getLeaf).map(SignUpParticipateScopeDTO::getExternalId).collect(Collectors.toList());
+        allGroupIds.addAll(leafDeptIds);
+        // 获取推送人员列表
+        Set<Integer> uidSet = Sets.newHashSet();
+        allGroupIds.forEach(v -> {
+            List<Integer> uids = wfwContactApiService.listDepartmentUid(v);
+            uidSet.addAll(uids);
+        });
+        xxtNoticeApiService.sendNotice(activity.getName(), content, attachment, CommonConstant.NOTICE_SEND_UID, new ArrayList<>(uidSet));
+        // 将通知保存
+        NoticeRecordSaveQueue.QueueParamDTO queueParam = NoticeRecordSaveQueue.QueueParamDTO.builder()
+                .activityId(activityId)
+                .type(NoticeRecord.TypeEnum.ACTIVITY_RELEASE)
+                .content(content)
+                .timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+                .build();
+        noticeRecordSaveQueue.push(queueParam);
     }
 }

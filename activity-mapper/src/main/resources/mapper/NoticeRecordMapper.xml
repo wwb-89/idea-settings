@@ -7,6 +7,7 @@
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="activity_create_fid" jdbcType="INTEGER" property="activityCreateFid" />
         <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
+        <result column="time" jdbcType="TIMESTAMP" property="time" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
@@ -14,8 +15,8 @@
         <result column="content" jdbcType="LONGVARCHAR" property="content" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.type, t.activity_id, t.activity_create_fid, t.activity_flag, t.create_time, 
-        t.update_time
+        t.id, t.type, t.activity_id, t.activity_create_fid, t.activity_flag, t.time,
+        t.create_time, t.update_time
     </sql>
     <sql id="Blob_Column_List">
         t.content
