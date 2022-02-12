@@ -59,11 +59,11 @@
                 </ul>
             </div>
         </div>
-        <div class="top-title">
+        <div class="top-title" v-show="false">
             <span class="font16 color333 title-name">用户参与按钮</span>
             <el-button class="fr btn-add" plain round @click="toAddFrontendMenu">添加</el-button>
         </div>
-        <div class="sortable-box ">
+        <div class="sortable-box" v-show="false">
             <ul class="table-deader fs0">
                 <li class="li-drag">排序</li>
                 <li class="li-button">按钮</li>
