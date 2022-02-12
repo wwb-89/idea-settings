@@ -10,8 +10,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @description: 活动管理第三方查询参数DTO
@@ -42,7 +44,7 @@ public class ActivityCreateParticipateQueryDTO {
     /** 活动标识 */
     private String flag;
     /** 机构fid */
-    private Integer fid;
+    private String fid;
     /** start_time, end_time */
     private String orderField;
     /** 排序方式 */
@@ -50,11 +52,15 @@ public class ActivityCreateParticipateQueryDTO {
     /** 用户id */
     private Integer uid;
 
+    /** fid 可能是逗号分隔，故切割之后放到fids里面 */
+    private List<Integer> fids;
+
     public void init() {
         List<String> defaultOrderFields = Lists.newArrayList("start_time", "end_time");
-        if (getFid() == null) {
+        if (StringUtils.isBlank(getFid())) {
             throw new BusinessException("fid不能为空");
         }
+        setFids(Arrays.stream(getFid().split(",")).map(Integer::valueOf).collect(Collectors.toList()));
         setArchived(Optional.ofNullable(getArchived()).orElse(false));
         // 防止sql注入，先对传入的字段和排序规则做检查
         if (StringUtils.isNotBlank(getOrderType()) && OrderTypeEnum.fromValue(getOrderType()) == null) {

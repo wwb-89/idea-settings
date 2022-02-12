@@ -13,6 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @description:
@@ -62,6 +63,8 @@ public class ActivityVO {
     private String createOrgName;
     /** 活动标识 */
     private String activityFlag;
+    /** 活动地址 */
+    private String address;
 
     /** 活动简介 */
     private String introduction;
@@ -104,6 +107,7 @@ public class ActivityVO {
                 .createFid(activity.getCreateFid())
                 .createOrgName(activity.getCreateOrgName())
                 .activityFlag(activity.getActivityFlag())
+                .address(activity.getActivityFullAddress())
                 .build();
         if (StringUtils.isBlank(result.getCoverUrl()) && StringUtils.isNotBlank(result.getCoverCloudId())) {
             result.setCoverUrl(DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + result.getCoverCloudId());

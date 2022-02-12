@@ -1147,7 +1147,11 @@
         WHERE
             t.activity_flag = #{params.flag}
             AND (
-                t.create_fid = #{params.fid} OR t1.fid = #{params.fid}
+                t.create_fid = #{params.fid} OR t1.fid in (
+                    <foreach collection="params.fids" item="fid" separator=",">
+                        #{fid}
+                    </foreach>
+                )
             )
             <!--状态-->
             AND t.is_archived = #{params.archived}
