@@ -505,11 +505,11 @@
                                                     <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList" :key="'wfw-scope-' + sidx">{{scope.label}}</el-radio>
                                                 </el-radio-group>
                                             </div>
-                                            <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope" style="margin-top: 12px;">
-                                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
+                                            <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope" style="margin-top: 12px;cursor: pointer;" @click="toAddSignUpParticipateScope(item.id, it)">
+                                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range">
                                                 <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
                                                 <div class="add-tags" v-else>
-                                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].wfwParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].wfwParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex, $event)"></i></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -523,11 +523,11 @@
                                                     <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList" :key="'contacts-scope-' + sidx">{{scope.label}}</el-radio>
                                                 </el-radio-group>
                                             </div>
-                                            <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
-                                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
+                                            <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope" style="cursor: pointer;" @click="toAddSignUpParticipateScope(item.id, it)">
+                                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range">
                                                 <span v-if="signUpMap[item.id].contactsParticipateScopes.length <= 0">请选择</span>
                                                 <div class="add-tags" v-else>
-                                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].contactsParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].contactsParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex, $event)"></i></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -2579,7 +2579,8 @@
                     var $this = this;
                     $this.activityPushReminder.receiveScopes.splice(scopeIndex, 1);
                 },
-                deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex) {
+                deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex, e) {
+                    e.stopPropagation();
                     var $this = this;
                     if (templateComponent.code == 'wfw_participation_scope') {
                         $this.signUpMap[signUpTplComponentId].wfwParticipateScopes.splice(scopeIndex, 1);
