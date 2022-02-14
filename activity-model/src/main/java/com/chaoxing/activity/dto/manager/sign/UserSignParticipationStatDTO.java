@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**用户报名签到参与情况统计信息
  * @author wwb
@@ -55,5 +57,19 @@ public class UserSignParticipationStatDTO {
 	private String formCollectionUrl;
 	/** 报名信息地址 */
 	private String signUpResultUrl;
+
+	public void handleSignUpUrl(Boolean isMultiOrg) {
+		isMultiOrg = Optional.ofNullable(isMultiOrg).orElse(false);
+		if (StringUtils.isBlank(getSignUpUrl())) {
+			return;
+		}
+		if (!getSignUpUrl().contains("?")) {
+			this.signUpUrl += "?";
+		}
+		if (!getSignUpUrl().contains("&")) {
+			this.signUpUrl += "&";
+		}
+		this.signUpUrl += "isMultiOrg=" + isMultiOrg;
+	}
 
 }

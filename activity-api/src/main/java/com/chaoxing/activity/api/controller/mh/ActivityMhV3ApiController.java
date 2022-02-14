@@ -132,13 +132,36 @@ public class ActivityMhV3ApiController {
         return RestRespDTO.success(jsonObject);
     }
 
+    /**通用活动门户按钮数据源
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-14 15:31:32
+     * @param data
+     * @return
+     */
     @RequestMapping("activity/btns")
     public RestRespDTO mhActivityBtns(@RequestBody String data) {
+       return RestRespDTO.success(packageBtns(data, false));
+    }
+
+    /**厦门门户活动按钮数据源
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-14 15:31:45
+     * @param data
+     * @return
+     */
+    @RequestMapping("xm/activity/btns")
+    public RestRespDTO xmMhActivityBtns(@RequestBody String data) {
+        return RestRespDTO.success(packageBtns(data, true));
+    }
+    
+    public JSONObject packageBtns(String data, Boolean isMultiOrg) {
         Activity activity = getActivityByData(data);
         JSONObject jsonObject = new JSONObject();
         if (activity == null) {
             jsonObject.put("results", Lists.newArrayList());
-            return RestRespDTO.success(jsonObject);
+            return jsonObject;
         }
         JSONObject params = JSON.parseObject(data);
         Integer uid = params.getInteger("uid");
@@ -150,8 +173,8 @@ public class ActivityMhV3ApiController {
         String excludeBtnNamesStr = urlParams.getString("excludeBtnNames");
         List<String> excludeBtnNames = MhPreParamsUtils.resolveStringV(excludeBtnNamesStr);
 
-        jsonObject.put("results", packageBtns(activity, activity.getSignId(), uid, wfwfid, excludeBtnNames));
-        return RestRespDTO.success(jsonObject);
+        jsonObject.put("results", packageBtns(activity, uid, wfwfid, excludeBtnNames, isMultiOrg));
+        return jsonObject;
     }
 
 
@@ -366,13 +389,14 @@ public class ActivityMhV3ApiController {
      * @author wwb
      * @Date 2021-03-09 18:39:37
      * @param activity
-     * @param signId
      * @param uid
      * @param wfwfid
      * @param excludeBtnNames 排除的按钮名称
+     * @param isMultiOrg 是否多机构(厦门项目报名多机构选择)
      * @return java.util.List<com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>
      */
-    private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer signId, Integer uid, Integer wfwfid, List<String> excludeBtnNames) {
+    private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer uid, Integer wfwfid, List<String> excludeBtnNames, Boolean isMultiOrg) {
+        Integer signId = activity.getSignId();
         List<MhGeneralAppResultDataDTO> result = Lists.newArrayList();
         Integer status = activity.getStatus();
         Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
@@ -460,6 +484,7 @@ public class ActivityMhV3ApiController {
                         }
                     }
                     if (!setSignUpBtn) {
+                        userSignParticipationStat.handleSignUpUrl(isMultiOrg);
                         result.add(MhDataBuildUtil.buildBtnField(showName, cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), userSignParticipationStat.getSignUpUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     }
                 }
