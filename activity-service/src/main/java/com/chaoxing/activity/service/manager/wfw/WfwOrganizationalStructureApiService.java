@@ -37,6 +37,8 @@ public class WfwOrganizationalStructureApiService {
 
 	/** 分页获取机构下角色URL */
 	private static final String ORG_ROLES_URL = DomainConstant.WFW_ORGANIZATION + "/apis/getrolebyfid?fid=%d&page=%d&pagesize=%d&enc=%s";
+	/** 查询机构下用户url */
+	private static final String ORG_SPECIFY_ROLE_USER_URL = DomainConstant.WFW_ORGANIZATION + "/apis/user/getperson?fid=%d&roleids=%s&limit=%d&enc=%s";
 	/** 机构下用户列表 */
 	private static final String ORG_USERS_URL = DomainConstant.WFW_ORGANIZATION + "/apis/user/getperson?fid=%d&limit=%d&enc=%s";
 	/** 机构group下用户列表 */
@@ -287,6 +289,10 @@ public class WfwOrganizationalStructureApiService {
 		return DigestUtils.md5Hex("" + fid + uid + ENC_KEY + now.format(DATE_TIME_FORMATTER));
 	}
 
+	private String getOrgSpecifyUsersEnc(Integer fid, String roleIds, Integer limit) {
+		return DigestUtils.md5Hex("fid=" + fid + "&roleids=" + roleIds + "&limit=" + limit + "mic^ro&deke@y");
+	}
+
 	private String getOrgUsersEnc(Integer fid, Integer limit) {
 		return DigestUtils.md5Hex("fid=" + fid + "&limit=" + limit + "mic^ro&deke@y");
 	}
@@ -299,6 +305,38 @@ public class WfwOrganizationalStructureApiService {
 		return DigestUtils.md5Hex(fid + ENC_KEY + LocalDate.now().format(DATE_TIME_FORMATTER));
 	}
 
+	/**查询机构下指定角色用户id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-02-14 15:29:25
+	 * @param fid 机构id
+	 * @param roleIds 角色id列表
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listOrgSpecifyRoleUid(Integer fid, List<Integer> roleIds) {
+		List<Integer> uids =Lists.newArrayList();
+		Integer limit = Integer.MAX_VALUE;
+		String roleIdsStr = String.join(CommonConstant.DEFAULT_SEPARATOR, roleIds.stream().map(String::valueOf).collect(Collectors.toList()));
+		String enc = getOrgSpecifyUsersEnc(fid, roleIdsStr, limit);
+		String url = String.format(ORG_SPECIFY_ROLE_USER_URL, fid, roleIdsStr, limit, enc);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean status = jsonObject.getBoolean("status");
+		status = Optional.ofNullable(status).orElse(false);
+		if (status) {
+			JSONArray json = jsonObject.getJSONArray("json");
+			int size = json.size();
+			if (size > 0) {
+				Set<Integer> uidSet = new HashSet<>();
+				for (int i = 0; i < size; i++) {
+					JSONObject user = json.getJSONObject(i);
+					uidSet.add(user.getInteger("userid"));
+				}
+				uids = new ArrayList<>(uidSet);
+			}
+		}
+		return uids;
+	}
 	/**查询机构下的uid列表
 	 * @Description 
 	 * @author wwb
@@ -308,8 +346,9 @@ public class WfwOrganizationalStructureApiService {
 	*/
 	public List<Integer> listOrgUid(Integer fid) {
 		List<Integer> uids =Lists.newArrayList();
-		String enc = getOrgUsersEnc(fid, Integer.MAX_VALUE);
-		String url = String.format(ORG_USERS_URL, fid, Integer.MAX_VALUE, enc);
+		Integer limit = Integer.MAX_VALUE;
+		String enc = getOrgUsersEnc(fid, limit);
+		String url = String.format(ORG_USERS_URL, fid, limit, enc);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean status = jsonObject.getBoolean("status");
