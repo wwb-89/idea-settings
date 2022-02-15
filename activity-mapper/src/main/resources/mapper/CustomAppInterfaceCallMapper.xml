@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.CustomAppInterfaceCallMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.CustomAppInterfaceCall">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="is_create_call" jdbcType="BIT" property="createCall" />
+        <result column="is_release_call" jdbcType="BIT" property="releaseCall" />
+        <result column="is_cancel_release_call" jdbcType="BIT" property="cancelReleaseCall" />
+        <result column="is_start_call" jdbcType="BIT" property="startCall" />
+        <result column="is_end_call" jdbcType="BIT" property="endCall" />
+        <result column="is_delete_call" jdbcType="BIT" property="deleteCall" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.template_component_id, t.url, t.is_create_call, t.is_release_call, t.is_cancel_release_call, 
+        t.is_start_call, t.is_end_call, t.is_delete_call
+    </sql>
+</mapper>
