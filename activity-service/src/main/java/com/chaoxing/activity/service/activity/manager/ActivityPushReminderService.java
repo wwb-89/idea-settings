@@ -201,6 +201,7 @@ public class ActivityPushReminderService {
         NoticeRecordSaveQueue.QueueParamDTO queueParam = NoticeRecordSaveQueue.QueueParamDTO.builder()
                 .activityId(activityId)
                 .type(NoticeRecord.TypeEnum.ACTIVITY_RELEASE)
+                .title(activity.getName())
                 .content(content)
                 .timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
                 .build();

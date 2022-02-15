@@ -43,6 +43,7 @@ public class NoticeRecordSaveQueueHandleService {
 				.activityId(activityId)
 				.activityCreateFid(activity.getCreateFid())
 				.activityFlag(activity.getActivityFlag())
+				.title(queueParamDto.getTitle())
 				.content(queueParamDto.getContent())
 				.time(DateUtils.startTimestamp2Time(queueParamDto.getTimestamp()))
 				.build();

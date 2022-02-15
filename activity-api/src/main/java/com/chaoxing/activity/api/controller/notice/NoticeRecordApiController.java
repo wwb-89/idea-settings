@@ -43,12 +43,13 @@ public class NoticeRecordApiController {
 	 * @author wwb
 	 * @Date 2022-02-12 10:21:14
 	 * @param activityId
+	 * @param title
 	 * @param content
 	 * @param timestamp
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("sign-up/save")
-	public RestRespDTO recordSignUpNotice(@RequestParam Integer activityId, @RequestParam String content, @RequestParam Long timestamp) {
+	public RestRespDTO recordSignUpNotice(@RequestParam Integer activityId, @RequestParam String title, @RequestParam String content, @RequestParam Long timestamp) {
 		Activity activity = activityQueryService.getById(activityId);
 		if (activity != null) {
 			NoticeRecord noticeRecord = NoticeRecord.builder()
@@ -56,6 +57,7 @@ public class NoticeRecordApiController {
 					.activityId(activityId)
 					.activityCreateFid(activity.getCreateFid())
 					.activityFlag(activity.getActivityFlag())
+					.title(title)
 					.content(content)
 					.time(DateUtils.startTimestamp2Time(timestamp))
 					.build();

@@ -52,6 +52,8 @@ public class NoticeRecordSaveQueue implements IQueue<NoticeRecordSaveQueue.Queue
 		private Integer activityId;
 		/** 通知类型 */
 		private NoticeRecord.TypeEnum type;
+		/** 标题 */
+		private String title;
 		/** 通知内容 */
 		private String content;
 		/** 时间 */
