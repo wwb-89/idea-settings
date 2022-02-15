@@ -7,7 +7,9 @@ import com.chaoxing.activity.mapper.ComponentMapper;
 import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.ComponentField;
 import com.chaoxing.activity.model.CustomAppConfig;
+import com.chaoxing.activity.model.CustomAppInterfaceCall;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
+import com.chaoxing.activity.service.activity.engine.CustomAppInterfaceCallQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -38,6 +40,8 @@ public class ComponentQueryService {
 	private ComponentFieldMapper componentFieldMapper;
 	@Resource
 	private CustomAppConfigQueryService customAppConfigQueryService;
+	@Resource
+	private CustomAppInterfaceCallQueryService customAppInterfaceCallQueryService;
 
 	/**根据code查询系统组件
 	 * @Description 
@@ -159,8 +163,13 @@ public class ComponentQueryService {
 			}
 			// 自定义应用配置
 			if (Objects.equals(v.getType(), Component.TypeEnum.CUSTOM_APP.getValue())) {
+				// 自定义应用
 				List<CustomAppConfig> customAppConfigs = customAppConfigQueryService.listByComponentId(v.getId());
 				v.setCustomAppConfigs(customAppConfigs);
+
+				// 自定义接口
+				List<CustomAppInterfaceCall> customAppInterfaceCalls = customAppInterfaceCallQueryService.listByComponentId(v.getId());
+				v.setCustomAppInterfaceCalls(customAppInterfaceCalls);
 			}
 		});
 		return components;

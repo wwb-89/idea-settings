@@ -24,3 +24,7 @@ CREATE TABLE `t_custom_app_interface_call_record` (
     PRIMARY KEY (`id`),
     KEY `idx_primary` (`activity_id`,`template_component_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='自定义应用接口调用记录表';
+
+
+ALTER TABLE t_custom_app_interface_call ADD component_id INT ( 11 ) NULL COMMENT '自定义组件id';
+

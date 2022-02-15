@@ -49,6 +49,8 @@ import com.chaoxing.activity.service.manager.module.ClazzInteractionApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.queue.event.activity.CustomAppInterfaceCallQueue;
+import com.chaoxing.activity.service.queue.event.activity.handler.CustomAppInterfaceCallQueueService;
 import com.chaoxing.activity.service.tag.TagHandleService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
@@ -154,6 +156,8 @@ public class ActivityHandleService {
 	private ActivityPushReminderService activityPushReminderService;
 	@Resource
 	private CustomAppConfigHandleService customAppConfigHandleService;
+	@Resource
+	private CustomAppInterfaceCallQueueService customAppInterfaceCallQueueService;
 
 	/**新增活动
 	 * @Description 
@@ -267,6 +271,8 @@ public class ActivityHandleService {
 		handleActivityTags(activity, activityCreateParamDto.getTagNames());
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
+		// 接口调用
+		customAppInterfaceCallQueueService.interfaceCall(activity, loginUser.getFid(), CustomAppInterfaceCall.CallTimingEnum.CREATE_CALL);
 		return activityId;
 	}
 
@@ -562,6 +568,8 @@ public class ActivityHandleService {
 		Activity activity = activityValidationService.releaseAble(activityId, operateUser);
 		activity.release(operateUser.getUid());
 		activityStatusService.updateReleaseStatus(activity);
+		// 发布自定义接口调用
+		customAppInterfaceCallQueueService.interfaceCall(activity, operateUser.getFid(), CustomAppInterfaceCall.CallTimingEnum.RELEASE_CALL);
 		Integer marketId = activity.getMarketId();
 		if (marketId == null) {
 			return;
@@ -604,6 +612,8 @@ public class ActivityHandleService {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, operateUser);
 		activity.cancelRelease();
 		activityStatusService.updateReleaseStatus(activity);
+		// 下架自定义接口调用
+		customAppInterfaceCallQueueService.interfaceCall(activity, operateUser.getFid(), CustomAppInterfaceCall.CallTimingEnum.CANCEL_RELEASE_CALL);
 		Integer marketId = activity.getMarketId();
 		if (marketId == null) {
 			return;
@@ -722,6 +732,8 @@ public class ActivityHandleService {
 		activityMarketService.delete(activityId);
 		// 活动状态改变
 		activityStatusChangeEventService.statusChange(activity, oldStatus);
+		// 删除活动自定义接口调用
+		customAppInterfaceCallQueueService.interfaceCall(activity, operateUser.getFid(), CustomAppInterfaceCall.CallTimingEnum.DELETE_CALL);
 	}
 
 	/**删除活动市场下的活动

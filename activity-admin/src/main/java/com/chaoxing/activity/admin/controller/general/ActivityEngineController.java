@@ -2,6 +2,7 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.ConditionDTO;
+import com.chaoxing.activity.dto.OptionDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.ClassifyShowComponent;
@@ -18,6 +19,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -97,6 +99,8 @@ public class ActivityEngineController {
         // 分类关联显示组件
         List<ClassifyShowComponent> classifyShowComponents = classifyShowComponentQueryService.listByTemplateId(templateId);
         model.addAttribute("classifyShowComponents", classifyShowComponents);
+        // 自定义接口调用时机列表
+        model.addAttribute("callTimings", OptionDTO.listInterfaceCallTiming());
         return "pc/engine/index";
     }
 }

@@ -3,6 +3,7 @@
 <mapper namespace="com.chaoxing.activity.mapper.CustomAppInterfaceCallMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.CustomAppInterfaceCall">
         <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="component_id" jdbcType="INTEGER" property="componentId" />
         <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="url" jdbcType="VARCHAR" property="url" />
         <result column="is_create_call" jdbcType="BIT" property="createCall" />
@@ -13,7 +14,35 @@
         <result column="is_delete_call" jdbcType="BIT" property="deleteCall" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_component_id, t.url, t.is_create_call, t.is_release_call, t.is_cancel_release_call, 
+        t.id, t.component_id, t.template_component_id, t.url, t.is_create_call, t.is_release_call, t.is_cancel_release_call,
         t.is_start_call, t.is_end_call, t.is_delete_call
     </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_custom_app_interface_call (
+            component_id,
+            template_component_id,
+            url,
+            is_create_call,
+            is_release_call,
+            is_cancel_release_call,
+            is_start_call,
+            is_end_call,
+            is_delete_call
+        )
+        VALUES
+        <foreach collection="dataList" item="item" open="" close="" separator=",">
+            (
+                #{item.componentId},
+                #{item.templateComponentId},
+                #{item.url},
+                #{item.createCall},
+                #{item.releaseCall},
+                #{item.cancelReleaseCall},
+                #{item.startCall},
+                #{item.endCall},
+                #{item.deleteCall}
+            )
+        </foreach>
+    </insert>
 </mapper>

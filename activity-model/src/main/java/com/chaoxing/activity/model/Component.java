@@ -77,6 +77,12 @@ public class Component {
     /** 被删除的自定义应用配置ids */
     @TableField(exist = false)
     private List<Integer> removeCustomAppConfigIds;
+    /** 自定义应用接口配置列表 */
+    @TableField(exist = false)
+    private List<CustomAppInterfaceCall> customAppInterfaceCalls;
+    /** 被删除的自定义应用接口配置ids */
+    @TableField(exist = false)
+    private List<Integer> removeInterfaceCallIds;
 
     /**获取自定义组件类型
     * @Description 

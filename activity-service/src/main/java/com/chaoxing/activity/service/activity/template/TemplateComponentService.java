@@ -9,6 +9,7 @@ import com.chaoxing.activity.mapper.TemplateComponentMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigHandleService;
+import com.chaoxing.activity.service.activity.engine.CustomAppInterfaceCallHandleService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
@@ -48,6 +49,8 @@ public class TemplateComponentService {
     private WfwFormApiService wfwFormApiService;
     @Resource
     private CustomAppConfigHandleService customAppConfigHandleService;
+    @Resource
+    private CustomAppInterfaceCallHandleService customAppInterfaceCallHandleService;
 
 
     /**根据模版id查询模版组件关联
@@ -395,6 +398,8 @@ public class TemplateComponentService {
         if (Objects.equals(templateComponent.getType(), Component.TypeEnum.CUSTOM_APP.getValue())) {
             // 更新自定义应用配置中缺失的templateComponentId
             customAppConfigHandleService.updateAppConfigTplComponentId(templateComponent);
+            // 更新自定义接口中缺失的templateComponentId
+            customAppInterfaceCallHandleService.updateInterfaceCallTplComponentId(templateComponent);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.chaoxing.activity.dto;
 
-import com.chaoxing.activity.util.constant.UrlConstant;
 import lombok.*;
 
 /**

@@ -80,6 +80,9 @@ public class TemplateComponent {
     /** 自定义应用配置列表 */
     @TableField(exist = false)
     private List<CustomAppConfig> customAppConfigs;
+    /** 自定义应用接口配置列表 */
+    @TableField(exist = false)
+    private List<CustomAppInterfaceCall> customAppInterfaceCalls;
 
     /**将模版组件列表克隆到指定的模版
      * @Description 子组件将封装到父组件的children中
@@ -135,6 +138,7 @@ public class TemplateComponent {
                 .signUpFillInfoType(o.getSignUpFillInfoType())
                 .originId(o.getOriginId())
                 .customAppConfigs(o.getCustomAppConfigs())
+                .customAppInterfaceCalls(o.getCustomAppInterfaceCalls())
                 .build(), result);
         return result;
     }

@@ -7,11 +7,12 @@ import com.chaoxing.activity.mapper.ComponentMapper;
 import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.ComponentField;
 import com.chaoxing.activity.model.CustomAppConfig;
+import com.chaoxing.activity.model.CustomAppInterfaceCall;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigHandleService;
+import com.chaoxing.activity.service.activity.engine.CustomAppInterfaceCallHandleService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +32,14 @@ import java.util.Optional;
 @Service
 public class ComponentHandleService {
 
-    @Autowired
+    @Resource
     private ComponentMapper componentMapper;
-    @Autowired
+    @Resource
     private ComponentFieldMapper componentFieldMapper;
     @Resource
     private CustomAppConfigHandleService customAppConfigHandleService;
+    @Resource
+    private CustomAppInterfaceCallHandleService customAppInterfaceCallHandleService;
 
 
     /**新增自定义组件
@@ -63,10 +66,20 @@ public class ComponentHandleService {
             componentFieldMapper.batchAdd(componentFields);
             component.setComponentFields(componentFields);
         }
+        // 自定义应用
         List<CustomAppConfig> customAppConfigs = component.getCustomAppConfigs();
         if (CollectionUtils.isNotEmpty(customAppConfigs)) {
             customAppConfigs.forEach(v -> v.setComponentId(componentId));
             customAppConfigHandleService.add(customAppConfigs);
+        }
+        // 自定义接口
+        List<CustomAppInterfaceCall> customAppInterfaceCalls = component.getCustomAppInterfaceCalls();
+        if (CollectionUtils.isNotEmpty(customAppInterfaceCalls)) {
+            customAppInterfaceCalls.forEach(v -> {
+                v.callTimingTransfer2StatusVal();
+                v.setComponentId(componentId);
+            });
+            customAppInterfaceCallHandleService.add(customAppInterfaceCalls);
         }
         return component;
     }
@@ -104,11 +117,22 @@ public class ComponentHandleService {
             });
             componentFieldMapper.batchAdd(component.getComponentFields());
         }
+        // 自定义应用
         List<Integer> removeCustomAppConfigIds = component.getRemoveCustomAppConfigIds();
         List<CustomAppConfig> customAppConfigs = Optional.ofNullable(component.getCustomAppConfigs()).orElse(Lists.newArrayList());
         if (CollectionUtils.isNotEmpty(removeCustomAppConfigIds) || CollectionUtils.isNotEmpty(customAppConfigs)) {
             customAppConfigs.forEach(v -> v.setComponentId(component.getId()));
-            customAppConfigHandleService.updateComponentCustomAppConfigs(component.getRemoveCustomAppConfigIds(), customAppConfigs);
+            customAppConfigHandleService.updateComponentCustomAppConfigs(removeCustomAppConfigIds, customAppConfigs);
+        }
+        // 自定义接口
+        List<Integer> removeInterfaceCallIds = component.getRemoveInterfaceCallIds();
+        List<CustomAppInterfaceCall> customAppInterfaceCalls = Optional.ofNullable(component.getCustomAppInterfaceCalls()).orElse(Lists.newArrayList());
+        if (CollectionUtils.isNotEmpty(removeInterfaceCallIds) || CollectionUtils.isNotEmpty(customAppInterfaceCalls)) {
+            customAppInterfaceCalls.forEach(v -> {
+                v.callTimingTransfer2StatusVal();
+                v.setComponentId(component.getId());
+            });
+            customAppInterfaceCallHandleService.updateComponentInterfaceCalls(removeInterfaceCallIds, customAppInterfaceCalls);
         }
         return component;
     }

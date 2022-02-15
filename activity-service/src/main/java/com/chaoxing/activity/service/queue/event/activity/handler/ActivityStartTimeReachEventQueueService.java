@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.queue.event.activity.handler;
 
 import com.chaoxing.activity.dto.event.activity.ActivityStartTimeReachEventOrigin;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.CustomAppInterfaceCall;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStatusService;
 import com.chaoxing.activity.util.DateUtils;
@@ -26,6 +27,8 @@ public class ActivityStartTimeReachEventQueueService {
     private ActivityStatusService activityStatusService;
     @Resource
     private ActivityQueryService activityQueryService;
+    @Resource
+    private CustomAppInterfaceCallQueueService customAppInterfaceCallQueueService;
 
     public void handle(ActivityStartTimeReachEventOrigin eventOrigin) {
         if (eventOrigin == null) {
@@ -41,6 +44,8 @@ public class ActivityStartTimeReachEventQueueService {
             return;
         }
         activityStatusService.statusUpdate(activityId);
+        // 活动开始自定义接口调用
+        customAppInterfaceCallQueueService.interfaceCall(activity, activity.getCreateFid(), CustomAppInterfaceCall.CallTimingEnum.START_CALL);
     }
 
 }

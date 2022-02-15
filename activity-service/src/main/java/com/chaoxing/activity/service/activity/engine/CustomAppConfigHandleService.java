@@ -62,6 +62,14 @@ public class CustomAppConfigHandleService {
                 .set(CustomAppConfig::getTemplateComponentId, templateComponent.getId()));
     }
 
+    /**更新自定义应用组件关联的自定义应用配置
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-15 16:08:26
+     * @param removeConfigIds
+     * @param customAppConfigs
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public void updateComponentCustomAppConfigs(List<Integer> removeConfigIds, List<CustomAppConfig> customAppConfigs) {
         // 批量删除已移除的配置id

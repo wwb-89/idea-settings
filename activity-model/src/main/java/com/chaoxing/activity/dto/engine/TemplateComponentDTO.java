@@ -1,9 +1,6 @@
 package com.chaoxing.activity.dto.engine;
 
-import com.chaoxing.activity.model.ComponentField;
-import com.chaoxing.activity.model.SignUpCondition;
-import com.chaoxing.activity.model.SignUpFillInfoType;
-import com.chaoxing.activity.model.CustomAppConfig;
+import com.chaoxing.activity.model.*;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,6 +65,8 @@ public class TemplateComponentDTO {
     private SignUpFillInfoType signUpFillInfoType;
     /** 自定义应用配置列表 */
     private List<CustomAppConfig> customAppConfigs;
+    /** 自定义应用接口配置列表 */
+    private List<CustomAppInterfaceCall> customAppInterfaceCalls;
 
     private Integer originId;
 

@@ -653,7 +653,7 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="content-switch-box">
+                        <div class="content-switch-box marginBottom20">
                             <div class="switch-title">
                                 <span class="color333 fs14">后台连接</span>
                                 <div class="switch-box fr">
@@ -678,6 +678,36 @@
                                     <i class="icon-plus-circle"></i>
                                     <span>添加</span>
                                 </a>
+                            </div>
+                        </div>
+                        <div class="content-switch-box">
+                            <div class="switch-title">
+                                <span class="color333 fs14">接口调用</span>
+                            </div>
+                            <div class="link-lists link-lists2">
+                                <div class="link-list marginBottom16" v-for="(interface ,ifIndex) in innerAddEditItem.interfaceCalls" :key="'interface-call-' + ifIndex">
+                                    <div class="left-box">
+                                        <div class="line2">
+                                            <el-input v-model="interface.url" type="text" placeholder="接口"></el-input>
+                                        </div>
+                                    </div>
+                                    <div class="delete-btn-icon icon-minus-circle fs16" style="top: 8px" @click="removeInterfaceCall(ifIndex)"></div>
+                                </div>
+                                <a href="javascript:;" class="fs14 color-blue" @click="addInterfaceCall()">
+                                    <i class="icon-plus-circle"></i>
+                                    <span>添加</span>
+                                </a>
+                            </div>
+                            <div style="margin-top: 20px">
+                                <el-select style="width: 100%" v-model="innerAddEditItem.callTimings" multiple placeholder="请选择触发条件">
+                                    <el-option
+                                            v-for="item in callTimings"
+                                            :key="item.value"
+                                            :label="item.name"
+                                            :value="item.value"
+                                    >
+                                    </el-option>
+                                </el-select>
                             </div>
                         </div>
                     </div>
@@ -908,7 +938,9 @@
                     // 分类显示组件关联 分类id: templateComponent
                     classifyShowComponentAssociated: {},
                     selectedClassify: {},
-                    selectedClassifyTemplateComponents: []
+                    selectedClassifyTemplateComponents: [],
+                    // 自定义应用接口调用时机
+                    callTimings: [[${callTimings}]]
                 },
                 created: function () {
                     var $this = this;
@@ -1080,7 +1112,16 @@
                         return { type: 'wfw_form', wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: wfwFormApprovalTemplateId}
                     },
                     getInitTemplateAppConfig: function () {
-                        return { showAfterSignUp: true, openBlank: true, frontendConfigs: [], backendConfigs: [], removeCustomAppConfigIds: [] }
+                        return {
+                            showAfterSignUp: true,
+                            openBlank: true,
+                            frontendConfigs: [],
+                            backendConfigs: [],
+                            removeCustomAppConfigIds: [],
+                            interfaceCalls: [], //  自定义调用接口列表
+                            callTimings: [], // 接口调用时机
+                            removeInterfaceCallIds: [] // 自定义调用接口被删除的id列表
+                        }
                     },
                     // 内部属性的判断补充初始化
                     innerAttrSupplement: function (templateComponent) {
@@ -1394,6 +1435,7 @@
                         // 分离appConfigs，重新组装 innerEditItem
                         var customAppConfigs = $this.addEditItem.customAppConfigs || [];
                         $this.innerAddEditItem = $this.getInitTemplateAppConfig();
+                        $this.innerAddEditItem.interfaceCalls = $.extend(true, [], $this.addEditItem.customAppInterfaceCalls || []);
                         for (var i = 0; i < customAppConfigs.length; i++) {
                             var it = customAppConfigs[i];
                             var iconId = it.iconId;
@@ -1412,6 +1454,9 @@
                         }
                         if ($this.innerAddEditItem.backendConfigs.length > 0) {
                             $this.innerAddEditItem.openBlank = $this.innerAddEditItem.backendConfigs[0].openBlank;
+                        }
+                        if ($this.innerAddEditItem.interfaceCalls.length > 0) {
+                            $this.innerAddEditItem.callTimings = $this.innerAddEditItem.interfaceCalls[0].callTimings;
                         }
                     },
                     confirmEditText: function () {
@@ -1508,6 +1553,24 @@
                             $this.innerAddEditItem.backendConfigs.push(appConfig);
                         }
                     },
+                    // 移除自定义接口调用配置
+                    removeInterfaceCall: function (index) {
+                        var $this = this;
+                        var removeItems = $this.innerAddEditItem.interfaceCalls.splice(index, 1);
+                        if (removeItems[0] && removeItems[0].id) {
+                            $this.innerAddEditItem.removeInterfaceCallIds.push(removeItems[0].id);
+                        }
+                    },
+                    // 增加自定义接口调用配置
+                    addInterfaceCall: function () {
+                        var $this = this;
+                        var templateComponentId = typeof $this.addEditItem.templateComponentId == 'number' ? $this.addEditItem.templateComponentId : '';
+                        var interfaceCall = {
+                            templateComponentId: templateComponentId,
+                            url: ''
+                        };
+                        $this.innerAddEditItem.interfaceCalls.push(interfaceCall);
+                    },
                     // 根据type 和 index， 移除自定义配置项
                     removeAppConfig: function (type, index) {
                         var $this = this;
@@ -1549,7 +1612,11 @@
                     confirmCustomAppConfig: function () {
                         var $this = this;
                         var customAppConfigs = [];
-                        var { showAfterSignUp, openBlank, frontendConfigs, backendConfigs, removeCustomAppConfigIds } = $this.innerAddEditItem;
+                        var customAppInterfaceCalls = [];
+                        var {
+                            showAfterSignUp, openBlank, frontendConfigs, backendConfigs, removeCustomAppConfigIds,
+                            interfaceCalls, callTimings, removeInterfaceCallIds
+                        } = $this.innerAddEditItem;
                         if (frontendConfigs.length > 0) {
                             for (var i = 0; i < frontendConfigs.length; i++) {
                                 var it = frontendConfigs[i];
@@ -1572,8 +1639,26 @@
                                 customAppConfigs.push(bit);
                             }
                         }
+                        if (interfaceCalls.length > 0) {
+                            var pattern = /^(https?:\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
+                            for (var k = 0; k < interfaceCalls.length; k++) {
+                                var interfaceCall = interfaceCalls[k];
+                                if (activityApp.isEmpty(interfaceCall.url)) {
+                                    app.showMsg("接口配置不能为空");
+                                    return;
+                                }
+                                if (!pattern.test(interfaceCall.url)) {
+                                    app.showMsg("接口地址不规范");
+                                    return;
+                                }
+                                interfaceCall.callTimings = callTimings;
+                                customAppInterfaceCalls.push(interfaceCall);
+                            }
+                        }
                         $this.addEditItem.customAppConfigs = customAppConfigs;
                         $this.addEditItem.removeCustomAppConfigIds = removeCustomAppConfigIds || [];
+                        $this.addEditItem.customAppInterfaceCalls = customAppInterfaceCalls;
+                        $this.addEditItem.removeInterfaceCallIds = removeInterfaceCallIds || [];
                         $this.submitCustomComponent($this.addEditItem)
                     },
                     validCustomAppConfig: function (appConfig) {
