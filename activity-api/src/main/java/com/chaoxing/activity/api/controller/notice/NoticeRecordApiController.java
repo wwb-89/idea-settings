@@ -1,17 +1,22 @@
 package com.chaoxing.activity.api.controller.notice;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.NoticeRecord;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.notice.record.NoticeRecordHandleService;
+import com.chaoxing.activity.service.notice.record.NoticeRecordQueryService;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.HttpServletRequestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**通知记录api
  * @author wwb
@@ -30,6 +35,8 @@ public class NoticeRecordApiController {
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private NoticeRecordHandleService noticeRecordHandleService;
+	@Resource
+	private NoticeRecordQueryService noticeRecordQueryService;
 
 	/**记录报名通知
 	 * @Description 
@@ -55,6 +62,37 @@ public class NoticeRecordApiController {
 			noticeRecordHandleService.add(noticeRecord);
 		}
 		return RestRespDTO.success();
+	}
+
+	/**分页查询通知记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-02-15 15:51:50
+	 * @param request
+	 * @param fid
+	 * @param flags
+	 * @param type
+	 * @param content
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("paging")
+	public RestRespDTO paging(HttpServletRequest request, Integer fid, String flags, String type, @RequestParam(defaultValue = "false") Boolean content) {
+		Page<NoticeRecord> page = HttpServletRequestUtils.buid(request);
+		page = noticeRecordQueryService.paging(page, fid, flags, type, content);
+		return RestRespDTO.success(page);
+	}
+
+	/**根据通知记录id查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-02-15 16:08:00
+	 * @param id
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{id}")
+	public RestRespDTO get(@PathVariable Integer id) {
+		NoticeRecord noticeRecord = noticeRecordQueryService.getById(id);
+		return RestRespDTO.success(noticeRecord);
 	}
 
 }

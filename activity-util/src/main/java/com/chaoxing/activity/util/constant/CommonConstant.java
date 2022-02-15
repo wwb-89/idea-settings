@@ -36,6 +36,8 @@ public class CommonConstant {
 	public static final Integer DEFAULT_PAGE_NUM = 1;
 	/** 默认每页条数 */
 	public static final Integer DEFAULT_PAGE_SIZE = 10;
+	/** 最大分页 */
+	public static final Integer MAX_PAGE_SIZE = 100;
 	/** 默认时区 */
 	public static final ZoneOffset DEFAULT_ZONEOFFSET = ZoneOffset.of("+8");
 

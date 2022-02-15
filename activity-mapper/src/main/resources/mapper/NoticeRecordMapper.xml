@@ -7,6 +7,7 @@
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="activity_create_fid" jdbcType="INTEGER" property="activityCreateFid" />
         <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
         <result column="time" jdbcType="TIMESTAMP" property="time" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -15,10 +16,47 @@
         <result column="content" jdbcType="LONGVARCHAR" property="content" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.type, t.activity_id, t.activity_create_fid, t.activity_flag, t.time,
+        t.id, t.type, t.activity_id, t.activity_create_fid, t.activity_flag, t.title, t.time,
         t.create_time, t.update_time
     </sql>
     <sql id="Blob_Column_List">
         t.content
     </sql>
+    
+    <select id="paging" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_notice_record t
+        WHERE
+            t.activity_create_fid = #{fid}
+            <if test="flags != null and flags.size() != 0">
+                AND t.activity_flag IN
+                <foreach collection="flags" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+            </if>
+            <if test="type != null and type != ''">
+                AND t.type = #{type}
+            </if>
+    </select>
+
+    <select id="pagingWithContent" resultMap="ResultMapWithBLOBs">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            <include refid="Blob_Column_List"></include>
+        FROM
+            t_notice_record t
+        WHERE
+            t.activity_create_fid = #{fid}
+            <if test="flags != null and flags.size() != 0">
+                AND t.activity_flag IN
+                <foreach collection="flags" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+            </if>
+            <if test="type != null and type != ''">
+                AND t.type = #{type}
+            </if>
+    </select>
 </mapper>

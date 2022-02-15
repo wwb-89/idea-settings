@@ -33,6 +33,8 @@ public class NoticeRecord {
     private Integer activityCreateFid;
     /** 活动标识; column: activity_flag*/
     private String activityFlag;
+    /** 标题; column: title*/
+    private String title;
     /** 通知时间; column: time*/
     private LocalDateTime time;
     /** 创建时间; column: create_time*/
