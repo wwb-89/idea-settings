@@ -10,6 +10,7 @@ import com.chaoxing.activity.model.User;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.user.UserService;
 import com.chaoxing.activity.util.constant.CacheConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**登录服务
@@ -164,6 +167,20 @@ public class LoginService {
 				uid +
 				CacheConstant.CACHE_KEY_PREFIX +
 				fid;
+	}
+
+	/**登录信息未变更
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-02-15 16:30:41
+	 * @param fid
+	 * @param loginUserDto
+	 * @return void
+	*/
+	public void loginInfoNotChange(Integer fid, LoginUserDTO loginUserDto) {
+		if (!Objects.equals(fid, Optional.ofNullable(loginUserDto).map(LoginUserDTO::getFid).orElse(null))) {
+			throw new BusinessException("登录信息已变更，请刷新页面");
+		}
 	}
 
 }

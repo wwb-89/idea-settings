@@ -2258,7 +2258,8 @@
                         releaseClassIdJsonStr: releaseClassIdJsonStr,
                         signJsonStr: activityApp.getJsonStr(sign),
                         isClone: $this.isClone,
-                        release: release ? true : false
+                        release: release ? true : false,
+                        fid: $this.fid
                     }
                     var action = "创建";
                     if (release) {
@@ -2311,7 +2312,8 @@
                         participateScopeJsonStr: participateScopeJsonStr,
                         releaseClassIdJsonStr: releaseClassIdJsonStr,
                         signJsonStr: activityApp.getJsonStr(sign),
-                        release: release ? true : false
+                        release: release ? true : false,
+                        fid: $this.fid
                     };
                     var action = "修改";
                     if (release) {

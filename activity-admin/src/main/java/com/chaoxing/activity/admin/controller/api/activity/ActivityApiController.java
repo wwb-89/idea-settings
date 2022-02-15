@@ -12,6 +12,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
@@ -40,6 +41,8 @@ public class ActivityApiController {
 	private ActivityHandleService activityHandleService;
 	@Resource
 	private ActivityQueryService activityQueryService;
+	@Resource
+	private LoginService loginService;
 
 	/**创建活动
 	 * @Description 需要活动对象
@@ -50,12 +53,14 @@ public class ActivityApiController {
 	 * @param participateScopeJsonStr 活动参与范围json字符串
 	 * @param signJsonStr 报名签到json字符串
 	 * @param release 是否发布
+	 * @param fid 进入页面时的fid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@LoginRequired
 	@PostMapping("new")
-	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr, Boolean isClone, Boolean release) {
+	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr, Boolean isClone, Boolean release, Integer fid) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		loginService.loginInfoNotChange(fid, loginUser);
 		ActivityCreateParamDTO activityCreateParamDto = JSON.parseObject(activityJsonStr, ActivityCreateParamDTO.class);
 		List<WfwAreaDTO> wfwRegionalArchitectures = StringUtils.isBlank(participateScopeJsonStr) ? null : JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
 		List<Integer> releaseClassIds = StringUtils.isBlank(releaseClassIdJsonStr) ? null : JSON.parseArray(releaseClassIdJsonStr, Integer.class);
@@ -80,12 +85,14 @@ public class ActivityApiController {
 	 * @param participateScopeJsonStr 活动参与范围json字符串
 	 * @param signJsonStr 报名签到json字符串
 	 * @param release 是否发布
+	 * @param fid 进入页面时的fid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@LoginRequired
 	@PostMapping("edit")
-	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr, Boolean release) {
+	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr, Boolean release, Integer fid) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		loginService.loginInfoNotChange(fid, loginUser);
 		ActivityUpdateParamDTO activityUpdateParamDto = JSON.parseObject(activityJsonStr, ActivityUpdateParamDTO.class);
 		List<Integer> releaseClassIds = StringUtils.isBlank(releaseClassIdJsonStr) ? null : JSON.parseArray(releaseClassIdJsonStr, Integer.class);
 		List<WfwAreaDTO> wfwRegionalArchitectures = StringUtils.isBlank(participateScopeJsonStr) ? null : JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
