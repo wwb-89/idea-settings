@@ -4,10 +4,7 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.OptionDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
-import com.chaoxing.activity.model.Classify;
-import com.chaoxing.activity.model.ClassifyShowComponent;
-import com.chaoxing.activity.model.Template;
-import com.chaoxing.activity.model.TemplateComponent;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.IconQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.classify.component.ClassifyShowComponentQueryService;
@@ -27,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author huxiaolong
@@ -101,6 +100,9 @@ public class ActivityEngineController {
         model.addAttribute("classifyShowComponents", classifyShowComponents);
         // 自定义接口调用时机列表
         model.addAttribute("callTimings", OptionDTO.listInterfaceCallTiming());
+        // 开关的系统组件code列表
+        List<String> switchBtnComptCodes = Arrays.stream(Component.SystemComponentCodeEnum.values()).filter(Component.SystemComponentCodeEnum::getSwitchBtn).map(Component.SystemComponentCodeEnum::getValue).collect(Collectors.toList());
+        model.addAttribute("switchBtnComptCodes", switchBtnComptCodes);
         return "pc/engine/index";
     }
 }

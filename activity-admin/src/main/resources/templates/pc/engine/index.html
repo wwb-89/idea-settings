@@ -41,7 +41,7 @@
                                 <i class="icon-edit" @click="openEditDialog(index, item)"></i>
                                 <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
                             </div>
-                            <label :class="{ label: true, required: item.required }">{{item.name}}</label>
+                            <label :class="{ label: true, required: (item.required && !isSwitchBtn(item.code)) }">{{item.name}}</label>
                             <div class="input-box">
                                 <!-- 活动名称：activity_name -->
                                 <template v-if="item.code == 'activity_name'">
@@ -218,7 +218,7 @@
                                                 <i class="icon-edit" @click="openEditDialog1(index, idx, it)"></i>
                                                 <i class="icon-delete" @click="removeComponentAssociate2(index, idx, it)"></i>
                                             </div>
-                                            <label :class="{ label: true, required: it.required }">{{it.name}}</label>
+                                            <label :class="{ label: true, required: (it.required && !isSwitchBtn(it.code)) }">{{it.name}}</label>
                                             <div class="input-box">
                                                 <template v-if="it.code == 'sign_up_time_scope'">
                                                     <el-date-picker type="daterange"
@@ -391,7 +391,7 @@
                                 <el-input v-model="addEditItem.originIdentify" type="text" placeholder="接口地址" class="marginBottom24"></el-input>
                             </el-form-item>
                         </template>
-                        <div class="switch-box" v-show="addEditItem.code != 'sign_up' && addEditItem.code != 'company_sign_up' && addEditItem.code != 'partition'">
+                        <div class="switch-box" v-show="!isSwitchBtn(addEditItem.code)">
                             <label class="label">必填项</label>
                             <el-switch class="switch" v-model="addEditItem.required"></el-switch>
                         </div>
@@ -464,8 +464,10 @@
                             </div>
                         </template>
                         <div class="switch-box">
-                            <label class="label">必填项</label>
-                            <el-switch class="switch" v-model="addEditItem.required"></el-switch>
+                            <template v-if="!isSwitchBtn(addEditItem.code)">
+                                <label class="label">必填项</label>
+                                <el-switch class="switch" v-model="addEditItem.required"></el-switch>
+                            </template>
                             <label class="label">允许多选</label>
                             <el-switch class="switch" v-model="addEditItem.type" active-value="checkbox" inactive-value="radio"></el-switch>
                         </div>
@@ -744,8 +746,10 @@
                             <i></i>添加{{addEditItem.name}}
                         </div>
                         <div class="switch-box display-flex1">
-                            <label class="label">必填项</label>
-                            <el-switch class="switch" v-model="addEditItem.required"></el-switch>
+                            <template v-if="!isSwitchBtn(addEditItem.code)">
+                                <label class="label">必填项</label>
+                                <el-switch class="switch" v-model="addEditItem.required"></el-switch>
+                            </template>
                             <label class="label">关联字段</label>
                             <div class="set-icon"><span class="cursor" @click="openClassifyShowComponentWindow()"><i class="icon-setting"></i>设置</span>
                                 <el-tooltip class="item" effect="dark" content="设置和选项关联出现的字段" placement="top">
@@ -940,7 +944,9 @@
                     selectedClassify: {},
                     selectedClassifyTemplateComponents: [],
                     // 自定义应用接口调用时机
-                    callTimings: [[${callTimings}]]
+                    callTimings: [[${callTimings}]],
+                    // 开关的系统组件code列表
+                    switchBtnComptCodes: [[${switchBtnComptCodes}]]
                 },
                 created: function () {
                     var $this = this;
@@ -996,6 +1002,10 @@
                     });
                 },
                 methods:{
+                    isSwitchBtn: function (code) {
+                        var $this = this;
+                        return $this.switchBtnComptCodes.indexOf(code) != -1;
+                    },
                     initData: function () {
                         var $this = this;
                         var {template, components, templateComponents} = $this.templateInfo;
