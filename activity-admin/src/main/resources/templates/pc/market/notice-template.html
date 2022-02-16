@@ -22,13 +22,6 @@
 <div class="notice-setting" id="index" v-cloak>
 	<el-table class="table-box" :data="marketNoticeTemplates">
 		<el-table-column fixed prop="noticeTypeDescription" label="通知规则" min-width="157"></el-table-column>
-		<el-table-column prop="showTitle" label="标题" min-width="236"></el-table-column>
-		<el-table-column prop="showContent" label="内容" min-width="866"></el-table-column>
-		<el-table-column fixed="right" align="center" label="状态" min-width="157">
-			<template slot-scope="scope">
-				<span>{{scope.row.enable ? "已启用" : "已禁用"}}</span>
-			</template>
-		</el-table-column>
 		<el-table-column fixed="right" prop="enable" label="开启" min-width="78">
 			<template slot-scope="scope">
 				<el-switch v-model="scope.row.enable" @change="changeEnable(scope.$index)"></el-switch>

@@ -134,6 +134,8 @@ public class SignApiService {
 	private static final String USER_SIGN_UP_ABLE_SIGN_URL = DomainConstant.SIGN_API + "/sign/sign-up-able";
 	/** 根据signIds查询报名的状态信息 */
 	private static final String SIGN_UP_STATUS_INFO_URL = DomainConstant.SIGN_API + "/sign/sign-up/status-info";
+	/** 报名限制角色id */
+	private static final String SIGN_UP_ROLE_ID_LIMIT_URL = DomainConstant.SIGN_API + "/sign/%d/sign-up/limit-role-id";
 
 	/** 根据万能表单id查询报名签到id */
 	private static final String GET_SIGN_ID_BY_WFW_FORM_ID_URL = DomainConstant.SIGN_API + "/sign/id/from-wfw-form-id";
@@ -952,7 +954,24 @@ public class SignApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
-			log.error("根据签到报名id:{}获取活动企业报名的万能表单id失败:{}", signId, message);
+			log.error("根据签到报名id:{}, 获取活动企业报名的万能表单id error:{}", signId, message);
+			throw new BusinessException(message);
+		});
+	}
+
+	/**查询报名的角色id限制列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-02-16 15:04:38
+	 * @param signId
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listSignUpRoleIdLimitBySignId(Integer signId) {
+		String url = String.format(SIGN_UP_ROLE_ID_LIMIT_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSONArray.parseArray(jsonObject.getString("data"), Integer.class), (message) -> {
+			log.error("根据签到报名id:{}, 查询报名的角色id限制列表error:{}", signId, message);
 			throw new BusinessException(message);
 		});
 	}

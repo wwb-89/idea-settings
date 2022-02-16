@@ -1578,4 +1578,23 @@ public class ActivityQueryService {
 		}
 		return activityMapper.listActivityIdsByMarketIdOrFid(marketId, fid);
 	}
+
+	/**查询活动的发布范围和报名的角色限制
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-02-16 11:32:00
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.activity.ActivityScopeSignUpRoleDTO
+	*/
+	public ActivityScopeSignUpRoleDTO getActivityScopeSignUpRole(Integer activityId) {
+		Activity activity = getById(activityId);
+		List<WfwAreaDTO> wfwAreaDtos = activityScopeQueryService.listByActivityId(activityId);
+		List<Integer> fids = wfwAreaDtos.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
+		List<Integer> roleIds = signApiService.listSignUpRoleIdLimitBySignId(activity.getSignId());
+		return ActivityScopeSignUpRoleDTO.builder()
+				.fids(fids)
+				.roleIds(roleIds)
+				.build();
+	}
+
 }
