@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -180,20 +181,54 @@ public class Component {
      */
     @Getter
     public enum SystemComponentCodeEnum {
+        /** 活动系统组件 */
+        ACTIVITY_NAME("名称", "activity_name", false),
+        ACTIVITY_TIME_SCOPE("活动时间", "activity_time_scope", false),
+        ACTIVITY_COVER("封面", "activity_cover", false),
+        ACTIVITY_ORGANISERS("主办方", "activity_organisers", false),
+        ACTIVITY_TYPE("类型", "activity_type", false),
+        ACTIVITY_CLASSIFY("校区", "activity_classify", false),
+        MAX_PARTICIPATE_TIME_LENGTH("最大参与时长", "max_participate_time_length", false),
+        INTEGRAL("积分", "integral", false),
+        ACTIVITY_RELEASE_SCOPE("发布范围", "activity_release_scope", false),
+        WORK("作品征集", "work", true),
+        ACTIVITY_RATING("活动评价", "activity_rating", true),
+        TIMING_RELEASE("定时发布", "timing_release", true),
+        INTRODUCTION("简介", "introduction", false),
+        SIGN_IN_OUT("签到", "sign_in_out", false),
+        PARTITION("分区", "partition", false),
+        READING("阅读", "reading", true),
+        GROUP("讨论小组", "group", true),
+        INSPECTION_CONFIG("考核设置", "inspection_config", true),
+        CLAZZ_INTERACTION("班级互动", "clazz_interaction", true),
+        CERTIFICATE("证书设置", "certificate", false),
+        PUSH_REMINDER("推送提醒", "push_reminder", true),
+        FORM_COLLECTION("表单采集", "form_collection", false),
+        SIGN_UP_ROLE_LIMIT("角色范围", "sign_up_role_limit", false),
 
-        /** 报名条件 */
-        SIGN_UP_CONDITION("报名条件", "sign_up_condition"),
-        SIGN_UP_FILL_INFO("报名填报信息", "sign_up_fill_info"),
-        COMPANY_SIGN_UP("企业报名", "company_sign_up"),
-        SIGN_UP("报名", "sign_up"),
-        SIGN_IN_OUT("签到", "sign_in_out");
+        /** 报名 */
+        COMPANY_SIGN_UP("企业报名", "company_sign_up", true),
+        SIGN_UP("报名", "sign_up", true),
+        SIGN_UP_TIME_SCOPE("报名时间", "sign_up_time_scope", false),
+        WFW_PARTICIPATION_SCOPE("微服务参与范围", "wfw_participation_scope", false),
+        CONTACTS_PARTICIPATION_SCOPE("通讯录参与范围", "contacts_participation_scope", false),
+        SIGN_UP_PERSON_LIMIT("人数限制", "sign_up_person_limit", false),
+        SIGN_UP_FILL_INFO("报名填报信息", "sign_up_fill_info", true),
+        SIGN_UP_REVIEW("报名需要审核", "sign_up_review", true),
+        SIGN_UP_PUBLIC_LIST("报名名单公开", "sign_up_public_list", true),
+        SIGN_UP_CANCEL_SIGNED_UP("限制取消报名", "sign_up_cancel_signed_up", true),
+        SIGN_UP_CONDITION("报名条件", "sign_up_condition", true),
+        ON_SITE_SIGN_UP("现场报名", "on_site_sign_up", true);
+
 
         private final String name;
         private final String value;
+        private final Boolean switchBtn;
 
-        SystemComponentCodeEnum(String name, String value) {
+        SystemComponentCodeEnum(String name, String value, Boolean switchBtn) {
             this.name = name;
             this.value = value;
+            this.switchBtn = switchBtn;
         }
 
     }
