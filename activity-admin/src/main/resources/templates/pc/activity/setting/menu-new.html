@@ -17,6 +17,9 @@
         .header {
             width: inherit;
         }
+        .dialog-mask {
+            background: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -28,22 +31,22 @@
         </div>
         <div class="sortable-box ">
             <ul class="table-deader fs0">
-                <li class="li-drag">排序</li>
+<!--                <li class="li-drag">排序</li>-->
                 <li class="li-name">菜单名称</li>
                 <li class="li-status">开启</li>
-                <li class="li-operate">操作</li>
+<!--                <li class="li-operate">操作</li>-->
             </ul>
             <div class="table-body" id="sortDragBox1">
                 <ul v-for="(item, index) in backendMenus" :key="'backend-menu-' + index" class="table-tr fs0 list-group-item" v-if="item.code != 'setting'">
-                    <li class="table-td li-drag"><i class="icon-drag" :menu-code="item.code"></i></li>
+<!--                    <li class="table-td li-drag"><i class="icon-drag" :menu-code="item.code"></i></li>-->
                     <li class="table-td li-name">{{item.name}}</li>
                     <li class="table-td li-status">
                         <el-switch v-model="item.enable" @change="changeBackendMenuEnable(index)"></el-switch>
                     </li>
-                    <li class="table-td li-operate" v-show="item.dataOrigin == 'activity'">
-                        <span class="btn btn-edit" @click="toEditBackendMenu(index)">编辑</span>
-                        <span class="btn btn-delete" @click="toRemoveBackendMenu(index)">删除</span>
-                    </li>
+<!--                    <li class="table-td li-operate" v-show="item.dataOrigin == 'activity'">-->
+<!--                        <span class="btn btn-edit" @click="toEditBackendMenu(index)">编辑</span>-->
+<!--                        <span class="btn btn-delete" @click="toRemoveBackendMenu(index)">删除</span>-->
+<!--                    </li>-->
                 </ul>
             </div>
         </div>
@@ -112,7 +115,7 @@
                                         <el-checkbox v-model="addEditMenu.mobile">移动端</el-checkbox>
                                     </div>
                                     <div class="switch-box">
-                                        <label class="label color666">新页面打开</label>
+                                        <label class="label color333 font14" style="color: #333333">新页面打开</label>
                                         <el-switch class="switch" v-model="addEditMenu.openBlank"></el-switch>
                                     </div>
                                 </div>
