@@ -55,6 +55,7 @@ body {
      -moz-box-sizing: border-box;
           box-sizing: border-box;
   border-bottom: 1px solid #F0F0F0;
+  font-size: 14px;
 }
 
 .header .back-style {
@@ -67,8 +68,8 @@ body {
       -ms-flex-align: center;
           align-items: center;
   float: left;
-  padding: 12px 0;
-  line-height: 38px;
+  padding: 9px 0;
+  line-height: 30px;
 }
 
 .header .back-style a {
@@ -90,27 +91,27 @@ body {
 
 .header .title {
   position: relative;
-  color: #333333;
+  color: #999999;
   text-align: left;
-  padding: 12px 0;
-  margin-right: 60px;
+  padding: 9px 0;
+  margin-right: 16px;
   float: left;
-  max-width: 334px;
+  max-width: 104px;
 }
 
 .header .title .title-box {
   font-weight: 500;
-  font-size: 16px;
   line-height: 30px;
   overflow: hidden;
   -o-text-overflow: ellipsis;
      text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 4px;
+  padding: 0 4px;
   width: 100%;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+  cursor: pointer;
 }
 
 .header .title .title-pop {
@@ -166,21 +167,16 @@ body {
 
 .header .menu {
   float: left;
-  max-width: calc(100% - 540px);
   overflow: hidden;
   white-space: nowrap;
 }
 
 .header .menu .menu-item {
-  padding: 16px 0;
+  padding: 9px 0 7px;
   border-bottom: 2px solid transparent;
   display: inline-block;
   font-size: 14px;
   margin-right: 32px;
-}
-
-.header .menu .menu-item:last-child {
-  margin-right: 0;
 }
 
 .header .menu .menu-item.active {
@@ -200,8 +196,7 @@ body {
 }
 
 .header .right-more-drop {
-  float: right;
-  margin: 21px 8px;
+  margin: 14px 0;
 }
 
 .header .right-more-drop:hover .el-icon-more {

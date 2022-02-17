@@ -53,12 +53,13 @@ body {
   padding: 0 24px;
   box-sizing: border-box;
   border-bottom: 1px solid #F0F0F0;
+  font-size: 14px;
   .back-style {
     display: flex;
     align-items: center;
     float: left;
-    padding: 12px 0;
-    line-height: 38px;
+    padding: 9px 0;
+    line-height: 30px;
     a{
       text-decoration: none;
       color: #999999;
@@ -76,22 +77,22 @@ body {
   }
   .title {
     position: relative;
-    color: #333333;
+    color: #999999;
     text-align: left;
-    padding: 12px 0;
-    margin-right: 60px;
+    padding: 9px 0;
+    margin-right: 16px;
     float: left;
-    max-width: 334px;
+    max-width: 104px;
     .title-box {
       font-weight: 500;
-      font-size: 16px;
       line-height: 30px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      padding: 4px;
+      padding: 0 4px;
       width: 100%;
       box-sizing: border-box;
+      cursor: pointer;
     }
     .title-pop {
       position: absolute;
@@ -137,18 +138,18 @@ body {
   }
   .menu {
     float: left;
-    max-width: calc(100% - 540px);
+    //max-width: calc(100% - 540px);
     overflow: hidden;
     white-space: nowrap;
     .menu-item {
-      padding: 16px 0;
+      padding: 9px 0 7px;
       border-bottom: 2px solid transparent;
       display: inline-block;
       font-size: 14px;
       margin-right: 32px;
-      &:last-child {
-        margin-right: 0;
-      }
+      //&:last-child {
+      //  margin-right: 0;
+      //}
       &.active {
         border-bottom: 2px solid #0084FF;
         font-weight: 600;
@@ -166,8 +167,7 @@ body {
     }
   }
   .right-more-drop {
-    float: right;
-    margin: 21px 8px;
+    margin: 14px 0;
     &:hover {
       .el-icon-more {
         color: #0084FF;
