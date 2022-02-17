@@ -27,4 +27,5 @@ CREATE TABLE `t_custom_app_interface_call_record` (
 
 
 ALTER TABLE t_custom_app_interface_call ADD component_id INT ( 11 ) NULL COMMENT '自定义组件id';
-
+-- 修复万能表单创建的活动的origin_type都为normal的问题
+UPDATE t_activity t SET t.origin_type = 'wfw_form' WHERE t.origin_type = 'normal' AND t.origin_form_user_id IS NOT NULL;
