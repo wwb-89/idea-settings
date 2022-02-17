@@ -23,7 +23,7 @@
                         <dt class="label">{{fieldCodeNameRelation['activity_time_scope']}}&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
                     </dl>
-                    <dl class="text-list" v-if="signUp">
+                    <dl class="text-list" v-if="openedSignUp">
                         <dt class="label">报名时间&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info"> {{ signUp.startTime | timestampScopeFormat(signUp.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
                     </dl>
@@ -35,7 +35,7 @@
                         <dt class="label">{{fieldCodeNameRelation['activity_organisers']}}&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info">{{activity.organisers}}</dd>
                     </dl>
-                    <dl class="text-list" v-if="signUp">
+                    <dl class="text-list" v-if="openedSignUp">
                         <dt class="label">报名容量&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info" v-if="signUp.limitPerson">{{signUp.personLimit}}</dd>
                         <dd class="info" v-else>不限</dd>
@@ -76,6 +76,10 @@
                             address += $this.activity.detailAddress || '';
                         }
                         return address;
+                    },
+                    openedSignUp: function () {
+                        var $this = this;
+                        return !activityApp.isEmpty($this.signUp) && !$this.signUp.deleted;
                     }
                 },
                 mounted: function () {
