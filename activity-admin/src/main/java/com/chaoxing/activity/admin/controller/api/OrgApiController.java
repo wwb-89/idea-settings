@@ -65,19 +65,7 @@ public class OrgApiController {
 		if (StringUtils.isNotBlank(areaCode)) {
 			List<WfwAreaDTO> wfwAreas = wfwAreaApiService.listByFid(fid);
 			Integer fwId = Optional.ofNullable(wfwAreas).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getCode(), areaCode)).findFirst().map(WfwAreaDTO::getId).orElse(null);
-			// 创建一个区域角色组
-			Integer areaRoleGroupId = -1;
-			WfwRoleDTO areaRoleGroup = WfwRoleDTO.builder()
-					.role(null)
-					.id(areaRoleGroupId)
-					.name("区域角色")
-					.group(true)
-					.build();
 			List<WfwRoleDTO> wfwRoles = wfwRoleApiService.listAreaRole(fwId);
-			for (WfwRoleDTO wfwRole : wfwRoles) {
-				wfwRole.setRoleGroupId(areaRoleGroupId);
-			}
-			result.add(areaRoleGroup);
 			result.addAll(wfwRoles);
 		} else {
 			List<WfwRoleDTO> orgWfwRoles = wfwRoleApiService.listFidRole(fid);
