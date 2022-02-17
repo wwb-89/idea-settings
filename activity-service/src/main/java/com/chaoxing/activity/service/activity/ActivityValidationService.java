@@ -44,6 +44,7 @@ public class ActivityValidationService {
 	 * @return void
 	*/
 	public void addInputValidate(Activity activity) {
+		boolean isAdd = activity.getId() == null;
 		String name = activity.getName();
 		if (StringUtils.isEmpty(name)) {
 			throw new BusinessException("活动名称不能为空");
@@ -77,7 +78,7 @@ public class ActivityValidationService {
 		activity.setTimingRelease(timingRelease);
 		activity.setTimingReleaseTime(timingReleaseTime);
 		String originType = activity.getOriginType();
-		if (StringUtils.isBlank(originType)) {
+		if (isAdd && StringUtils.isBlank(originType)) {
 			activity.setOriginType(Activity.OriginTypeEnum.NORMAL.getValue());
 		}
 		// 活动形式

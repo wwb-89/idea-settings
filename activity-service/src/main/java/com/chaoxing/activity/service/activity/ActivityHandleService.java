@@ -49,7 +49,6 @@ import com.chaoxing.activity.service.manager.module.ClazzInteractionApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
-import com.chaoxing.activity.service.queue.event.activity.CustomAppInterfaceCallQueue;
 import com.chaoxing.activity.service.queue.event.activity.handler.CustomAppInterfaceCallQueueService;
 import com.chaoxing.activity.service.tag.TagHandleService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
