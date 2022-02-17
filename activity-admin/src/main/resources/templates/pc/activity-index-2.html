@@ -195,7 +195,8 @@
                     iframeUrl: "",
                     activityHomeQrcodeShow: false,
                     activityHomeQrcodeGenerated: false,
-                    isEmbedded: activityApp.isEmbedded()
+                    isEmbedded: activityApp.isEmbedded(),
+                    backUrl: [[${backUrl}]]
                 }
             },
             created: function () {
@@ -389,7 +390,11 @@
                 returnBack: function () {
                     var $this = this;
                     if ($this.isEmbedded) {
-                        window.history.back();
+                        if (activityApp.isEmpty($this.backUrl)) {
+                            window.history.back();
+                        } else {
+                            window.location.replace($this.backUrl);
+                        }
                     } else {
                         window.close();
                     }

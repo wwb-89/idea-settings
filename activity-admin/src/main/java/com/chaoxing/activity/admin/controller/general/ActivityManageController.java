@@ -15,8 +15,8 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.classify.component.ClassifyShowComponentQueryService;
-import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
@@ -44,7 +44,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -98,13 +97,15 @@ public class ActivityManageController {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-12-29 17:13:59
+	 * @param request
 	 * @param model
 	 * @param activityId
-	 * @param request
+	 * @param style
+	 * @param backUrl
 	 * @return java.lang.String
 	*/
 	@RequestMapping("{activityId}")
-	public String activityIndex(Model model, @PathVariable Integer activityId, Integer style, HttpServletRequest request) {
+	public String activityIndex(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer style, String backUrl) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 //		todo 暂时屏蔽校验
 //		Activity activity = activityValidationService.manageAble(activityId, operateUid);
@@ -120,6 +121,7 @@ public class ActivityManageController {
 		model.addAttribute("userActivityMenus", userActivityMenus);
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
 		model.addAttribute("xiamenTrainingPlatformDomain", DomainConstant.XIAMEN_TRAINING_PLATFORM_API);
+		model.addAttribute("backUrl", Optional.ofNullable(backUrl).orElse(""));
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("webDomain", DomainConstant.WEB);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
