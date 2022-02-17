@@ -79,10 +79,11 @@ public class OrgApiController {
 			}
 			result.add(areaRoleGroup);
 			result.addAll(wfwRoles);
-		}
-		List<WfwRoleDTO> orgWfwRoles = wfwRoleApiService.listFidRole(fid);
-		if (CollectionUtils.isNotEmpty(orgWfwRoles)) {
-			result.addAll(orgWfwRoles);
+		} else {
+			List<WfwRoleDTO> orgWfwRoles = wfwRoleApiService.listFidRole(fid);
+			if (CollectionUtils.isNotEmpty(orgWfwRoles)) {
+				result.addAll(orgWfwRoles);
+			}
 		}
 		return RestRespDTO.success(result);
 	}
