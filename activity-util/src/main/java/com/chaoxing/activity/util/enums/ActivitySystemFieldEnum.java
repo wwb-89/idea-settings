@@ -34,7 +34,8 @@ public enum ActivitySystemFieldEnum {
     CREATE_USER("发起人", "create_user"),
     ACTIVITY_STATUS("活动状态", "activity_status"),
     TAGS("标签", "tags"),
-    INTRODUCTION("简介", "introduction");
+    INTRODUCTION("简介", "introduction"),
+    CREATOR_DEPARTMENT("创建者部门", "creator_department");
 
     private final String name;
     private final String value;

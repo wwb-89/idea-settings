@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.cloud.CloudImageDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
 import com.chaoxing.activity.dto.manager.wfwform.v2.WfwFormDataAddParamDTO;
 import com.chaoxing.activity.dto.manager.wfwform.v2.WfwFormDataUpdateParamDTO;
 import com.chaoxing.activity.model.*;
@@ -15,6 +16,7 @@ import com.chaoxing.activity.service.data.v2.DataPushConfigService;
 import com.chaoxing.activity.service.data.v2.MarketActivityDataPushRecordService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.manager.wfw.v2.WfwFormNewApiService;
 import com.chaoxing.activity.service.queue.activity.MarketActivityDataPushQueue;
@@ -71,6 +73,8 @@ public class MarketActivityDataPushQueueService {
     private CloudApiService cloudApiService;
     @Resource
     private TagQueryService tagQueryService;
+    @Resource
+    private WfwContactApiService wfwContactApiService;
 
     @Transactional(rollbackFor = Exception.class)
     public void handle(MarketActivityDataPushQueue.QueueParamDTO queueParam) {
@@ -346,6 +350,14 @@ public class MarketActivityDataPushQueueService {
                     ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
                     valueJsonObject.put("val", Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).filter(StringUtils::isNotBlank).orElse(""));
                     item.put("values", data);
+                    break;
+                case CREATOR_DEPARTMENT:
+                    WfwDepartmentDTO wfwDepartment = wfwContactApiService.getUserDepartment(activity.getCreateUid(), activity.getCreateFid());
+                    if (wfwDepartment != null) {
+                        valueJsonObject.put("id", wfwDepartment.getId());
+                        valueJsonObject.put("name", wfwDepartment.getName());
+                        item.put("idNames", data);
+                    }
                     break;
                 default:
             }

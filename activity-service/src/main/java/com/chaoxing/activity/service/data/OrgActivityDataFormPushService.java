@@ -5,12 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.cloud.CloudImageDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -54,6 +56,8 @@ public class OrgActivityDataFormPushService {
     private DataPushValidationService dataPushValidationService;
     @Resource
     private CloudApiService cloudApiService;
+    @Resource
+    private WfwContactApiService wfwContactApiService;
 
     /**推送数据
      * @Description 
@@ -105,7 +109,7 @@ public class OrgActivityDataFormPushService {
                 Integer formUserId = Integer.parseInt(dataPushRecord.getRecord());
                 existFormData = formApiService.getFormRecord(formUserId, formId, activity.getCreateFid());
             }
-            String formData = packageFormData(activity, formId, createFid);
+            String formData = packageFormData(activity, formId);
             if (existFormData == null) {
                 // 新增
                 Integer formUserId = formApiService.fillForm(formId, createFid, createUid, formData);
@@ -130,7 +134,8 @@ public class OrgActivityDataFormPushService {
         }
     }
 
-    private String packageFormData(Activity activity, Integer formId, Integer createFid) {
+    private String packageFormData(Activity activity, Integer formId) {
+        Integer createFid = activity.getCreateFid();
         List<FormStructureDTO> formFields = formApiService.getFormStructure(formId, createFid);
         if (CollectionUtils.isEmpty(formFields)) {
             log.error("微服务表单:{}没有字段", formId);
@@ -229,6 +234,18 @@ public class OrgActivityDataFormPushService {
                 Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
                 data.add(statusEnum.getName());
                 item.put("val", data);
+            }
+            // 创建者的部门
+            if (Objects.equals("creator_department", alias)) {
+                WfwDepartmentDTO wfwDepartment = wfwContactApiService.getUserDepartment(activity.getCreateUid(), createFid);
+                if (wfwDepartment != null) {
+                    JSONObject user = new JSONObject();
+                    user.put("id", wfwDepartment.getId());
+                    user.put("name", wfwDepartment.getName());
+                    data.add(user);
+                    item.put("idNames", data);
+                    result.add(item);
+                }
             }
         }
         return result.toJSONString();
