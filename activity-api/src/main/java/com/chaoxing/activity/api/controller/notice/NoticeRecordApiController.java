@@ -59,7 +59,7 @@ public class NoticeRecordApiController {
 					.activityFlag(activity.getActivityFlag())
 					.title(title)
 					.content(content)
-					.time(DateUtils.startTimestamp2Time(timestamp))
+					.time(DateUtils.timestamp2Date(timestamp))
 					.build();
 			noticeRecordHandleService.add(noticeRecord);
 		}
