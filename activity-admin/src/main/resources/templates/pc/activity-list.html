@@ -866,10 +866,6 @@
                     var url = $this.adminDomain + "/activity/" + activityId;
                     window.open(url);
                 },
-                // 活动的来源是不是活动申报
-                isActivityDeclaration: function (activity) {
-                    return "activity_declaration" == activity.originType;
-                },
                 calShowTableFieldDetails: function () {
                     var $this = this;
                     // 计算表格显示的字段列表
