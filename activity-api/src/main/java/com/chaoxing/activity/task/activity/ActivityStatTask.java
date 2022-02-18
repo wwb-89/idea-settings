@@ -36,7 +36,16 @@ public class ActivityStatTask {
     */
     @Scheduled(cron = "0 30 0 * * ?")
     public void generateActivityStatTask() {
-        activityStatQueueService.addActivityStatTask();
+        log.info("生成活动统计任务 start");
+        try {
+            activityStatQueueService.addActivityStatTask();
+            log.info("生成活动统计任务 success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("生成活动统计任务 error:{}", e.getMessage());
+        } finally {
+            log.info("生成活动统计任务 end");
+        }
     }
 
     /**处理活动统计任务
@@ -51,10 +60,11 @@ public class ActivityStatTask {
     public void handleActivityStatTask() throws InterruptedException {
         log.info("处理活动统计任务 start");
         Integer taskId = activityStatQueueService.popActivityStatTask();
-        log.info("根据参数:{} 处理活动统计任务", taskId);
         if (taskId == null) {
+            log.info("处理活动统计任务 忽略");
             return;
         }
+        log.info("根据参数:{} 处理活动统计任务", taskId);
         boolean result = false;
         try {
             result = activityStatHandleService.handleTask(taskId);
