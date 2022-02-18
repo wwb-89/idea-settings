@@ -11,7 +11,7 @@ CREATE TABLE `t_notice_record` (
     `create_time` datetime DEFAULT current_timestamp() COMMENT '创建时间',
     `update_time` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    KEY `idx_primary` (`activity_create_fid`,`activity_flag`,`type`,`create_time`)
+    KEY `idx_primary` (`activity_create_fid`,`activity_flag`,`type`,`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知记录表';
 -- 2022-02-15 自定义应用接口调用
 CREATE TABLE `t_custom_app_interface_call` (
