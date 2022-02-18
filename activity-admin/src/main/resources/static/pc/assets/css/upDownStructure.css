@@ -100,7 +100,7 @@ body {
 }
 
 .header .title .title-box {
-  font-weight: 500;
+  font-weight: 400;
   line-height: 30px;
   overflow: hidden;
   -o-text-overflow: ellipsis;
