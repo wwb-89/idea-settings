@@ -39,6 +39,8 @@
             <if test="type != null and type != ''">
                 AND t.type = #{type}
             </if>
+        ORDER BY
+            t.time DESC
     </select>
 
     <select id="pagingWithContent" resultMap="ResultMapWithBLOBs">
@@ -58,5 +60,7 @@
             <if test="type != null and type != ''">
                 AND t.type = #{type}
             </if>
+        ORDER BY
+            t.time DESC
     </select>
 </mapper>
