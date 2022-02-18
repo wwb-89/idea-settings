@@ -116,7 +116,8 @@ public class ActivityManageController {
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		// 是不是创建者
 		boolean creator = activityValidationService.isCreator(activity, loginUser.getUid());
-		List<ActivityMenuDTO> userActivityMenus = activityMenuQueryService.listUserActivityMenus(activity, loginUser.getUid(), creator);
+		boolean isMobile = UserAgentUtils.isMobileAccess(request);
+		List<ActivityMenuDTO> userActivityMenus = activityMenuQueryService.listUserActivityMenus(activity, loginUser.getUid(), creator, isMobile);
 		model.addAttribute("isCreator", creator);
 		model.addAttribute("userActivityMenus", userActivityMenus);
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
@@ -125,7 +126,7 @@ public class ActivityManageController {
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("webDomain", DomainConstant.WEB);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
-		if (UserAgentUtils.isMobileAccess(request)) {
+		if (isMobile) {
 			return "mobile/activity-index";
 		} else {
 			style = Optional.ofNullable(style).orElse(1);

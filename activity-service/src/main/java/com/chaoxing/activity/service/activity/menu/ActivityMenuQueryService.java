@@ -191,7 +191,8 @@ public class ActivityMenuQueryService {
      * @param creator
      * @return
      */
-    public List<ActivityMenuDTO> listUserActivityMenus(Activity activity, Integer uid, boolean creator) {
+    public List<ActivityMenuDTO> listUserActivityMenus(Activity activity, Integer uid, boolean creator, Boolean isMobile) {
+        isMobile = Optional.ofNullable(isMobile).orElse(false);
         Integer activityId = activity.getId();
         // 查询活动配置启用的所有菜单
         List<ActivityMenuConfig> activityMenus = listActivityEnableMenuConfigs(activityId);
@@ -216,8 +217,12 @@ public class ActivityMenuQueryService {
                 activityMenus = activityMenus.stream().filter(v -> managerMenus.contains(v.getMenu())).collect(Collectors.toList());
             }
         }
-        return convertMenu2DTO(activityId, activityMenus).stream()
+        List<ActivityMenuDTO> result = convertMenu2DTO(activityId, activityMenus).stream()
                 .filter(v -> Objects.equals(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue(), v.getType())).collect(Collectors.toList());
+        if (isMobile) {
+            return result.stream().filter(ActivityMenuDTO::getMobile).collect(Collectors.toList());
+        }
+        return result.stream().filter(ActivityMenuDTO::getPc).collect(Collectors.toList());
     }
 
     /**MenuConfig转换MenuDTO，携带上url和图标等信息

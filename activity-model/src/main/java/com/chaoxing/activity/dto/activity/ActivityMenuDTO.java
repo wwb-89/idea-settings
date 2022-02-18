@@ -91,6 +91,8 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
                 .openBlank(false)
                 .enable(true)
                 .url("")
+                .pc(true)
+                .mobile(true)
                 .desc(v.getDesc())
                 .showRule(ActivityMenuConfig.ShowRuleEnum.NO_LIMIT.getValue())
                 .sequence(v.getSequence())
@@ -102,6 +104,8 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
                 .dataOrigin(ActivityMenuConfig.DataOriginEnum.SYSTEM.getValue())
                 .openBlank(true)
                 .enable(true)
+                .pc(true)
+                .mobile(true)
                 .url("")
                 .desc("")
                 .showRule(v.getShowRule())
@@ -130,6 +134,8 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
                 .openBlank(Optional.ofNullable(v.getOpenBlank()).orElse(false))
                 .url(v.getUrl())
                 .desc("")
+                .pc(true)
+                .mobile(true)
                 .showRule(ActivityMenuConfig.ShowRuleEnum.NO_LIMIT.getValue())
                 .defaultIconUrl(Optional.ofNullable(v.getDefaultIconCloudId()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
                 .activeIconUrl(Optional.ofNullable(v.getActiveIconCloudId()).map(icon -> DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + icon).orElse(null))
@@ -156,8 +162,8 @@ public class ActivityMenuDTO implements Comparable<ActivityMenuDTO> {
                 .activityId(v.getActivityId())
                 .activityMenuId(v.getId())
                 .iconId(v.getIconId())
-                .pc(v.getPc())
-                .mobile(v.getMobile())
+                .pc(Optional.ofNullable(v.getPc()).orElse(false))
+                .mobile(Optional.ofNullable(v.getMobile()).orElse(false))
                 .build()).collect(Collectors.toList());
     }
 
