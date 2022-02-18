@@ -88,24 +88,4 @@ public class ActivitySettingApiController {
         return RestRespDTO.success();
     }
 
-    /**更新模块设置
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-08-06 17:09:54
-    * @param activityId
-    * @param menus
-    * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @PostMapping("menu")
-    public RestRespDTO updateMenus(Integer activityId, String menus) {
-        List<String> menuList = JSONArray.parseArray(menus, String.class);
-        activityMenuHandleService.configActivityMenu(activityId, menuList);
-        return RestRespDTO.success();
-    }
-
-
-
-
-
-
 }

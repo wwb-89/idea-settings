@@ -7,9 +7,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.statement.select.Select;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -100,21 +98,6 @@ public class CustomAppConfigQueryService {
             return Lists.newArrayList();
         }
         return list(enableCustomAppTplComponentIds).stream().filter(v -> Objects.equals(v.getType(), ActivityMenuConfig.UrlTypeEnum.FRONTEND.getValue())).collect(Collectors.toList());
-    }
-
-    /**获取菜单对应的模板组件id
-     * @Description
-     * @author huxiaolong
-     * @Date 2022-01-13 18:32:49
-     * @param menu
-     * @return
-     */
-    public Integer getCustomAppTplComponentId(String menu) {
-        if (StringUtils.isEmpty(menu)) {
-            return null;
-        }
-        CustomAppConfig customAppConfig = customAppConfigMapper.selectList(new LambdaQueryWrapper<CustomAppConfig>().eq(CustomAppConfig::getId, Integer.valueOf(menu))).stream().findFirst().orElse(null);
-        return Optional.ofNullable(customAppConfig).map(CustomAppConfig::getTemplateComponentId).orElse(null);
     }
 
     public List<CustomAppConfig> listByTemplateId(Integer templateId) {

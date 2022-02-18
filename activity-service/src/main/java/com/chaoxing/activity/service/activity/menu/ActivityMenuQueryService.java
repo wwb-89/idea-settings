@@ -259,7 +259,4 @@ public class ActivityMenuQueryService {
         return result.stream().sorted(Comparator.comparing(ActivityMenuDTO::getSequence)).collect(Collectors.toList());
     }
 
-
-
-
 }

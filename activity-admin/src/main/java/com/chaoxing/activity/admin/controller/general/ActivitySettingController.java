@@ -237,6 +237,6 @@ public class ActivitySettingController {
         model.addAttribute("canConfigMenus", activityMenuQueryService.listCanConfigMenus(activityId));
         model.addAttribute("mainDomain", DomainConstant.MAIN);
         model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
-        return "pc/activity/setting/menu-new";
+        return "pc/activity/setting/menu";
     }
 }

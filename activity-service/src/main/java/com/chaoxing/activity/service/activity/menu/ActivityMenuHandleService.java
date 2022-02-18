@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.mapper.ActivityMenuConfigMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityCustomAppConfig;
 import com.chaoxing.activity.model.ActivityMenuConfig;
-import com.chaoxing.activity.service.activity.engine.CustomAppConfigQueryService;
+import com.chaoxing.activity.model.FlagDefaultSystemMenuConfig;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,17 +34,15 @@ public class ActivityMenuHandleService {
 
     @Resource
     private ActivityMenuConfigMapper activityMenuConfigMapper;
-
+    @Resource
+    private ActivityQueryService activityQueryService;
     @Resource
     private ActivityCustomAppConfigHandleService activityCustomAppConfigHandleService;
     @Resource
-    private ActivityMenuQueryService activityMenuQueryService;
-    @Resource
-    private CustomAppConfigQueryService customAppConfigQueryService;
-
+    private FlagDefaultSystemMenuConfigService flagDefaultSystemMenuConfigService;
 
     /**活动创建时，批量新增默认的菜单列表
-     * @Description
+     * @Description 活动标识配置了默认的菜单配置，此处活动的默认菜单需要合并活动标识的默认配置：活动标识列表有些是不启用的
      * @author huxiaolong
      * @Date 2022-01-11 10:34:24
      * @param activityId
@@ -54,6 +53,27 @@ public class ActivityMenuHandleService {
     public void configActivityDefaultMenu(Integer activityId, List<ActivityMenuConfig> activityMenus) {
         if (CollectionUtils.isEmpty(activityMenus)) {
             return;
+        }
+        Activity activity = activityQueryService.getById(activityId);
+        List<FlagDefaultSystemMenuConfig> flagDefaultSystemMenuConfigs = flagDefaultSystemMenuConfigService.listByFlag(activity.getActivityFlag());
+        if (CollectionUtils.isNotEmpty(flagDefaultSystemMenuConfigs)) {
+            // 系统菜单以配置为准
+            Map<String, FlagDefaultSystemMenuConfig> menuObjectMap = flagDefaultSystemMenuConfigs.stream().collect(Collectors.toMap(FlagDefaultSystemMenuConfig::getMenu, v -> v, (v1, v2) -> v2));
+            Iterator<ActivityMenuConfig> iterator = activityMenus.iterator();
+            while (iterator.hasNext()) {
+                ActivityMenuConfig next = iterator.next();
+                String dataOrigin = next.getDataOrigin();
+                if (Objects.equals(ActivityMenuConfig.DataOriginEnum.SYSTEM.getValue(), dataOrigin)) {
+                    // menu唯一（所有的来源：系统、模板、活动）
+                    FlagDefaultSystemMenuConfig flagDefaultSystemMenuConfig = menuObjectMap.get(next.getMenu());
+                    if (flagDefaultSystemMenuConfig == null) {
+                        iterator.remove();
+                    } else {
+                        next.setSequence(flagDefaultSystemMenuConfig.getSequence());
+                        next.setShowRule(flagDefaultSystemMenuConfig.getShowRule());
+                    }
+                }
+            }
         }
         activityMenus.forEach(v -> v.setActivityId(activityId));
         activityMenuConfigMapper.batchAdd(activityMenus);
@@ -88,56 +108,6 @@ public class ActivityMenuHandleService {
                         .eq(ActivityMenuConfig::getId, inspectConfigMenu.getId())
                         .set(ActivityMenuConfig::getEnable, !inspectConfigMenu.getEnable()));
             }
-        }
-    }
-
-
-    /**活动菜单配置
-     * @Description
-     * @author huxiaolong
-     * @Date 2022-01-11 11:12:20
-     * @param activityId
-     * @param menuList
-     * @return
-     */
-    @Deprecated
-    @Transactional(rollbackFor = Exception.class)
-    public void configActivityMenu(Integer activityId, List<String> menuList) {
-        // 查询活动现有的活动菜单配置
-        Map<String, ActivityMenuConfig> menuConfigMap = activityMenuQueryService.listByActivityId(activityId).stream().collect(Collectors.toMap(ActivityMenuConfig::getMenu, v -> v, (v1, v2) -> v2));
-        List<ActivityMenuConfig> waitAddConfigs = Lists.newArrayList();
-        List<ActivityMenuConfig> waitUpdateConfigs = Lists.newArrayList();
-        menuList.forEach(menu -> {
-            ActivityMenuConfig menuConfig = menuConfigMap.get(menu);
-            if (menuConfig == null) {
-                menuConfig = ActivityMenuConfig.builder().menu(menu).activityId(activityId).enable(true).build();
-                ActivityMenuEnum.BackendMenuEnum backendMenuEnum = ActivityMenuEnum.BackendMenuEnum.fromValue(menu);
-                if (backendMenuEnum == null) {
-                    Integer tplComponentId = customAppConfigQueryService.getCustomAppTplComponentId(menu);
-                    menuConfig.setDataOrigin(ActivityMenuConfig.DataOriginEnum.TEMPLATE.getValue());
-                    menuConfig.setTemplateComponentId(tplComponentId);
-                    menuConfig.setSequence(150);
-                } else {
-                    menuConfig.setDataOrigin(ActivityMenuConfig.DataOriginEnum.SYSTEM.getValue());
-                    menuConfig.setSequence(backendMenuEnum.getSequence());
-                }
-                waitAddConfigs.add(menuConfig);
-            }
-        });
-        menuConfigMap.values().forEach(v -> {
-            boolean isUpdated = (menuList.contains(v.getMenu()) && !v.getEnable()) || (!menuList.contains(v.getMenu()) && v.getEnable());
-            if (isUpdated) {
-                v.setEnable(!v.getEnable());
-                waitUpdateConfigs.add(v);
-            }
-        });
-        if (CollectionUtils.isNotEmpty(waitAddConfigs)) {
-            activityMenuConfigMapper.batchAdd(waitAddConfigs);
-        }
-        if (CollectionUtils.isNotEmpty(waitUpdateConfigs)) {
-            waitUpdateConfigs.forEach(v -> activityMenuConfigMapper.update(null, new LambdaUpdateWrapper<ActivityMenuConfig>()
-                    .eq(ActivityMenuConfig::getId, v.getId())
-                    .set(ActivityMenuConfig::getEnable, v.getEnable())));
         }
     }
 

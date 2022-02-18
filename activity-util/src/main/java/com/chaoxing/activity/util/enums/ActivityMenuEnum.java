@@ -94,29 +94,29 @@ public enum ActivityMenuEnum {
     @Getter
     public enum FrontendMenuEnum {
         /** 去报名 */
-        TO_SIGN_UP("报名参与", "to_sign_up", IconEnum.UNIVERSAL.getValue(), false, 1, "before_sign_up"),
+        TO_SIGN_UP("报名参与", "to_sign_up", IconEnum.UNIVERSAL.getValue(), false, 10, "before_sign_up"),
         /** 进入会场 */
-        ENTER_VENUE("进入会场", "enter_venue", IconEnum.UNIVERSAL.getValue(), false, 2, "no_limit"),
+        ENTER_VENUE("进入会场", "enter_venue", IconEnum.UNIVERSAL.getValue(), false, 20, "no_limit"),
         /** 去签到，点击跳转签到列表页 */
-        TO_SIGN_IN("去签到", "to_sign_in", IconEnum.SIGN_IN.getValue(), false, 3, "after_sign_up"),
+        TO_SIGN_IN("去签到", "to_sign_in", IconEnum.SIGN_IN.getValue(), false, 30, "after_sign_up"),
         /** 去填写，点击跳转表单采集填写列表页 */
-        TO_FILL_FORM_COLLECTION("去填写", "to_fill_form_collection", IconEnum.UNIVERSAL.getValue(), false, 4, "after_sign_up"),
+        TO_FILL_FORM_COLLECTION("去填写", "to_fill_form_collection", IconEnum.UNIVERSAL.getValue(), false, 40, "after_sign_up"),
         /** 阅读测评 */
-        TO_READING("阅读测评", "to_reading", IconEnum.READING_TEST.getValue(), false, 5, "after_sign_up"),
+        TO_READING("阅读测评", "to_reading", IconEnum.READING_TEST.getValue(), false, 50, "after_sign_up"),
         /** 讨论小组 */
-        TO_DISCUSSION_GROUP("讨论小组", "to_discussion_group", IconEnum.UNIVERSAL.getValue(), false, 6, "after_sign_up"),
+        TO_DISCUSSION_GROUP("讨论小组", "to_discussion_group", IconEnum.UNIVERSAL.getValue(), false, 60, "after_sign_up"),
         /** 评价 */
-        TO_RATE("评价", "to_rate", IconEnum.RATING.getValue(), false, 7, "after_sign_up"),
+        TO_RATE("评价", "to_rate", IconEnum.RATING.getValue(), false, 70, "after_sign_up"),
         /** 活动管理 */
-        TO_MANAGE("管理", "to_manage", IconEnum.MANAGEMENT.getValue(), false, 8, "no_limit"),
+        TO_MANAGE("管理", "to_manage", IconEnum.MANAGEMENT.getValue(), false, 80, "no_limit"),
         /** 查看报名信息 */
-        TO_SIGN_UP_INFO("报名信息", "to_sign_up_info", IconEnum.SIGN_UP_INFO.getValue(), false, 9, "after_sign_up"),
+        TO_SIGN_UP_INFO("报名信息", "to_sign_up_info", IconEnum.SIGN_UP_INFO.getValue(), false, 90, "after_sign_up"),
         /** 进入班级互动主页 */
-        TO_CLASS_INTERACTION_HOMEPAGE("进入主页", "to_class_interaction_homepage", IconEnum.UNIVERSAL.getValue(), false, 10, "after_sign_up"),
+        TO_CLASS_INTERACTION_HOMEPAGE("进入主页", "to_class_interaction_homepage", IconEnum.UNIVERSAL.getValue(), false, 100, "after_sign_up"),
 
         /** 状态按钮，不可点击 */
         /** 活动已结束 */
-        ACTIVITY_ENDED("活动已结束", "activity_ended", IconEnum.UNIVERSAL.getValue(), true, 11, "no_limit");
+        ACTIVITY_ENDED("活动已结束", "activity_ended", IconEnum.UNIVERSAL.getValue(), true, 110, "no_limit");
 
         /** 按钮名称 */
         private final String name;
