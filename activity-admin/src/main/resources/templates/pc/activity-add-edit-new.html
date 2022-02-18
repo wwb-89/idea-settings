@@ -725,7 +725,7 @@
                 </div>
             </div>
             <!--展示页 || 重新选择展示页-->
-            <div class="info box" v-if="!activity.id || isReselectConfig">
+            <div class="info box" v-show="(!activity.id && webTemplates.length > 1) || isReselectConfig">
                 <div class="form-item align-start">
                     <label class="label">展示页面</label>
                     <div class="input-box display-block">
