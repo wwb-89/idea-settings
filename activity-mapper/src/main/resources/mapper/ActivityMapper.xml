@@ -211,7 +211,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
             <trim suffixOverrides=",">
                 <if test="params.marketId != null">
                     t4.is_top DESC,
@@ -314,7 +313,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 2, 3, 4 ),
             <if test="params.marketId == null and params.topFid != null and (params.areaCode == null or params.areaCode == '')">
                 t1.fid <![CDATA[<>]]> #{params.topFid},
@@ -416,7 +414,6 @@
             ISNULL(t.origin_activity_id)
         GROUP BY t.id
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 2, 3, 4 ),
         <if test="params.topFid != null">
             t.create_fid <![CDATA[<>]]> #{params.topFid},
@@ -478,7 +475,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
             t.create_time DESC
     </select>
     <!--查询管理的活动-->
@@ -550,7 +546,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
         <trim suffixOverrides=",">
             <if test="params.marketId != null">
                 t1.is_top DESC,
@@ -621,7 +616,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
         <trim suffixOverrides=",">
             <if test="params.marketId != null">
                 t1.is_top DESC,
@@ -649,7 +643,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 4 ),
             t1.fid <![CDATA[<>]]> #{fid},
             t.start_time DESC
@@ -665,7 +658,6 @@
             t.market_id = #{marketId}
             AND t.`status` IN ( 2, 3, 4 )
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 4 ),
             t.start_time DESC
     </select>
@@ -683,7 +675,6 @@
             </if>
             AND t.`status` IN ( 1, 2, 3, 4 )
         ORDER BY
-            t.sequence,
             t.create_time DESC
     </select>
 
@@ -709,7 +700,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
             t.create_time DESC
     </select>
 
@@ -777,7 +767,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 4 )
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
@@ -822,7 +811,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 4 )
             ,t.start_time DESC
     </select>
@@ -853,7 +841,6 @@
             </foreach>
             AND t.`status` IN (1, 2, 3, 4)
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 1, 4 )
             ,t.start_time DESC
     </select>
@@ -887,7 +874,6 @@
             </if>
             AND t.`status` IN (1, 2, 3, 4)
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 1, 4 )
             ,t.start_time DESC
     </select>
@@ -924,7 +910,6 @@
             </if>
             AND t.`status` IN (1, 2, 3, 4)
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 1, 4 )
             ,t.start_time DESC
     </select>
@@ -944,7 +929,6 @@
             </if>
             AND t.`status` IN (1, 2, 3, 4)
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 1, 4 )
             ,t.start_time DESC
     </select>
@@ -986,7 +970,6 @@
                 AND t.`name` LIKE CONCAT( '%', #{params.sw}, '%' )
             </if>
         ORDER BY
-            t.sequence,
             t1.create_time DESC
     </select>
 
@@ -1032,7 +1015,6 @@
             </choose>
             AND t.`status` IN ( 2, 3, 4 )
         ORDER BY
-            t.sequence,
             FIELD( t.`status`, 3, 2, 4 ),
             t.start_time DESC
     </select>
@@ -1134,7 +1116,6 @@
         GROUP BY
             t.work_id
         ORDER BY
-            t.sequence,
             t.id DESC
     </select>
 
@@ -1191,7 +1172,6 @@
         GROUP BY
             t.id
         ORDER BY
-            t.sequence,
             <choose>
                 <when test="params.orderField == null or params.orderField == ''">
                     FIELD( t.`status`, 3, 2, 1, 4 ),
