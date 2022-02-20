@@ -13,10 +13,10 @@
     <mask>*mapper.xml</mask>
     <mask>*.yml</mask>
     <mask>*.json</mask>
-    <mask>*.js</mask>
     <mask>*.html</mask>
+    <mask>*.sql</mask>
     <mask>*.xml</mask>
     <mask>*.java</mask>
-    <mask>*.sql</mask>
+    <mask>*.js</mask>
   </component>
 </application>
