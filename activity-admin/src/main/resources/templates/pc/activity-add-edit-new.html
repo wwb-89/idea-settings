@@ -93,7 +93,7 @@
 
             <button v-if="activity.id" type="button" class="btn-second-normal btn-width-80 margin-left-auto" @click="editSubmit(true)">保存</button>
             <button v-else type="button" class="btn-second-normal btn-width-80 margin-left-auto" @click="addSubmit(true)">保存</button>
-            <button v-if="!activity.released" type="button" class="create-btn btn-width-80" @click="release">发布</button>
+            <button v-if="!activity.released && !timingRelease" type="button" class="create-btn btn-width-80" @click="release">发布</button>
         </div>
         <!-- 创建活动头部 -->
         <div v-show="templateComponents && activity">
