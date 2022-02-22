@@ -31,4 +31,12 @@ public class WfwContactApiServiceTests {
 		System.out.println(JSON.toJSONString(departments));
 	}
 
+	@Test
+	public void getUserDepartment() {
+		Integer uid = 58488158;
+		Integer fid = 170642;
+		WfwDepartmentDTO userDepartment = wfwContactApiService.getUserDepartment(uid, fid);
+		System.out.println(JSON.toJSONString(userDepartment));
+	}
+
 }

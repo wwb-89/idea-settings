@@ -1,6 +1,7 @@
 package com.chaoxing.activity;
 
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
+import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,6 +51,11 @@ public class WfwFormApiServiceTests {
         Integer formId = 100965;
         Integer fid = 177512;
         FormDataDTO formRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
+    }
+
+    @Test
+    public void structure() {
+        List<FormStructureDTO> formStructure = wfwFormApiService.getFormStructure(133519, 170642);
     }
 
 }
