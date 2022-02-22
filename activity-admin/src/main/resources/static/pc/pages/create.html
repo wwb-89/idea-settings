@@ -379,6 +379,47 @@
                     <span class="person-span" v-show="value1 == 2">人</span>
                 </div>
             </div>
+            <div class="form-item sign-info">
+                <label class="label">报名填报信息</label>
+                <div class="input-box">
+                    <div class="set-box">
+                        <el-switch v-model="delivery2"></el-switch>
+                        <span class="tips">开启后，报名者需填写信息</span>
+                    </div>
+                    <div class="radio-box">
+                        <el-radio v-model="value3" label="1" name="active-type">填写表单</el-radio>
+                        <el-radio v-model="value3" label="2" name="active-type">填写表单并审批</el-radio>
+                        <el-select v-model="value8" placeholder="请选择" popper-class="fixed-select">
+                            <el-option v-for="item in options9" :key="item.value" :label="item.label"  :value="item.value">
+                            </el-option>
+                            <!--  注意这有俩个编辑，一个空的一个有数据的 -->
+                            <div class="setiing-absolute" v-on:click="chooseDialog=true"><i class="icon-plus-circle"></i>新建</div>
+                            <div slot="empty" class="no-content-self">
+                                <div class="no-con">暂无选项</div>
+                                <div class="setiing-absolute" v-on:click="chooseDialog=true"><i class="icon-plus-circle"></i>编辑</div>
+                            </div>
+                        </el-select>
+                        <a href="javascript:;" class="set-box configurationForm">
+                            <img src="../assets/images/setting.png">
+                            <span class="tips set-information">配置表单</span>
+                        </a>
+                    </div>
+                    <ul class="form-list">
+                        <li class="item">
+                            <div class="left-box"></div>
+                            <p class="title overHidden2">审批表单1</p>
+                            <a href="javascript:;" class="edit-btn"></a>
+                            <a href="javascript:;" class="del-btn"></a>
+                        </li>
+                        <li class="item">
+                            <div class="left-box type1"></div>
+                            <p class="title lineH20 overHidden2">标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+                            <a href="javascript:;" class="edit-btn"></a>
+                            <a href="javascript:;" class="del-btn"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <!-- <div class="form-item" v-show="radio==1">
                 <label class="label">报名方式</label>
                 <div class="input-box">
@@ -1241,6 +1282,17 @@
         </div>
     </div>
 
+    <!--  切换填报形式提示弹窗 -->
+    <div class="dailog-box1" style="display: none;">
+        <div class="dailog delete-dailog width304">
+            <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
+            <span>切换报名填报形式可能会导致报名数据误差</span>
+            <div>
+                <div class="normal-btn" @click="handleSave">取消</div>
+                <div class="normal-btn after-sure" @click="handleSure">继续切换</div>
+            </div>
+        </div>
+    </div>
     <!--音视频播放-start-->
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>

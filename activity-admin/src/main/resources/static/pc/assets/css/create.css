@@ -2661,3 +2661,135 @@ input.btn-name,
 .choose-field .add-option:hover {
   opacity: 0.8;
 }
+
+.form-item.sign-info {
+  -webkit-box-align: start;
+     -moz-box-align: start;
+      -ms-flex-align: start;
+          align-items: start;
+}
+
+.form-item.sign-info .input-box {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+     -moz-box-orient: vertical;
+     -moz-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: start;
+     -moz-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  -webkit-box-pack: center;
+     -moz-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.form-item.sign-info .input-box .radio-box {
+  margin-top: 8px;
+  font-size: 0;
+}
+
+.form-item.sign-info .input-box .radio-box .el-radio {
+  margin-right: 20px;
+  line-height: 32px;
+}
+
+.form-item.sign-info .input-box .radio-box .el-radio:nth-child(2) {
+  margin-right: 0;
+}
+
+.form-item.sign-info .input-box .radio-box .el-select {
+  margin-left: 20px;
+}
+
+.form-item.sign-info .input-box .radio-box .set-box {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 8px;
+  font-size: 0;
+  margin-left: 16px;
+}
+
+.form-item.sign-info .input-box .radio-box .set-box span {
+  vertical-align: top;
+}
+
+.form-item.sign-info .input-box .form-list .item {
+  position: relative;
+  background: #F9F9F9;
+  border-radius: 4px;
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 0;
+  width: 350px;
+  overflow: hidden;
+}
+
+.form-item.sign-info .input-box .form-list .item .left-box {
+  width: 36px;
+  height: 36px;
+  background-image: url(../images/icons/biaodan.png);
+  float: left;
+}
+
+.form-item.sign-info .input-box .form-list .item .left-box.type1 {
+  background-image: url(../images/icons/shenpi.png);
+}
+
+.form-item.sign-info .input-box .form-list .item .title {
+  float: left;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  line-height: 36px;
+  margin-left: 8px;
+  max-width: 226px;
+}
+
+.form-item.sign-info .input-box .form-list .item .title.lineH20 {
+  line-height: 20px;
+}
+
+.form-item.sign-info .input-box .form-list .item .edit-btn {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background-image: url(../images/icons/edit-stroke2.png);
+  background-size: 100% 100%;
+  display: none;
+}
+
+.form-item.sign-info .input-box .form-list .item .del-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  background-image: url(../images/icons/blue-del.png);
+  background-size: 100% 100%;
+  display: none;
+}
+
+.form-item.sign-info .input-box .form-list .item:hover .edit-btn {
+  display: block;
+}
+
+.form-item.sign-info .input-box .form-list .item:hover .del-btn {
+  display: block;
+}
+
+.width304 {
+  width: 304px;
+  height: 220px;
+}
