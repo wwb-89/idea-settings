@@ -84,8 +84,19 @@
         resizePageHeight();
       menuFunc();
       cropImgFun('.title-pop');
-    };
 
+    $('.title').mouseenter(function () {
+        var child = $(this).find('.title-pop');
+        setTimeout(function () {
+            $(child).show();
+        },300)
+    }).mouseleave(function () {
+        var child = $(this).find('.title-pop');
+        setTimeout(function () {
+            $(child).hide();
+        },300)
+    });
+    };
     function resizePageHeight () {
         // container的最小高度
         var containerMinHeight = $(".container").css("min-height");

@@ -161,10 +161,6 @@ body {
   background: #F8F8F8;
 }
 
-.header .title:hover .title-pop {
-  display: block;
-}
-
 .header .menu {
   float: left;
   overflow: hidden;
