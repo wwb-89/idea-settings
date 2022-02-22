@@ -1258,6 +1258,45 @@
         </div>
       </div>
 
+        <!-- 报名信息弹窗 -->
+        <div class="dialog-mask" v-show="signInfoDialog">
+            <div class="dailog sign-info">
+                <div class="header">
+                    <span>报名信息</span>
+                    <i class="close" @click="signInfoDialog=false"></i>
+                </div>
+                <div class="body">
+                    <div class="form">
+                        <el-input v-model="title" type="text" placeholder="报名填报信息" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model="explain" type="text" placeholder="开启后，报名者需填写信息" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+                        <div class="input-box">
+                            <label class="label fl">指定模板</label>
+                            <el-select v-model="form.select1" class="fl weightLabelRight" size="small" multiple collapse-tags placeholder="请选择">
+                                <el-option-group
+                                    v-for="group in options"
+                                    :key="group.label"
+                                    :label="group.label">
+                                    <el-option
+                                    v-for="item in group.options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-option-group>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn">取消</div>
+                        <!-- <div class="normal-btn disable">确定</div> -->
+                        <div class="normal-btn">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     <script src="../../assets/lib/jquery.min.js"></script>
     <script src="../../assets/lib/vue.js"></script>
@@ -1303,7 +1342,7 @@
                 textDialog:false,
                 addFieldDialog:false,
                 chooseDialog:false,
-                setRelationDialog:true,
+                setRelationDialog:false,
                 partitionDialog:false,
                 delDialog:false,
                 activityNameDialog:false,
@@ -1394,6 +1433,32 @@
                         type:false
                     }
                 ],
+                signInfoDialog: true,
+                options:[{
+                    label: '表单',
+                    options: [{
+                        value: '学生信息表',
+                        label: '学生信息表'
+                    }, {
+                        value: '双选会企业报名',
+                        label: '双选会企业报名'
+                    }, {
+                        value: '万能表单1',
+                        label: '万能表单1'
+                    }]
+                },{
+                    label: '审批',
+                    options: [{
+                        value: '湖北群艺馆',
+                        label: '湖北群艺馆'
+                    }, {
+                        value: '人员名单(基本信息)',
+                        label: '人员名单(基本信息)'
+                    }, {
+                        value: '人员列表(审核)',
+                        label: '人员列表(审核)'
+                    }]
+                }],
             },
             watch: {
                 /* 监听选项列表的改变 */

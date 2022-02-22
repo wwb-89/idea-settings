@@ -1948,3 +1948,30 @@
     }
   }
 }
+.el-input .el-input__count{
+    color: #999999;
+    font-size: 14px;
+}
+/* 报名信息弹窗 */
+.sign-info{
+    .body{
+        padding: 20px 32px;
+        .input-box{
+            margin-bottom: 0;
+        }
+        .el-tag.el-tag--info{
+            background: rgba(0, 132, 255, 0.08);
+            border: none;
+            color: #333333;
+            padding: 2px 6px;
+            height: 24px;
+            line-height: 20px;
+        }
+        .el-select .el-tag__close.el-icon-close{
+            background-color: rgba(0, 132, 255, 0.01);
+            color: #999999;
+            transform: scale(1);
+            right: -4px;
+        }
+    }
+}
