@@ -308,7 +308,7 @@ public class WfwContactApiService {
 			String wfwContactersJsonStr = jsonObject.getJSONObject("data").getString("list");
 			List<WfwContacterDTO> wfwContacters = JSON.parseArray(wfwContactersJsonStr, WfwContacterDTO.class);
 			if (CollectionUtils.isNotEmpty(wfwContacters)) {
-				uids = wfwContacters.stream().map(WfwContacterDTO::getPuid).collect(Collectors.toList());
+				uids = wfwContacters.stream().map(WfwContacterDTO::getPuid).filter(v -> v != null).collect(Collectors.toList());
 			}
 		} else {
 			String errorMessage = jsonObject.getString("errorMsg");

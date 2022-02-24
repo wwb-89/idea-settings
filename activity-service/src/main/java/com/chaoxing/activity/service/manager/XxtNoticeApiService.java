@@ -18,7 +18,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,33 +63,35 @@ public class XxtNoticeApiService {
 			log.error("通知内容不能为空");
 			return;
 		}
+		if (CollectionUtils.isEmpty(receiverUids)) {
+			log.error("接收通知的人不能为空");
+			return;
+		}
 		Optional.ofNullable(content).filter(StringUtils::isNotBlank).orElseThrow(() -> new BusinessException("通知内容不能为空"));
 		Optional.ofNullable(senderUid).orElseThrow(() -> new BusinessException("消息发送者不能为空"));
-		Optional.ofNullable(receiverUids).filter(CollectionUtils::isNotEmpty).orElseThrow(() -> new BusinessException("接收消息的用户不能为空"));
 		// 先生成消息
 		int size = receiverUids.size();
 		List<Integer> generateNoticeReceiverUids;
-		List<Integer> remainIds;
+		List<List<Integer>> partition;
 		if (size > EACH_MAX_SEND_NUM) {
 			// 取前200个用户来生成消息
-			generateNoticeReceiverUids = new ArrayList<>(receiverUids.subList(0, EACH_MAX_SEND_NUM));
-			receiverUids.removeAll(generateNoticeReceiverUids);
-			remainIds = receiverUids;
+			partition = Lists.partition(receiverUids, EACH_MAX_SEND_NUM);
+			generateNoticeReceiverUids = partition.get(0);
 		} else {
 			generateNoticeReceiverUids = receiverUids;
-			remainIds = Lists.newArrayList();
+			partition = Lists.newArrayList();
 		}
 		try {
 			long noticeId = generateNotice(title, content, attachment, senderUid, generateNoticeReceiverUids);
-			if (CollectionUtils.isNotEmpty(remainIds)) {
+			if (CollectionUtils.isNotEmpty(partition)) {
 				// 将信息存入redis定时发送信息
-				List<List<Integer>> partition = Lists.partition(remainIds, EACH_MAX_SEND_NUM);
-				for (List<Integer> integers : partition) {
-					xxtNoticeQueueService.add(build(noticeId, title, content, attachment, senderUid, integers));
+				int partitionSize = partition.size();
+				for (int i = 1; i < partitionSize; i++) {
+					xxtNoticeQueueService.add(build(noticeId, title, content, attachment, senderUid, partition.get(i)));
 				}
 			}
 		} catch (BusinessException e) {
-			log.error("发送通知 title::{},content:{},senderUid:{},receiverUids:{}, error:{}", title, content, senderUid, JSON.toJSONString(receiverUids), e.getMessage());
+			log.error("发送通知 title::{},content:{},senderUid:{},receiverUids:{}, error:{}", title, content, senderUid, JSON.toJSONString(generateNoticeReceiverUids), e.getMessage());
 			throw e;
 		}
 	}
