@@ -1121,10 +1121,13 @@
 
     <select id="createParticipateActivityPage" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>
+            <include refid="Base_Column_List"></include>,
+            t2.`name` activityClassifyName
         FROM
             t_activity t
             LEFT JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            <!--类型-->
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
         WHERE
             t.activity_flag = #{params.flag}
             AND (

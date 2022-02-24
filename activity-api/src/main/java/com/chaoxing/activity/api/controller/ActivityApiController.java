@@ -27,6 +27,7 @@ import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.create.ActivityCreateService;
@@ -129,6 +130,8 @@ public class ActivityApiController {
 	private CertificateQueryService certificateQueryService;
 	@Resource
 	private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
+	@Resource
+	private ClassifyQueryService classifyQueryService;
 
 	/**组活动推荐
 	 * @Description 
@@ -742,6 +745,10 @@ public class ActivityApiController {
 	public RestRespDTO getActivityInfo(@PathVariable Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
 		ActivityVO activityVO = ActivityVO.activityConvert2Vo(activity);
+		if (activity.getActivityClassifyId() != null) {
+			Classify classify = classifyQueryService.getById(activity.getActivityClassifyId());
+			activityVO.setActivityClassifyName(Optional.ofNullable(classify).map(Classify::getName).orElse(""));
+		}
 		String timescope = activity.getStartTime().format(CommonConstant.FULL_TIME_FORMAT) + "-" + activity.getEndTime().format(CommonConstant.FULL_TIME_FORMAT);
 		activityVO.setTimeScope(timescope);
 		ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);

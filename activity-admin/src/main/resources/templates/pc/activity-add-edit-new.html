@@ -93,7 +93,7 @@
 
             <button v-if="activity.id" type="button" class="btn-second-normal btn-width-80 margin-left-auto" @click="editSubmit(true)">保存</button>
             <button v-else type="button" class="btn-second-normal btn-width-80 margin-left-auto" @click="addSubmit(true)">保存</button>
-            <button v-if="!activity.released && !timingRelease" type="button" class="create-btn btn-width-80" @click="release">发布</button>
+            <button v-if="!activity.released && !activity.timingRelease" type="button" class="create-btn btn-width-80" @click="release">发布</button>
         </div>
         <!-- 创建活动头部 -->
         <div v-show="templateComponents && activity">
@@ -545,39 +545,59 @@
                                         </div>
                                     </div>
                                     <!--报名填报信息-->
-                                    <div class="form-item align-start" v-else-if="it.code == 'sign_up_fill_info'">
-                                        <label class="label" style="line-height: 20px;">{{it.name}}</label>
-                                        <div class="input-box column">
+                                    <div class="form-item sign-info" v-else-if="it.code == 'sign_up_fill_info'">
+                                        <label class="label">{{it.name}}</label>
+                                        <div class="input-box">
                                             <div class="set-box">
                                                 <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it)"></el-switch>
                                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                             </div>
-                                            <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
-                                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                                <span class="tips set-information">配置表单</span>
-                                            </div>
-                                            <!--万能表单-->
-                                            <div v-else-if="signUpMap[item.id].formType == 'wfw_form' && signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(item.id)">
-                                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                                <span class="tips set-information">配置表单</span>
-                                            </div>
-                                            <!--审批-->
-                                            <div v-else-if="signUpMap[item.id].formType == 'approval' && signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toApprovalConfig(item.id)">
-                                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                                <span class="tips set-information">配置审批</span>
-                                            </div>
-                                            <!--未选择使用万能表单/审批的时候-->
-                                            <div v-if="!signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo">
-                                                <div class="input-box">
-                                                    <el-radio v-for="(wfwFormFillInfoType, index) of wfwFormFillInfoTypes" :key="'wfw-form-fill-info-type-' + index" v-model="signUpMap[item.id].formType" :label="wfwFormFillInfoType.value" name="active-type">{{wfwFormFillInfoType.name}}</el-radio>
-                                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
-                                                    <!--配置表单/审批-->
-                                                    <div style="display: flex;" @click="fillInfoConfig(item.id)">
-                                                        <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                                        <span class="tips set-information">配置{{signUpMap[item.id].formType == 'wfw_form' ? '表单' : '审批'}}</span>
+                                            <div class="radio-box" v-show="signUpMap[item.id].fillInfo && !signUpMap[item.id].fillInfoFormId">
+                                                <el-radio v-for="(wfwFormFillInfoType, index) of wfwFormFillInfoTypes" :key="'wfw-form-fill-info-type-' + index" v-model="signUpMap[item.id].formType" :label="wfwFormFillInfoType.value" name="active-type">{{wfwFormFillInfoType.name}}</el-radio>
+                                                <el-select v-if="showWfwFormSelect(item.id, it.signUpFillInfoType)"
+                                                        v-model="signUpMap[item.id].wfwFormTemplateId"
+                                                        placeholder="请选择"
+                                                        popper-class="fixed-select"
+                                                >
+                                                    <template v-if="signUpMap[item.id].formType == 'wfw_form'">
+                                                        <el-option
+                                                                v-for="item in (it.signUpFillInfoType && it.signUpFillInfoType.templateOptions) || []"
+                                                                :key="item.id"
+                                                                :label="item.name"
+                                                                :value="item.id"
+                                                        >
+                                                        </el-option>
+                                                    </template>
+                                                    <template v-else>
+                                                        <el-option
+                                                                v-for="item in (it.signUpFillInfoType && it.signUpFillInfoType.templateOptions) || []"
+                                                                :key="item.id"
+                                                                :label="item.name"
+                                                                :value="item.id"
+                                                                v-if="item.type == 'approval'"
+                                                        ></el-option>
+                                                    </template>
+                                                    <!--  注意这有俩个编辑，一个空的一个有数据的 -->
+                                                    <div class="setiing-absolute" @click="createDefaultWfwForm(item.id)"><i class="icon-plus-circle"></i>新建</div>
+                                                    <div slot="empty" class="no-content-self">
+                                                        <div class="no-con">暂无选项</div>
+                                                        <div class="setiing-absolute" @click=""><i class="icon-plus-circle"></i>编辑</div>
                                                     </div>
-                                                </div>
+                                                </el-select>
+                                                <!--配置表单/审批-->
+                                                <a href="javascript:;" class="set-box configurationForm" @click="fillInfoConfig(item.id)" v-show="signUpMap[item.id].wfwFormTemplateId || !showWfwFormSelect(item.id, it.signUpFillInfoType)">
+                                                    <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                                    <span class="tips set-information">配置{{signUpMap[item.id].formType == 'wfw_form' ? '表单' : '审批'}}</span>
+                                                </a>
                                             </div>
+                                            <ul class="form-list" v-show="signUpMap[item.id].fillInfo && signUpMap[item.id].fillInfoFormId">
+                                                <li class="item">
+                                                    <div :class="{'left-box': true, 'type1': signUpMap[item.id].formType == 'approval'}"></div>
+                                                    <p class="title overHidden2">{{signUpMap[item.id].wfwFormName}}</p>
+                                                    <a href="javascript:;" class="edit-btn" @click="fillInfoConfig(item.id)"></a>
+                                                    <a href="javascript:;" class="del-btn" @click="openWfwFormSwitchDialog(item.id)"></a>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </div>
                                     <!--报名名单公开-->
@@ -853,6 +873,18 @@
         <vue-confirm ref="offlineEmptyAddressWindow" :message="'未填写位置信息，展示页面中的地图位置可能不准确'" :cancel="'取消'" :sure="'继续保存'" @callback="ignoreOfflineEmptyAddress"></vue-confirm>
         <!--重新选择门户模版-->
         <vue-confirm ref="reSelectWebTemplateWindow" :message="'重新选择展示页面可能会导致部分数据丢失'" :cancel="'取消'" :sure="'继续'" @callback="sureReSelectWebTemplate"></vue-confirm>
+
+        <!--  切换填报形式提示弹窗 -->
+        <div class="dailog-box1" v-show="showSwitchFormDialog">
+            <div class="dailog delete-dailog width304">
+                <div class="warn"><img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" alt=""></div>
+                <span>切换报名填报形式可能会导致报名数据误差</span>
+                <div>
+                    <div class="normal-btn" @click="cancelSwitchForm">取消</div>
+                    <div class="normal-btn after-sure" @click="confirmSwitchForm">继续切换</div>
+                </div>
+            </div>
+        </div>
     </div>
     <div v-show="showSignInListIframe">
         <div class="top flex">
@@ -1066,6 +1098,10 @@
                 curHideTemplateComponentIds: [],
                 classifyWindowShow: false,
                 operateClassifyIndex: null,
+                // 切换表单填报弹框
+                showSwitchFormDialog: false,
+                // 临时存储原始formId数据
+                tempStoreOriginFormId: null
             },
             created: function () {
                 var $this = this;
@@ -1078,6 +1114,7 @@
                         $this.$set($this.signUpMap[originId], "openAddr", data.openAddr);
                         $this.$set($this.signUpMap[originId], "pcUrl", data.pcUrl);
                         $this.$set($this.signUpMap[originId], "wechatUrl", data.wechatUrl);
+                        $this.$set($this.signUpMap[originId], "wfwFormName", data.name);
                         $this.$set($this.signUpMap[originId], "fillInfoFormId", data.formId);
                         $this.wfwFormConfigWindow.close();
                     } else {
@@ -1401,10 +1438,8 @@
                     }
                     if (activityApp.isEmpty($this.sign.id)) {
                         // 仅在新增的时候，根据signUpTplComponentId 初始化formType
-                        var formType = $this.fillInfoTypeMap[item.originId] && $this.fillInfoTypeMap[item.originId].type;
-                        item.formType = formType || 'form';
+                        item.formType = 'wfw_form';
                     }
-                    $this.createSignUpWfwForm(item.originId);
                 });
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
@@ -1597,15 +1632,15 @@
                 createSignUpWfwForm: function (signUpTplComponentId) {
                     var $this =this;
                     var signUp = $this.signUpMap[signUpTplComponentId];
-                    // 判断报名的表单是否存在，不存在则创建表单
-                    if (signUp.formType == 'wfw_form' && activityApp.isEmpty(signUp.fillInfoFormId)) {
+                    if (signUp.formType == 'wfw_form' || signUp.formType == 'approval') {
                         // 克隆新的表单
-                        var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
                         var url = ctx + "/api/wfw-form/create/from/wfw-form-template";
                         var params = {
                             fid: $this.fid,
                             uid: [[${session._login_user_.uid}]],
-                            wfwFormTemplateId: wfwFormTemplateId
+                            wfwFormTemplateId: signUp.wfwFormTemplateId,
+                            signUpFormType: signUp.formType,
+                            signUpTemplateComponentId: signUp.originId
                         };
                         app.ajaxPost(url, params, function (res) {
                             if (res.success) {
@@ -1616,6 +1651,7 @@
                                     "wechatUrl": wechatUrl,
                                     "fillInfoFormId": formId
                                 };
+                                $this.toWfwFormConfig(signUpTplComponentId)
                             } else {
                                 var errorMessage = res.message;
                                 if (activityApp.isEmpty(errorMessage)) {
@@ -2095,17 +2131,19 @@
                                     app.showMsg("请配置" + signUp.name + "填报信息");
                                     return false;
                                 }
-                            } else {
+                            } /*else {
                                 // 给没有开启报名填报信息的报名设置万能表单
                                 if (activityApp.isEmpty(signUp.fillInfoFormId) && signUp.formType != "form") {
                                     var wfwFormInfo = $this.signUpFillInfoDefaultWfwFormMap[originId];
-                                    $this.$set($this.signUpMap[originId], "formType", "wfw_form");
-                                    $this.$set($this.signUpMap[originId], "openAddr", wfwFormInfo.openAddr);
-                                    $this.$set($this.signUpMap[originId], "pcUrl", wfwFormInfo.pcUrl);
-                                    $this.$set($this.signUpMap[originId], "wechatUrl", wfwFormInfo.wechatUrl);
-                                    $this.$set($this.signUpMap[originId], "fillInfoFormId", wfwFormInfo.fillInfoFormId);
+                                    if (wfwformInfo) {
+                                        $this.$set($this.signUpMap[originId], "formType", "wfw_form");
+                                        $this.$set($this.signUpMap[originId], "openAddr", wfwFormInfo.openAddr);
+                                        $this.$set($this.signUpMap[originId], "pcUrl", wfwFormInfo.pcUrl);
+                                        $this.$set($this.signUpMap[originId], "wechatUrl", wfwFormInfo.wechatUrl);
+                                        $this.$set($this.signUpMap[originId], "fillInfoFormId", wfwFormInfo.fillInfoFormId);
+                                    }
                                 }
-                            }
+                            }*/
 
                             if (activityApp.isEmpty(signUp.btnName)) {
                                 app.showMsg(signUp.name + "按钮名称不能为空");
@@ -2449,6 +2487,50 @@
                         }
                     })
                 },
+                createDefaultWfwForm: function (signUpTplComponentId) {
+                    var $this = this;
+                    if ($this.wfwFormConfigWindow && !$this.wfwFormConfigWindow.closed) {
+                        app.showMsg("请先关闭上一个填报信息配置页面");
+                        return;
+                    }
+                    $this.operateSignUpOriginId = signUpTplComponentId;
+                    var signUp = $this.signUpMap[signUpTplComponentId];
+                    var url = ctx + "/api/wfw-form/create/empty-form";
+                    var params = {
+                        fid: $this.fid,
+                        uid: [[${session._login_user_.uid}]],
+                        signUpFormType: signUp.formType
+                    }
+                    app.ajaxPost(url, params, function (res) {
+                        if (res.success) {
+                            $this.wfwFormConfigWindow = window.open(res.data);
+                        } else {
+                            var errorMessage = res.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取表单配置地址失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取表单配置地址失败");
+                    });
+                },
+                // 配置报名填报信息
+                fillInfoConfig: function (signUpTplComponentId) {
+                    var $this = this;
+                    $this.operateSignUpOriginId = signUpTplComponentId;
+                    var signUp = $this.signUpMap[signUpTplComponentId];
+                    var formId = signUp.fillInfoFormId || '';
+                    if (activityApp.isEmpty(formId)) {
+                        $this.createSignUpWfwForm(signUpTplComponentId);
+                        return;
+                    }
+                    var formType = signUp.formType;
+                    if ("wfw_form" == formType || "approval" == formType) {
+                        // 配置万能表单
+                        $this.toWfwFormConfig(signUpTplComponentId);
+                    }
+                },
                 // 万能表单
                 toWfwFormConfig: function (signUpTplComponentId) {
                     var $this = this;
@@ -2468,12 +2550,11 @@
                         formId = form.fillInfoFormId;
                         $this.$set($this.signUpMap[signUpTplComponentId], "fillInfoFormId", formId);
                     }
-                    var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
                     var params = {
                         fid: $this.fid,
                         uid: [[${session._login_user_.uid}]],
                         formId: formId,
-                        wfwFormTemplateId: wfwFormTemplateId
+                        signUpFormType: signUp.formType
                     }
                     app.ajaxPost(url, params, function (res) {
                         if (res.success) {
@@ -2489,37 +2570,39 @@
                         app.showMsg("获取表单配置地址失败");
                     });
                 },
-                // 审批
-                toApprovalConfig: function (signUpTplComponentId) {
-                    var $this = this;
-                    if ($this.wfwFormConfigWindow && !$this.wfwFormConfigWindow.closed) {
-                        app.showMsg("请先关闭上一个填报信息配置页面");
-                        return;
-                    }
+                openWfwFormSwitchDialog: function (signUpTplComponentId) {
+                    var $this= this;
                     $this.operateSignUpOriginId = signUpTplComponentId;
-                    var signUp = $this.signUpMap[signUpTplComponentId];
-                    var url = ctx + "/api/wfw-form/approval/build/edit-url";
-                    var formId = signUp.fillInfoFormId || '';
-                    var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormApprovalTemplateId;
-                    var params = {
-                        fid: $this.fid,
-                        uid: [[${session._login_user_.uid}]],
-                        formId: formId,
-                        wfwFormTemplateId: wfwFormTemplateId
-                    }
-                    app.ajaxPost(url, params, function (res) {
-                        if (res.success) {
-                            $this.wfwFormConfigWindow = window.open(res.data);
-                        } else {
-                            var errorMessage = res.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "获取表单配置地址失败";
-                            }
-                            app.showMsg(errorMessage);
+                    $this.showSwitchFormDialog = true;
+                },
+                cancelSwitchForm: function () {
+                    var $this = this;
+                    $this.showSwitchFormDialog = false;
+                    $this.operateSignUpOriginId = -1;
+                },
+                confirmSwitchForm: function () {
+                    var $this = this;
+                    var tplComponentId = $this.operateSignUpOriginId;
+                    $this.$set($this.signUpMap[tplComponentId], "openAddr", "");
+                    $this.$set($this.signUpMap[tplComponentId], "pcUrl", "");
+                    $this.$set($this.signUpMap[tplComponentId], "wechatUrl", "");
+                    $this.$set($this.signUpMap[tplComponentId], "fillInfoFormId", "");
+                    $this.signUpFillInfoDefaultWfwFormMap[tplComponentId] = null;
+
+                    $this.cancelSwitchForm();
+                },
+                // 是否显示信息填报下拉
+                showWfwFormSelect: function (signUpTplComponentId, signUpFillInfoType) {
+                    var $this = this;
+                    var templateOptions = (signUpFillInfoType && signUpFillInfoType.templateOptions) || [];
+                    var { formType } = $this.signUpMap[signUpTplComponentId];
+                    var approvalNum = 0;
+                    $(templateOptions).each(function () {
+                        if (this.type == 'approval') {
+                            approvalNum++;
                         }
-                    }, function () {
-                        app.showMsg("获取表单配置地址失败");
                     });
+                    return (formType == 'wfw_form' && templateOptions.length > 1) || (formType == 'approval' && approvalNum > 1);
                 },
                 closeFormConfigLayer: function (formId) {
                     var $this = this;
@@ -2898,19 +2981,6 @@
                     }, function () {
                         app.showMsg("获取证书配置地址失败");
                     });
-                },
-                // 配置报名填报信息
-                fillInfoConfig: function (signUpTplComponentId) {
-                    var $this = this;
-                    var signUp = $this.signUpMap[signUpTplComponentId];
-                    var formType = signUp.formType;
-                    if ("wfw_form" == formType) {
-                        // 配置万能表单
-                        $this.toWfwFormConfig(signUpTplComponentId);
-                    } else {
-                        // 配置审批
-                        $this.toApprovalConfig(signUpTplComponentId);
-                    }
                 },
                 toConfigClassify: function () {
                     var $this = this;

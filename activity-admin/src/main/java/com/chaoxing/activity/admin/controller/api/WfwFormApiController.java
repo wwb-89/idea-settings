@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
@@ -32,6 +33,8 @@ public class WfwFormApiController {
 
 	@Resource
 	private WfwFormApiService wfwFormApiService;
+
+
 
 	/**查询微服务表单的字段列表
 	 * @Description 
@@ -68,34 +71,19 @@ public class WfwFormApiController {
 		return RestRespDTO.success(result);
 	}
 
-	/**获取构建表单创建地址
+	/**获取表单编辑url地址(万能表单和审批)
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-08-17 17:50:13
 	* @param fid
 	* @param uid
-	* @param wfwFormTemplateId
+	* @param formId
+	 * @param signUpFormType 报名万能表单类型(wfw_form; approval)
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("build/edit-url")
-	public RestRespDTO getWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId, Integer formId) {
-		return RestRespDTO.success(wfwFormApiService.buildEditFormUrl(fid, formId, uid, wfwFormTemplateId));
-	}
-
-	/**获取创建审批的url
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-12-23 15:28:19
-	 * @param fid
-	 * @param uid
-	 * @param wfwFormTemplateId
-	 * @param formId
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@RequestMapping("approval/build/edit-url")
-	public RestRespDTO getApprovalWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId, Integer formId) {
-		String url = wfwFormApiService.buildApprovalEditFormUrl(fid, formId, uid, wfwFormTemplateId);
-		return RestRespDTO.success(url);
+	public RestRespDTO getWfwFormEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer formId, @RequestParam String signUpFormType) {
+		return RestRespDTO.success(wfwFormApiService.buildEditFormUrl(fid, formId, uid, signUpFormType));
 	}
 
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
@@ -105,12 +93,30 @@ public class WfwFormApiController {
 	 * @param fid
 	 * @param uid
 	 * @param wfwFormTemplateId
+	 * @param signUpFormType 报名万能表单类型(wfw_form; approval)
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
-	@Deprecated
 	@RequestMapping("create/from/wfw-form-template")
-	public RestRespDTO createWfwFormWithEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer wfwFormTemplateId) {
-		return RestRespDTO.success(wfwFormApiService.createWfwForm(fid, uid, wfwFormTemplateId));
+	public RestRespDTO createWfwFormWithEditUrl(@RequestParam Integer fid,
+												@RequestParam Integer uid,
+												Integer wfwFormTemplateId,
+												@RequestParam String signUpFormType,
+												@RequestParam Integer signUpTemplateComponentId) {
+		return RestRespDTO.success(wfwFormApiService.createWfwForm(fid, uid, wfwFormTemplateId, signUpFormType, signUpTemplateComponentId));
+	}
+
+	/**
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2022-02-24 17:24:49
+	 * @param fid
+	 * @param uid
+	 * @param signUpFormType
+	 * @return
+	 */
+	@RequestMapping("create/empty-form")
+	public RestRespDTO createEmptyFormWithEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam String signUpFormType) {
+		return RestRespDTO.success(wfwFormApiService.createEmptyForm(fid, uid, signUpFormType));
 	}
 
 	/**获取表单管理地址

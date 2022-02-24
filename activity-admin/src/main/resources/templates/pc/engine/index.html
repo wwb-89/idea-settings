@@ -584,26 +584,42 @@
                     <el-form ref="form"  label-width="72px">
                         <el-input v-model="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
                         <el-input v-model="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
-                        <el-form-item label="表单模板" class="marginBottom20">
-                            <el-select v-model="innerAddEditItem.wfwFormTemplateId" placeholder="请选择关联表单">
-                                <el-option v-for="item in wfwFormTemplates"
-                                           :key="item.id"
-                                           :label="item.name"
-                                           :value="item.id"
-                                >
-                                </el-option>
+                        <div class="input-box">
+                            <label class="label fl">指定模板</label>
+                            <el-select v-model="innerAddEditItem.formTemplateIds" class="fl weightLabelRight" size="small" multiple collapse-tags placeholder="请选择">
+                                <el-option-group
+                                        v-for="group in wfwFormTplOptions"
+                                        :key="group.label"
+                                        :label="group.label">
+                                    <el-option
+                                            v-for="item in group.options"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-option-group>
                             </el-select>
-                        </el-form-item>
-                        <el-form-item label="审批模板" class="marginBottom20">
-                            <el-select v-model="innerAddEditItem.wfwFormApprovalTemplateId" placeholder="请选择关联审批">
-                                <el-option v-for="item in wfwFormApprovalTemplates"
-                                           :key="item.id"
-                                           :label="item.name"
-                                           :value="item.id"
-                                >
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
+                        </div>
+<!--                        <el-form-item label="表单模板" class="marginBottom20">-->
+<!--                            <el-select v-model="innerAddEditItem.wfwFormTemplateId" placeholder="请选择关联表单">-->
+<!--                                <el-option v-for="item in wfwFormTemplates"-->
+<!--                                           :key="item.id"-->
+<!--                                           :label="item.name"-->
+<!--                                           :value="item.id"-->
+<!--                                >-->
+<!--                                </el-option>-->
+<!--                            </el-select>-->
+<!--                        </el-form-item>-->
+<!--                        <el-form-item label="审批模板" class="marginBottom20">-->
+<!--                            <el-select v-model="innerAddEditItem.wfwFormApprovalTemplateId" placeholder="请选择关联审批">-->
+<!--                                <el-option v-for="item in wfwFormApprovalTemplates"-->
+<!--                                           :key="item.id"-->
+<!--                                           :label="item.name"-->
+<!--                                           :value="item.id"-->
+<!--                                >-->
+<!--                                </el-option>-->
+<!--                            </el-select>-->
+<!--                        </el-form-item>-->
                     </el-form>
                 </div>
                 <div class="footer">
@@ -851,6 +867,7 @@
                     wfwFormTypes: [
                         {label: "万能表单", value: "wfw_form"}
                     ],
+                    wfwFormTplOptions: [],
                     wfwFormTemplates: [[${wfwFormTemplates}]],
                     wfwFormApprovalTemplates: [[${wfwFormApprovalTemplates}]],
                     // 源模板id
@@ -958,6 +975,15 @@
                     $($this.icons).each(function () {
                         $this.iconMap[this.id] = this;
                     });
+                    var formTemplates = {
+                        label: '表单',
+                        options: $this.wfwFormTemplates || []
+                    };
+                    var formApprovalTemplates = {
+                        label: '审批',
+                        options: $this.wfwFormApprovalTemplates || []
+                    };
+                    $this.wfwFormTplOptions = [formTemplates, formApprovalTemplates];
                     $this.initData();
                 },
                 mounted: function () {
@@ -1119,7 +1145,7 @@
                     getInitSignUpFillInfoType: function () {
                         var $this = this;
                         var wfwFormApprovalTemplateId = ($this.wfwFormApprovalTemplates[0] && $this.wfwFormApprovalTemplates[0].id) || ''
-                        return { type: 'wfw_form', wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: wfwFormApprovalTemplateId}
+                        return { type: 'wfw_form', formTemplateIds: [], wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: wfwFormApprovalTemplateId}
                     },
                     getInitTemplateAppConfig: function () {
                         return {
@@ -1533,6 +1559,10 @@
                             }
                             $this.addEditItem.signUpCondition = $this.innerAddEditItem;
                         } else if (code == "sign_up_fill_info") {
+                            if (!$this.innerAddEditItem.formTemplateIds || $this.innerAddEditItem.formTemplateIds.length < 1) {
+                                app.showMsg("需要选择指定模板");
+                                return;
+                            }
                             $this.addEditItem.signUpFillInfoType = $this.innerAddEditItem;
                         }
                         if ($this.isAddComponent) {

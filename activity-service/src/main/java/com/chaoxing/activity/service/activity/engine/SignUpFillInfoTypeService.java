@@ -71,10 +71,12 @@ public class SignUpFillInfoTypeService {
 
 
 	public void add(SignUpFillInfoType signUpFillInfoType) {
+    	signUpFillInfoType.formTemplateIds2WfwFormTemplateIds();
 		signUpFillInfoTypeMapper.insert(signUpFillInfoType);
 	}
 
 	public void updateById(SignUpFillInfoType signUpFillInfoType) {
+    	signUpFillInfoType.formTemplateIds2WfwFormTemplateIds();
 		signUpFillInfoTypeMapper.updateById(signUpFillInfoType);
 	}
 }

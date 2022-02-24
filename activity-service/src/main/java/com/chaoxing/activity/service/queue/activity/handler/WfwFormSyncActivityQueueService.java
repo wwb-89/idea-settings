@@ -240,6 +240,7 @@ public class WfwFormSyncActivityQueueService {
                 signUpCreateParam.setPcUrl(wfwFormCreateResult.getPcUrl());
                 signUpCreateParam.setWechatUrl(wfwFormCreateResult.getWechatUrl());
                 signUpCreateParam.setOpenAddr(wfwFormCreateResult.getOpenAddr());
+                signUpCreateParam.setWfwFormName(wfwFormCreateResult.getName());
             }
             signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
         }
@@ -284,25 +285,18 @@ public class WfwFormSyncActivityQueueService {
                 return null;
             }
             SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(sysComponentTplComponentId);
-            String type = Optional.ofNullable(signUpFillInfoType).map(SignUpFillInfoType::getType).orElse(null);
-            if (!Objects.equals(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue(), type)) {
-                return null;
+            if (signUpFillInfoType != null) {
+                // 查询报名填报信息模版
+                signUpFillInfoType.wfwFormTemplateIds2FormTemplateIds();
+                Integer wfwFormTemplateId = signUpFillInfoType.getFormTemplateIds().stream().findFirst().orElse(null);
+                signUpWfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, SignUpWfwFormTemplate.TypeEnum.NORMAL);
             }
-            // 查询报名填报信息模版
-            signUpWfwFormTemplate = signUpWfwFormTemplateService.getById(signUpFillInfoType.getWfwFormTemplateId());
         }
+
         if (signUpWfwFormTemplate == null) {
             return null;
         }
-        WfwFormCreateParamDTO wfwFormCreateParam = WfwFormCreateParamDTO.builder()
-                .formId(signUpWfwFormTemplate.getFormId())
-                .originalFid(signUpWfwFormTemplate.getFid())
-                .sign(signUpWfwFormTemplate.getSign())
-                .key(signUpWfwFormTemplate.getKey())
-                .uid(operateUser.getUid())
-                .fid(operateUser.getFid())
-                .build();
-        return wfwFormApiService.create(wfwFormCreateParam);
+        return wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate, SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
     }
 
     /**封装报名信息

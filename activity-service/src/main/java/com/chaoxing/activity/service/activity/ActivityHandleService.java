@@ -17,6 +17,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.dto.module.ClazzInteractionDTO;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
@@ -27,6 +28,7 @@ import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigHandleService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
+import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
@@ -49,6 +51,7 @@ import com.chaoxing.activity.service.manager.module.ClazzInteractionApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.event.activity.handler.CustomAppInterfaceCallQueueService;
 import com.chaoxing.activity.service.tag.TagHandleService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
@@ -157,6 +160,10 @@ public class ActivityHandleService {
 	private CustomAppConfigHandleService customAppConfigHandleService;
 	@Resource
 	private CustomAppInterfaceCallQueueService customAppInterfaceCallQueueService;
+	@Resource
+	private WfwFormApiService wfwFormApiService;
+	@Resource
+	private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
 
 	/**新增活动
 	 * @Description 
@@ -231,7 +238,7 @@ public class ActivityHandleService {
 			inspectionConfigHandleService.updateConfigActivityId(activityCreateParamDto.getInspectionConfigId(), activityId);
 		}
 		activityStatSummaryHandlerService.init(activityId);
-		// 班级互动
+		// 班级互动（一定要在报名签到处理完之后再进行）
 		ApplicationContextHolder.getBean(ActivityHandleService.class).handleClazzInteraction(activity, signCreateParamDto, loginUser);
 		// 活动详情
 		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
@@ -364,9 +371,25 @@ public class ActivityHandleService {
 	 * @return com.chaoxing.activity.dto.sign.create.SignCreateResultDTO
 	 */
 	private SignCreateResultDTO handleSign(Activity activity, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
+		Integer fid = loginUser.getFid();
+		Integer uid = loginUser.getUid();
 		SignCreateResultDTO signCreateResultDto;
 		signCreateParam.perfectName(activity.getName());
 		signCreateParam.setMarketId(activity.getMarketId());
+		// 活动创建页面时没有创建万能表单，在这里补充创建
+		SignUpWfwFormTemplate normalWfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(null, SignUpWfwFormTemplate.TypeEnum.NORMAL);
+		if (CollectionUtils.isNotEmpty(signCreateParam.getSignUps()) && normalWfwFormTemplate != null) {
+			signCreateParam.getSignUps().forEach(v -> {
+				if (v.getFillInfoFormId() == null) {
+					WfwFormCreateResultDTO wfwFormResult = wfwFormApiService.createWfwForm(fid, uid, normalWfwFormTemplate, SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
+					v.setPcUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getPcUrl).orElse(null));
+					v.setOpenAddr(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getOpenAddr).orElse(null));
+					v.setWechatUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getWechatUrl).orElse(null));
+					v.setFillInfoFormId(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getFormId).orElse(null));
+					v.setWfwFormName(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getName).orElse(null));
+				}
+			});
+		}
 		if (signCreateParam.getId() == null) {
 			signCreateParam.perfectCreator(loginUser);
 			signCreateResultDto = signApiService.create(signCreateParam);

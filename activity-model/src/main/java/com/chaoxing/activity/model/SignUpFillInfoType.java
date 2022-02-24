@@ -1,15 +1,15 @@
 package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.google.common.collect.Lists;
 import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,24 +32,64 @@ public class SignUpFillInfoType {
     private Integer id;
     /** 报名的模版组件关联id; column: template_component_id*/
     private Integer templateComponentId;
-    /** 类型; column: type*/
-    private String type;
-    /** 报名万能表单模板id; column: wfw_form_template_id*/
-    private Integer wfwFormTemplateId;
-    /** 审批表单模板id; column: wfw_form_approval_template_id*/
-    private Integer wfwFormApprovalTemplateId;
+    /** 表单/审批模板ids集合; column: wfw_form_template_ids */
+    private String wfwFormTemplateIds;
+
+    /** 模板字段设置时，所用到显示已选择的表单id */
+    @TableField(exist = false)
+    private List<Integer> formTemplateIds;
+    /** 活动创建修改时，获取模板已选择的表单选项 */
+    @TableField(exist = false)
+    private List<SignUpWfwFormTemplate> templateOptions;
 
     public SignUpFillInfoType cloneToNewTemplateComponentId(Integer templateComponentId) {
         return SignUpFillInfoType.builder()
                 .templateComponentId(templateComponentId)
-                .type(getType())
-                .wfwFormTemplateId(getWfwFormTemplateId())
-                .wfwFormApprovalTemplateId(getWfwFormApprovalTemplateId())
+                .wfwFormTemplateIds(getWfwFormTemplateIds())
                 .build();
     }
 
     public static List<SignUpFillInfoType> cloneToNewTemplateComponentId(List<SignUpFillInfoType> signUpFillInfoTypes, Map<Integer, Integer> oldNewTemplateComponentIdRelation) {
         return Optional.ofNullable(signUpFillInfoTypes).orElse(Lists.newArrayList()).stream().map(v -> v.cloneToNewTemplateComponentId(oldNewTemplateComponentIdRelation.get(v.getTemplateComponentId()))).collect(Collectors.toList());
+    }
+
+    /** wfwFormTemplateIds 字段值转换为 formTemplateIds字段
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-23 11:06:54
+     * @return
+     */
+    public void wfwFormTemplateIds2FormTemplateIds() {
+        this.formTemplateIds = Lists.newArrayList();
+        if (StringUtils.isNotBlank(this.wfwFormTemplateIds)) {
+            this.formTemplateIds = Arrays.stream(this.wfwFormTemplateIds.split(",")).map(Integer::valueOf).collect(Collectors.toList());
+        }
+    }
+
+    /** formTemplateIds 字段值转换为 wfwFormTemplateIds 字段
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-23 11:08:03
+     * @return
+     */
+    public void formTemplateIds2WfwFormTemplateIds() {
+        if (CollectionUtils.isNotEmpty(this.formTemplateIds)) {
+            this.wfwFormTemplateIds = this.formTemplateIds.stream().sorted().map(String::valueOf).collect(Collectors.joining(","));
+        }
+    }
+
+    /**
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-23 14:34:37
+     * @param wfwFormTemplates
+     * @return
+     */
+    public void packageWfwTemplateOptions(List<SignUpWfwFormTemplate> wfwFormTemplates) {
+        this.templateOptions = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(this.formTemplateIds)) {
+            this.templateOptions = wfwFormTemplates.stream().filter(v -> this.formTemplateIds.contains(v.getId())).collect(Collectors.toList());
+        }
     }
 
     @Getter

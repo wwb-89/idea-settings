@@ -1,6 +1,8 @@
 package com.chaoxing.activity;
 
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.service.queue.activity.WfwFormSyncActivityQueue;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +13,9 @@ import javax.annotation.Resource;
 class ActivityApiApplicationTests {
 	@Resource
 	private WfwFormSyncActivityQueue wfwFormSyncActivityQueue;
+
+	@Resource
+	private WfwFormApiService wfwFormApiService;
 
 	@Test
 	void contextLoads() {

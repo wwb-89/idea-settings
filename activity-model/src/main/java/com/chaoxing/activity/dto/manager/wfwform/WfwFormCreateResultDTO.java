@@ -27,5 +27,7 @@ public class WfwFormCreateResultDTO {
     private String pcUrl;
     /** 微信端填写地址 */
     private String wechatUrl;
+    /** 万能/审批表单名称; column: wfw_form_name */
+    private String name;
 
 }

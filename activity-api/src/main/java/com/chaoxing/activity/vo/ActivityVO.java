@@ -70,6 +70,8 @@ public class ActivityVO {
     private String introduction;
     /** 活动时间范围 */
     private String timeScope;
+    /** 活动分类 */
+    private String activityClassifyName;
 
     /**
      * 活动list转换为活动vo list
@@ -108,6 +110,7 @@ public class ActivityVO {
                 .createOrgName(activity.getCreateOrgName())
                 .activityFlag(activity.getActivityFlag())
                 .address(activity.getActivityFullAddress())
+                .activityClassifyName(activity.getActivityClassifyName())
                 .build();
         if (StringUtils.isBlank(result.getCoverUrl()) && StringUtils.isNotBlank(result.getCoverCloudId())) {
             result.setCoverUrl(DomainConstant.CLOUD_RESOURCE + "/star3/origin/" + result.getCoverCloudId());

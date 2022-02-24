@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**报名万能表单模版服务
  * @author wwb
@@ -34,13 +36,14 @@ public class SignUpWfwFormTemplateService {
      * @param code
      * @return
      */
-    public SignUpWfwFormTemplate getSystemTemplateByCode(String code) {
-        if (StringUtils.isBlank(code)) {
-            log.error("code为空，系统模板不存在");
+    public SignUpWfwFormTemplate getSystemTemplateByCode(String code, SignUpWfwFormTemplate.TypeEnum templateFormType) {
+        if (templateFormType == null) {
+            log.error("模板类型不存在!");
             return null;
         }
         SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
                 .eq(SignUpWfwFormTemplate::getCode, code)
+                .eq(SignUpWfwFormTemplate::getType, templateFormType.getValue())
                 .eq(SignUpWfwFormTemplate::getSystem, Boolean.TRUE)).stream().findFirst().orElse(null);
         if (signUpWfwFormTemplate == null) {
             log.error("code为{}的系统模板不存在", code);
@@ -56,10 +59,10 @@ public class SignUpWfwFormTemplateService {
      * @param wfwFormTemplateId
      * @return
      */
-    public SignUpWfwFormTemplate getByIdOrDefaultNormal(Integer wfwFormTemplateId) {
+    public SignUpWfwFormTemplate getByIdOrDefaultNormal(Integer wfwFormTemplateId, SignUpWfwFormTemplate.TypeEnum templateFormType) {
         SignUpWfwFormTemplate signUpWfwFormTemplate = getById(wfwFormTemplateId);
         if (signUpWfwFormTemplate == null) {
-            signUpWfwFormTemplate = getSystemTemplateByCode(NORMAL_TEMPLATE_CODE);
+            signUpWfwFormTemplate = getSystemTemplateByCode(NORMAL_TEMPLATE_CODE, templateFormType);
         }
         return signUpWfwFormTemplate;
     }
@@ -126,4 +129,15 @@ public class SignUpWfwFormTemplateService {
         return signUpWfwFormTemplates.stream().findFirst().orElse(null);
     }
 
+    /**列出所有的系统模板
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-23 14:28:00
+     * @return
+     */
+    public List<SignUpWfwFormTemplate> listAllSystem() {
+        return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+                .eq(SignUpWfwFormTemplate::getSystem, true)
+                .eq(SignUpWfwFormTemplate::getDeleted, false));
+    }
 }

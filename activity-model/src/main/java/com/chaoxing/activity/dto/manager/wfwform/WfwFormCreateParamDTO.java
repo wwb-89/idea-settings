@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.manager.wfwform;
 
+import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +24,8 @@ public class WfwFormCreateParamDTO {
     private Integer formId;
     /** 来源表单的机构id */
     private Integer originalFid;
+    /** 表单类型： 0-审批， 2：表单(默认) */
+    private Integer formType;
     /** 创建用户id */
     private Integer uid;
     /** 创建机构id */

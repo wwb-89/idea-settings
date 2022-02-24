@@ -8,10 +8,7 @@ import com.chaoxing.activity.mapper.ComponentFieldMapper;
 import com.chaoxing.activity.mapper.TemplateComponentMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
-import com.chaoxing.activity.service.activity.engine.CustomAppConfigHandleService;
-import com.chaoxing.activity.service.activity.engine.CustomAppInterfaceCallHandleService;
-import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
-import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
+import com.chaoxing.activity.service.activity.engine.*;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -51,7 +48,8 @@ public class TemplateComponentService {
     private CustomAppConfigHandleService customAppConfigHandleService;
     @Resource
     private CustomAppInterfaceCallHandleService customAppInterfaceCallHandleService;
-
+    @Resource
+    private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
 
     /**根据模版id查询模版组件关联
      * @Description
@@ -201,7 +199,11 @@ public class TemplateComponentService {
             }
             if (!signUpFillInfoTypeMap.isEmpty() && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
                 // 报名填报信息的模板组件id为报名的模板组件id
-                v.setSignUpFillInfoType(Optional.ofNullable(signUpFillInfoTypeMap.get(v.getPid())).orElse(null));
+                SignUpFillInfoType sucItem = Optional.ofNullable(signUpFillInfoTypeMap.get(v.getPid())).orElse(null);
+                if (sucItem != null) {
+                    sucItem.wfwFormTemplateIds2FormTemplateIds();
+                    v.setSignUpFillInfoType(sucItem);
+                }
             }
         });
     }
@@ -286,6 +288,7 @@ public class TemplateComponentService {
                 .map(TemplateComponentDTO::getComponentId)
                 .collect(Collectors.toList());
         Map<Integer, List<ComponentField>> componentFieldMap = Maps.newHashMap();
+        List<SignUpWfwFormTemplate> wfwFormTemplates = signUpWfwFormTemplateService.listAllSystem();
         if (CollectionUtils.isNotEmpty(chooseComponentIds)) {
             List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>().lambda().in(ComponentField::getComponentId, chooseComponentIds));
             componentFields.forEach(v -> {
@@ -299,7 +302,12 @@ public class TemplateComponentService {
             }
             if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
                 // 报名填报信息的模板组件id为报名的模板组件id
-                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getPid()));
+                SignUpFillInfoType sucItem = signUpFillInfoTypeService.getByTemplateComponentId(v.getPid());
+                if (sucItem != null) {
+                    sucItem.wfwFormTemplateIds2FormTemplateIds();
+                    sucItem.packageWfwTemplateOptions(wfwFormTemplates);
+                    v.setSignUpFillInfoType(sucItem);
+                }
             }
             if (StringUtils.isNotBlank(v.getDataOrigin()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
                 v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));

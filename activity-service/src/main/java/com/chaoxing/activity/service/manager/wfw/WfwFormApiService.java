@@ -468,54 +468,18 @@ public class WfwFormApiService {
 		return new ArrayList<>(fieldValueSet);
 	}
 
-	/** 表单创建相关 */
-	/**构建表单编辑地址（仅仅是编辑）
+	/**表单编辑接口调用（万能表单和审批）
 	 * @Description
 	 * @author huxiaolong
-	 * @Date 2021-08-17 17:49:15
-	 * @param fid
-	 * @param uid
-	 * @param wfwFormTemplateId
-	 * @return java.lang.String
+	 * @Date 2022-02-23 15:48:11
+	 * @param fid 机构fid
+	 * @param formId 表单id
+	 * @param uid 用户id
+	 * @param signUpFormType 报名表单类型(wfw_form; approval)
+	 * @return
 	 */
-	public String buildEditFormUrl(Integer fid, Integer formId, Integer uid, Integer wfwFormTemplateId) {
-		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
-		if (wfwFormTemplate == null) {
-			wfwFormTemplate = SignUpWfwFormTemplate.builder().sign(WfwFormConstant.CREATE_SIGN).key(WfwFormConstant.CREATE_KEY).build();
-		}
-		return buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplate);
-	}
-
-	/**构建审批表单编辑地址
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-12-23 15:29:42
-	 * @param fid
-	 * @param formId
-	 * @param uid
-	 * @param wfwFormTemplateId
-	 * @return java.lang.String
-	*/
-	public String buildApprovalEditFormUrl(Integer fid, Integer formId, Integer uid, Integer wfwFormTemplateId) {
-		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
-		if (wfwFormTemplate == null) {
-			wfwFormTemplate = SignUpWfwFormTemplate.builder().sign(WfwFormConstant.CREATE_SIGN).key(WfwFormConstant.CREATE_KEY).build();
-		}
-		return buildApprovalCreateEditFormUrl(fid, formId, uid, wfwFormTemplate);
-	}
-
-	private String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
-		return buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplate, SignUpWfwFormTemplate.TypeEnum.NORMAL);
-	}
-
-	private String buildApprovalCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
-		return buildCreateEditFormUrl(fid, formId, uid, wfwFormTemplate, SignUpWfwFormTemplate.TypeEnum.APPROVAL);
-	}
-
-	private String buildCreateEditFormUrl(Integer fid, Integer formId, Integer uid, SignUpWfwFormTemplate wfwFormTemplate, SignUpWfwFormTemplate.TypeEnum type) {
-		if (wfwFormTemplate == null) {
-			throw new BusinessException("机构: " + fid + "报名万能表单模板不存在!");
-		}
+	public String buildEditFormUrl(Integer fid, Integer formId, Integer uid, String signUpFormType) {
+		Integer formType = Objects.equals(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue(), signUpFormType) ? 2 : 1;
 		Map<String, Object> params = Maps.newTreeMap();
 		params.put("fid", fid);
 		params.put("uid", uid);
@@ -524,9 +488,11 @@ public class WfwFormApiService {
 		}
 		LocalDateTime now = LocalDateTime.now();
 		params.put("datetime", now.format(DATE_TIME_FORMATTER));
-		params.put("sign", wfwFormTemplate.getSign());
-		params.put("formType", Objects.equals(SignUpWfwFormTemplate.TypeEnum.NORMAL, type) ? 2 : 1);
-		String enc = getEnc(params, wfwFormTemplate.getKey());
+//		params.put("sign", WfwFormConstant.CREATE_SIGN);
+		params.put("sign", WfwFormConstant.CREATE_SIGN);
+		params.put("formType", formType);
+//		String enc = getEnc(params, WfwFormConstant.KEY);
+		String enc = getEnc(params, WfwFormConstant.CREATE_KEY);
 		params.put("enc", enc);
 		// 封装url
 		StringBuilder url = new StringBuilder(CREATE_URL + "?");
@@ -543,14 +509,25 @@ public class WfwFormApiService {
 	 * @param fid
 	 * @param uid
 	 * @param wfwFormTemplateId
+	 * @param signUpFormType 报名万能表单类型(wfw_form; approval)
 	 * @return java.lang.String
 	 */
-	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, Integer wfwFormTemplateId) {
-		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId);
-		return createWfwForm(fid, uid, wfwFormTemplate);
+	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, Integer wfwFormTemplateId, String signUpFormType, Integer signUpTemplateComponentId) {
+		if (wfwFormTemplateId == null) {
+			SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(signUpTemplateComponentId);
+			if (signUpFillInfoType != null) {
+				signUpFillInfoType.wfwFormTemplateIds2FormTemplateIds();
+				wfwFormTemplateId = signUpFillInfoType.getFormTemplateIds().stream().findFirst().orElse(null);
+			}
+		}
+		signUpFormType = StringUtils.isBlank(signUpFormType) ? SignUpFillInfoType.TypeEnum.WFW_FORM.getValue() : signUpFormType;
+
+		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
+		return createWfwForm(fid, uid, wfwFormTemplate, signUpFormType);
 	}
 
-	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
+	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, SignUpWfwFormTemplate wfwFormTemplate, String signUpFormType) {
 		if (wfwFormTemplate == null) {
 			throw new BusinessException("报名万能表单模板不存在!");
 		}
@@ -562,6 +539,7 @@ public class WfwFormApiService {
 				.fid(fid)
 				.sign(wfwFormTemplate.getSign())
 				.key(wfwFormTemplate.getKey())
+				.formType(Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? 0 : 2)
 				.build());
 	}
 
@@ -577,11 +555,18 @@ public class WfwFormApiService {
 	 * @param tplComponentId 报名的模板组件id
 	 * @return com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO
 	 */
-	public WfwFormCreateResultDTO cloneSignUpWfwForm(Integer originFid, Integer formId, Integer fid, Integer uid, Integer tplComponentId) {
-		Integer wfwFormTemplateId = Optional.ofNullable(signUpFillInfoTypeService.getByTemplateComponentId(tplComponentId)).map(SignUpFillInfoType::getWfwFormTemplateId).orElse(null);
-		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
+	public WfwFormCreateResultDTO cloneSignUpWfwForm(Integer originFid, Integer formId, Integer fid, Integer uid, Integer tplComponentId, String signUpFormType) {
+		Integer wfwFormTemplateId = null;
+		SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(tplComponentId);
+		if (signUpFillInfoType != null) {
+			signUpFillInfoType.wfwFormTemplateIds2FormTemplateIds();
+			wfwFormTemplateId = signUpFillInfoType.getFormTemplateIds().stream().findFirst().orElse(null);
+		}
+		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
+
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
 		if (formId == null) {
-			return createWfwForm(fid, uid, wfwFormTemplate);
+			return createWfwForm(fid, uid, wfwFormTemplate, signUpFormType);
 		}
 		return create(WfwFormCreateParamDTO.builder()
 				.originalFid(originFid)
@@ -590,6 +575,7 @@ public class WfwFormApiService {
 				.uid(uid)
 				.sign(wfwFormTemplate.getSign())
 				.key(wfwFormTemplate.getKey())
+				.formType(Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? 0 : 2)
 				.build());
 	}
 
@@ -616,8 +602,6 @@ public class WfwFormApiService {
 		return String.format(FORM_ADMIN_URL, fid, uid, dateTimeStr, WfwFormConstant.CREATE_SIGN, formId, formType, enc);
 	}
 
-
-
 	/**创建万能表单
 	 * @Description
 	 * @author wwb
@@ -633,6 +617,7 @@ public class WfwFormApiService {
 		params.put("fid", wfwFormCreateParam.getFid());
 		params.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
 		params.put("sign", wfwFormCreateParam.getSign());
+		params.put("formType", Optional.ofNullable(wfwFormCreateParam.getFormType()).orElse(2));
 		params.put("enc", getEnc(params, wfwFormCreateParam.getKey()));
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
 		paramMap.setAll(params);
@@ -649,4 +634,22 @@ public class WfwFormApiService {
 		}
 	}
 
+	public String createEmptyForm(Integer fid, Integer uid, String signUpFormType) {
+		Integer formType = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL.getValue(), signUpFormType) ? 1 : 2;
+		Map<String, Object> params = Maps.newTreeMap();
+		params.put("fid", fid);
+		params.put("uid", uid);
+		LocalDateTime now = LocalDateTime.now();
+		params.put("datetime", now.format(DATE_TIME_FORMATTER));
+		params.put("sign", WfwFormConstant.CREATE_SIGN);
+		params.put("formType", formType);
+		String enc = getEnc(params, WfwFormConstant.CREATE_KEY);
+		params.put("enc", enc);
+		// 封装url
+		StringBuilder url = new StringBuilder(CREATE_URL + "?");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			url.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+		}
+		return url.toString();
+	}
 }
