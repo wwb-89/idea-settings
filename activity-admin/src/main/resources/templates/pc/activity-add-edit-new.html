@@ -593,7 +593,7 @@
                                             <ul class="form-list" v-show="signUpMap[item.id].fillInfo && signUpMap[item.id].fillInfoFormId">
                                                 <li class="item">
                                                     <div :class="{'left-box': true, 'type1': signUpMap[item.id].formType == 'approval'}"></div>
-                                                    <p class="title overHidden2">{{signUpMap[item.id].wfwFormName}}</p>
+                                                    <p class="title overHidden2">{{signUpMap[item.id].wfwFormName ? {{signUpMap[item.id].wfwFormName : '表单' }}</p>
                                                     <a href="javascript:;" class="edit-btn" @click="fillInfoConfig(item.id)"></a>
                                                     <a href="javascript:;" class="del-btn" @click="openWfwFormSwitchDialog(item.id)"></a>
                                                 </li>
