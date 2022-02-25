@@ -8,6 +8,7 @@ import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.GroupRegionFilter;
+import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.model.MarketSignUpConfig;
 import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
@@ -248,6 +249,11 @@ public class IndexController {
 				signUpKeyword = StringUtils.isNotBlank(marketSignUpConfig.getSignUpKeyword()) ? marketSignUpConfig.getSignUpKeyword() : signUpKeyword;
 			}
 		}
+		Market market = null;
+		if (marketId != null) {
+			market = marketQueryService.getById(marketId);
+		}
+		model.addAttribute("market", market);
 		model.addAttribute("regions", groupRegionFilters);
 		model.addAttribute("activityQueryDates", activityQueryDates);
 		model.addAttribute("areaCode", areaCode);

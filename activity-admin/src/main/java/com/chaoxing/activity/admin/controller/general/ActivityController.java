@@ -94,6 +94,11 @@ public class ActivityController {
 		if (marketId != null && StringUtils.isBlank(flag)) {
 			flag = Optional.ofNullable(templateQueryService.getMarketFirstTemplate(marketId)).map(Template::getActivityFlag).orElse(null);
 		}
+		Market market = null;
+		if (marketId != null) {
+			market = marketQueryService.getById(marketId);
+		}
+		model.addAttribute("market", market);
 		model.addAttribute("fid", fid);
 		model.addAttribute("strict", strict);
 		model.addAttribute("marketId", marketId);
