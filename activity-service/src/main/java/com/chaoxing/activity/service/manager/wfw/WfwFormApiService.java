@@ -510,16 +510,10 @@ public class WfwFormApiService {
 	 * @param uid
 	 * @param wfwFormTemplateId
 	 * @param signUpFormType 报名万能表单类型(wfw_form; approval)
+	 * @param newFormFromNormal 是否从通用表单复制(新建按钮传递此参数)
 	 * @return java.lang.String
 	 */
-	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, Integer wfwFormTemplateId, String signUpFormType, Integer signUpTemplateComponentId) {
-		if (wfwFormTemplateId == null) {
-			SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(signUpTemplateComponentId);
-			if (signUpFillInfoType != null) {
-				signUpFillInfoType.wfwFormTemplateIds2FormTemplateIds();
-				wfwFormTemplateId = signUpFillInfoType.getFormTemplateIds().stream().findFirst().orElse(null);
-			}
-		}
+	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, Integer wfwFormTemplateId, String signUpFormType) {
 		signUpFormType = StringUtils.isBlank(signUpFormType) ? SignUpFillInfoType.TypeEnum.WFW_FORM.getValue() : signUpFormType;
 
 		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
@@ -632,24 +626,5 @@ public class WfwFormApiService {
 			log.error("根据参数:{} 创建万能表单error:{}", JSON.toJSONString(wfwFormCreateParam), message);
 			throw new BusinessException(message);
 		}
-	}
-
-	public String createEmptyForm(Integer fid, Integer uid, String signUpFormType) {
-		Integer formType = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL.getValue(), signUpFormType) ? 1 : 2;
-		Map<String, Object> params = Maps.newTreeMap();
-		params.put("fid", fid);
-		params.put("uid", uid);
-		LocalDateTime now = LocalDateTime.now();
-		params.put("datetime", now.format(DATE_TIME_FORMATTER));
-		params.put("sign", WfwFormConstant.CREATE_SIGN);
-		params.put("formType", formType);
-		String enc = getEnc(params, WfwFormConstant.CREATE_KEY);
-		params.put("enc", enc);
-		// 封装url
-		StringBuilder url = new StringBuilder(CREATE_URL + "?");
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			url.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
-		}
-		return url.toString();
 	}
 }

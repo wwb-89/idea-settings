@@ -977,11 +977,11 @@
                     });
                     var formTemplates = {
                         label: '表单',
-                        options: $this.wfwFormTemplates || []
+                        options: $.grep($this.wfwFormTemplates, function(item) { return item.code != 'normal'; })
                     };
                     var formApprovalTemplates = {
                         label: '审批',
-                        options: $this.wfwFormApprovalTemplates || []
+                        options: $.grep($this.wfwFormApprovalTemplates, function(item) { return item.code != 'normal'; })
                     };
                     $this.wfwFormTplOptions = [formTemplates, formApprovalTemplates];
                     $this.initData();

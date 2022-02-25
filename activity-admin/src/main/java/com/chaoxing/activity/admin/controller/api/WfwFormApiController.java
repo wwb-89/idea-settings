@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
-import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
@@ -100,23 +99,8 @@ public class WfwFormApiController {
 	public RestRespDTO createWfwFormWithEditUrl(@RequestParam Integer fid,
 												@RequestParam Integer uid,
 												Integer wfwFormTemplateId,
-												@RequestParam String signUpFormType,
-												@RequestParam Integer signUpTemplateComponentId) {
-		return RestRespDTO.success(wfwFormApiService.createWfwForm(fid, uid, wfwFormTemplateId, signUpFormType, signUpTemplateComponentId));
-	}
-
-	/**
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2022-02-24 17:24:49
-	 * @param fid
-	 * @param uid
-	 * @param signUpFormType
-	 * @return
-	 */
-	@RequestMapping("create/empty-form")
-	public RestRespDTO createEmptyFormWithEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam String signUpFormType) {
-		return RestRespDTO.success(wfwFormApiService.createEmptyForm(fid, uid, signUpFormType));
+												@RequestParam String signUpFormType) {
+		return RestRespDTO.success(wfwFormApiService.createWfwForm(fid, uid, wfwFormTemplateId, signUpFormType));
 	}
 
 	/**获取表单管理地址
