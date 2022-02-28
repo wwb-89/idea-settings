@@ -36,6 +36,23 @@ public class NoticeDTO {
 	private Integer senderUid;
 	/** 接收者id列表 */
 	private List<Integer> receiverUids;
+	/** 接收范围json */
+	private List<Togen> togens;
+
+	@Data
+	@Builder
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Togen {
+		/** 范围类型: 单位-14， 单位角色-13 */
+		private Integer type;
+		/** 机构id 或  机构id-角色id */
+		private String id;
+		/** 名称 */
+		private String name;
+		/** 附件 */
+		private String ext;
+	}
 
 	@Data
 	@Builder

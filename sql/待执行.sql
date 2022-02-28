@@ -11,3 +11,12 @@ UPDATE t_sign_up_fill_info_type SET wfw_form_template_ids =  replace (`wfw_form_
 UPDATE t_sign_up_fill_info_type SET wfw_form_template_ids =  replace (`wfw_form_template_ids`,',7','');
 UPDATE t_sign_up_fill_info_type SET wfw_form_template_ids =  replace (`wfw_form_template_ids`,'7,','');
 UPDATE t_sign_up_fill_info_type SET wfw_form_template_ids =  replace (`wfw_form_template_ids`,'7','');
+
+
+-- 2022-02-28 新建表
+CREATE TABLE `t_template_push_reminder_config` (
+    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `template_component_id` int(11) DEFAULT NULL COMMENT '模板组件id',
+    `is_remind_within_role_scope` tinyint(1) DEFAULT '0' COMMENT '是否发送给报名范围内用户',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='模板消息推送组件配置表';

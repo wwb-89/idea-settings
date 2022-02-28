@@ -118,6 +118,15 @@ public class XxtNoticeApiService {
 				.receiverUids(receiverUids)
 				.build();
 	}
+	private NoticeDTO build(String title, String content, String attachment, Integer senderUid, List<NoticeDTO.Togen> togens) {
+		return NoticeDTO.builder()
+				.title(title)
+				.content(content)
+				.attachment(attachment)
+				.senderUid(senderUid)
+				.togens(togens)
+				.build();
+	}
 
 	/**发送通知
 	 * @Description
@@ -131,6 +140,10 @@ public class XxtNoticeApiService {
 		if (noticeId != null) {
 			sendNoticeByNoticeId(notice.getId(), notice.getTitle(), notice.getContent(), notice.getAttachment(), notice.getSenderUid(), notice.getReceiverUids());
 		} else {
+			if (CollectionUtils.isNotEmpty(notice.getTogens())) {
+				sendNoticeToTogens(notice.getTitle(), notice.getContent(), notice.getAttachment(), notice.getSenderUid(), notice.getTogens());
+				return;
+			}
 			sendNotice(notice.getTitle(), notice.getContent(), notice.getAttachment(), notice.getSenderUid(), notice.getReceiverUids());
 		}
 	}
@@ -203,6 +216,39 @@ public class XxtNoticeApiService {
 			String msg = jsonObject.getString("msg");
 			log.error("发送通知 title::{},content:{},senderUid:{},receiverUids:{}, error:{}", title, content, senderUid, JSON.toJSONString(receiverUids), msg);
 			xxtNoticeQueueService.add(build(noticeId, title, content, attachment, senderUid, receiverUids));
+		}
+	}
+
+	/**
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2022-02-25 14:54:14
+	 * @param title
+	 * @param content
+	 * @param attachment
+	 * @param senderUid
+	 * @param togens
+	 * @return
+	 */
+	public void sendNoticeToTogens(String title, String content, String attachment, Integer senderUid, List<NoticeDTO.Togen> togens) {
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		Optional.ofNullable(title).filter(StringUtils::isNotBlank).ifPresent(v -> params.add("title", v));
+		params.add("uid", senderUid);
+		params.add("content", content);
+		params.add("togen", JSON.toJSONString(togens));
+		params.add("source_type", 1000);
+		params.add("attachment", attachment);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(params, httpHeaders);
+		String result = restTemplate.postForObject(SEND_NOTICE_URL, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Integer code = jsonObject.getInteger("result");
+		if (Objects.equals(code, 1)) {
+
+		} else {
+			String msg = jsonObject.getString("msg");
+			log.error("发送通知 title::{},content:{},senderUid:{},togens:{}, error:{}", title, content, senderUid, JSON.toJSONString(togens), msg);
+			xxtNoticeQueueService.add(build(title, content, attachment, senderUid, togens));
 		}
 	}
 

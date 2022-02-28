@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity.scope;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.mapper.ActivityScopeMapper;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**活动发布范围服务
  * @author wwb
@@ -55,6 +57,17 @@ public class ActivityScopeService {
 			activityScopes.forEach(v -> v.setActivityId(activityId));
 			activityScopeMapper.batchAdd(activityScopes);
 		}
+	}
+
+	/**
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2022-02-28 11:56:30
+	 * @param activityId
+	 * @return
+	 */
+	public List<ActivityScope> listByActivity(Integer activityId) {
+		return activityScopeMapper.selectList(new LambdaQueryWrapper<ActivityScope>().eq(ActivityScope::getActivityId, activityId));
 	}
 
 }

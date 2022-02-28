@@ -67,6 +67,8 @@ public class TemplateComponentDTO {
     private List<CustomAppConfig> customAppConfigs;
     /** 自定义应用接口配置列表 */
     private List<CustomAppInterfaceCall> customAppInterfaceCalls;
+    /** 推送提醒组件配置 */
+    private TemplatePushReminderConfig pushReminderConfig;
 
     private Integer originId;
 

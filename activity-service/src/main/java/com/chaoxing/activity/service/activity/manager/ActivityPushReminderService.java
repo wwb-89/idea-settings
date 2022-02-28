@@ -4,21 +4,26 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
+import com.chaoxing.activity.dto.manager.sign.SignDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwRoleDTO;
 import com.chaoxing.activity.mapper.ActivityPushReminderMapper;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityPushReminder;
-import com.chaoxing.activity.model.NoticeRecord;
-import com.chaoxing.activity.model.OrgConfig;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.engine.TemplatePushReminderConfigService;
+import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.queue.notice.ActivityReminderNoticeQueue;
 import com.chaoxing.activity.service.queue.notice.NoticeRecordSaveQueue;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,6 +57,12 @@ public class ActivityPushReminderService {
     private XxtNoticeApiService xxtNoticeApiService;
     @Resource
     private NoticeRecordSaveQueue noticeRecordSaveQueue;
+    @Resource
+    private TemplatePushReminderConfigService templatePushReminderConfigService;
+    @Resource
+    private ActivityScopeService activityScopeService;
+    @Resource
+    private SignApiService signApiService;
 
     /**根据活动id查询活动的推送提醒
      * @Description 
@@ -159,15 +170,108 @@ public class ActivityPushReminderService {
      */
     public void sendNotice(Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
-        Integer fid = activity.getCreateFid();
         Boolean openPushReminder = Optional.ofNullable(activity.getOpenPushReminder()).orElse(false);
         if (!openPushReminder) {
             return;
         }
         ActivityPushReminder activityPushReminder = getByActivityId(activityId);
-        if (activityPushReminder == null || StringUtils.isBlank(activityPushReminder.getReceiveScope())) {
-            String errMsg = activityPushReminder == null ? "活动不存在对应的活动推送提醒" : "活动推送提醒无对应的推送范围";
-            log.error(errMsg);
+        if (activityPushReminder == null) {
+            log.error("活动不存在对应的活动推送提醒");
+            return;
+        }
+        TemplatePushReminderConfig config = templatePushReminderConfigService.getByTemplateId(activity.getTemplateId());
+        Boolean remindWithinRoleScope = Optional.ofNullable(config).map(TemplatePushReminderConfig::getRemindWithinRoleScope).orElse(false);
+        if (remindWithinRoleScope) {
+            sendNoticeToScopeRecipients(activity, activityPushReminder);
+        } else {
+            sendNoticeToManualAddRecipients(activity, activityPushReminder);
+        }
+
+    }
+
+    /**
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-28 11:20:35
+     * @param activity
+     * @param activityPushReminder
+     * @return
+     */
+    private void sendNoticeToScopeRecipients(Activity activity, ActivityPushReminder activityPushReminder) {
+        Integer activityId = activity.getId();
+        // 获取活动的发布范围
+        List<ActivityScope> activityScopes = activityScopeService.listByActivity(activityId);
+        if (CollectionUtils.isEmpty(activityScopes)) {
+            return;
+        }
+        // 获取发布范围的所有角色id
+        SignCreateParamDTO sign = signApiService.getCreateById(activity.getSignId());
+        List<SignUpCreateParamDTO> signUps = Optional.ofNullable(sign).map(SignCreateParamDTO::getSignUps).orElse(Lists.newArrayList());
+        Set<WfwRoleDTO> wfwRoles = Sets.newHashSet();
+        signUps.forEach(v -> {
+            Boolean openRoleLimit = v.getOpenRoleLimit();
+            if (openRoleLimit && CollectionUtils.isNotEmpty(v.getRoleParticipateScopes())) {
+                wfwRoles.addAll(v.getRoleParticipateScopes());
+            }
+        });
+        if (CollectionUtils.isEmpty(wfwRoles)) {
+            return;
+        }
+        Map<Integer, String> scopeMap = activityScopes.stream().collect(Collectors.toMap(ActivityScope::getFid, ActivityScope::getName, (v1, v2) -> v2));
+        Map<Integer, String> roleMap = wfwRoles.stream().collect(Collectors.toMap(WfwRoleDTO::getRole, WfwRoleDTO::getName, (v1, v2) -> v2));
+        Map<String, String> releaseScopeRoleMap = Maps.newHashMap();
+        //   releaseScopeRoleMap 主要防止fid-roleId重复
+        for (Map.Entry<Integer, String> scopeEntry : scopeMap.entrySet()) {
+            for (Map.Entry<Integer, String> roleEntry : roleMap.entrySet()) {
+                String id = scopeEntry.getKey() + "-" + roleEntry.getKey();
+                String name = scopeEntry.getValue();
+                if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(roleEntry.getValue())) {
+                    name += "-";
+                }
+                name += roleEntry;
+                releaseScopeRoleMap.put(id, name);
+            }
+        }
+        // 封装通知范围对象
+        List<NoticeDTO.Togen> noticeTogens = Lists.newArrayList();
+        for (Map.Entry<String, String> entry : releaseScopeRoleMap.entrySet()) {
+            noticeTogens.add(NoticeDTO.Togen.builder()
+                    .id(entry.getKey())
+                    .name(entry.getValue())
+                    .type(14)
+                    .ext("")
+                    .build());
+        }
+
+        String content = activityPushReminder.getContent();
+        String attachment = NoticeDTO.generateActivityAttachment(activity.getName(), activity.getPreviewUrl());
+
+        xxtNoticeApiService.sendNoticeToTogens(activity.getName(), content, attachment, CommonConstant.NOTICE_SEND_UID, noticeTogens);
+        // 将通知保存
+        NoticeRecordSaveQueue.QueueParamDTO queueParam = NoticeRecordSaveQueue.QueueParamDTO.builder()
+                .activityId(activityId)
+                .type(NoticeRecord.TypeEnum.ACTIVITY_RELEASE)
+                .title(activity.getName())
+                .content(content)
+                .timestamp(DateUtils.date2Timestamp(LocalDateTime.now()))
+                .build();
+        noticeRecordSaveQueue.push(queueParam);
+
+    }
+
+    /**
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-28 11:20:51
+     * @param activity
+     * @param activityPushReminder
+     * @return
+     */
+    private void sendNoticeToManualAddRecipients(Activity activity, ActivityPushReminder activityPushReminder) {
+        Integer activityId = activity.getId();
+        Integer fid = activity.getCreateFid();
+        if (StringUtils.isBlank(activityPushReminder.getReceiveScope())) {
+            log.error("活动推送提醒无对应的推送范围");
             return;
         }
         String content = activityPushReminder.getContent();

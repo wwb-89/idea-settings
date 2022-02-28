@@ -358,7 +358,7 @@
                                     <el-switch v-model="activity.openPushReminder" class="examine-switch"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
-                                <div class="set-box configurationForm" v-show="activity.openPushReminder" @click="toPushReminderConfig">
+                                <div class="set-box configurationForm" v-show="activity.openPushReminder" @click="toPushReminderConfig(item.id)">
                                     <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
                                     <span class="tips set-information">编辑提醒内容</span>
                                 </div>
@@ -561,11 +561,11 @@
                                                         popper-class="fixed-select"
                                                 >
                                                     <el-option
-                                                            v-for="item in (it.signUpFillInfoType && it.signUpFillInfoType.templateOptions) || []"
-                                                            :key="item.id"
-                                                            :label="item.name"
-                                                            :value="item.id"
-                                                            v-if="item.type == 'wfw_form'"
+                                                            v-for="opt in (it.signUpFillInfoType && it.signUpFillInfoType.templateOptions) || []"
+                                                            :key="opt.id"
+                                                            :label="opt.name"
+                                                            :value="opt.id"
+                                                            v-if="opt.type == 'normal'"
                                                     >
                                                     </el-option>
                                                     <!--  注意这有俩个编辑，一个空的一个有数据的 -->
@@ -582,11 +582,11 @@
                                                         popper-class="fixed-select"
                                                 >
                                                     <el-option
-                                                            v-for="item in (it.signUpFillInfoType && it.signUpFillInfoType.templateOptions) || []"
-                                                            :key="item.id"
-                                                            :label="item.name"
-                                                            :value="item.id"
-                                                            v-if="item.type == 'approval'"
+                                                            v-for="opt in (it.signUpFillInfoType && it.signUpFillInfoType.templateOptions) || []"
+                                                            :key="opt.id"
+                                                            :label="opt.name"
+                                                            :value="opt.id"
+                                                            v-if="opt.type == 'approval'"
                                                     ></el-option>
                                                     <!--  注意这有俩个编辑，一个空的一个有数据的 -->
                                                     <div class="setiing-absolute" @click="createFormFromNormal(item.id)"><i class="icon-plus-circle"></i>新建</div>
@@ -837,14 +837,22 @@
                         <div class="form-items">
                             <label class="label">接收人</label>
                             <div class="items receive-box">
-                                <!-- 点击添加弹窗和参与范围弹窗一样 -->
-                                <div class="add-receive" @click="toAddPushRemindScope"><img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" alt=""></div>
-                                <ul class="add-box" style="height: 28px">
-                                    <li v-for="(scope, scopeIndex) of activityPushReminder.receiveScopes" :key="'receiver-scope-' + scopeIndex">
-                                        <span>{{scope.externalName}}</span>
-                                        <i class="del-btn" @click="removeRemindScope(scopeIndex)"></i>
+                                <ul class="add-box" style="height: 28px;" v-if="activityPushReminder.remindWithinRoleScope">
+                                    <li v-for="(scope, scIndex) in ['发布范围', '角色范围']" :key="'scope-' + scIndex" style="padding-right: 8px; border-radius: 0">
+                                        <span>{{scope}}</span>
                                     </li>
                                 </ul>
+                                <template v-else>
+                                    <!-- 点击添加弹窗和参与范围弹窗一样 -->
+                                    <div class="add-receive" @click="toAddPushRemindScope"><img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" alt=""></div>
+                                    <ul class="add-box" style="height: 28px">
+                                        <li v-for="(scope, scopeIndex) of activityPushReminder.receiveScopes" :key="'receiver-scope-' + scopeIndex">
+                                            <span>{{scope.externalName}}</span>
+                                            <i class="del-btn" @click="removeRemindScope(scopeIndex)"></i>
+                                        </li>
+                                    </ul>
+                                </template>
+
                             </div>
                         </div>
                         <div class="form-items">
@@ -2059,7 +2067,7 @@
                             app.showMsg("请填写提醒内容");
                             return false;
                         }
-                        if (scopes && scopes.length < 1) {
+                        if (!$this.activityPushReminder.remindWithinRoleScope && scopes && scopes.length < 1) {
                             app.showMsg("请选择提醒范围");
                             return false;
                         }
@@ -2596,7 +2604,7 @@
                     var { formType } = $this.signUpMap[signUpTplComponentId];
                     var approvalNum = 0, wfwFormNum = 0;
                     $(templateOptions).each(function () {
-                        if (this.type == 'wfw_form') {
+                        if (this.type == 'normal') {
                             wfwFormNum++;
                         } else if (this.type == 'approval') {
                             approvalNum++;
@@ -2652,7 +2660,7 @@
                         app.showMsg("请填写提醒内容");
                         return;
                     }
-                    if ($this.activityPushReminder.receiveScopes && $this.activityPushReminder.receiveScopes.length < 1) {
+                    if (!$this.activityPushReminder.remindWithinRoleScope && $this.activityPushReminder.receiveScopes && $this.activityPushReminder.receiveScopes.length < 1) {
                         app.showMsg("请选择提醒范围");
                         return;
                     }
@@ -2746,10 +2754,12 @@
                     var cloudIdList = activityApp.isEmpty(cloudIds) ? [] : cloudIds.split(',');
                     $this.$refs.richTextEditDialogWindow.showWindow($this.cloudDomain, title, value || '', cloudIdList);
                 },
-                toPushReminderConfig: function () {
+                toPushReminderConfig: function (tplComponentId) {
                     var $this = this;
-                    $this.remindContentShow = true
+                    var { pushReminderConfig } = $this.templateComponentMap[tplComponentId];
                     $this.activityPushReminder = $.extend({}, $this.activity.activityPushReminder);
+                    $this.$set($this.activityPushReminder, 'remindWithinRoleScope', pushReminderConfig && pushReminderConfig.remindWithinRoleScope);
+                    $this.remindContentShow = true
                 },
                 toAddPushRemindScope: function () {
                     var $this = this;
@@ -2909,11 +2919,17 @@
                 },
                 initActivityPushReminder: function () {
                     var $this = this;
+                    var pushReminderTplComponent = $.grep($this.templateComponents, function (it) {
+                        return it.code == "push_reminder";
+                    })[0];
+                    var { pushReminderConfig } = pushReminderTplComponent;
+                    var remindWithinRoleScope = pushReminderConfig && pushReminderConfig.remindWithinRoleScope;
                     if (!$this.activity.activityPushReminder) {
                         $this.activity.activityPushReminder = {
                             receiveScope: '',
                             receiveScopes: [],
-                            content: '有新的活动，快来看看吧!'
+                            content: '有新的活动，快来看看吧!',
+                            remindWithinRoleScope: remindWithinRoleScope
                         };
                     }
                     if ($this.activity.activityPushReminder.receiveScopes) {
@@ -2927,7 +2943,7 @@
                         });
                     }
                     $this.activityPushReminder = $.extend({}, $this.activity.activityPushReminder);
-
+                    $this.$set($this.activityPushReminder, 'remindWithinRoleScope', remindWithinRoleScope || false);
                 },
                 // 创建证书
                 newCertificate: function () {

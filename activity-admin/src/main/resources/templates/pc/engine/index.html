@@ -364,14 +364,14 @@
                         <el-input v-model="addEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
                         <template v-if="inputTypes.indexOf(addEditItem.type) != -1">
                             <el-form-item label="类型" class="marginBottom20">
-                            <el-select v-model="addEditItem.type" placeholder="请选择">
-                                <el-option
-                                        v-for="item in customInputTypes"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                >
-                                </el-option>
+                                <el-select v-model="addEditItem.type" placeholder="请选择">
+                                    <el-option
+                                            v-for="item in customInputTypes"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value"
+                                    >
+                                    </el-option>
                                 </el-select>
                             </el-form-item>
                         </template>
@@ -389,6 +389,11 @@
                             </el-form-item>
                             <el-form-item label="接口地址" class="marginBottom20" v-show="addEditItem.dataOrigin == 'interface'">
                                 <el-input v-model="addEditItem.originIdentify" type="text" placeholder="接口地址" class="marginBottom24"></el-input>
+                            </el-form-item>
+                        </template>
+                        <template v-if="addEditItem.code == 'push_reminder' && addEditItem.pushReminderConfig">
+                            <el-form-item label="发送给报名范围内用户" class="marginBottom20" label-width="152px">
+                                <el-switch class="switch" v-model="addEditItem.pushReminderConfig.remindWithinRoleScope"></el-switch>
                             </el-form-item>
                         </template>
                         <div class="switch-box" v-show="!isSwitchBtn(addEditItem.code)">
@@ -1218,7 +1223,7 @@
                         var $this = this;
                         $this.fieldIndex = index;
                         $this.isAddComponent = true;
-                        if (item.code == 'activity_release_scope' || item.code == 'company_sign_up') {
+                        if (item.code == 'activity_release_scope' || item.code == 'push_reminder' || item.code == 'company_sign_up') {
                             $this.openTextDialog(item);
                         } else if (item.code == 'sign_up_fill_info') {
                             $this.setDialogTitle(item, '报名信息填写')
@@ -1360,7 +1365,10 @@
                         }
                         if ($this.isAddComponent) {
                             // type存在时，则为自定义文本；type不存在时，则可能为activity_release_scope、sign_up、company_sign_up等
-                            $this.addEditItem = !item.type ? $this.createNewTemplateComponent(item) : $this.createDefaultEditItem(item.type)
+                            $this.addEditItem = !item.type ? $this.createNewTemplateComponent(item) : $this.createDefaultEditItem(item.type);
+                            if (item.code == 'push_reminder') {
+                                $this.$set($this.addEditItem, 'pushReminderConfig', { remindWithinRoleScope: false });
+                            }
                             return;
                         }
                         // 编辑操作
@@ -1368,6 +1376,9 @@
                         $this.addEditItem = $this.inputTypes.indexOf(item.type) != -1
                             ? $.extend({}, $.grep($this.components, function (it) { return it.id == item.componentId; })[0])
                             : $this.addEditItem = $.extend({}, item);
+                        if (item.code == 'push_reminder' && !item.pushReminderConfig) {
+                            $this.$set($this.addEditItem, 'pushReminderConfig', { remindWithinRoleScope: false });
+                        }
                     },
                     // 打开选择字段弹窗
                     openChooseEditDialog: function (item, index) {
@@ -1511,7 +1522,7 @@
                             return;
                         }
                         if ($this.isAddComponent) {
-                            if ($this.addEditItem.code == 'activity_release_scope' || $this.addEditItem.code == 'partition') {
+                            if ($this.addEditItem.code == 'activity_release_scope' || $this.addEditItem.code == 'push_reminder' || $this.addEditItem.code == 'partition') {
                                 $this.templateComponents.push($this.addEditItem);
                             } else if ($this.addEditItem.code == 'sign_up' || $this.addEditItem.code == 'company_sign_up') {
                                 $this.addSignUpComponentAssociate();
@@ -2047,6 +2058,7 @@
                                 dataOrigin: _this.dataOrigin,
                                 originIdentify: _this.originIdentify,
                                 fieldFlag: _this.fieldFlag,
+                                pushReminderConfig: _this.pushReminderConfig,
                                 children: newChildren
                             });
                         });

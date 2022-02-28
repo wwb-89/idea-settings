@@ -72,6 +72,8 @@ public class TemplateComponent {
     @TableField(exist = false)
     private List<String> fieldValues;
     @TableField(exist = false)
+    private TemplatePushReminderConfig pushReminderConfig;
+    @TableField(exist = false)
     private SignUpCondition signUpCondition;
     @TableField(exist = false)
     private SignUpFillInfoType signUpFillInfoType;
@@ -139,6 +141,7 @@ public class TemplateComponent {
                 .originId(o.getOriginId())
                 .customAppConfigs(o.getCustomAppConfigs())
                 .customAppInterfaceCalls(o.getCustomAppInterfaceCalls())
+                .pushReminderConfig(o.getPushReminderConfig())
                 .build(), result);
         return result;
     }

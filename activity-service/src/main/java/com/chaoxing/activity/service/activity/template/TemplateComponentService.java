@@ -50,6 +50,8 @@ public class TemplateComponentService {
     private CustomAppInterfaceCallHandleService customAppInterfaceCallHandleService;
     @Resource
     private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+    @Resource
+    private TemplatePushReminderConfigService templatePushReminderConfigService;
 
     /**根据模版id查询模版组件关联
      * @Description
@@ -188,6 +190,10 @@ public class TemplateComponentService {
                     sufiTplComponentIds.add(tplCompoenent.getPid());
                 }
             }
+            if (Objects.equals(tplCompoenent.getCode(), Component.SystemComponentCodeEnum.PUSH_REMINDER.getValue())) {
+                TemplatePushReminderConfig config = templatePushReminderConfigService.getByTplComponentId(tplCompoenent.getId());
+                tplCompoenent.setPushReminderConfig(config);
+            }
         }
         Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listWithTemplateDetailsByTplComponentIds(sucTplComponentIds).stream()
                 .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
@@ -300,6 +306,10 @@ public class TemplateComponentService {
             if (CollectionUtils.isNotEmpty(componentFieldMap.get(v.getComponentId()))) {
                 v.setComponentFields(componentFieldMap.get(v.getComponentId()));
             }
+            if (Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.PUSH_REMINDER.getValue())) {
+                TemplatePushReminderConfig config = templatePushReminderConfigService.getByTplComponentId(v.getId());
+                v.setPushReminderConfig(config);
+            }
             if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
                 // 报名填报信息的模板组件id为报名的模板组件id
                 SignUpFillInfoType sucItem = signUpFillInfoTypeService.getByTemplateComponentId(v.getPid());
@@ -382,6 +392,11 @@ public class TemplateComponentService {
                     signUpFillInfoTypeService.updateById(signUpFillInfoType);
                 }
             }
+            TemplatePushReminderConfig pushReminderConfig = v.getPushReminderConfig();
+            if (pushReminderConfig != null) {
+                pushReminderConfig.setTemplateComponentId(tplComponent.getId());
+                templatePushReminderConfigService.addOrUpdate(pushReminderConfig);
+            }
         });
     }
 
@@ -394,6 +409,9 @@ public class TemplateComponentService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void handleInnerAttrItem(TemplateComponent templateComponent) {
+        if (templateComponent.getPushReminderConfig() != null) {
+            templatePushReminderConfigService.addOrUpdate(templateComponent.getPushReminderConfig());
+        }
         if (templateComponent.getSignUpCondition() != null) {
             templateComponent.getSignUpCondition().setTemplateComponentId(templateComponent.getId());
             signUpConditionService.add(templateComponent.getSignUpCondition());
