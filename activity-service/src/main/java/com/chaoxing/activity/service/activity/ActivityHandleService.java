@@ -208,6 +208,9 @@ public class ActivityHandleService {
 		activity.beforeCreate(loginUser.getUid(), loginUser.getRealName(), loginUser.getFid(), loginUser.getOrgName());
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
+		// 活动详情
+		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
+		activityDetailMapper.insert(activityDetail);
 		// 保存活动推送提醒
 		ActivityPushReminder activityPushReminder = activityCreateParamDto.getActivityPushReminder();
 		if (activity.getOpenPushReminder() && activityPushReminder != null) {
@@ -239,10 +242,7 @@ public class ActivityHandleService {
 		}
 		activityStatSummaryHandlerService.init(activityId);
 		// 班级互动（一定要在报名签到处理完之后再进行）
-		ApplicationContextHolder.getBean(ActivityHandleService.class).handleClazzInteraction(activity, signCreateParamDto, loginUser);
-		// 活动详情
-		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
-		activityDetailMapper.insert(activityDetail);
+		handleClazzInteraction(activity, signCreateParamDto, loginUser);
 		// 活动菜单配置
 		List<ActivityMenuConfig> activityMenus;
 		if (isClone && activity.getOriginActivityId() != null) {
@@ -530,10 +530,10 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2022-01-25 17:21:45
 	 * @param activityUpdateParamDto
- * @param signCreateParam
- * @param wfwRegionalArchitectureDtos
- * @param releaseClassIds
- * @param loginUser
+	 * @param signCreateParam
+	 * @param wfwRegionalArchitectureDtos
+	 * @param releaseClassIds
+	 * @param loginUser
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	@Transactional(rollbackFor = Exception.class)
