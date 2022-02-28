@@ -72,6 +72,8 @@ public class ActivityVO {
     private String timeScope;
     /** 活动分类 */
     private String activityClassifyName;
+    /** 标签 */
+    private String tags;
 
     /**
      * 活动list转换为活动vo list

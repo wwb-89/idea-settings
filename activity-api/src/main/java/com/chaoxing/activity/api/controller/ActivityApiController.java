@@ -12,6 +12,7 @@ import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
+import com.chaoxing.activity.dto.activity.ActivityTagNameDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
@@ -43,6 +44,7 @@ import com.chaoxing.activity.service.notice.MarketNoticeTemplateService;
 import com.chaoxing.activity.service.notice.SystemNoticeTemplateService;
 import com.chaoxing.activity.service.queue.activity.WfwFormActivityDataUpdateQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
+import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
@@ -62,10 +64,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -132,6 +131,8 @@ public class ActivityApiController {
 	private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
 	@Resource
 	private ClassifyQueryService classifyQueryService;
+	@Resource
+	private TagQueryService tagQueryService;
 
 	/**组活动推荐
 	 * @Description 
@@ -685,7 +686,18 @@ public class ActivityApiController {
 		page = activityQueryService.createParticipateActivityPage(page, activityQuery);
 		List<Activity> activities = page.getRecords();
 		if (CollectionUtils.isNotEmpty(activities)) {
-			page.setRecords(ActivityVO.activitiesConvert2Vo(activities));
+			List<ActivityVO> result = ActivityVO.activitiesConvert2Vo(activities);
+			List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
+			// 活动标签
+			List<ActivityTagNameDTO> activityTagNames = tagQueryService.listActivityTagNameByActivityIds(activityIds);
+			Map<Integer, List<String>> activityIdTagNames = activityTagNames.stream().collect(Collectors.groupingBy(ActivityTagNameDTO::getActivityId, Collectors.mapping(ActivityTagNameDTO::getTagName, Collectors.toList())));
+			result.forEach(v -> {
+				// 标签
+				List<String> tagNames = activityIdTagNames.getOrDefault(v.getId(), Lists.newArrayList());
+				v.setTags(String.join(",", tagNames));
+			});
+			page.setRecords(result);
+
 		}
 		return RestRespDTO.success(page);
 	}
@@ -756,6 +768,9 @@ public class ActivityApiController {
 			String cleanTagHtml = HtmlUtil.cleanHtmlTag(activityDetail.getIntroduction()).replaceAll(HtmlUtil.NBSP, " ");
 			activityVO.setIntroduction(cleanTagHtml);
 		}
+		List<ActivityTagNameDTO> activityTags = tagQueryService.listActivityTagNameByActivityIds(Lists.newArrayList(activityId));
+		String tags = activityTags.stream().map(ActivityTagNameDTO::getTagName).collect(Collectors.joining(","));
+		activityVO.setTags(tags);
 		return RestRespDTO.success(activityVO);
 	}
 
