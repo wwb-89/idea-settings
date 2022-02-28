@@ -339,7 +339,7 @@
                     <template v-for="(item, index) in (componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].advanceCompts) || []">
                         <div class="field-item" :style="index % 2 == 0 ? {'margin-right': '24px'} : {'margin-right': '0px'}" @click="addAdvanceComponentAssociate(item)">
                             <p class="field overHidden1">
-                                {{item.name || ((item.type == 'radio' || item.type == 'checkbox') ? '自定义选择' : (item.type == 'custom_app' ? '自定义应用' : '自定义输入')) }}
+                                {{item.name || ((item.type == 'radio' || item.type == 'checkbox') ? '下拉选择' : (item.type == 'custom_app' ? '参与按钮' : '单行输入')) }}
                             </p>
                         </div>
                     </template>
@@ -651,7 +651,7 @@
 <!--                        </div>-->
                         <div class="content-switch-box marginBottom20">
                             <div class="switch-title">
-                                <span class="color333 fs14">前台链接</span>
+                                <span class="color333 fs14">按钮地址</span>
                                 <div class="switch-box fr">
                                     <label class="label color666">报名后显示</label>
                                     <el-switch class="switch" v-model="innerAddEditItem.showAfterSignUp"></el-switch>
@@ -678,7 +678,7 @@
                         </div>
                         <div class="content-switch-box marginBottom20">
                             <div class="switch-title">
-                                <span class="color333 fs14">后台连接</span>
+                                <span class="color333 fs14">管理地址</span>
                                 <div class="switch-box fr">
                                     <label class="label color666">新页面打开</label>
                                     <el-switch class="switch" v-model="innerAddEditItem.openBlank"></el-switch>
@@ -914,14 +914,14 @@
                     iconSelectDialog: false, // 图标选择弹窗开关
                     defaultTextComponent: {
                         pid: 0,
-                        name: '自定义输入',
+                        name: '单行输入',
                         required: true,
                         templateId: [[${templateId}]],
                         type: 'text'
                     },
                     defaultChooseComponent: {
                         pid: 0,
-                        name: '自定义选择',
+                        name: '下拉选择',
                         required: true,
                         templateId: [[${templateId}]],
                         dataOrigin: 'custom',
@@ -936,7 +936,7 @@
                     },
                     defaultCustomAppComponent: {
                         pid: 0,
-                        name: '自定义应用',
+                        name: '参与按钮',
                         required: false,
                         templateId: [[${templateId}]],
                         type: 'custom_app'
@@ -1356,7 +1356,7 @@
                     // 打开文本字段弹窗
                     openTextDialog: function (item, index) {
                         var $this = this;
-                        $this.setDialogTitle(item, "自定义输入")
+                        $this.setDialogTitle(item, "单行输入")
                         $this.addFieldDialog = false;
                         $this.textDialog = true;
                         if (item.code == 'activity_release_scope' && !item.dataOrigin) {
@@ -1383,7 +1383,7 @@
                     // 打开选择字段弹窗
                     openChooseEditDialog: function (item, index) {
                         var $this = this;
-                        $this.setDialogTitle(item, "自定义选择");
+                        $this.setDialogTitle(item, "下拉选择");
                         $this.addFieldDialog = false;
                         $this.chooseDialog = true;
                         if ($this.isAddComponent) {
@@ -1465,7 +1465,7 @@
                     // 打开自定义应用配置弹框
                     openCustomAppConfigDialog: function (item, index) {
                         var $this = this;
-                        $this.setDialogTitle(item, "自定义应用");
+                        $this.setDialogTitle(item, "参与按钮");
                         $this.addFieldDialog = false;
                         $this.customAppConfigDialog = true;
                         // 新增时，创建新的模板组件，初始化创建临时的自定义应用配置
