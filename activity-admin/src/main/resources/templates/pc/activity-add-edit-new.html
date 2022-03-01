@@ -2922,8 +2922,11 @@
                     var pushReminderTplComponent = $.grep($this.templateComponents, function (it) {
                         return it.code == "push_reminder";
                     })[0];
-                    var { pushReminderConfig } = pushReminderTplComponent;
-                    var remindWithinRoleScope = pushReminderConfig && pushReminderConfig.remindWithinRoleScope;
+                    var remindWithinRoleScope = false;
+                    if (pushReminderTplComponent) {
+                        var { pushReminderConfig } = pushReminderTplComponent;
+                        remindWithinRoleScope = pushReminderConfig && pushReminderConfig.remindWithinRoleScope;
+                    }
                     if (!$this.activity.activityPushReminder) {
                         $this.activity.activityPushReminder = {
                             receiveScope: '',
