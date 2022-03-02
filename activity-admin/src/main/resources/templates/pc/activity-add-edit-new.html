@@ -592,11 +592,11 @@
                                                     <div class="setiing-absolute" @click="createFormFromNormal(item.id)"><i class="icon-plus-circle"></i>新建</div>
                                                     <div slot="empty" class="no-content-self">
                                                         <div class="no-con">暂无选项</div>
-                                                        <div class="setiing-absolute" @click=""><i class="icon-plus-circle"></i>编辑</div>
+                                                        <div class="setiing-absolute"><i class="icon-plus-circle"></i>编辑</div>
                                                     </div>
                                                 </el-select>
                                                 <!--配置表单/审批-->
-                                                <a href="javascript:;" class="set-box configurationForm" @click="fillInfoConfig(item.id)" v-show="signUpMap[item.id].wfwFormTemplateId || !showWfwFormSelect(item.id, it.signUpFillInfoType)">
+                                                <a href="javascript:" class="set-box configurationForm" @click="fillInfoConfig(item.id)" v-show="signUpMap[item.id].wfwFormTemplateId || !showWfwFormSelect(item.id, it.signUpFillInfoType)">
                                                     <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
                                                     <span class="tips set-information">配置{{signUpMap[item.id].formType == 'wfw_form' ? '表单' : '审批'}}</span>
                                                 </a>
@@ -605,8 +605,8 @@
                                                 <li class="item">
                                                     <div :class="{'left-box': true, 'type1': signUpMap[item.id].formType == 'approval'}"></div>
                                                     <p class="title overHidden2">{{signUpMap[item.id].wfwFormName ? signUpMap[item.id].wfwFormName : '表单' }}</p>
-                                                    <a href="javascript:;" class="edit-btn" @click="fillInfoConfig(item.id)"></a>
-                                                    <a href="javascript:;" class="del-btn" @click="openWfwFormSwitchDialog(item.id)"></a>
+                                                    <a href="javascript:" v-show="signUpMap[item.id].formType != 'form' && signUpMap[item.id].fillInfoFormId > 60000" class="edit-btn" @click="fillInfoConfig(item.id)"></a>
+                                                    <a href="javascript:" v-show="signUpMap[item.id].formType != 'form' && signUpMap[item.id].fillInfoFormId > 60000" class="del-btn" @click="openWfwFormSwitchDialog(item.id)"></a>
                                                 </li>
                                             </ul>
                                         </div>
