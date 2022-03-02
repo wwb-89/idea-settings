@@ -116,4 +116,20 @@ public class BlacklistApiController {
         return RestRespDTO.success();
     }
 
+
+
+    /**分页查询违约记录列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-03-01 17:25:49
+     * @param request
+     * @param blacklistQueryDto
+     * @return
+     */
+    @RequestMapping("detail/page")
+    public RestRespDTO pagingBlacklistDetail(HttpServletRequest request, BlacklistQueryDTO blacklistQueryDto) {
+        Page page = HttpServletRequestUtils.buid(request);
+        blacklistQueryService.pageBlacklistDetail(page, blacklistQueryDto);
+        return RestRespDTO.success(page);
+    }
 }

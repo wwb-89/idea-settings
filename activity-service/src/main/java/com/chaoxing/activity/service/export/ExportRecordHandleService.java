@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
+import com.chaoxing.activity.dto.query.BlacklistQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.mapper.ExportRecordMapper;
 import com.chaoxing.activity.model.ExportRecord;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.blacklist.BlacklistQueryService;
 import com.chaoxing.activity.service.export.activity.ActivityExportService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.queue.ExportQueue;
@@ -64,6 +66,8 @@ public class ExportRecordHandleService {
     private ActivityExportService activityExportService;
     @Resource
     private CloudApiService cloudApiService;
+    @Resource
+    private BlacklistQueryService blacklistQueryService;
 
     @Transactional(rollbackFor = Exception.class)
     public void add(String params, String createIp, String exportType, LoginUserDTO loginUser) {
@@ -160,6 +164,9 @@ public class ExportRecordHandleService {
                 LoginUserDTO exportUser = LoginUserDTO.buildDefault(activityManageQueryParams.getExportUid(), activityManageQueryParams.getFid());
                 exportData = activityExportService.packageExportData(activityManageQueryParams, exportUser);
                 break;
+            case BLACKLIST_DETAIL:
+                BlacklistQueryDTO blacklistQueryParams = JSONObject.parseObject(params, BlacklistQueryDTO.class);
+                exportData = blacklistQueryService.packageExportBlacklistDetail(blacklistQueryParams);
             default:
         }
         exportData.setSheetName(exportTypeEnum.getName());

@@ -33,6 +33,17 @@ public class UserNotSignedInNumStatDTO {
     private String account;
     /** 未签到数量 */
     private Integer notSignedInNum;
+    /** 未签到/签退信息 */
+    private List<NotSignInInfo> notSignInInfos;
+    
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NotSignInInfo {
+        private String signInName;
+        private String signInType;
+    }
 
     public BlacklistRecord buildBlacklistRecord(Integer markId, Integer activityId) {
         return BlacklistRecord.builder()

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.BlacklistDetailMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.BlacklistDetail">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="account" jdbcType="VARCHAR" property="account" />
+        <result column="breach_content" jdbcType="VARCHAR" property="breachContent" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.market_id, t.activity_id, t.uid, t.user_name, t.account, t.breach_content, t.create_time
+    </sql>
+
+    <select id="pageBlacklistDetail" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        , t1.name activityName
+        FROM t_blacklist_detail t
+        Left JOIN t_activity t1 ON t.activity_id = t1.id
+        WHERE
+            t.market_id = #{params.marketId}
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.user_name LIKE CONCAT( '%', #{params.sw}, '%' )
+                OR t.account LIKE CONCAT( '%', #{params.sw}, '%' )
+                )
+            </if>
+        ORDER BY
+            t.create_time ${params.orderType.value}
+    </select>
+
+    <insert id="batchAdd">
+        INSERT INTO t_blacklist_detail ( market_id, activity_id, uid, user_name, account, breach_content )
+        VALUES
+        <foreach collection="data" index="key" item="value" open="" close="" separator=",">
+            ( #{value.marketId}, #{value.activityId}, #{value.uid}, #{value.userName}, #{value.account}, #{value.breachContent} )
+        </foreach>
+    </insert>
+
+
+</mapper>

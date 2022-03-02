@@ -6,25 +6,25 @@ import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.blacklist.BlacklistDTO;
 import com.chaoxing.activity.dto.blacklist.BlacklistRuleDTO;
 import com.chaoxing.activity.dto.stat.UserNotSignedInNumStatDTO;
+import com.chaoxing.activity.mapper.BlacklistDetailMapper;
 import com.chaoxing.activity.mapper.BlacklistMapper;
 import com.chaoxing.activity.mapper.BlacklistRecordMapper;
 import com.chaoxing.activity.mapper.BlacklistRuleMapper;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.Blacklist;
-import com.chaoxing.activity.model.BlacklistRecord;
-import com.chaoxing.activity.model.BlacklistRule;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoRemoveQueue;
 import com.chaoxing.activity.service.queue.notice.handler.BlacklistUserNoticeHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -58,6 +58,8 @@ public class BlacklistHandleService {
     private SignApiService signApiService;
     @Resource
     private BlacklistUserNoticeHandleService blacklistUserNoticeHandleService;
+    @Resource
+    private BlacklistDetailMapper blacklistDetailMapper;
 
     /**新增或更新黑名单规则
      * @Description 
@@ -268,11 +270,43 @@ public class BlacklistHandleService {
             return;
         }
         List<UserNotSignedInNumStatDTO> userNotSignedInNumStatDtos = signApiService.statUserNotSignedInNum(activity.getSignId());
+        if (CollectionUtils.isNotEmpty(userNotSignedInNumStatDtos)) {
+            addBlacklistDetails(activityId, marketId, userNotSignedInNumStatDtos);
+        }
         List<BlacklistRecord> blacklistRecords = UserNotSignedInNumStatDTO.buildBlacklistRecord(userNotSignedInNumStatDtos, marketId, activityId);
         if (CollectionUtils.isNotEmpty(blacklistRecords)) {
             blacklistRecordMapper.batchAdd(blacklistRecords);
         }
         autoAddBlacklist(marketId);
+    }
+
+    /**批量保存违约记录
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-03-01 16:07:14
+     * @param activityId
+     * @param marketId
+     * @param userNotSignedInNumStatDtos
+     * @return
+     */
+    public void addBlacklistDetails(Integer activityId, Integer marketId, List<UserNotSignedInNumStatDTO> userNotSignedInNumStatDtos) {
+        List<BlacklistDetail> blacklistDetails = Lists.newArrayList();
+        userNotSignedInNumStatDtos.forEach(v -> {
+            if (CollectionUtils.isNotEmpty(v.getNotSignInInfos())) {
+                List<BlacklistDetail> details = v.getNotSignInInfos().stream().map(u -> BlacklistDetail.builder()
+                        .uid(v.getUid())
+                        .marketId(marketId)
+                        .activityId(activityId)
+                        .userName(v.getUserName())
+                        .account(v.getAccount())
+                        .breachContent("未" + Optional.ofNullable(u.getSignInType()).orElse("签到") + ":" + u.getSignInName())
+                        .build()).collect(Collectors.toList());
+                blacklistDetails.addAll(details);
+            }
+        });
+        if (CollectionUtils.isNotEmpty(blacklistDetails)) {
+            blacklistDetailMapper.batchAdd(blacklistDetails);
+        }
     }
 
 }

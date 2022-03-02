@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title>黑名单&违约明细</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/dialog.css" th:href="@{/pc/assets/css/dialog.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/iframe-style.css" th:href="@{/pc/assets/css/iframe-style.css}">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="iframe-style" id="iframe" v-cloak>
+        <div class="header">
+            <div class="tab">
+                <ul>
+                    <li :class="menu.selected ? 'active' : ''" v-for="(menu, index) in menus" :key="'menu-' + index" @click="changeTab(index)">{{menu.name}}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="iframe-div">
+            <iframe id="content" src=""  frameborder="0"></iframe>
+        </div>
+
+    </div>
+</body>
+
+</html>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script>
+        var vm = new Vue({
+            el: '#iframe',
+            data: function () {
+                return {
+                    // market: [[${market}]],
+                    marketId: [[${marketId}]],
+                    menus: [],
+                    url: "",
+                }
+            },
+            created: function () {
+                var $this = this;
+                $this.menus = [
+                    { name: '黑名单', url: ctx + "/market/" + $this.marketId + "/blacklist/list", selected: true },
+                    { name: '违约明细', url: ctx + "/market/" + $this.marketId + "/blacklist/breach-detail", selected: false },
+                ]
+            },
+            mounted: function () {
+                var $this = this;
+                $this.url = $this.menus[0].url;
+                $this.resetFrameHeight();
+            },
+            watch: {
+                "url": function () {
+                    var $this = this;
+                    $("#content")[0].src = $this.url;
+                    $("#content")[0].onload = function() {
+                        $this.resetFrameHeight();
+                    };
+                }
+            },
+            methods: {
+                resetFrameHeight: function () {
+                    $("#content").height($(window).height() - 68 - 20 - 5);
+                },
+                changeTab: function (index) {
+                    var $this = this;
+                    $($this.menus).each(function () {
+                        this.selected = false;
+                    });
+                    $this.menus[index].selected = true;
+                    $this.url = $this.menus[index].url;
+                }
+            }
+        });
+    </script>
+</div>
+
