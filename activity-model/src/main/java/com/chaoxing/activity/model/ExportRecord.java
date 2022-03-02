@@ -62,7 +62,10 @@ public class ExportRecord {
         ORG_ACTIVITY_STAT("机构活动统计", "org_activity_stat"),
         ORG_USER_STAT("机构用户统计", "org_user_stat"),
         ACTIVITY_INSPECTION_MANAGE("活动成绩考核", "activity_inspection_manage"),
-        ACTIVITY_MANAGE("活动管理", "activity_manage");
+        ACTIVITY_MANAGE("活动管理", "activity_manage"),
+
+        /** 违约记录 */
+        BLACKLIST_DETAIL("违约记录", "blacklist_detail"),;
 
         private final String name;
         private final String value;

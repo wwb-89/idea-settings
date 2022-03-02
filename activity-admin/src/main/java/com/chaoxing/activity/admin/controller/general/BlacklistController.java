@@ -30,6 +30,17 @@ public class BlacklistController {
 	private MarketValidationService marketValidationService;
 
 	@LoginRequired
+	@RequestMapping("index")
+	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
+		model.addAttribute("market", market);
+		model.addAttribute("marketId", marketId);
+		model.addAttribute("photoDomain", DomainConstant.PHOTO);
+		return "pc/blacklist/index";
+	}
+
+	@LoginRequired
 	@RequestMapping("list")
 	public String list(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -38,6 +49,17 @@ public class BlacklistController {
 		model.addAttribute("marketId", marketId);
 		model.addAttribute("photoDomain", DomainConstant.PHOTO);
 		return "pc/blacklist/blacklist-list";
+	}
+
+	@LoginRequired
+	@RequestMapping("breach-detail")
+	public String breachDetail(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
+		model.addAttribute("market", market);
+		model.addAttribute("marketId", marketId);
+		model.addAttribute("photoDomain", DomainConstant.PHOTO);
+		return "pc/blacklist/blacklist-detail";
 	}
 
 }

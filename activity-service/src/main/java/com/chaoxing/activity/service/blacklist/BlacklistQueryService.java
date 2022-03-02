@@ -2,17 +2,24 @@ package com.chaoxing.activity.service.blacklist;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.blacklist.BlacklistDTO;
+import com.chaoxing.activity.dto.blacklist.BlacklistDetailDTO;
+import com.chaoxing.activity.dto.export.ExportDataDTO;
+import com.chaoxing.activity.dto.manager.PassportUserDTO;
+import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.BlacklistQueryDTO;
+import com.chaoxing.activity.mapper.BlacklistDetailMapper;
 import com.chaoxing.activity.mapper.BlacklistMapper;
 import com.chaoxing.activity.mapper.BlacklistRecordMapper;
 import com.chaoxing.activity.mapper.BlacklistRuleMapper;
-import com.chaoxing.activity.model.Blacklist;
-import com.chaoxing.activity.model.BlacklistRecord;
-import com.chaoxing.activity.model.BlacklistRule;
+import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -40,6 +47,8 @@ public class BlacklistQueryService {
     private BlacklistRuleMapper blacklistRuleMapper;
     @Resource
     private BlacklistRecordMapper blacklistRecordMapper;
+    @Resource
+    private BlacklistDetailMapper blacklistDetailMapper;
 
     /**根据活动市场id查询黑名单规则
      * @Description 
@@ -198,5 +207,58 @@ public class BlacklistQueryService {
         }
         blacklistUids.retainAll(handledBlacklistRecordUids);
         return blacklistUids;
+    }
+
+    
+    /**分页查询违约记录列表
+     * @Description 
+     * @author huxiaolong
+     * @Date 2022-03-02 15:03:40
+     * @param page
+     * @param blacklistQueryDto
+     * @return
+     */
+    public Page pageBlacklistDetail(Page page, BlacklistQueryDTO blacklistQueryDto) {
+        page = blacklistDetailMapper.pageBlacklistDetail(page, blacklistQueryDto);
+        List<BlacklistDetailDTO> detailDtos = BlacklistDetailDTO.buildFromBlacklistDetail(page.getRecords());
+        page.setRecords(detailDtos);
+        return page;
+    }
+
+
+    private List<List<String>> listBlacklistDetailHeader() {
+        List<List<String>> headers = Lists.newArrayList();
+        headers.add(Lists.newArrayList("姓名"));
+        headers.add(Lists.newArrayList("账号"));
+        headers.add(Lists.newArrayList("活动名称"));
+        headers.add(Lists.newArrayList("违约记录"));
+        headers.add(Lists.newArrayList("违约时间"));
+        return headers;
+    }
+
+    private List<List<String>> listBlacklistDetail(List<BlacklistDetailDTO> records) {
+        List<List<String>> data = Lists.newArrayList();
+        if (CollectionUtils.isEmpty(records)) {
+            return data;
+        }
+        for (BlacklistDetailDTO record : records) {
+            List<String> itemData = Lists.newArrayList();
+            // 活动id
+            itemData.add(record.getUserName());
+            itemData.add(record.getAccount());
+            itemData.add(record.getActivityName());
+            itemData.add(record.getBreachContent());
+            itemData.add(Optional.ofNullable(record.getCreateTimestamp()).map(v -> DateUtils.timestamp2Format(v, DateUtils.DATE_MINUTE_STRING)).orElse(null));
+            data.add(itemData);
+        }
+        return data;
+    }
+
+    public ExportDataDTO packageExportBlacklistDetail(BlacklistQueryDTO queryParam) {
+        Page<BlacklistDetailDTO> page = pageBlacklistDetail(new Page<>(1, Integer.MAX_VALUE), queryParam);
+        return ExportDataDTO.builder()
+                .headers(listBlacklistDetailHeader())
+                .data(listBlacklistDetail(page.getRecords()))
+                .build();
     }
 }
