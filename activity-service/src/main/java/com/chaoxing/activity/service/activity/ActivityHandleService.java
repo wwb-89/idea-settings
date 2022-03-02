@@ -351,8 +351,7 @@ public class ActivityHandleService {
 			Integer activityId = activity.getId();
 			String startTime = Optional.ofNullable(activity.getStartTime()).map(v -> v.format(DateUtils.FULL_TIME_FORMATTER)).orElse(null);
 			String endTime = Optional.ofNullable(activity.getEndTime()).map(v -> v.format(DateUtils.FULL_TIME_FORMATTER)).orElse(null);
-			ClazzInteractionDTO clazzInteraction = clazzInteractionApiService.clazzCourseCreate(activityId, activityName,
-					loginUser.getUid(), coverUrl, fillFormId, fid, flag, startTime, endTime);
+			ClazzInteractionDTO clazzInteraction = clazzInteractionApiService.clazzCourseCreate(activityId, activityName, loginUser.getUid(), coverUrl, fillFormId, fid, flag, startTime, endTime);
 			if (clazzInteraction == null) {
 				return;
 			}
