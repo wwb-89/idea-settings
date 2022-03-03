@@ -16,7 +16,6 @@ import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
@@ -505,19 +504,25 @@ public class WfwFormSyncActivityQueueService {
             return null;
         }
         String openSignIn = formatData.getValues().get(0).getString("val");
-        if (Objects.equals(openSignIn, "否")) {
+        if (Objects.equals(openSignIn, "否") || Objects.equals(openSignIn, "无需签到")) {
             return null;
         }
         SignInCreateParamDTO signIn = SignInCreateParamDTO.buildDefaultSignIn();
+        String way;
         if (Objects.equals(openSignIn, "是")) {
-            String way = formatData.getValues().get(1).getString("val");
-            if (Objects.equals(way, "普通签到")) {
-                signIn.setWay(1);
-                signIn.setName("直接签到");
-            } else if (Objects.equals(way, "扫码签到")){
-                signIn.setWay(3);
-                signIn.setName("扫码签到");
-            }
+            way = formatData.getValues().get(1).getString("val");
+        } else {
+            way = openSignIn;
+        }
+        if (Objects.equals(way, "普通签到")) {
+            signIn.setWay(1);
+            signIn.setName("直接签到");
+        } else if (Objects.equals(way, "扫码签到")) {
+            signIn.setWay(3);
+            signIn.setName("扫码签到");
+        } else {
+            // 不支持位置签到
+            return null;
         }
         return signIn;
     }
