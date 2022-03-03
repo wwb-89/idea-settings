@@ -98,7 +98,7 @@ public class ActivityManagerService {
         for (ActivityManager activityManager : activityManagers) {
             activityManager.setActivityId(activityId);
         }
-        boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid());
+        boolean creator = activityValidationService.isCreatorRelax(activityId, loginUser.getUid());
         if (!creator) {
             throw new BusinessException("无权限");
         }
@@ -134,7 +134,7 @@ public class ActivityManagerService {
      * @return void
     */
     public void delete(Integer activityId, Integer uid, LoginUserDTO loginUser) {
-        Activity activity = activityValidationService.creator(activityId, loginUser.getUid());
+        Activity activity = activityValidationService.creatorRelax(activityId, loginUser.getUid());
         // 不能删除创建者
         if (Objects.equals(uid, activity.getCreateUid())) {
             throw new BusinessException("不能删除创建者");

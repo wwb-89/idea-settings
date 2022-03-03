@@ -79,6 +79,7 @@
                     activity: [[${activity}]],
                     loginUser: [[${session._login_user_}]],
                     signActivityManageIndex: [[${signActivityManageIndex}]],
+                    isCreator: [[${isCreator}]],
                     // 系统应用菜单enums
                     systemMenus: {
                         // 报名签到
@@ -242,11 +243,9 @@
                             });
                         }
                     });
-                    var creator = $this.activity.createUid == $this.loginUser.uid;
-                    if (creator && !visibleMenus.includes('setting')) {
+                    if ($this.isCreator && !visibleMenus.includes('setting')) {
                         visibleMenus.push('setting')
                     }
-
                     // 系统菜单处理
                     var systemMenuCodes = Object.keys($this.systemMenus);
                     var interactionMenus = ['task', 'discuss', 'homework', 'review_management']

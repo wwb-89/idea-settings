@@ -98,6 +98,7 @@
                     activity: [[${activity}]],
                     loginUser: [[${session._login_user_}]],
                     signActivityManageIndex: [[${signActivityManageIndex}]],
+                    isCreator: [[${isCreator}]],
                     customMenus: [],    // 自定义菜单列表
                     visibleMenus: [],   //  当前用户所能看到的菜单code列表
                     // 系统应用菜单enums
@@ -235,15 +236,14 @@
                 handleActivityMenus: function () {
                     var $this = this;
                     // 初始化
-                    $this.visibleMenus = []; $this.customMenus = [];
-                    var menuSequenceMap = {};
+                    var menuSequenceMap = {}, visibleMenus = [];
 
                     var userActivityMenus = [[${userActivityMenus}]] || [];
                     $(userActivityMenus).each(function () {
                         menuSequenceMap[this.code] = this.sequence;
                         // 将菜单code 放进visibleMenus，后续做菜单显隐控制判断
-                        if (!$this.visibleMenus.includes(this.code)) {
-                            $this.visibleMenus.push(this.code);
+                        if (!visibleMenus.includes(this.code)) {
+                            visibleMenus.push(this.code);
                         }
                         // 非系统模块菜单
                         if (this.dataOrigin != 'system') {
@@ -253,7 +253,6 @@
                             } else {
                                 this.url += "?" + additionalParams;
                             }
-                            $this.customMenus.push(this);
                             $this.menus.push({
                                 name: this.name,
                                 code: this.code,
@@ -266,6 +265,9 @@
                             });
                         }
                     });
+                    if ($this.isCreator && !visibleMenus.includes('setting')) {
+                        visibleMenus.push('setting')
+                    }
                     // 系统菜单处理
                     var systemMenuCodes = Object.keys($this.systemMenus);
                     var interactionMenus = ['task', 'discuss', 'homework', 'review_management']
@@ -289,7 +291,7 @@
                         if (interactionMenus.includes(menu) && !$this.activity.openClazzInteraction) {
                             continue;
                         }
-                        if ($this.visibleMenus.includes(menu)) {
+                        if (visibleMenus.includes(menu)) {
                             sysMenu.sequence = menuSequenceMap[menu] || i;
                             $this.menus.push(sysMenu);
                         }

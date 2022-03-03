@@ -996,9 +996,8 @@
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             app.noticeActivityChange($this.activity.id);
-                            app.showMsg("修改成功", function () {
-                                $this.toViewPage();
-                            });
+                            app.showMsg("修改成功");
+                            $this.toViewPage();
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -1074,7 +1073,8 @@
                     return true;
                 },
                 toViewPage: function () {
-                    window.location.href = ctx + "/activity/[[${activityId}]]/setting/basic-info/view"
+                    var $this = this;
+                    window.location.href = ctx + "/activity/" + $this.activity.id + "/setting/basic-info/view"
                 },
                 // 选中活动的日期范围
                 selectActivityTime: function (obj) {

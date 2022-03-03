@@ -105,27 +105,28 @@ public class ActivityManageController {
 	 * @return java.lang.String
 	*/
 	@RequestMapping("{activityId}")
-	public String activityIndex(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer style, String backUrl) {
+	public String activityIndex(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer style, String backUrl, Boolean relax) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-//		todo 暂时屏蔽校验
-//		Activity activity = activityValidationService.manageAble(activityId, operateUid);
-		Activity activity = activityValidationService.activityExist(activityId);
-		model.addAttribute("activity", activity);
+		Integer operateUid = loginUser.getUid();
+		relax = Optional.ofNullable(relax).orElse(false);
+		Activity activity = activityValidationService.manageAble(activityId, operateUid, relax);
 		Integer signId = activity.getSignId();
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
+		model.addAttribute("activity", activity);
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		// 是不是创建者
-		boolean creator = activityValidationService.isCreator(activity, loginUser.getUid());
+		boolean isCreator = activityValidationService.isCreatorRelax(activity, operateUid);
 		boolean isMobile = UserAgentUtils.isMobileAccess(request);
-		List<ActivityMenuDTO> userActivityMenus = activityMenuQueryService.listUserActivityMenus(activity, loginUser.getUid(), creator, isMobile);
-		model.addAttribute("isCreator", creator);
+		List<ActivityMenuDTO> userActivityMenus = activityMenuQueryService.listUserActivityMenus(activity, operateUid, isCreator, isMobile);
+		model.addAttribute("isCreator", isCreator);
 		model.addAttribute("userActivityMenus", userActivityMenus);
 		model.addAttribute("signWebDomain", DomainConstant.SIGN_WEB);
-		model.addAttribute("xiamenTrainingPlatformDomain", DomainConstant.XIAMEN_TRAINING_PLATFORM_API);
-		model.addAttribute("backUrl", Optional.ofNullable(backUrl).orElse(""));
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("webDomain", DomainConstant.WEB);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
+		model.addAttribute("xiamenTrainingPlatformDomain", DomainConstant.XIAMEN_TRAINING_PLATFORM_API);
+		model.addAttribute("backUrl", Optional.ofNullable(backUrl).orElse(""));
+
 		if (isMobile) {
 			return "mobile/activity-index";
 		} else {

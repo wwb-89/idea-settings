@@ -192,8 +192,52 @@ public class ActivityMenuQueryService {
      * @return
      */
     public List<ActivityMenuDTO> listUserActivityMenus(Activity activity, Integer uid, boolean creator, Boolean isMobile) {
-        isMobile = Optional.ofNullable(isMobile).orElse(false);
         Integer activityId = activity.getId();
+        List<ActivityMenuConfig> activityMenus = listCreatorMenus(activityId);
+        if (creator) {
+            return convertMenuConfig2DTO(activityId, activityMenus, isMobile);
+        }
+        if (!activityManagerValidationService.isManager(activityId, uid)) {
+            return Lists.newArrayList();
+        }
+        ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
+        if (activityManager == null || StringUtils.isBlank(activityManager.getMenu())) {
+            return Lists.newArrayList();
+        }
+        // 如果用户为管理员，且有menu配置，根据menu配置进一步过滤活动菜单配置列表
+        List<String> managerMenus = Arrays.asList(StringUtils.split(activityManager.getMenu(), ","));
+        activityMenus = activityMenus.stream().filter(v -> managerMenus.contains(v.getMenu())).collect(Collectors.toList());
+        return convertMenuConfig2DTO(activityId, activityMenus, isMobile);
+    }
+
+    /**转换菜单
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-03-03 11:15:58
+     * @param activityId
+     * @param activityMenus
+     * @return
+     */
+    private List<ActivityMenuDTO> convertMenuConfig2DTO(Integer activityId, List<ActivityMenuConfig> activityMenus, Boolean isMobile) {
+        isMobile = Optional.ofNullable(isMobile).orElse(false);
+        List<ActivityMenuDTO> result = convertMenu2DTO(activityId, activityMenus).stream()
+                .filter(v ->
+                        Objects.equals(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue(), v.getType())
+                ).collect(Collectors.toList());
+        if (isMobile) {
+            return result.stream().filter(ActivityMenuDTO::getMobile).collect(Collectors.toList());
+        }
+        return result.stream().filter(ActivityMenuDTO::getPc).collect(Collectors.toList());
+    }
+
+    /**列出活动创建者所有菜单配置
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-03-03 11:16:32
+     * @param activityId
+     * @return
+     */
+    private List<ActivityMenuConfig> listCreatorMenus(Integer activityId) {
         // 查询活动配置启用的所有菜单
         List<ActivityMenuConfig> activityMenus = listActivityEnableMenuConfigs(activityId);
         // 旧数据中可能没有设置配置，所以在此添加上设置，并置为启用状态，若用户不为创建者，在下面的管理员的判断中会自动过滤掉该多余配置
@@ -209,20 +253,7 @@ public class ActivityMenuQueryService {
                     .sequence(settingEnum.getSequence())
                     .build());
         }
-        if (activityManagerValidationService.isManager(activityId, uid) && !creator) {
-            ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
-            if (activityManager != null && StringUtils.isNotBlank(activityManager.getMenu())) {
-                // 如果用户为管理员，且有menu配置，根据menu配置进一步过滤活动菜单配置列表
-                List<String> managerMenus = Arrays.asList(StringUtils.split(activityManager.getMenu(), ","));
-                activityMenus = activityMenus.stream().filter(v -> managerMenus.contains(v.getMenu())).collect(Collectors.toList());
-            }
-        }
-        List<ActivityMenuDTO> result = convertMenu2DTO(activityId, activityMenus).stream()
-                .filter(v -> Objects.equals(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue(), v.getType())).collect(Collectors.toList());
-        if (isMobile) {
-            return result.stream().filter(ActivityMenuDTO::getMobile).collect(Collectors.toList());
-        }
-        return result.stream().filter(ActivityMenuDTO::getPc).collect(Collectors.toList());
+        return activityMenus;
     }
 
     /**MenuConfig转换MenuDTO，携带上url和图标等信息
