@@ -44,6 +44,7 @@
                 areaCode: [[${areaCode == null ? '' : areaCode}]],
                 pageMode: [[${pageMode}]],
                 isEmbedded: activityApp.isEmbedded(),
+		        strict: [[${strict}]],
 		        url: "",
                 photoDomain: [[${photoDomain}]]
 	        },
@@ -53,7 +54,7 @@
                 document.domain = $this.mainDomain;
                 // 如果被嵌入则跳转到活动管理列表页面
                 if (activityApp.isEmbedded()) {
-                    window.location.replace(ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&areaCode=" + $this.areaCode + "&pageMode=" + $this.pageMode);
+                    window.location.replace(ctx + "/?marketId=" + $this.market.id + "&fullScreen=true&areaCode=" + $this.areaCode + "&pageMode=" + $this.pageMode + "&strict=" + $this.strict);
                 }
             },
             mounted: function () {

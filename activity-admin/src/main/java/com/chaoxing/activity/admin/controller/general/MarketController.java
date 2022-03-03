@@ -47,11 +47,12 @@ public class MarketController {
 	 * @param model
 	 * @param areaCode
 	 * @param pageMode
+	 * @param strict
 	 * @return java.lang.String
 	*/
 	@LoginRequired
 	@RequestMapping("{marketId}")
-	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId, String areaCode, @RequestParam(defaultValue = "0") Integer pageMode) {
+	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId, String areaCode, @RequestParam(defaultValue = "0") Integer pageMode, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
 		model.addAttribute("market", market);
@@ -59,6 +60,7 @@ public class MarketController {
 		model.addAttribute("pageMode", pageMode);
 		model.addAttribute("photoDomain", DomainConstant.PHOTO);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
+		model.addAttribute("strict", strict);
 		return "pc/market/market-index-new";
 	}
 
