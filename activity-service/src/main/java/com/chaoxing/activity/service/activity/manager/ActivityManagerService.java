@@ -9,6 +9,8 @@ import com.chaoxing.activity.mapper.ActivityManagerMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.model.ActivityMenuConfig;
+import com.chaoxing.activity.service.activity.ActivityAuthService;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.util.enums.ActivityMenuEnum;
@@ -44,6 +46,10 @@ public class ActivityManagerService {
     private ActivityValidationService activityValidationService;
     @Resource
     private ActivityMenuQueryService activityMenuQueryService;
+    @Resource
+    private ActivityAuthService activityAuthService;
+    @Resource
+    private ActivityQueryService activityQueryService;
 
     /**分页查询管理员列表
      * @Description 
@@ -98,7 +104,7 @@ public class ActivityManagerService {
         for (ActivityManager activityManager : activityManagers) {
             activityManager.setActivityId(activityId);
         }
-        boolean creator = activityValidationService.isCreatorRelax(activityId, loginUser.getUid());
+        boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid()) || activityAuthService.isAuthorizedUser(activityId, loginUser.getUid());
         if (!creator) {
             throw new BusinessException("无权限");
         }
@@ -134,7 +140,12 @@ public class ActivityManagerService {
      * @return void
     */
     public void delete(Integer activityId, Integer uid, LoginUserDTO loginUser) {
-        Activity activity = activityValidationService.creatorRelax(activityId, loginUser.getUid());
+        boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid()) || activityAuthService.isAuthorizedUser(activityId, loginUser.getUid());
+        if (!creator) {
+            throw new BusinessException("无权限");
+        }
+//        Activity activity = activityValidationService.creator(activityId, loginUser.getUid());
+        Activity activity = activityQueryService.getById(activityId);
         // 不能删除创建者
         if (Objects.equals(uid, activity.getCreateUid())) {
             throw new BusinessException("不能删除创建者");

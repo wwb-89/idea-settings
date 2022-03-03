@@ -11,6 +11,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
+import com.chaoxing.activity.service.activity.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.rmi.server.UID;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -92,6 +94,8 @@ public class ActivityManageController {
 	private CustomAppConfigQueryService customAppConfigQueryService;
 	@Resource
 	private ClassifyShowComponentQueryService classifyShowComponentQueryService;
+	@Resource
+	private ActivityAuthService activityAuthService;
 
 	/**活动管理主页
 	 * @Description 
@@ -105,17 +109,17 @@ public class ActivityManageController {
 	 * @return java.lang.String
 	*/
 	@RequestMapping("{activityId}")
-	public String activityIndex(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer style, String backUrl, Boolean relax) {
+	public String activityIndex(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer style, String backUrl, String authEnc) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer operateUid = loginUser.getUid();
-		relax = Optional.ofNullable(relax).orElse(false);
-		Activity activity = activityValidationService.manageAble(activityId, operateUid, relax);
+		activityAuthService.authorizedUser(activityId, operateUid, authEnc);
+		Activity activity = activityValidationService.manageAble(activityId, operateUid);
 		Integer signId = activity.getSignId();
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
 		model.addAttribute("activity", activity);
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		// 是不是创建者
-		boolean isCreator = activityValidationService.isCreatorRelax(activity, operateUid);
+		boolean isCreator = activityValidationService.isCreator(activity, operateUid) || activityAuthService.isAuthorizedUser(activityId, operateUid);
 		boolean isMobile = UserAgentUtils.isMobileAccess(request);
 		List<ActivityMenuDTO> userActivityMenus = activityMenuQueryService.listUserActivityMenus(activity, operateUid, isCreator, isMobile);
 		model.addAttribute("isCreator", isCreator);

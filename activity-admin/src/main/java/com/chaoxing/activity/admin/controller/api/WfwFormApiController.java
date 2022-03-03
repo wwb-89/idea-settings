@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
@@ -100,7 +101,8 @@ public class WfwFormApiController {
 												@RequestParam Integer uid,
 												Integer wfwFormTemplateId,
 												@RequestParam String signUpFormType) {
-		return RestRespDTO.success(wfwFormApiService.createWfwForm(fid, uid, wfwFormTemplateId, signUpFormType));
+		WfwFormCreateResultDTO wfwForm = wfwFormApiService.createWfwForm(fid, uid, wfwFormTemplateId, signUpFormType);
+		return RestRespDTO.success(wfwForm);
 	}
 
 	/**获取表单管理地址

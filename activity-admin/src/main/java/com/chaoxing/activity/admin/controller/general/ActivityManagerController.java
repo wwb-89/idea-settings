@@ -60,7 +60,7 @@ public class ActivityManagerController {
 	public String index(@PathVariable Integer activityId, Model model, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer operateUid = loginUser.getUid();
-		Activity activity = activityValidationService.manageAbleRelax(activityId, operateUid);
+		Activity activity = activityValidationService.manageAble(activityId, operateUid);
 		model.addAttribute("activity", activity);
 		List<OrgDTO> orgs = wfwContactApiService.listUserHaveContactsOrg(operateUid);
 		model.addAttribute("orgs", orgs);

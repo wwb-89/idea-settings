@@ -314,7 +314,7 @@ public class ActivityApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("manager-judge")
-	public RestRespDTO isManager(@RequestParam Integer signId, @RequestParam Integer uid, @RequestParam Integer fid, Boolean relax) {
+	public RestRespDTO isManager(@RequestParam Integer signId, @RequestParam Integer uid, @RequestParam Integer fid) {
 		Activity activity = activityQueryService.getBySignId(signId);
 		if (activity == null) {
 			return RestRespDTO.success(true);
@@ -322,8 +322,7 @@ public class ActivityApiController {
 		if (Objects.equals(activity.getCreateFid(), fid)) {
 			return RestRespDTO.success(true);
 		}
-		relax= Optional.ofNullable(relax).orElse(false);
-		boolean manager = activityValidationService.isManageAble(activity, uid, relax);
+		boolean manager = activityValidationService.isManageAble(activity, uid);
 		return RestRespDTO.success(manager);
 	}
 

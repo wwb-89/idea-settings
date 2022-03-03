@@ -5,12 +5,10 @@ import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
-import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**活动验证服务
  * @author wwb
@@ -38,16 +35,14 @@ public class ActivityValidationService {
 	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private ActivityManagerValidationService activityManagerValidationService;
-	@Resource
-	private RedisTemplate redisTemplate;
 
 	/**新增活动输入验证
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-10 16:22:48
 	 * @param activity
 	 * @return void
-	*/
+	 */
 	public void addInputValidate(Activity activity) {
 		boolean isAdd = activity.getId() == null;
 		String name = activity.getName();
@@ -97,12 +92,12 @@ public class ActivityValidationService {
 	}
 
 	/**更新活动的输入验证
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-07-13 18:32:58
 	 * @param activity
 	 * @return void
-	*/
+	 */
 	public void updateInputValidate(Activity activity) {
 		Integer activityId = activity.getId();
 		Optional.ofNullable(activityId).orElseThrow(() -> new BusinessException("活动id不能为空"));
@@ -110,12 +105,12 @@ public class ActivityValidationService {
 	}
 
 	/**活动必须存在
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 16:07:46
 	 * @param activityId
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity activityExist(Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
 		Optional.ofNullable(activity).orElseThrow(() -> new ActivityNotExistException(activityId));
@@ -123,86 +118,54 @@ public class ActivityValidationService {
 	}
 
 	/**是不是活动的创建者
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-16 11:06:20
 	 * @param activityId
 	 * @param uid
 	 * @return boolean
-	*/
+	 */
 	public boolean isCreator(Integer activityId, Integer uid) {
-		return isCreator(activityId, uid, false);
-	}
-
-	public boolean isCreatorRelax(Integer activityId, Integer uid) {
-		return isCreator(activityId, uid, true);
-	}
-
-	public boolean isCreator(Integer activityId, Integer uid, Boolean relax) {
-		relax = Optional.ofNullable(relax).orElse(false);
 		Activity activity = activityQueryService.getById(activityId);
-		return isCreator(activity, uid, relax);
+		return isCreator(activity, uid);
 	}
 
 	/**是不是活动创建者
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-09 19:08:14
 	 * @param activity
 	 * @param uid
 	 * @return boolean
-	*/
+	 */
 	public boolean isCreator(Activity activity, Integer uid) {
-		return isCreator(activity, uid, false);
-	}
-	public boolean isCreatorRelax(Activity activity, Integer uid) {
-		return isCreator(activity, uid, true);
-	}
-
-	public boolean isCreator(Activity activity, Integer uid, Boolean relax) {
-		if (Objects.equals(activity.getCreateUid(), uid)) {
-			return true;
-		}
-		relax = Optional.ofNullable(relax).orElse(false);
-		if (relax) {
-			String cacheKey = CacheConstant.buildSpecialUserKey(activity.getId(), uid);
-			return redisTemplate.hasKey(cacheKey);
-		}
-		return false;
+		return Objects.equals(activity.getCreateUid(), uid);
 	}
 
 	/**活动创建者
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-08 15:40:56
 	 * @param activityId
 	 * @param uid
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity creator(Integer activityId, Integer uid) {
-		return creator(activityId, uid, false);
-	}
-
-	public Activity creatorRelax(Integer activityId, Integer uid) {
-		return creator(activityId, uid, true);
-	}
-
-	public Activity creator(Integer activityId, Integer uid, Boolean relax) {
 		Activity activity = activityQueryService.getById(activityId);
-		if (!isCreator(activity, uid, relax)) {
+		if (!isCreator(activity, uid)) {
 			throw new BusinessException("无权限");
 		}
 		return activity;
 	}
 
 	/**机构是否在管理范围内
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-02 16:11:36
 	 * @param fid
 	 * @param operateUser
 	 * @return boolean
-	*/
+	 */
 	public boolean isOrgInManageScope(Integer fid, OperateUserDTO operateUser) {
 		Integer loginUserFid = operateUser.getFid();
 		List<Integer> manageFids = wfwAreaApiService.listSubFid(loginUserFid);
@@ -210,112 +173,63 @@ public class ActivityValidationService {
 	}
 
 	/**是否能管理活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-29 09:49:49
 	 * @param activityId
 	 * @param uid
 	 * @return boolean
-	*/
+	 */
 	public boolean isManageAble(Integer activityId, Integer uid) {
 		Activity activity = activityQueryService.getById(activityId);
 		return isManageAble(activity, uid);
 	}
 
 	/**是否能管理活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-29 09:51:58
 	 * @param activity
 	 * @param uid
 	 * @return boolean
-	*/
-	public boolean isManageAble(Activity activity, Integer uid) {
-		return isManageAble(activity, uid, false);
-	}
-
-	/**
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2022-03-03 10:46:17
-	 * @param activity
-	 * @param uid
-	 * @param relax 是否放宽权限
-	 * @return
 	 */
-	public boolean isManageAble(Activity activity, Integer uid, Boolean relax) {
-		boolean manageAble = false;
+	public boolean isManageAble(Activity activity, Integer uid) {
 		if (activity != null) {
 			boolean creator = isCreator(activity, uid);
 			if (creator) {
 				return true;
 			} else {
-				manageAble = activityManagerValidationService.isManager(activity.getId(), uid);
-				if (!manageAble && relax) {
-					String cacheKey = CacheConstant.buildSpecialUserKey(activity.getId(), uid);
-					manageAble =  redisTemplate.hasKey(cacheKey);
-				}
+				return activityManagerValidationService.isManager(activity.getId(), uid);
 			}
 		}
-		return manageAble;
+		return false;
 	}
 
 	/**可管理活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-29 09:55:31
 	 * @param activityId
 	 * @param uid
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity manageAble(Integer activityId, Integer uid) {
-		return manageAble(activityId, uid, false);
-	}
-
-	/**可管理的活动放宽
-	 * @Description 
-	 * @author huxiaolong
-	 * @Date 2022-03-03 11:19:52
-	 * @param activityId
-	 * @param uid
-	 * @return
-	 */
-	public Activity manageAbleRelax(Integer activityId, Integer uid) {
-		return manageAble(activityId, uid, true);
-	}
-
-	/**
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2022-03-03 10:44:54
-	 * @param activityId
-	 * @param uid
-	 * @param relax 是否放宽权限
-	 * @return
-	 */
-	public Activity manageAble(Integer activityId, Integer uid, Boolean relax) {
 		Activity activity = activityQueryService.getById(activityId);
-		boolean isManager = isManageAble(activity, uid, relax);
+		boolean isManager = isManageAble(activity, uid);
 		if (!isManager) {
-			if (!relax) {
-				throw new BusinessException("无权限");
-			}
-			String cacheKey = CacheConstant.buildSpecialUserKey(activityId, uid);
-			if (!redisTemplate.hasKey(cacheKey)) {
-				redisTemplate.opsForValue().set(cacheKey, 1, 30, TimeUnit.MINUTES);
-			}
+			throw new BusinessException("无权限");
 		}
 		return activity;
 	}
 
 	/**可管理活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-29 09:55:52
 	 * @param activity
 	 * @param uid
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity manageAble(Activity activity, Integer uid) {
 		if (!isManageAble(activity, uid)) {
 			throw new BusinessException("无权限");
@@ -324,18 +238,18 @@ public class ActivityValidationService {
 	}
 
 	/**能修改活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 16:07:52
 	 * @param activityId
 	 * @param loginUser
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity editAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
 		Integer createFid = activity.getCreateFid();
-		// 是不是创建者 todo(此处放宽了权限)
-		boolean creator = isCreatorRelax(activity, loginUser.getUid());
+		// 是不是创建者
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
@@ -357,7 +271,7 @@ public class ActivityValidationService {
 	 * @param activityId
 	 * @param operateUser
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity deleteAble(Integer activityId, OperateUserDTO operateUser) {
 		Activity activity = activityExist(activityId);
 		Integer createFid = activity.getCreateFid();
@@ -380,7 +294,7 @@ public class ActivityValidationService {
 	 * @param activityId
 	 * @param operateUser
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity releaseAble(Integer activityId, OperateUserDTO operateUser) {
 		Activity activity = activityExist(activityId);
 		// 验证创建者
@@ -415,7 +329,7 @@ public class ActivityValidationService {
 	 * @param activityId
 	 * @param operateUser
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 */
 	public Activity cancelReleaseAble(Integer activityId, OperateUserDTO operateUser) {
 		Activity activity = activityExist(activityId);
 		// 验证创建者

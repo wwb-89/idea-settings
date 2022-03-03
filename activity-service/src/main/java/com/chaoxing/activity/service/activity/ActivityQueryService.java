@@ -405,7 +405,7 @@ public class ActivityQueryService {
 		}
 		List<Activity> activities = page.getRecords();
 		// 封装活动关联数据
-		packageActivityData(activities);
+		packageActivityData(activities, loginUser.getUid());
 		// 封装是不是管理员
 		packageManager(activities);
 		return page;
@@ -418,7 +418,7 @@ public class ActivityQueryService {
 	 * @param activities
 	 * @return void
 	 */
-	private void packageActivityData(List<Activity> activities) {
+	private void packageActivityData(List<Activity> activities, Integer uid) {
 		if (CollectionUtils.isEmpty(activities)) {
 			return;
 		}
@@ -447,6 +447,8 @@ public class ActivityQueryService {
 		List<ActivityTagNameDTO> activityTagNames = tagQueryService.listActivityTagNameByActivityIds(activityIds);
 		Map<Integer, List<String>> activityIdTagNames = activityTagNames.stream().collect(Collectors.groupingBy(ActivityTagNameDTO::getActivityId, Collectors.mapping(ActivityTagNameDTO::getTagName, Collectors.toList())));
 		for (Activity activity : activities) {
+			// 活动enc加密封装
+			activity.setAuthEnc(ActivityAuthService.buildActivityAuthEnc(activity.getId(), uid));
 			// 活动报名签到状态数据
 			SignStatDTO signStatItem = Optional.ofNullable(activity.getSignId()).map(signIdSignStatMap::get).orElse(null);
 			activity.setSignedUpNum(Optional.ofNullable(signStatItem).map(SignStatDTO::getSignedUpNum).orElse(0));

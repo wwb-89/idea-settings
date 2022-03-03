@@ -510,7 +510,6 @@ public class WfwFormApiService {
 	 * @param uid
 	 * @param wfwFormTemplateId
 	 * @param signUpFormType 报名万能表单类型(wfw_form; approval)
-	 * @param newFormFromNormal 是否从通用表单复制(新建按钮传递此参数)
 	 * @return java.lang.String
 	 */
 	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, Integer wfwFormTemplateId, String signUpFormType) {

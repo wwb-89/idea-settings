@@ -237,6 +237,9 @@ public class Activity {
     /** 标签 */
     @TableField(exist = false)
     private String tags;
+    /** 校验enc */
+    @TableField(exist = false)
+    private String authEnc;
 
     @Getter
     public enum OriginTypeEnum {

@@ -1664,13 +1664,15 @@
                         };
                         app.ajaxPost(url, params, function (res) {
                             if (res.success) {
-                                var {formId, openAddr, pcUrl, wechatUrl} = res.data;
+                                var { formId, openAddr, pcUrl, wechatUrl, name } = res.data;
                                 $this.signUpFillInfoDefaultWfwFormMap[signUpTplComponentId] = {
                                     "openAddr": openAddr,
                                     "pcUrl": pcUrl,
                                     "wechatUrl": wechatUrl,
-                                    "fillInfoFormId": formId
+                                    "fillInfoFormId": formId,
+                                    "wfwFormName": name
                                 };
+                                $this.setSignUpFormInfo(signUpTplComponentId);
                                 $this.toWfwFormConfig(signUpTplComponentId)
                             } else {
                                 var errorMessage = res.message;
@@ -1683,6 +1685,15 @@
                             app.showMsg("报名信息填写，创建填写表单失败");
                         });
                     }
+                },
+                setSignUpFormInfo: function (tplComponentId) {
+                    var $this = this;
+                    var form = $this.signUpFillInfoDefaultWfwFormMap[tplComponentId];
+                    $this.$set($this.signUpMap[tplComponentId], "openAddr", form.openAddr);
+                    $this.$set($this.signUpMap[tplComponentId], "pcUrl", form.pcUrl);
+                    $this.$set($this.signUpMap[tplComponentId], "wechatUrl", form.wechatUrl);
+                    $this.$set($this.signUpMap[tplComponentId], "wfwFormName", form.wfwFormName);
+                    $this.$set($this.signUpMap[tplComponentId], "fillInfoFormId", formId);
                 },
                 // 获取虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
                 getVirtualNodeMap: function (groups) {
@@ -2558,12 +2569,8 @@
                     var url = ctx + "/api/wfw-form/build/edit-url";
                     var formId = signUp.fillInfoFormId || '';
                     if (activityApp.isEmpty(formId)) {
-                        var form = $this.signUpFillInfoDefaultWfwFormMap[signUpTplComponentId];
-                        $this.$set($this.signUpMap[signUpTplComponentId], "openAddr", form.openAddr);
-                        $this.$set($this.signUpMap[signUpTplComponentId], "pcUrl", form.pcUrl);
-                        $this.$set($this.signUpMap[signUpTplComponentId], "wechatUrl", form.wechatUrl);
-                        formId = form.fillInfoFormId;
-                        $this.$set($this.signUpMap[signUpTplComponentId], "fillInfoFormId", formId);
+                        $this.setSignUpFormInfo(signUpTplComponentId);
+                        formId = $this.signUpMap[signUpTplComponentId].fillInfoFormId;
                     }
                     var params = {
                         fid: $this.fid,

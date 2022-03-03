@@ -11,6 +11,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.MarketSignUpConfig;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.model.Tag;
+import com.chaoxing.activity.service.activity.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.IconQueryService;
@@ -85,12 +86,14 @@ public class ActivitySettingController {
     private TagQueryService tagQueryService;
     @Resource
     private IconQueryService iconQueryService;
+    @Resource
+    private ActivityAuthService activityAuthService;
 
     @LoginRequired
     @RequestMapping("index")
     public String settingIndex(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer style) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityValidationService.manageAbleRelax(activityId, loginUser.getUid());
+		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 
         model.addAttribute("activityId", activityId);
         model.addAttribute("openSignUp", templateComponentService.exitSignUpComponent(activity.getTemplateId()));
@@ -115,7 +118,7 @@ public class ActivitySettingController {
     @RequestMapping("basic-info/edit")
     public String basicInfoEdit(HttpServletRequest request, Model model, @PathVariable Integer activityId, @RequestParam(defaultValue = "0") Integer strict) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        Activity activity = activityValidationService.manageAbleRelax(activityId, loginUser.getUid());
+        Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
         ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
         model.addAttribute("signId", activity.getSignId());
         model.addAttribute("activity", createParamDTO);
@@ -159,10 +162,11 @@ public class ActivitySettingController {
     public String basicInfoView(HttpServletRequest request, Model model, @PathVariable Integer activityId, @RequestParam(defaultValue = "0") Integer strict) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         Integer operateUid = loginUser.getUid();
-        Activity activity = activityValidationService.manageAbleRelax(activityId, operateUid);
+        Activity activity = activityValidationService.manageAble(activityId, operateUid);
         ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
         model.addAttribute("activity", createParamDTO);
-        model.addAttribute("isCreator", activityValidationService.isCreatorRelax(activity, operateUid));
+        boolean isCreator = activityValidationService.isCreator(activity, operateUid) || activityAuthService.isAuthorizedUser(activityId, operateUid);
+        model.addAttribute("isCreator",  isCreator);
         model.addAttribute("templateComponents", templateComponentService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
         List<String> participateScopes = activityScopeQueryService.listByActivityId(activityId).stream().map(WfwAreaDTO::getName).collect(Collectors.toList());
         model.addAttribute("participateScopes", participateScopes);
@@ -183,7 +187,7 @@ public class ActivitySettingController {
     @RequestMapping("sign-up")
     public String signUpSetting(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        Activity activity = activityValidationService.manageAbleRelax(activityId, loginUser.getUid());
+        Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
         ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
         // 报名签到
         Integer signId = activity.getSignId();

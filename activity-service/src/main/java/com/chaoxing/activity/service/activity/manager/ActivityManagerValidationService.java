@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.manager;
 
 import com.chaoxing.activity.model.ActivityManager;
+import com.chaoxing.activity.service.activity.ActivityAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ public class ActivityManagerValidationService {
 
 	@Resource
 	private ActivityManagerQueryService activityManagerQueryService;
+	@Resource
+	private ActivityAuthService activityAuthService;
 
 	/**是不是管理员
 	 * @Description 
@@ -38,7 +41,7 @@ public class ActivityManagerValidationService {
 				return true;
 			}
 		}
-		return false;
+		return activityAuthService.isAuthorizedUser(activityId, uid);
 	}
 
 }

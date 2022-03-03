@@ -643,7 +643,7 @@
                             $this.toDelete(id);
                             break;
                         case "manage":
-                            $this.toManage(id);
+                            $this.toManage(id, activity.authEnc);
                             break;
                         case "release":
                             $this.toRelease(id);
@@ -861,9 +861,9 @@
                     window.open(url);
                 },
                 // 管理页面
-                toManage: function (activityId) {
+                toManage: function (activityId, authEnc) {
                     var $this = this;
-                    var url = $this.adminDomain + "/activity/" + activityId + "?relax=true";
+                    var url = $this.adminDomain + "/activity/" + activityId + "?authEnc=" + authEnc;
                     window.open(url);
                 },
                 calShowTableFieldDetails: function () {
