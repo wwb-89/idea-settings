@@ -2083,6 +2083,8 @@
                         var originId = signUpKeys[i];
                         var signUp = $this.signUpMap[originId];
                         var deleted = signUp.deleted;
+                        var templateOptions = $this.fillInfoTypeMap[originId] && $this.fillInfoTypeMap[originId].templateOptions;
+                        debugger
                         if (!deleted) {
                             if (activityApp.isEmpty(signUp.startTime)) {
                                 app.showMsg(signUp.name + "开始时间不能为空");
@@ -2147,10 +2149,27 @@
                             }
 
                             if (signUp.fillInfo) {
-                                if (activityApp.isEmpty(signUp.fillInfoFormId)) {
-                                    app.showMsg("请配置" + signUp.name + "填报信息");
-                                    return false;
+                                var approvalNum = 0, wfwFormNum = 0;
+                                $(templateOptions).each(function () {
+                                    if (this.type == 'normal') {
+                                        wfwFormNum++;
+                                    } else if (this.type == 'approval') {
+                                        approvalNum++;
+                                    }
+                                });
+                                if (activityApp.isEmpty(signUp.wfwFormTemplateId)) {
+                                    if (signUp.formType == 'wfw_form' && wfwFormNum > 0) {
+                                        app.showMsg("请选择" + signUp.name + "填报信息模板");
+                                        return false;
+                                    } else if (signUp.formType == 'approval' && approvalNum > 0) {
+                                        app.showMsg("请选择" + signUp.name + "填报信息模板");
+                                        return false;
+                                    }
                                 }
+                                // if (activityApp.isEmpty(signUp.fillInfoFormId)) {
+                                //     app.showMsg("请配置" + signUp.name + "填报信息");
+                                //     return false;
+                                // }
                             } /*else {
                                 // 给没有开启报名填报信息的报名设置万能表单
                                 if (activityApp.isEmpty(signUp.fillInfoFormId) && signUp.formType != "form") {
@@ -2585,6 +2604,7 @@
                 confirmSwitchForm: function () {
                     var $this = this;
                     var tplComponentId = $this.operateSignUpOriginId;
+                    $this.signUpMap[tplComponentId].formType = $this.signUpMap[tplComponentId].formType == 'wfw_form' ? 'approval' : 'wfw_form';
                     $this.$set($this.signUpMap[tplComponentId], "openAddr", "");
                     $this.$set($this.signUpMap[tplComponentId], "pcUrl", "");
                     $this.$set($this.signUpMap[tplComponentId], "wechatUrl", "");

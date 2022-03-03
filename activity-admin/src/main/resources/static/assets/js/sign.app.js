@@ -45,7 +45,7 @@
             limitPerson: false,
             personLimit: 100,
             fillInfo: false,
-            formType: 'form',
+            formType: 'wfw_form',
             fillInfoFormId: null,
             openAddr: null,
             pcUrl: null,

@@ -87,6 +87,8 @@ public class SignUpCreateParamDTO {
 	private Boolean openRoleLimit;
 	/** 万能表单名称 */
 	private String wfwFormName;
+	/** 万能表单原始模板id */
+	private Integer wfwFormTemplateId;
 
 	/** 微服务参与范围列表 */
 	private List<SignUpParticipateScopeDTO> wfwParticipateScopes;
