@@ -159,38 +159,38 @@
                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                         </div>
                     </div>
-                    <!-- wfw参与范围 -->
+                    <!--微服务参与范围-->
                     <div class="form-item flexStart" v-else-if="it.code == 'wfw_participation_scope'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                        <div class="input-box" style="display: block">
+                        <div class="join-box">
                             <div :class="{'autoRange': (!signUpMap[item.id].enableWfwParticipateScope)}">
                                 <el-radio-group v-model="signUpMap[item.id].wfwOrgScope" @change="wfwOrgScopeChange($event, item.id)" >
                                     <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList" :key="'wfw-scope-' + sidx">{{scope.label}}</el-radio>
                                 </el-radio-group>
                             </div>
-                            <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
-                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
+                            <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope" style="margin-top: 12px;cursor: pointer;" @click="toAddSignUpParticipateScope(item.id, it)">
+                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range">
                                 <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
                                 <div class="add-tags" v-else>
-                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].wfwParticipateScopes" :key="'wfw-scope-' + scopeIndex">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].wfwParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex, $event)"></i></span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- contacts参与范围 -->
+                    <!--通讯录参与范围-->
                     <div class="form-item flexStart" v-else-if="it.code == 'contacts_participation_scope'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                        <div class="input-box" style="display: block">
+                        <div class="join-box">
                             <div :class="{'autoRange': (!signUpMap[item.id].enableContactsParticipateScope)}">
                                 <el-radio-group v-model="signUpMap[item.id].contactScope" @change="contactScopeChange($event, item.id)">
-                                    <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList" :key="'contact-scope-' + sidx">{{scope.label}}</el-radio>
+                                    <el-radio :label="scope.value" name="active-type" v-for="(scope,sidx) in scopeList" :key="'contacts-scope-' + sidx">{{scope.label}}</el-radio>
                                 </el-radio-group>
                             </div>
-                            <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
-                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
+                            <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope" style="cursor: pointer;" @click="toAddSignUpParticipateScope(item.id, it)">
+                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range">
                                 <span v-if="signUpMap[item.id].contactsParticipateScopes.length <= 0">请选择</span>
                                 <div class="add-tags" v-else>
-                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].contactsParticipateScopes" :key="'contact-scope-' + scopeIndex">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].contactsParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex, $event)"></i></span>
                                 </div>
                             </div>
                         </div>
@@ -207,37 +207,70 @@
                         </div>
                     </div>
                     <!--报名填报信息-->
-                    <div class="form-item align-start" v-else-if="it.code == 'sign_up_fill_info'">
-                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                        <div class="input-box column">
+                    <div class="form-item sign-info" v-else-if="it.code == 'sign_up_fill_info'">
+                        <label class="label">{{it.name}}</label>
+                        <div class="input-box">
                             <div class="set-box">
-                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it, item.id)"></el-switch>
+                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it)"></el-switch>
                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                             </div>
-                            <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
-                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                <span class="tips set-information">配置表单</span>
-                            </div>
-                            <div v-else-if="signUpMap[item.id].formType == 'wfw_form' && signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(item.id)">
-                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                <span class="tips set-information">配置填报信息</span>
-                            </div>
-                            <div v-else-if="signUpMap[item.id].formType == 'approval' && signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toApprovalConfig(item.id)">
-                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                <span class="tips set-information">配置审批</span>
-                            </div>
-                            <!--未选择使用万能表单/审批的时候-->
-                            <div v-if="!signUpMap[item.id].fillInfoFormId" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo">
-                                <div class="input-box">
-                                    <el-radio v-for="(wfwFormFillInfoType, index) of wfwFormFillInfoTypes" :key="'wfw-form-fill-info-type-' + index" v-model="signUpMap[item.id].formType" :label="wfwFormFillInfoType.value" name="active-type">{{wfwFormFillInfoType.name}}</el-radio>
-                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
-                                    <!--配置表单/审批-->
-                                    <div style="display: flex;" @click="fillInfoConfig(item.id)">
-                                        <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                                        <span class="tips set-information">配置{{signUpMap[item.id].formType == 'wfw_form' ? '表单' : '审批'}}</span>
+                            <div class="radio-box" v-show="signUpMap[item.id].fillInfo && !signUpMap[item.id].fillInfoFormId">
+                                <el-radio v-for="(wfwFormFillInfoType, index) of wfwFormFillInfoTypes" :key="'wfw-form-fill-info-type-' + index" v-model="signUpMap[item.id].formType" :label="wfwFormFillInfoType.value" name="active-type" @change="signUpFormTypeChange(item.id)">{{wfwFormFillInfoType.name}}</el-radio>
+                                <!-- 万能表单 -->
+                                <el-select v-if="signUpMap[item.id].formType == 'wfw_form' && showWfwFormSelect(item.id, it.signUpFillInfoType)"
+                                           v-model="signUpMap[item.id].wfwFormTemplateId"
+                                           placeholder="请选择"
+                                           popper-class="fixed-select"
+                                >
+                                    <el-option
+                                            v-for="opt in (it.signUpFillInfoType && it.signUpFillInfoType.templateOptions) || []"
+                                            :key="opt.id"
+                                            :label="opt.name"
+                                            :value="opt.id"
+                                            v-if="opt.type == 'normal'"
+                                    >
+                                    </el-option>
+                                    <!--  注意这有俩个编辑，一个空的一个有数据的 -->
+                                    <div class="setiing-absolute" @click="createFormFromNormal(item.id)"><i class="icon-plus-circle"></i>新建</div>
+                                    <div slot="empty" class="no-content-self">
+                                        <div class="no-con">暂无选项</div>
+                                        <div class="setiing-absolute" @click=""><i class="icon-plus-circle"></i>编辑</div>
                                     </div>
-                                </div>
+                                </el-select>
+                                <!-- 审批 -->
+                                <el-select v-else-if="signUpMap[item.id].formType == 'approval' && showWfwFormSelect(item.id, it.signUpFillInfoType)"
+                                           v-model="signUpMap[item.id].wfwFormTemplateId"
+                                           placeholder="请选择"
+                                           popper-class="fixed-select"
+                                >
+                                    <el-option
+                                            v-for="opt in (it.signUpFillInfoType && it.signUpFillInfoType.templateOptions) || []"
+                                            :key="opt.id"
+                                            :label="opt.name"
+                                            :value="opt.id"
+                                            v-if="opt.type == 'approval'"
+                                    ></el-option>
+                                    <!--  注意这有俩个编辑，一个空的一个有数据的 -->
+                                    <div class="setiing-absolute" @click="createFormFromNormal(item.id)"><i class="icon-plus-circle"></i>新建</div>
+                                    <div slot="empty" class="no-content-self">
+                                        <div class="no-con">暂无选项</div>
+                                        <div class="setiing-absolute"><i class="icon-plus-circle"></i>编辑</div>
+                                    </div>
+                                </el-select>
+                                <!--配置表单/审批-->
+                                <a href="javascript:" class="set-box configurationForm" @click="fillInfoConfig(item.id)" v-show="signUpMap[item.id].wfwFormTemplateId || !showWfwFormSelect(item.id, it.signUpFillInfoType)">
+                                    <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                    <span class="tips set-information">配置{{signUpMap[item.id].formType == 'wfw_form' ? '表单' : '审批'}}</span>
+                                </a>
                             </div>
+                            <ul class="form-list" v-show="signUpMap[item.id].fillInfo && signUpMap[item.id].fillInfoFormId">
+                                <li class="item">
+                                    <div :class="{'left-box': true, 'type1': signUpMap[item.id].formType == 'approval'}"></div>
+                                    <p class="title overHidden2">{{signUpMap[item.id].wfwFormName ? signUpMap[item.id].wfwFormName : '表单' }}</p>
+                                    <a href="javascript:" v-show="signUpMap[item.id].formType != 'form' || signUpMap[item.id].fillInfoFormId > 60000" class="edit-btn" @click="fillInfoConfig(item.id)"></a>
+                                    <a href="javascript:" v-show="signUpMap[item.id].formType != 'form' || signUpMap[item.id].fillInfoFormId > 60000" class="del-btn" @click="openWfwFormSwitchDialog(item.id)"></a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
@@ -293,43 +326,22 @@
                             </div>
                         </div>
                     </div>
-                    <template v-else-if="it.code == 'sign_up_condition'">
-                        <div class="form-item">
-                            <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                            <div class="input-box">
+                    <div class="form-item align-start" v-else-if="it.code == 'sign_up_condition'">
+                        <label class="label" style="line-height: 20px;">{{it.name}}</label>
+                        <div class="input-box column">
+                            <div class="set-box">
                                 <el-switch v-model="signUpConditionMap[it.id].enable"></el-switch>
                                 <el-tooltip style="position: relative; bottom: 3px" class="item-tips fl" effect="dark" disabled :content="signUpConditionTips(it.name, it.id)" placement="top">
                                     <el-button>报名条件</el-button>
                                 </el-tooltip>
                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                             </div>
+                            <div v-if="signUpConditionMap[it.id].enable && signUpConditionMap[it.id].allowSignedUp && signUpConditionMap[it.id].configOnActivity" class="set-box configurationForm" @click="toConfigSignUpDetails(it.id)">
+                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                <span class="tips set-information">配置明细</span>
+                            </div>
                         </div>
-                        <div class="form-item" v-if="signUpConditionMap[it.id].enable && signUpConditionMap[it.id].allowSignedUp && signUpConditionMap[it.id].configOnActivity">
-                            <el-form label-position='left' label-width="72px" class="select-form" onsubmit="return false">
-                                <el-form-item :label="detail.fieldName" v-for="(detail, dIndex) in signUpConditionMap[it.id].activityConditionDetails" :key="'condition-detail-' + dIndex">
-                                    <el-select v-model="detail.condition" placeholder="请选择">
-                                        <el-option v-for="(ce, ceIdx) in conditionEnums"
-                                                   :key="ceIdx"
-                                                   :label="ce.name"
-                                                   :value="ce.value"
-                                        >
-                                        </el-option>
-                                    </el-select>
-                                    <template v-if="detail.condition && detail.condition != 'empty' && detail.condition != 'un_empty'">
-                                        <el-select v-if="detail.compt == 'selectbox' || detail.compt == 'selectmultibox'" v-model="detail.value" placeholder="请选择" style="width: 152px">
-                                            <el-option  v-for="(it, index) in detail.options"
-                                                        :key="index"
-                                                        :label="it"
-                                                        :value="it"
-                                            >
-                                            </el-option>
-                                        </el-select>
-                                        <el-input v-else v-model="detail.value" placeholder="请输入" style="width: 152px"></el-input>
-                                    </template>
-                                </el-form-item>
-                            </el-form>
-                        </div>
-                    </template>
+                    </div>
                 </template>
                 <el-divider v-if="index !== signUpTemplateComponents.length - 1"></el-divider>
             </div>
@@ -339,27 +351,20 @@
         </el-form>
 
         <!-- 报名参与范围弹窗 -->
-        <div class="dailog-box1" v-show="signUpParticipateWindowShow">
-            <div class="dailog">
-                <div class="header">
-                    <span>请选择</span>
-                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="cancelSignUpParticipateScope" class="close">
-                </div>
-                <div class="body">
-                    <div class="tree">
-                        <div class="tree-box">
-                            <div id="sign-up-participate-scope-tree" class="ztree"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="normal-btn cancle" @click="cancelSignUpParticipateScope">取消</div>
-                    <div class="normal-btn after-sure" @click="sureSignUpParticipateScope">确定</div>
+        <vue-custom-participate-scope :dom-scope-id="'sign-up-participate-scope-tree'" ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
+        <!--报名条件配置-->
+        <vue-sign-up-condition ref="signUpConfigDialogWindow" @callback="confirmSignUpConditionDetails"></vue-sign-up-condition>
+        <!--  切换填报形式提示弹窗 -->
+        <div class="dailog-box1" v-show="showSwitchFormDialog">
+            <div class="dailog delete-dailog width304">
+                <div class="warn"><img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" alt=""></div>
+                <span>切换报名填报形式可能会导致报名数据误差</span>
+                <div>
+                    <div class="normal-btn" @click="cancelSwitchForm">取消</div>
+                    <div class="normal-btn after-sure" @click="confirmSwitchForm">继续切换</div>
                 </div>
             </div>
         </div>
-
-
         <!-- 警告类弹框 -->
         <el-dialog
                 :visible.sync="DialogVisible"
@@ -381,6 +386,8 @@
         <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
         <script src="/static/pc/assets/lib/jqthumb.js" th:src="@{/pc/assets/lib/jqthumb.js}"></script>
         <script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
+        <script src="/static/pc/assets/component/vue-custom-participate-scope.js" th:src="@{/pc/assets/component/vue-custom-participate-scope.js}"></script>
+        <script src="/static/pc/assets/component/sign-up-condition.js" th:src="@{/pc/assets/component/sign-up-condition.js}"></script>
         <script src="/static/pc/assets/js/create-active.js" th:src="@{/pc/assets/js/create-active.js}"></script>
         <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
         <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
@@ -400,10 +407,12 @@
                     templateComponentMap: {},
                     defaultSignUpBtnName: [[${marketSignUpConfig != null ? marketSignUpConfig.signUpBtnName : ""}]],
                     defaultSignUpKeyword: [[${marketSignUpConfig != null ? marketSignUpConfig.signUpKeyword : ""}]],
+                    fid: [[${session._login_user_.fid}]],
                     // 报名: { originId: signUp }
                     signUpMap: {},
                     // 报名信息填写类型: { templateComponentId: signUpFillInfoType }
                     fillInfoTypeMap: {},
+                    formStructureMap: {},   // 报名条件的表单结构map
                     // 报名条件
                     signUpConditionMap: {},
                     sucTplComponentIds: [[${sucTplComponentIds}]],
@@ -437,7 +446,11 @@
                     DialogVisible: false,
                     wfwFormConfigWindow: null,
                     // 给报名填报信息默认创建的万能表单
-                    signUpFillInfoDefaultWfwFormMap: {}
+                    signUpFillInfoDefaultWfwFormMap: {},
+                    // 切换表单填报弹框
+                    showSwitchFormDialog: false,
+                    // 临时存储原始formId数据
+                    tempStoreOriginFormId: null
                 },
                 created: function () {
                     var $this = this;
@@ -447,10 +460,11 @@
                         if (e.origin.indexOf($this.wfwFormDomain.replace(/http(|s):\/\//, "")) > -1) {
                             var { data } = activityApp.getJsonObject(e.data);
                             var originId = $this.operateSignUpOriginId;
-                            $this.$set($this.signUpMap[originId], 'openAddr', data.openAddr);
-                            $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
-                            $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
-                            $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
+                            $this.$set($this.signUpMap[originId], "openAddr", data.openAddr);
+                            $this.$set($this.signUpMap[originId], "pcUrl", data.pcUrl);
+                            $this.$set($this.signUpMap[originId], "wechatUrl", data.wechatUrl);
+                            $this.$set($this.signUpMap[originId], "wfwFormName", data.name);
+                            $this.$set($this.signUpMap[originId], "fillInfoFormId", data.formId);
                             $this.wfwFormConfigWindow.close();
                         } else {
                             try {
@@ -473,7 +487,7 @@
                     // 表单字段map封装
                     var formFields = [[${formFieldStructures}]] || {};
                     var formIds = Object.keys(formFields);
-                    var formStructureMap = {}
+                    $this.formStructureMap = {}
                     $(formIds).each(function (i) {
                         var formId = formIds[i];
                         if (formFields[formId]) {
@@ -481,7 +495,7 @@
                             $(formFields[formId]).each(function () {
                                 fieldNameCompObj[this.name] = this;
                             });
-                            formStructureMap[formId] = fieldNameCompObj;
+                            $this.formStructureMap[formId] = fieldNameCompObj;
                         }
                     });
                     // 报名条件map封装
@@ -491,7 +505,7 @@
                         $this.$set(_this, "enable", sucTplComponentIds.includes(_this.templateComponentId));
                         if (_this.activityConditionDetails) {
                             $(_this.activityConditionDetails).each(function () {
-                                var fieldObj = formStructureMap[_this.originIdentify];
+                                var fieldObj = $this.formStructureMap[_this.originIdentify];
                                 $this.$set(this, "compt", fieldObj[this.fieldName].compt);
                                 $this.$set(this, "options", fieldObj[this.fieldName].options || []);
                             })
@@ -578,7 +592,6 @@
                             signUp.enable = !signUp.deleted;
                             $this.$set(signUp, "timeScope", [signUp.startTime, signUp.endTime]);
                             $this.$set($this.signUpMap, originId, signUp);
-                            $this.createSignUpWfwForm(originId);
                         }
                     });
                 },
@@ -597,28 +610,30 @@
                 },
                 methods: {
                     // 创建报名万能表单
-                    createSignUpWfwForm: function (signUpTplComponentId) {
+                    createSignUpWfwForm: function (signUpTplComponentId, newFormFromNormal) {
                         var $this =this;
                         var signUp = $this.signUpMap[signUpTplComponentId];
-                        // 判断报名的表单是否存在，不存在则创建表单
-                        if (signUp.formType == 'wfw_form' && activityApp.isEmpty(signUp.fillInfoFormId)) {
+                        if (signUp.formType == 'wfw_form' || signUp.formType == 'approval') {
                             // 克隆新的表单
-                            var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
-                            var url = ctx + '/api/wfw-form/create/from/wfw-form-template'
+                            var url = ctx + "/api/wfw-form/create/from/wfw-form-template";
                             var params = {
-                                fid: $this.activity.createFid,
+                                fid: $this.fid,
                                 uid: [[${session._login_user_.uid}]],
-                                wfwFormTemplateId: wfwFormTemplateId
+                                wfwFormTemplateId: signUp.wfwFormTemplateId,
+                                signUpFormType: signUp.formType
                             };
                             app.ajaxPost(url, params, function (res) {
                                 if (res.success) {
-                                    var {formId, openAddr, pcUrl, wechatUrl} = res.data;
+                                    var { formId, openAddr, pcUrl, wechatUrl, name } = res.data;
                                     $this.signUpFillInfoDefaultWfwFormMap[signUpTplComponentId] = {
                                         "openAddr": openAddr,
                                         "pcUrl": pcUrl,
                                         "wechatUrl": wechatUrl,
-                                        "fillInfoFormId": formId
+                                        "fillInfoFormId": formId,
+                                        "wfwFormName": name
                                     };
+                                    $this.setSignUpFormInfo(signUpTplComponentId);
+                                    $this.toWfwFormConfig(signUpTplComponentId)
                                 } else {
                                     var errorMessage = res.message;
                                     if (activityApp.isEmpty(errorMessage)) {
@@ -630,6 +645,15 @@
                                 app.showMsg("报名信息填写，创建填写表单失败");
                             });
                         }
+                    },
+                    setSignUpFormInfo: function (tplComponentId) {
+                        var $this = this;
+                        var form = $this.signUpFillInfoDefaultWfwFormMap[tplComponentId];
+                        $this.$set($this.signUpMap[tplComponentId], "openAddr", form.openAddr);
+                        $this.$set($this.signUpMap[tplComponentId], "pcUrl", form.pcUrl);
+                        $this.$set($this.signUpMap[tplComponentId], "wechatUrl", form.wechatUrl);
+                        $this.$set($this.signUpMap[tplComponentId], "wfwFormName", form.wfwFormName);
+                        $this.$set($this.signUpMap[tplComponentId], "fillInfoFormId", form.fillInfoFormId);
                     },
                     initSignUpScope: function(i, signUp) {
                         var $this = this;
@@ -752,221 +776,26 @@
                         $this.$set($this.signUpMap[tplComponentId], "startTime", obj[0]);
                         $this.$set($this.signUpMap[tplComponentId], "endTime", obj[1]);
                     },
-                    // 表单
-                    toConfigForm: function (tplComponentId) {
-                        var $this = this;
-                        $this.operateSignUpOriginId = tplComponentId;
-                        var signUp = $this.signUpMap[tplComponentId];
-                        var formId = "";
-                        if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
-                            formId = signUp.fillInfoFormId;
-                        }
-                        var url = "//" + $this.signWebDomain.replace(/http(|s):\/\//, "") + "/form/config?formId=" + formId;
-                        $('body').addClass('scroll');
-                        $this.formConfigLayerIndex = layer.open({
-                            title: "表单配置",
-                            skin: "create-class",
-                            type: 2,
-                            content: [url, "no"],
-                            area: ["600px", "580px"],
-                            btn: ["取消", "完成"],
-                            btnAlign: "c",
-                            yes: function (index) {
-                                var signUp = $this.signUpMap[tplComponentId];
-                                if (signUp.fillInfo && activityApp.isEmpty(signUp.fillInfoFormId)) {
-                                    $this.$set($this.signUpMap[tplComponentId], "fillInfo", false);
-                                }
-                                // 关闭表单填写
-                                app.closeLayerPop(index);
-                            },
-                            btn2: function () {
-                                $("#layui-layer-iframe" + $this.formConfigLayerIndex)[0].contentWindow.submit();
-                                return false;
-                            },
-                            end: function () {
-                                $('body').removeClass('scroll');
-                            }
-                        })
-                    },
-                    // 万能表单
-                    toWfwFormConfig: function (signUpTplComponentId) {
-                        var $this = this;
-                        if ($this.wfwFormConfigWindow && !$this.wfwFormConfigWindow.closed) {
-                            app.showMsg("请先关闭上一个填报信息配置页面");
-                            return;
-                        }
-                        $this.operateSignUpOriginId = signUpTplComponentId;
-                        var signUp = $this.signUpMap[signUpTplComponentId];
-                        var url = ctx + "/api/wfw-form/build/edit-url";
-                        var formId = signUp.fillInfoFormId || '';
-                        if (activityApp.isEmpty(formId)) {
-                            var form = $this.signUpFillInfoDefaultWfwFormMap[signUpTplComponentId];
-                            $this.$set($this.signUpMap[signUpTplComponentId], "openAddr", form.openAddr);
-                            $this.$set($this.signUpMap[signUpTplComponentId], "pcUrl", form.pcUrl);
-                            $this.$set($this.signUpMap[signUpTplComponentId], "wechatUrl", form.wechatUrl);
-                            formId = form.fillInfoFormId;
-                            $this.$set($this.signUpMap[signUpTplComponentId], "fillInfoFormId", formId);
-                        }
-                        var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormTemplateId;
-                        var params = {
-                            fid: $this.activity.createFid,
-                            uid: [[${session._login_user_.uid}]],
-                            formId: formId,
-                            wfwFormTemplateId: wfwFormTemplateId
-                        }
-                        app.ajaxPost(url, params, function (res) {
-                            if (res.success) {
-                                $this.wfwFormConfigWindow = window.open(res.data);
-                            } else {
-                                var errorMessage = res.message;
-                                if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "获取表单配置地址失败";
-                                }
-                                app.showMsg(errorMessage);
-                            }
-                        }, function () {
-                            app.showMsg("获取表单配置地址失败");
-                        });
-                    },
-                    // 配置审批
-                    toApprovalConfig: function (signUpTplComponentId) {
-                        var $this = this;
-                        if ($this.wfwFormConfigWindow && !$this.wfwFormConfigWindow.closed) {
-                            app.showMsg("请先关闭上一个填报信息配置页面");
-                            return;
-                        }
-                        $this.operateSignUpOriginId = signUpTplComponentId;
-                        var signUp = $this.signUpMap[signUpTplComponentId];
-                        var url = ctx + "/api/wfw-form/approval/build/edit-url";
-                        var formId = signUp.fillInfoFormId || '';
-                        var wfwFormTemplateId = $this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].wfwFormApprovalTemplateId;
-                        var params = {
-                            fid: $this.activity.createFid,
-                            uid: [[${session._login_user_.uid}]],
-                            formId: formId,
-                            wfwFormTemplateId: wfwFormTemplateId
-                        }
-                        app.ajaxPost(url, params, function (res) {
-                            if (res.success) {
-                                $this.wfwFormConfigWindow = window.open(res.data);
-                            } else {
-                                var errorMessage = res.message;
-                                if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "获取表单配置地址失败";
-                                }
-                                app.showMsg(errorMessage);
-                            }
-                        }, function () {
-                            app.showMsg("获取表单配置地址失败");
-                        });
-                    },
-                    closeFormConfigLayer: function (formId) {
-                        var $this = this;
-                        app.closeLayerPop($this.formConfigLayerIndex);
-                        $this.$set($this.signUpMap[$this.operateSignUpOriginId], "fillInfoFormId", formId);
-                    },
                     toAddSignUpParticipateScope: function(signUpTplComponentId, templateComponent){
                         var $this = this;
                         $this.operateSignUpOriginId = signUpTplComponentId;
                         $this.currGroupType = templateComponent.code == 'wfw_participation_scope' ? 'wfw' : 'contacts';
-                        $this.currWfwGroups = templateComponent.code == 'wfw_participation_scope' ? $this.wfwGroups : $this.contactGroups;
-                        $this.initWfwGroups();
-                        $this.signUpParticipateWindowShow = true;
-                        if(!$this.signUpParticipateScopeTreeObj){
-                            $this.initGroupTree();
-                        }
-                    },
-                    initGroupTree: function () {
-                        var $this = this;
-                        $($this.currWfwGroups).each(function () {
-                            this.isParent = this.soncount > 0;
-                        })
-                        var setting = {
-                            check: {
-                                enable: true
-                            },
-                            data: {
-                                simpleData: {
-                                    enable: true,
-                                    idKey: "virtualId",
-                                    pIdKey: "gid",
-                                },
-                                key: {
-                                    name: "groupname"
-                                },
-                                keep: {
-                                    parent: true
-                                }
-                            },
-                            callback: {}
-                        };
-                        $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.currWfwGroups);
-
+                        var groups = templateComponent.code == 'wfw_participation_scope' ? $this.wfwGroups : $this.contactGroups;
                         var signUp = $this.signUpMap[$this.operateSignUpOriginId];
-
-                        var signUpParticipateScopes = (signUp && ($this.currGroupType == 'wfw' ? signUp.wfwParticipateScopes : signUp.contactsParticipateScopes)) || [];
-
-                        // 获取所有父节点
-                        for(var i = 0; i < signUpParticipateScopes.length; i++) {
-                            var item = signUpParticipateScopes[i];
-                            $this.signUpParticipateScopeTreeObj.checkNode($this.signUpParticipateScopeTreeObj.getNodeByParam("virtualId", item.virtualId, null), true, !item.leaf);
-                        }
-
-                    },
-                    cancelSignUpParticipateScope: function () {
-                        var $this = this;
-                        if ($this.signUpParticipateScopeTreeObj) {
-                            $this.signUpParticipateScopeTreeObj.destroy();
-                            $this.signUpParticipateScopeTreeObj = null;
-                        }
-                        $this.currWfwGroups = [];
-                        $this.currGroupType = 'wfw';
-                        $this.signUpParticipateWindowShow = false
+                        var scopes = (signUp && ($this.currGroupType == 'wfw' ? signUp.wfwParticipateScopes : signUp.contactsParticipateScopes)) || [];
+                        $this.$refs.signUpParticipateScopeWindow.showWindow(groups, scopes, $this.currGroupType);
                     },
                     // 确认选择报名参与范围
-                    sureSignUpParticipateScope: function () {
+                    sureSignUpParticipateScope: function (scopes) {
                         var $this = this;
-                        var zTree = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
-                        var nodeArr = zTree.getCheckedNodes(true);
-                        //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
-                        var scopes = [];
-                        var pNodes = [];
-                        var pNodeMap = {};
-                        var cNodes = [];
-                        $(nodeArr).each(function () {
-                            // 半选状态
-                            var half = this.getCheckStatus().half;
-                            // 只记录全选的
-                            if (!half) {
-                                var node = { externalId: this.id, virtualId: this.virtualId, externalPid: this.gid, externalName: this.groupname, leaf: !this.isParent };
-                                // 如果是非叶子结点节点
-                                if (this.isParent) {
-                                    pNodes.push(node);
-                                    pNodeMap[node.virtualId] = node;
-                                } else {
-                                    cNodes.push(node);
-                                }
-                            }
-                        });
-                        $(cNodes).each(function () {
-                            if (!this.externalPid || !pNodeMap[this.externalPid]) {
-                                pNodes.push(this);
-                                pNodeMap[this.virtualId] = this;
-                            }
-                        });
-                        $(pNodes).each(function () {
-                            if (!this.externalPid || !pNodeMap[this.externalPid]) {
-                                scopes.push($.extend({}, this, {groupType: $this.currGroupType}));
-                            }
-                        });
                         if ($this.currGroupType == 'contacts') {
                             $this.$set($this.signUpMap[$this.operateSignUpOriginId], "contactsParticipateScopes", scopes);
                         } else {
                             $this.$set($this.signUpMap[$this.operateSignUpOriginId], "wfwParticipateScopes", scopes);
                         }
-                        $this.cancelSignUpParticipateScope();
                     },
-                    deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex) {
+                    deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex, e) {
+                        e.stopPropagation();
                         var $this = this;
                         if (templateComponent.code == 'wfw_participation_scope') {
                             $this.signUpMap[signUpTplComponentId].wfwParticipateScopes.splice(scopeIndex, 1);
@@ -982,6 +811,7 @@
                             var originId = signUpKeys[i];
                             var signUp = $this.signUpMap[originId];
                             var deleted = signUp.deleted;
+                            var templateOptions = $this.fillInfoTypeMap[originId] && $this.fillInfoTypeMap[originId].templateOptions;
                             if (!deleted) {
                                 if (activityApp.isEmpty(signUp.startTime)) {
                                     app.showMsg(signUp.name + "开始时间不能为空");
@@ -1039,20 +869,22 @@
                                     }
                                 }
                                 if (signUp.fillInfo) {
-                                    if (activityApp.isEmpty(signUp.fillInfoFormId)) {
-                                        app.showMsg("请配置" + signUp.name + "填报信息");
-                                        return false;
-                                    }
-                                } else {
-                                    // 给没有开启报名填报信息的报名设置万能表单
-                                    if (activityApp.isEmpty(signUp.fillInfoFormId)) {
-                                        var wfwFormInfo = $this.signUpFillInfoDefaultWfwFormMap[originId];
-                                        signUp.formType = "wfw_form";
-                                        $this.$set($this.signUpMap[originId], "formType", "wfw_form");
-                                        $this.$set($this.signUpMap[originId], "openAddr", wfwFormInfo.openAddr);
-                                        $this.$set($this.signUpMap[originId], "pcUrl", wfwFormInfo.pcUrl);
-                                        $this.$set($this.signUpMap[originId], "wechatUrl", wfwFormInfo.wechatUrl);
-                                        $this.$set($this.signUpMap[originId], "fillInfoFormId", wfwFormInfo.fillInfoFormId);
+                                    var approvalNum = 0, wfwFormNum = 0;
+                                    $(templateOptions).each(function () {
+                                        if (this.type == 'normal') {
+                                            wfwFormNum++;
+                                        } else if (this.type == 'approval') {
+                                            approvalNum++;
+                                        }
+                                    });
+                                    if (activityApp.isEmpty(signUp.wfwFormTemplateId)) {
+                                        if (signUp.formType == 'wfw_form' && wfwFormNum > 0) {
+                                            app.showMsg("请选择" + signUp.name + "填报信息模板");
+                                            return false;
+                                        } else if (signUp.formType == 'approval' && approvalNum > 0) {
+                                            app.showMsg("请选择" + signUp.name + "填报信息模板");
+                                            return false;
+                                        }
                                     }
                                 }
 
@@ -1129,19 +961,179 @@
                             $this.signUpMap[tplComponentId].contactOnlySelfUnit = true;
                         }
                     },
-                    // 配置报名填报信息
-                    fillInfoConfig: function (signUpTplComponentId) {
+                    createFormFromNormal: function (signUpTplComponentId) {
                         var $this = this;
+                        $this.fillInfoConfig(signUpTplComponentId, true);
+                    },
+                    // 配置报名填报信息
+                    fillInfoConfig: function (signUpTplComponentId, newFormFromNormal) {
+                        var $this = this;
+                        $this.operateSignUpOriginId = signUpTplComponentId;
                         var signUp = $this.signUpMap[signUpTplComponentId];
+                        var formId = signUp.fillInfoFormId || '';
+                        if (activityApp.isEmpty(formId)) {
+                            $this.createSignUpWfwForm(signUpTplComponentId, newFormFromNormal);
+                            return;
+                        }
                         var formType = signUp.formType;
-                        if ("wfw_form" == formType) {
+                        if ("wfw_form" == formType || "approval" == formType) {
                             // 配置万能表单
                             $this.toWfwFormConfig(signUpTplComponentId);
-                        } else {
-                            // 配置审批
-                            $this.toApprovalConfig(signUpTplComponentId);
                         }
-                    }
+                    },
+                    // 万能表单
+                    toWfwFormConfig: function (signUpTplComponentId) {
+                        var $this = this;
+                        if ($this.wfwFormConfigWindow && !$this.wfwFormConfigWindow.closed) {
+                            app.showMsg("请先关闭上一个填报信息配置页面");
+                            return;
+                        }
+                        $this.operateSignUpOriginId = signUpTplComponentId;
+                        var signUp = $this.signUpMap[signUpTplComponentId];
+                        var url = ctx + "/api/wfw-form/build/edit-url";
+                        var formId = signUp.fillInfoFormId || '';
+                        if (activityApp.isEmpty(formId)) {
+                            $this.setSignUpFormInfo(signUpTplComponentId);
+                            formId = $this.signUpMap[signUpTplComponentId].fillInfoFormId;
+                        }
+                        var params = {
+                            fid: $this.fid,
+                            uid: [[${session._login_user_.uid}]],
+                            formId: formId,
+                            signUpFormType: signUp.formType
+                        }
+                        app.ajaxPost(url, params, function (res) {
+                            if (res.success) {
+                                $this.wfwFormConfigWindow = window.open(res.data);
+                            } else {
+                                var errorMessage = res.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "获取表单配置地址失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("获取表单配置地址失败");
+                        });
+                    },
+                    closeFormConfigLayer: function (formId) {
+                        var $this = this;
+                        app.closeLayerPop($this.formConfigLayerIndex);
+                        $this.$set($this.signUpMap[$this.operateSignUpOriginId], "fillInfoFormId", formId);
+                    },
+                    // 表单
+                    toConfigForm: function (tplComponentId) {
+                        var $this = this;
+                        $this.operateSignUpOriginId = tplComponentId;
+                        var signUp = $this.signUpMap[tplComponentId];
+                        var formId = "";
+                        if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
+                            formId = signUp.fillInfoFormId;
+                        }
+                        var url = "//" + $this.signWebDomain.replace(/http(|s):\/\//, "") + "/form/config?formId=" + formId;
+                        $('body').addClass('scroll');
+                        $this.formConfigLayerIndex = layer.open({
+                            title: "表单配置",
+                            skin: "create-class",
+                            type: 2,
+                            content: [url, "no"],
+                            area: ["600px", "580px"],
+                            btn: ["取消", "完成"],
+                            btnAlign: "c",
+                            yes: function (index) {
+                                var signUp = $this.signUpMap[tplComponentId];
+                                if (signUp.fillInfo && activityApp.isEmpty(signUp.fillInfoFormId)) {
+                                    $this.$set($this.signUpMap[tplComponentId], "fillInfo", false);
+                                }
+                                // 关闭表单填写
+                                app.closeLayerPop(index);
+                            },
+                            btn2: function () {
+                                $("#layui-layer-iframe" + $this.formConfigLayerIndex)[0].contentWindow.submit();
+                                return false;
+                            },
+                            end: function () {
+                                $('body').removeClass('scroll');
+                            }
+                        })
+                    },
+                    openWfwFormSwitchDialog: function (signUpTplComponentId) {
+                        var $this= this;
+                        $this.operateSignUpOriginId = signUpTplComponentId;
+                        var signUp = $this.signUpMap[signUpTplComponentId];
+                        var now = new Date().getTime();
+                        if (signUp.startTime && signUp.startTime < now) {
+                            $this.showSwitchFormDialog = true;
+                        } else {
+                            $this.confirmSwitchForm();
+                        }
+                    },
+                    cancelSwitchForm: function () {
+                        var $this = this;
+                        $this.showSwitchFormDialog = false;
+                        $this.operateSignUpOriginId = -1;
+                    },
+                    confirmSwitchForm: function () {
+                        var $this = this;
+                        var tplComponentId = $this.operateSignUpOriginId;
+                        $this.signUpMap[tplComponentId].formType = $this.signUpMap[tplComponentId].formType == 'wfw_form' ? 'approval' : 'wfw_form';
+                        $this.$set($this.signUpMap[tplComponentId], "openAddr", "");
+                        $this.$set($this.signUpMap[tplComponentId], "pcUrl", "");
+                        $this.$set($this.signUpMap[tplComponentId], "wechatUrl", "");
+                        $this.$set($this.signUpMap[tplComponentId], "wfwFormName", "");
+                        $this.$set($this.signUpMap[tplComponentId], "fillInfoFormId", "");
+                        $this.signUpFillInfoDefaultWfwFormMap[tplComponentId] = null;
+
+                        $this.cancelSwitchForm();
+                    },
+                    signUpFormTypeChange: function (signUpTplComponentId) {
+                        var $this = this;
+                        $this.$set($this.signUpMap[signUpTplComponentId], 'wfwFormTemplateId', '');
+                    },
+                    // 是否显示信息填报下拉
+                    showWfwFormSelect: function (signUpTplComponentId, signUpFillInfoType) {
+                        var $this = this;
+                        var templateOptions = (signUpFillInfoType && signUpFillInfoType.templateOptions) || [];
+                        var { formType } = $this.signUpMap[signUpTplComponentId];
+                        var approvalNum = 0, wfwFormNum = 0;
+                        $(templateOptions).each(function () {
+                            if (this.type == 'normal') {
+                                wfwFormNum++;
+                            } else if (this.type == 'approval') {
+                                approvalNum++;
+                            }
+                        });
+                        return (formType == 'wfw_form' && wfwFormNum > 0) || (formType == 'approval' && approvalNum > 0);
+                    },
+                    toConfigSignUpDetails: function (signUpConditionTplComponentId) {
+                        var $this = this;
+                        $this.operationSucTplComponentId = signUpConditionTplComponentId;
+                        var { originIdentify, activityConditionDetails, templateConditionDetails } = $this.signUpConditionMap[signUpConditionTplComponentId];
+                        var fields = [];
+                        if (!activityApp.isEmpty(originIdentify)) {
+                            var fieldNameMap = $this.formStructureMap[originIdentify];
+                            debugger
+                            $(templateConditionDetails).each(function () {
+                                var field = fieldNameMap[this.fieldName];
+                                if (!fields.includes(field)) {
+                                    fields.push(field);
+                                }
+                            });
+                        }
+                        $this.$refs.signUpConfigDialogWindow.showWindow(fields, activityConditionDetails, $this.conditionEnums);
+                    },
+                    confirmSignUpConditionDetails: function (conditionDetails, deleteDetailIds) {
+                        var $this = this;
+                        var tplComponentId = $this.operationSucTplComponentId;
+                        $(conditionDetails).each(function () {
+                            this.activityId = $this.activity.id || ''
+                            this.templateComponentId = tplComponentId;
+                        })
+                        $this.signUpConditionMap[tplComponentId].activityConditionDetails = conditionDetails;
+                        var tmpDeleteIds = $this.signUpConditionMap[tplComponentId].deleteDetailIds || [];
+                        tmpDeleteIds.pushArray(deleteDetailIds);
+                        $this.signUpConditionMap[tplComponentId].deleteDetailIds = tmpDeleteIds;
+                    },
                 }
             });
             /**

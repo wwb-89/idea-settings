@@ -1658,9 +1658,7 @@
                             fid: $this.fid,
                             uid: [[${session._login_user_.uid}]],
                             wfwFormTemplateId: signUp.wfwFormTemplateId,
-                            signUpFormType: signUp.formType,
-                            signUpTemplateComponentId: signUp.originId,
-                            newFormFromNormal: newFormFromNormal
+                            signUpFormType: signUp.formType
                         };
                         app.ajaxPost(url, params, function (res) {
                             if (res.success) {
@@ -2095,7 +2093,6 @@
                         var signUp = $this.signUpMap[originId];
                         var deleted = signUp.deleted;
                         var templateOptions = $this.fillInfoTypeMap[originId] && $this.fillInfoTypeMap[originId].templateOptions;
-                        debugger
                         if (!deleted) {
                             if (activityApp.isEmpty(signUp.startTime)) {
                                 app.showMsg(signUp.name + "开始时间不能为空");
@@ -2469,11 +2466,11 @@
                 toConfigSignUpDetails: function (signUpConditionTplComponentId) {
                     var $this = this;
                     $this.operationSucTplComponentId = signUpConditionTplComponentId;
-                    var { originIdentify, activityConditionDetails } = $this.signUpConditionMap[signUpConditionTplComponentId];
+                    var { originIdentify, activityConditionDetails, templateConditionDetails } = $this.signUpConditionMap[signUpConditionTplComponentId];
                     var fields = [];
                     if (!activityApp.isEmpty(originIdentify)) {
                         var fieldNameMap = $this.formStructureMap[originIdentify];
-                        $(activityConditionDetails).each(function () {
+                        $(templateConditionDetails).each(function () {
                             var field = fieldNameMap[this.fieldName];
                             if (!fields.includes(field)) {
                                 fields.push(field);
@@ -2615,6 +2612,7 @@
                     $this.$set($this.signUpMap[tplComponentId], "openAddr", "");
                     $this.$set($this.signUpMap[tplComponentId], "pcUrl", "");
                     $this.$set($this.signUpMap[tplComponentId], "wechatUrl", "");
+                    $this.$set($this.signUpMap[tplComponentId], "wfwFormName", "");
                     $this.$set($this.signUpMap[tplComponentId], "fillInfoFormId", "");
                     $this.signUpFillInfoDefaultWfwFormMap[tplComponentId] = null;
 

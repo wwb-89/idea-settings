@@ -578,6 +578,7 @@ public class SignUpConditionService {
 		signUpConditions.forEach(v -> {
 			List<TemplateSignUpCondition> tmpConditionDetails = tplConditionDetailsMap.get(v.getTemplateComponentId());
 			if (tmpConditionDetails != null) {
+				v.setTemplateConditionDetails(tmpConditionDetails);
 				v.setActivityConditionDetails(ActivitySignUpCondition.buildFromTemplateSignUpConditions(tmpConditionDetails));
 			}
 		});

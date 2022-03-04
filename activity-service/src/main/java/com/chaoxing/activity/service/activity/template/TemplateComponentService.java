@@ -271,10 +271,16 @@ public class TemplateComponentService {
                 .stream()
                 .filter(v -> v.getPid() != 0 || Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP.getValue()) || Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.COMPANY_SIGN_UP.getValue()))
                 .collect(Collectors.toList());
+        List<SignUpWfwFormTemplate> wfwFormTemplates = signUpWfwFormTemplateService.listAllSystem();
         templateComponents.forEach(v -> {
             if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
                 // 报名填报信息的模板组件id为报名的模板组件id
-                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getPid()));
+                SignUpFillInfoType sucItem = signUpFillInfoTypeService.getByTemplateComponentId(v.getPid());
+                if (sucItem != null) {
+                    sucItem.wfwFormTemplateIds2FormTemplateIds();
+                    sucItem.packageWfwTemplateOptions(wfwFormTemplates);
+                    v.setSignUpFillInfoType(sucItem);
+                }
             }
         });
         return TemplateComponentDTO.buildTrees(templateComponents);
