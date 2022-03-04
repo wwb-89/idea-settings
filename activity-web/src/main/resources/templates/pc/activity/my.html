@@ -66,7 +66,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="btn-box" v-if="currentTab.code == 'signedUp' && activity.buttons && activity.buttons.length > 0">
+                            <div class="btn-box" v-if="currentTab.code == 'signedUp' && activity.buttons && activity.buttons.length > 0" :style="{'z-index': getZIndex(index)}">
                                 <button class="btn-secondary" @click="buttonEventHandle(index, 0, $event)">{{activity.buttons[0].name}}</button>
                                 <div class="more-vertical" v-if="activity.buttons.length > 1">
                                     <i class="icon-more-vertical"></i>
@@ -214,6 +214,11 @@
                 $this.initMescroll();
             },
             methods: {
+                getZIndex: function (index) {
+                    var $this = this;
+                    var end = ($this.activities && ($this.activities.length - 1)) || 0;
+                    return end - index;
+                },
                 showTab: function (tabName) {
                     var $this = this;
                     return $this.hideList.indexOf(tabName) == -1;
