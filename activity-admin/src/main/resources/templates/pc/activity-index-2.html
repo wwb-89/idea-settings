@@ -95,6 +95,7 @@
                     mainDomain: [[${mainDomain}]],
                     signWebDomain: [[${signWebDomain}]],
                     cloudDomain: [[${cloudDomain}]],
+                    workDomain: [[${workDomain}]],
                     activity: [[${activity}]],
                     loginUser: [[${session._login_user_}]],
                     signActivityManageIndex: [[${signActivityManageIndex}]],
@@ -123,6 +124,13 @@
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-active.png",
                             url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
+                            selected: false
+                        },
+                        works: {
+                            name: "作品征集",
+                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-collection-default.png",
+                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-collection-active.png",
+                            url: [[${workDomain}]] + "/zj/activity/" + [[${activity.workId}]] + "/work/audit/noPowerIndex",
                             selected: false
                         },
                         task: {
@@ -275,7 +283,9 @@
                         var menu = systemMenuCodes[i];
                         var sysMenu = $this.systemMenus[menu];
                         sysMenu.openBlank = false;
-
+                        if (menu == 'works' && !$this.activity.openWork) {
+                            continue;
+                        }
                         if (menu == 'sign_up') {
                             var { signUpExist, signUpIds } = $this.signActivityManageIndex;
                             var existSignUp = signUpExist && signUpIds && (signUpIds.length > 0);

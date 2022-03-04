@@ -129,6 +129,7 @@ public class ActivityManageController {
 		model.addAttribute("webDomain", DomainConstant.WEB);
 		model.addAttribute("cloudDomain", DomainConstant.CLOUD_RESOURCE);
 		model.addAttribute("xiamenTrainingPlatformDomain", DomainConstant.XIAMEN_TRAINING_PLATFORM_API);
+		model.addAttribute("workDomain", DomainConstant.WORK);
 		model.addAttribute("backUrl", Optional.ofNullable(backUrl).orElse(""));
 
 		if (isMobile) {

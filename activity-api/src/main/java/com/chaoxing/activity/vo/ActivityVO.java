@@ -74,6 +74,8 @@ public class ActivityVO {
     private String activityClassifyName;
     /** 标签 */
     private String tags;
+    /** 认证enc */
+    private String authEnc;
 
     /**
      * 活动list转换为活动vo list

@@ -24,6 +24,7 @@ public enum ActivityMenuEnum {
         SIGN_UP("报名名单", "sign_up", "管理报名名单、报名审核等功能", 1),
         SIGN_IN("签到管理", "sign_in", "管理签到、发布签到", 10),
         FORM_COLLECTION("表单采集", "form_collection", "管理表单采集、发布表单采集", 20),
+        WORKS("作品征集", "works", "作品征集", 25),
         RESULTS_MANAGE("考核管理", "results_manage", "审核用户的成绩是否为合格", 30),
         CERTIFICATE("证书发放", "certificate", "", 40),
         NOTICE("发通知", "notice", "", 50),

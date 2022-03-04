@@ -10,3 +10,16 @@ CREATE TABLE `t_blacklist_detail` (
      `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '违约时间',
      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='黑名单违约记录明细';
+
+-- 2022-03-04 系统菜单增加作品征集，刷数据
+INSERT INTO t_activity_menu_config ( activity_id, menu, is_enable, show_rule, data_origin )
+SELECT
+    t.id,
+    'works' AS menu,
+    1 AS is_enable,
+    'no_limit' AS show_rule,
+    'system' AS data_origin
+FROM
+    t_activity t
+WHERE
+    t.is_open_work = 1 AND t.work_id IS NOT NULL;

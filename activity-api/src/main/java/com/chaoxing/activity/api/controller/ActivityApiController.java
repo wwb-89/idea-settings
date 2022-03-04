@@ -25,6 +25,7 @@ import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
+import com.chaoxing.activity.service.activity.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -692,6 +693,7 @@ public class ActivityApiController {
 			List<ActivityTagNameDTO> activityTagNames = tagQueryService.listActivityTagNameByActivityIds(activityIds);
 			Map<Integer, List<String>> activityIdTagNames = activityTagNames.stream().collect(Collectors.groupingBy(ActivityTagNameDTO::getActivityId, Collectors.mapping(ActivityTagNameDTO::getTagName, Collectors.toList())));
 			result.forEach(v -> {
+				v.setAuthEnc(ActivityAuthService.buildActivityAuthEnc(v.getId(), activityQuery.getUid()));
 				// 标签
 				List<String> tagNames = activityIdTagNames.getOrDefault(v.getId(), Lists.newArrayList());
 				v.setTags(String.join(",", tagNames));
