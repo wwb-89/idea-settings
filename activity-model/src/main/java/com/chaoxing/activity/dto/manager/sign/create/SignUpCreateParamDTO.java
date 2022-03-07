@@ -89,6 +89,8 @@ public class SignUpCreateParamDTO {
 	private String wfwFormName;
 	/** 万能表单原始模板id */
 	private Integer wfwFormTemplateId;
+	/** 上一个表单填报id */
+	private Integer oldFillInfoFormId;
 
 	/** 微服务参与范围列表 */
 	private List<SignUpParticipateScopeDTO> wfwParticipateScopes;

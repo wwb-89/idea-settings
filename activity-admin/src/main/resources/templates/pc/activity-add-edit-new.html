@@ -836,23 +836,22 @@
                     <form action="">
                         <div class="form-items">
                             <label class="label">接收人</label>
-                            <div class="items receive-box">
-                                <ul class="add-box" style="height: 28px;" v-if="activityPushReminder.remindWithinRoleScope">
+                            <div class="items receive-box" v-if="activityPushReminder.remindWithinRoleScope">
+                                <ul class="add-box" style="height: 28px;">
                                     <li v-for="(scope, scIndex) in ['发布范围', '角色范围']" :key="'scope-' + scIndex" style="padding-right: 8px; border-radius: 0">
                                         <span>{{scope}}</span>
                                     </li>
                                 </ul>
-                                <template v-else>
-                                    <!-- 点击添加弹窗和参与范围弹窗一样 -->
-                                    <div class="add-receive" @click="toAddPushRemindScope"><img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" alt=""></div>
-                                    <ul class="add-box" style="height: 28px">
-                                        <li v-for="(scope, scopeIndex) of activityPushReminder.receiveScopes" :key="'receiver-scope-' + scopeIndex">
-                                            <span>{{scope.externalName}}</span>
-                                            <i class="del-btn" @click="removeRemindScope(scopeIndex)"></i>
-                                        </li>
-                                    </ul>
-                                </template>
-
+                            </div>
+                            <div class="items receive-box" style="cursor: pointer" @click="toAddPushRemindScope" v-else>
+                                <!-- 点击添加弹窗和参与范围弹窗一样 -->
+                                <div class="add-receive"><img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" alt=""></div>
+                                <ul class="add-box" style="height: 28px">
+                                    <li v-for="(scope, scopeIndex) of activityPushReminder.receiveScopes" :key="'receiver-scope-' + scopeIndex">
+                                        <span>{{scope.externalName}}</span>
+                                        <i class="del-btn" @click="removeRemindScope($event, scopeIndex)"></i>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                         <div class="form-items">
@@ -897,10 +896,10 @@
         <div class="dailog-box1" v-show="showSwitchFormDialog">
             <div class="dailog delete-dailog width304">
                 <div class="warn"><img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" alt=""></div>
-                <span>切换报名填报形式可能会导致报名数据误差</span>
+                <span>切换填报形式会清除已报名用户</span>
                 <div>
                     <div class="normal-btn" @click="cancelSwitchForm">取消</div>
-                    <div class="normal-btn after-sure" @click="confirmSwitchForm">继续切换</div>
+                    <div class="normal-btn after-sure" @click="confirmSwitchForm">确定</div>
                 </div>
             </div>
         </div>
@@ -2165,7 +2164,7 @@
                                         approvalNum++;
                                     }
                                 });
-                                if (activityApp.isEmpty(signUp.wfwFormTemplateId)) {
+                                if (activityApp.isEmpty(signUp.fillInfoFormId) && activityApp.isEmpty(signUp.wfwFormTemplateId)) {
                                     if (signUp.formType == 'wfw_form' && wfwFormNum > 0) {
                                         app.showMsg("请选择" + signUp.name + "填报信息模板");
                                         return false;
@@ -2693,8 +2692,9 @@
                     // 将数据拷贝
                     $this.activity.activityPushReminder = $.extend({}, $this.activityPushReminder);
                 },
-                removeRemindScope: function (scopeIndex) {
+                removeRemindScope: function (e, scopeIndex) {
                     var $this = this;
+                    e.stopPropagation();
                     $this.activityPushReminder.receiveScopes.splice(scopeIndex, 1);
                 },
                 deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex, e) {
@@ -2786,8 +2786,9 @@
                     $this.$set($this.activityPushReminder, 'remindWithinRoleScope', pushReminderConfig && pushReminderConfig.remindWithinRoleScope);
                     $this.remindContentShow = true
                 },
-                toAddPushRemindScope: function () {
+                toAddPushRemindScope: function (e) {
                     var $this = this;
+                    e.stopPropagation();
                     $this.$refs.reminderParticipateScopeWindow.showWindow($this.contactGroups, $this.activityPushReminder.receiveScopes, 'contacts');
                 },
                 // 签到列表管理页

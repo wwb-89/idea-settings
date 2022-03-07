@@ -42,10 +42,10 @@
 					<!-- 计数栏 -->
 					<div class="table-count-box fs12">
 						<div class="count-info fl">
-							<span class="colorBlue marginr8">已选择 {{selectedNum}} 人</span>
+							<span class="colorBlue marginr8" v-if="selectedNum > 0">已选择 {{selectedNum}} 人</span>
 							<span class="color999">共 {{total}} 人</span>
 						</div>
-						<div class="clear"></div>
+<!--						<div class="clear"></div>-->
 					</div>
 
 				</div>

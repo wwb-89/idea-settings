@@ -394,6 +394,7 @@ public class ActivityHandleService {
 		if (CollectionUtils.isEmpty(sign.getSignUps())) {
 			return;
 		}
+		List<Integer> waitClearSignedUpIds = Lists.newArrayList();
 		sign.getSignUps().forEach(v -> {
 			if (v.getFillInfoFormId() == null) {
 				// 根据模板类型和模板id获取模板
@@ -408,7 +409,17 @@ public class ActivityHandleService {
 				v.setFillInfoFormId(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getFormId).orElse(null));
 				v.setWfwFormName(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getName).orElse(null));
 			}
+
+			// 表单是否切换
+			boolean fillFormSwitch = v.getId() != null && v.getOldFillInfoFormId() != null && !Objects.equals(v.getFillInfoFormId(), v.getOldFillInfoFormId());
+			if (fillFormSwitch){
+				// 新旧填报表单不一致,	移除所有已报名数据
+				waitClearSignedUpIds.add(v.getId());
+			}
 		});
+		if (CollectionUtils.isNotEmpty(waitClearSignedUpIds)) {
+			signApiService.clearSignedUpRecords(waitClearSignedUpIds);
+		}
 	}
 
 	/**处理小组

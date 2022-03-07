@@ -165,6 +165,7 @@ public class ActivityManageController {
 		if (signId != null) {
 			sign = signApiService.getCreateById(signId);
 		}
+		sign.initSignUpCreateParams();
 		model.addAttribute("sign", sign);
 		return editView(model,
 				activityId,

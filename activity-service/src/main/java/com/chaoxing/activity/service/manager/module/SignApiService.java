@@ -87,6 +87,8 @@ public class SignApiService {
 	private static final String CANCEL_SIGN_UP_URL = DomainConstant.SIGN_API + "/sign-up/%d/cancel";
 	/** 撤销报名 */
 	private static final String REVOCATION_SIGN_UP_URL = DomainConstant.SIGN_API + "/sign-up/%d/revocation";
+	/** 表单切换，清空已报名用户记录 */
+	private static final String CLEAR_SIGNED_UP_USER_RECORDS_URL = DomainConstant.SIGN_API + "/sign-up/clear/user-sign-up";
 
 	/** 统计活动报名签到对应的活动统计汇总记录url */
 	private static final String STAT_ACTIVITY_SUMMARY_URL = DomainConstant.SIGN_API + "/stat/sign/%d/activity-stat-summary";
@@ -976,4 +978,25 @@ public class SignApiService {
 		});
 	}
 
+	/**清空报名人员记录
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2022-03-07 10:30:47
+	 * @param signUpIds
+	 * @return 
+	 */
+    public void clearSignedUpRecords(List<Integer> signUpIds) {
+		if (CollectionUtils.isEmpty(signUpIds)) {
+			return;
+		}
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signUpIds), httpHeaders);
+		String result = restTemplate.postForObject(CLEAR_SIGNED_UP_USER_RECORDS_URL, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		resultHandle(jsonObject, () -> null, (message) -> {
+			throw new BusinessException(message);
+		});
+    }
 }

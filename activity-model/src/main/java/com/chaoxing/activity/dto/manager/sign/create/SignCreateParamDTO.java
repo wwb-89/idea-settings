@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
@@ -66,4 +67,12 @@ public class SignCreateParamDTO {
 	}
 
 
+    public void initSignUpCreateParams() {
+		if (CollectionUtils.isEmpty(getSignUps())) {
+			return;
+		}
+		getSignUps().forEach(v -> {
+			v.setOldFillInfoFormId(v.getFillInfoFormId());
+		});
+    }
 }

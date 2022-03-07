@@ -127,7 +127,7 @@
                             selected: false
                         },
                         works: {
-                            name: "作品征集",
+                            name: "作品审核",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-collection-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-collection-active.png",
                             url: [[${workDomain}]] + "/zj/activity/" + [[${activity.workId}]] + "/work/audit/noPowerIndex",
@@ -137,28 +137,28 @@
                             name: "任务",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-active.png",
-                            url: "//" + xiamenTrainingPlatformDomain + "/activity/task?activityId=" + [[${activity.id}]],
+                            url: [[${xiamenTrainingPlatformDomain}]] + "/activity/task?activityId=" + [[${activity.id}]],
                             selected: false
                         },
                         discuss: {
                             name: "讨论",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-active.png",
-                            url: "//" + xiamenTrainingPlatformDomain + "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                            url: [[${xiamenTrainingPlatformDomain}]] + "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
                             selected: false
                         },
                         homework: {
                             name: "作业",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-active.png",
-                            url: "//" + xiamenTrainingPlatformDomain + "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                            url: [[${xiamenTrainingPlatformDomain}]] + "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
                             selected: false
                         },
                         review_management: {
                             name: "评审",
                             defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-default.png",
                             activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-active.png",
-                            url: "//" + xiamenTrainingPlatformDomain + "/review/list?activityId=" + [[${activity.id}]],
+                            url: [[${xiamenTrainingPlatformDomain}]] + "/review/list?activityId=" + [[${activity.id}]],
                             selected: false
                         },
                         results_manage: {
