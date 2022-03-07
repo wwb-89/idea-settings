@@ -1,4 +1,4 @@
-package com.chaoxing.activity.api.controller;
+package com.chaoxing.activity.api.controller.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

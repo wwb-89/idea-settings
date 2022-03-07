@@ -38,6 +38,7 @@ public class ActivityPosterController {
         model.addAttribute("activity", activity);
         model.addAttribute("signUp", signUp);
         model.addAttribute("mainDomain", DomainConstant.MAIN);
+        model.addAttribute("webDomain", DomainConstant.WEB);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/activity/poster/index";
         } else {

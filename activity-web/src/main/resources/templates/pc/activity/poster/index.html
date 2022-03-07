@@ -60,6 +60,7 @@
                 el: "#poster-pc",
                 data: {
                     mainDomain: [[${mainDomain}]],
+                    webDomain: [[${webDomain}]],
                     activity: [[${activity}]],
                     signUp: [[${signUp}]],
                     fieldCodeNameRelation: [[${fieldCodeNameRelation}]],
@@ -101,8 +102,9 @@
                         }
                         $this.getHeight($('.text-title')[0], 60);
                         //    canvas
+                        var activityUrl = $this.webDomain + "/activity/" + $this.activity.id;
                         new QRCode('canvas', {
-                            text: $this.activity.previewUrl,
+                            text: activityUrl,
                             width: 128,
                             height: 128,
                             colorDark : "#000000",
