@@ -137,6 +137,21 @@
   right: 24px;
 }
 
+.assess-header .assess-header-right .setting {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 8px;
+  width: 80px;
+  text-align: center;
+  height: 24px;
+  line-height: 24px;
+  background: #0084ff;
+  border-radius: 15px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
 .assess-header .login-container .after-login {
   cursor: pointer;
   text-align: right;

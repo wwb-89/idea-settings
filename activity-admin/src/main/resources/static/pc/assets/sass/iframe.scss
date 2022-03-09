@@ -121,6 +121,20 @@
     position: absolute;
     top: 0;
     right: 24px;
+    .setting{
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 8px;
+      width: 80px;
+      text-align: center;
+      height: 24px;
+      line-height: 24px;
+      background: #0084ff;
+      border-radius: 15px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
   }
   .login-container {
     .after-login {

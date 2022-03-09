@@ -2793,3 +2793,312 @@ input.btn-name,
   width: 304px;
   height: 220px;
 }
+
+.setForm .join-box .join-select-new {
+  width: 339px;
+}
+
+.setForm .join-box .join-select-new .title-box {
+  margin-top: 8px;
+  color: #999999;
+  font-size: 12px;
+  line-height: 16px;
+  overflow: hidden;
+}
+
+.setForm .join-box .join-select-new .title-box .fr {
+  margin-right: 40px;
+  width: 64px;
+  text-align: center;
+}
+
+.setForm .join-box .join-select-new .list-box {
+  overflow: auto;
+  max-height: 196px;
+}
+
+.setForm .join-box .join-select-new .text-box {
+  position: relative;
+  margin-top: 8px;
+  min-height: 28px;
+}
+
+.setForm .join-box .join-select-new .text-box .text {
+  width: 227px;
+  font-size: 14px;
+  line-height: 22px;
+  color: #333333;
+}
+
+.setForm .join-box .join-select-new .text-box input {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  width: 64px;
+  height: 28px;
+  text-align: center;
+  padding: 5px 12px;
+}
+
+.setForm .join-box .join-select-new .text-box input:hover {
+  border: 1px solid #0084FF;
+}
+
+.setForm .join-box .join-select-new .text-box > i {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  font-size: 16px;
+  color: #CCCCCC;
+  cursor: pointer;
+  display: none;
+}
+
+.setForm .join-box .join-select-new .text-box:hover i {
+  display: block;
+}
+
+.setForm .join-box .join-select-new .btn-box {
+  margin-top: 12px;
+  height: 20px;
+  overflow: hidden;
+}
+
+.setForm .join-box .join-select-new .btn-box > a {
+  color: #0084FF;
+  font-size: 14px;
+  line-height: 20px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.setForm .join-box .join-select-new .btn-box > a > i {
+  font-size: 16px;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 4px;
+  margin-top: 2px;
+}
+
+.setForm .join-box .join-select-new .btn-box .number {
+  line-height: 20px;
+  font-size: 12px;
+  color: #999999;
+  float: right;
+  margin-right: 40px;
+}
+
+.setForm .join-box .join-select-new .btn-box .number > span {
+  color: #27bb2c;
+}
+
+/* 选择器弹窗 */
+.select-dailog {
+  width: 600px;
+}
+
+.select-dailog > .body {
+  padding: 0;
+  overflow: hidden;
+  font-size: 0;
+}
+
+.select-dailog .left-tree {
+  display: inline-block;
+  vertical-align: top;
+  width: 319px;
+  border-right: 1px solid #F0F0F0;
+  padding-left: 24px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.select-dailog .left-tree .search {
+  position: relative;
+  margin-top: 12px;
+  margin-right: 16px;
+}
+
+.select-dailog .left-tree .search input {
+  border: 1px solid #E9E9E9;
+  border-radius: 999px;
+  padding-right: 60px;
+}
+
+.select-dailog .left-tree .search .icon1 {
+  cursor: pointer;
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  font-size: 16px;
+  color: #cccccc;
+}
+
+.select-dailog .left-tree .search .icon1:hover {
+  color: #999999;
+}
+
+.select-dailog .left-tree .search .icon2 {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  font-size: 16px;
+  color: #cccccc;
+}
+
+.select-dailog .left-tree .tree-box {
+  border: none;
+  height: 338px;
+  overflow-x: hidden;
+}
+
+.select-dailog .left-tree .tree-box .ztree {
+  padding: 0;
+}
+
+.select-dailog .left-tree .tree-box .ztree li {
+  line-height: 38px;
+}
+
+.select-dailog .left-tree .tree-box .ztree li.checked {
+  background: rgba(0, 132, 255, 0.04);
+}
+
+.select-dailog .left-tree .tree-box .ztree li a {
+  height: 38px;
+  width: calc(100% - 36px);
+}
+
+.select-dailog .left-tree .tree-box .ztree li span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 21px;
+}
+
+.select-dailog .left-tree .tree-box .ztree li span.button.chk {
+  margin-right: 8px;
+}
+
+.select-dailog .left-tree .tree-box .ztree li span.button.ico_close,
+.select-dailog .left-tree .tree-box .ztree li span.button.ico_open,
+.select-dailog .left-tree .tree-box .ztree li span.button.ico_docu {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url(../images/catalog1.png);
+  background-size: 100% 100%;
+}
+
+.select-dailog .left-tree .tree-box .ztree .node_name {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: calc(100% - 60px);
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-dailog .right-choose {
+  display: inline-block;
+  vertical-align: top;
+  width: calc(100% - 319px);
+}
+
+.select-dailog .right-choose .top-box {
+  width: 100%;
+  padding: 12px 16px 6px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  line-height: 30px;
+  height: 48px;
+}
+
+.select-dailog .right-choose .top-box .number {
+  font-size: 14px;
+  color: #333333;
+}
+
+.select-dailog .right-choose .top-box .clear-btn {
+  font-size: 13px;
+  color: #0084FF;
+  float: right;
+}
+
+.select-dailog .right-choose .choose-list {
+  height: 335px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 16px 0 8px;
+}
+
+.select-dailog .right-choose .choose-list .list-item {
+  position: relative;
+  padding: 7px 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.select-dailog .right-choose .choose-list .list-item:hover {
+  background: #F8F8F8;
+}
+
+.select-dailog .right-choose .choose-list .list-item .list-photo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  float: left;
+}
+
+.select-dailog .right-choose .choose-list .list-item .list-photo img {
+  width: 100%;
+  height: 100%;
+}
+
+.select-dailog .right-choose .choose-list .list-item .list-text {
+  float: left;
+  margin-left: 8px;
+  line-height: 24px;
+  color: #333333;
+  font-size: 14px;
+  width: 180px;
+}
+
+.select-dailog .right-choose .choose-list .list-item .del {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.select-dailog .right-choose .choose-list .list-item .del:hover {
+  background: #EBEBEB;
+}
+
+.select-dailog .right-choose .choose-list .list-item .del img {
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+}
