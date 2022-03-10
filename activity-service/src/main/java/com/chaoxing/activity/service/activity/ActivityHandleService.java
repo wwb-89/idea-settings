@@ -395,28 +395,32 @@ public class ActivityHandleService {
 			return;
 		}
 		List<Integer> waitClearSignedUpIds = Lists.newArrayList();
-		sign.getSignUps().forEach(v -> {
-			if (v.isWfwFormFillInfo() && v.getFillInfoFormId() == null) {
+		for (SignUpCreateParamDTO signUp : sign.getSignUps()) {
+			if (!signUp.isWfwFormFillInfo()) {
+				continue;
+			}
+			if (signUp.getFillInfoFormId() == null) {
 				// 根据模板类型和模板id获取模板
-				SignUpFillInfoType.TypeEnum signUpFormTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL.getValue(), v.getFormType()) ? SignUpFillInfoType.TypeEnum.APPROVAL : SignUpFillInfoType.TypeEnum.WFW_FORM;
+				SignUpFillInfoType.TypeEnum signUpFormTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL.getValue(), signUp.getFormType()) ? SignUpFillInfoType.TypeEnum.APPROVAL : SignUpFillInfoType.TypeEnum.WFW_FORM;
 				SignUpWfwFormTemplate.TypeEnum templateTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL, signUpFormTypeEnum) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
-				SignUpWfwFormTemplate template = signUpWfwFormTemplateService.getByIdOrDefaultNormal(v.getWfwFormTemplateId(), templateTypeEnum);
+				SignUpWfwFormTemplate template = signUpWfwFormTemplateService.getByIdOrDefaultNormal(signUp.getWfwFormTemplateId(), templateTypeEnum);
 				//
 				WfwFormCreateResultDTO wfwFormResult = wfwFormApiService.createWfwForm(fid, uid, template, signUpFormTypeEnum.getValue());
-				v.setPcUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getPcUrl).orElse(null));
-				v.setOpenAddr(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getOpenAddr).orElse(null));
-				v.setWechatUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getWechatUrl).orElse(null));
-				v.setFillInfoFormId(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getFormId).orElse(null));
-				v.setWfwFormName(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getName).orElse(null));
+				signUp.setPcUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getPcUrl).orElse(null));
+				signUp.setOpenAddr(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getOpenAddr).orElse(null));
+				signUp.setWechatUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getWechatUrl).orElse(null));
+				signUp.setFillInfoFormId(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getFormId).orElse(null));
+				signUp.setWfwFormName(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getName).orElse(null));
 			}
 
 			// 表单是否切换
-			boolean fillFormSwitch = v.getId() != null && v.getOldFillInfoFormId() != null && !Objects.equals(v.getFillInfoFormId(), v.getOldFillInfoFormId());
+			boolean fillFormSwitch = signUp.getId() != null && signUp.getOldFillInfoFormId() != null
+					&& !Objects.equals(signUp.getFillInfoFormId(), signUp.getOldFillInfoFormId());
 			if (fillFormSwitch){
 				// 新旧填报表单不一致,	移除所有已报名数据
-				waitClearSignedUpIds.add(v.getId());
+				waitClearSignedUpIds.add(signUp.getId());
 			}
-		});
+		}
 		if (CollectionUtils.isNotEmpty(waitClearSignedUpIds)) {
 			signApiService.clearSignedUpRecords(waitClearSignedUpIds);
 		}
