@@ -94,7 +94,7 @@ public class MoocApiService {
 			return Lists.newArrayList();
 		}
 
-		List<String> roleIdSplits = Arrays.asList(moocUser.getRoleIds().split(","));
+		List<String> roleIdSplits = Arrays.asList(moocUser.getRoleIds().split(",")).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
 		List<Integer> roleIds = Lists.newArrayList();
 		CollectionUtils.collect(roleIdSplits, Integer::valueOf, roleIds);
 		return roleIds;
