@@ -396,7 +396,7 @@ public class ActivityHandleService {
 		}
 		List<Integer> waitClearSignedUpIds = Lists.newArrayList();
 		sign.getSignUps().forEach(v -> {
-			if (v.getFillInfoFormId() == null) {
+			if (v.isWfwFormFillInfo() && v.getFillInfoFormId() == null) {
 				// 根据模板类型和模板id获取模板
 				SignUpFillInfoType.TypeEnum signUpFormTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL.getValue(), v.getFormType()) ? SignUpFillInfoType.TypeEnum.APPROVAL : SignUpFillInfoType.TypeEnum.WFW_FORM;
 				SignUpWfwFormTemplate.TypeEnum templateTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL, signUpFormTypeEnum) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;

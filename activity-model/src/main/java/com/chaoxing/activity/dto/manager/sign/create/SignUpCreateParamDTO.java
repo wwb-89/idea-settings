@@ -2,8 +2,10 @@ package com.chaoxing.activity.dto.manager.sign.create;
 
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwRoleDTO;
+import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -178,4 +180,15 @@ public class SignUpCreateParamDTO {
 		}
 	}
 
+
+
+	/**是否从万能表单填写信息
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2022-03-10 18:19:27
+	 * @return
+	 */
+	public boolean isWfwFormFillInfo() {
+		return StringUtils.isNotBlank(getFormType()) && !Objects.equals(getFormType(), SignUpFillInfoType.TypeEnum.FORM.getValue());
+	}
 }
