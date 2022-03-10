@@ -396,6 +396,7 @@ public class ActivityHandleService {
 		}
 		List<Integer> waitClearSignedUpIds = Lists.newArrayList();
 		for (SignUpCreateParamDTO signUp : sign.getSignUps()) {
+			// 非万能表单填报类型的报名不进行后续的表单处理
 			if (!signUp.isWfwFormFillInfo()) {
 				continue;
 			}
