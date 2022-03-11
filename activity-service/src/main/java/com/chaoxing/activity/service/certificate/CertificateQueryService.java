@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Optional;
 
 /**证书查询服务
  * @author wwb
@@ -128,6 +127,19 @@ public class CertificateQueryService {
     */
     public Integer getActivityMaxSerialNo(Integer activityId) {
         return certificateIssueMapper.getActivityMaxSerialNo(activityId);
+    }
+
+    /**根据证书编号查询证书
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-10 20:31:40
+     * @param no
+     * @return com.chaoxing.activity.model.CertificateIssue
+    */
+    public CertificateIssue getByNo(String no) {
+        return certificateIssueMapper.selectList(new LambdaQueryWrapper<CertificateIssue>()
+                .eq(CertificateIssue::getNo, no)
+        ).stream().findFirst().orElse(null);
     }
 
 }
