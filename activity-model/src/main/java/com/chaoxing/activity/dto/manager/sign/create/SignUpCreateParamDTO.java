@@ -93,6 +93,8 @@ public class SignUpCreateParamDTO {
 	private Integer wfwFormTemplateId;
 	/** 上一个表单填报id */
 	private Integer oldFillInfoFormId;
+	/** 状态（已有的报名的状态，目前作为是否能切换填报信息表单的依据） */
+	private Integer status;
 
 	/** 微服务参与范围列表 */
 	private List<SignUpParticipateScopeDTO> wfwParticipateScopes;

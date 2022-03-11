@@ -606,7 +606,7 @@
                                                     <div :class="{'left-box': true, 'type1': signUpMap[item.id].formType == 'approval'}"></div>
                                                     <p class="title overHidden2">{{signUpMap[item.id].wfwFormName ? signUpMap[item.id].wfwFormName : '表单' }}</p>
                                                     <a href="javascript:" v-show="signUpMap[item.id].formType != 'form' || signUpMap[item.id].fillInfoFormId > 60000" class="edit-btn" @click="fillInfoConfig(item.id)"></a>
-                                                    <a href="javascript:" v-show="signUpMap[item.id].formType != 'form' || signUpMap[item.id].fillInfoFormId > 60000" class="del-btn" @click="openWfwFormSwitchDialog(item.id)"></a>
+                                                    <a href="javascript:" v-show="(signUpMap[item.id].formType != 'form' || signUpMap[item.id].fillInfoFormId > 60000) && (!signUpMap[item.id] || signUpMap[item.id].status != 2)" class="del-btn" @click="openWfwFormSwitchDialog(item.id)"></a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -2592,8 +2592,7 @@
                     var $this= this;
                     $this.operateSignUpOriginId = signUpTplComponentId;
                     var signUp = $this.signUpMap[signUpTplComponentId];
-                    var now = new Date().getTime();
-                    if (signUp.startTime && signUp.startTime < now) {
+                    if (signUp.id) {
                         $this.showSwitchFormDialog = true;
                     } else {
                         $this.confirmSwitchForm();
