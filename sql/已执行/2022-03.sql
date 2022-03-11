@@ -23,3 +23,7 @@ FROM
     t_activity t
 WHERE
         t.is_open_work = 1 AND t.work_id IS NOT NULL;
+-- 2022-03-11
+UPDATE t_sign_up_wfw_form_template t
+SET t.type = 'wfw_form'
+WHERE t.type = 'normal';
