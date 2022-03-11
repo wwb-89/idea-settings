@@ -230,16 +230,13 @@ public class WfwFormSyncActivityQueueService {
         if (signUpCreateParam != null) {
             // 是否指定了报名使用的万能表单模板
             String signUpFormTemplateName = WfwFormUtils.getValue(formUserRecord, "sign_up_form_template_name");
-            SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateService.getByName(signUpFormTemplateName);
-            WfwFormCreateResultDTO wfwFormCreateResult = createWfwForm(templateId, signUpWfwFormTemplate, operateUser);
+            SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateService.getByNameOrDefaultSignUp(signUpFormTemplateName, signUpCreateParam);
+            WfwFormCreateResultDTO wfwFormCreateResult =
+                    wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate);;
             if (wfwFormCreateResult != null) {
+                // 根据表单模板和表单信息，填充报名表单信息相关属性
+                signUpCreateParam.buildSignUpWfwFormInfo(signUpWfwFormTemplate, wfwFormCreateResult);
                 signUpCreateParam.setFillInfo(true);
-                signUpCreateParam.setFormType(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
-                signUpCreateParam.setFillInfoFormId(wfwFormCreateResult.getFormId());
-                signUpCreateParam.setPcUrl(wfwFormCreateResult.getPcUrl());
-                signUpCreateParam.setWechatUrl(wfwFormCreateResult.getWechatUrl());
-                signUpCreateParam.setOpenAddr(wfwFormCreateResult.getOpenAddr());
-                signUpCreateParam.setWfwFormName(wfwFormCreateResult.getName());
             }
             signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
         }
@@ -265,37 +262,6 @@ public class WfwFormSyncActivityQueueService {
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
         signApiService.createUserSignUp(activity.getSignId(), participateUids);
         return activity;
-    }
-
-    /**创建万能表单
-     * @Description 
-     * @author wwb
-     * @Date 2021-11-30 17:32:21
-     * @param templateId
-     * @param signUpWfwFormTemplate
-     * @param operateUser
-     * @return com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO
-    */
-    private WfwFormCreateResultDTO createWfwForm(Integer templateId, SignUpWfwFormTemplate signUpWfwFormTemplate, OperateUserDTO operateUser) {
-        if (signUpWfwFormTemplate == null) {
-            // 查询模版关联的报名组件templateComponentId
-            Integer sysComponentTplComponentId = templateComponentService.getSysComponentTplComponentId(templateId, Component.SystemComponentCodeEnum.SIGN_UP.getValue());
-            if (sysComponentTplComponentId == null) {
-                return null;
-            }
-            SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(sysComponentTplComponentId);
-            if (signUpFillInfoType != null) {
-                // 查询报名填报信息模版
-                signUpFillInfoType.wfwFormTemplateIds2FormTemplateIds();
-                Integer wfwFormTemplateId = signUpFillInfoType.getFormTemplateIds().stream().findFirst().orElse(null);
-                signUpWfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, SignUpWfwFormTemplate.TypeEnum.NORMAL);
-            }
-        }
-
-        if (signUpWfwFormTemplate == null) {
-            return null;
-        }
-        return wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate, SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
     }
 
     /**封装报名信息

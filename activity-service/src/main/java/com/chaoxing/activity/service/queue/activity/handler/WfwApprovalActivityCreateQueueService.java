@@ -10,11 +10,13 @@ import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
+import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
@@ -25,6 +27,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwApprovalApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -86,6 +89,10 @@ public class WfwApprovalActivityCreateQueueService {
     private SignApiService signApiService;
     @Resource
     private ActivityPushReminderService activityPushReminderService;
+    @Resource
+    private WfwFormApiService wfwFormApiService;
+    @Resource
+    private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
 
     /**创建活动
      * @Description
@@ -172,7 +179,20 @@ public class WfwApprovalActivityCreateQueueService {
         SignCreateParamDTO signCreateParam = buildSignFromApproval(formData, loginUser.getUid(), fid, DateUtils.timestamp2Date(activity.getStartTimeStamp()));
         if (CollectionUtils.isNotEmpty(signCreateParam.getSignUps())) {
             Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
-            signCreateParam.getSignUps().get(0).setOriginId(originId);
+            SignUpCreateParamDTO signUpCreateParam = signCreateParam.getSignUps().get(0);
+            signUpCreateParam.setOriginId(originId);
+            OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
+            // 根据报名中的审核标识获取报名表单填报模板
+            SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateService.getByNameOrDefaultSignUp(null, signUpCreateParam);
+            WfwFormCreateResultDTO wfwFormCreateResult =
+                    wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate);;
+            if (wfwFormCreateResult != null) {
+                // 根据表单模板和表单信息，填充报名表单信息相关属性
+                signUpCreateParam.buildSignUpWfwFormInfo(signUpWfwFormTemplate, wfwFormCreateResult);
+                signUpCreateParam.setFillInfo(true);
+            }
+            signCreateParam.getSignUps().set(0, signUpCreateParam);
+
         }
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);

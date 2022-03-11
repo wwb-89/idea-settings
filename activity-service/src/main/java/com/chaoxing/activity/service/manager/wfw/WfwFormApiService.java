@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.WfwFormConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -517,10 +518,10 @@ public class WfwFormApiService {
 
 		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
 		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
-		return createWfwForm(fid, uid, wfwFormTemplate, signUpFormType);
+		return createWfwForm(fid, uid, wfwFormTemplate);
 	}
 
-	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, SignUpWfwFormTemplate wfwFormTemplate, String signUpFormType) {
+	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, SignUpWfwFormTemplate wfwFormTemplate) {
 		if (wfwFormTemplate == null) {
 			throw new BusinessException("报名万能表单模板不存在!");
 		}
@@ -532,7 +533,7 @@ public class WfwFormApiService {
 				.fid(fid)
 				.sign(wfwFormTemplate.getSign())
 				.key(wfwFormTemplate.getKey())
-				.formType(Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? 0 : 2)
+				.formType(Objects.equals(wfwFormTemplate.getType(), SignUpWfwFormTemplate.TypeEnum.APPROVAL.getValue()) ? 0 : 2)
 				.build());
 	}
 
@@ -559,7 +560,7 @@ public class WfwFormApiService {
 
 		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
 		if (formId == null) {
-			return createWfwForm(fid, uid, wfwFormTemplate, signUpFormType);
+			return createWfwForm(fid, uid, wfwFormTemplate);
 		}
 		return create(WfwFormCreateParamDTO.builder()
 				.originalFid(originFid)

@@ -1,13 +1,16 @@
 package com.chaoxing.activity.service.activity.engine;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.mapper.SignUpWfwFormTemplateMapper;
+import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +29,8 @@ public class SignUpWfwFormTemplateService {
 
     @Resource
     private SignUpWfwFormTemplateMapper signUpWfwFormTemplateMapper;
+    @Resource
+    private SignUpFillInfoTypeService signUpFillInfoTypeService;
 
     private static final String NORMAL_TEMPLATE_CODE = "normal";
 
@@ -127,6 +132,39 @@ public class SignUpWfwFormTemplateService {
                 .eq(SignUpWfwFormTemplate::getDeleted, false)
         );
         return signUpWfwFormTemplates.stream().findFirst().orElse(null);
+    }
+
+    /**根据名称或报名信息获取表单模板，此方法不会返回空！
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-03-11 16:12:46
+     * @param name
+     * @param signUp
+     * @return
+     */
+    public SignUpWfwFormTemplate getByNameOrDefaultSignUp(String name, SignUpCreateParamDTO signUp) {
+        SignUpWfwFormTemplate signUpWfwFormTemplate = getByName(name);
+        // 名字存在，返回模板
+        if (signUpWfwFormTemplate != null) {
+            return signUpWfwFormTemplate;
+        }
+        // 根据报名是否开启审核判断报名表单类型是wfw_form亦或是approval
+        SignUpWfwFormTemplate.TypeEnum formTypeEnum = Optional.ofNullable(signUp.getOpenAudit()).orElse(false) ?  SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
+        SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(signUp.getOriginId());
+        // 如果模板的报名信息填报配置存在，且配置模板ids不为空，根据类型查询第一个满足的表单模板
+        String wfwFormTemplateIds = Optional.ofNullable(signUpFillInfoType).map(SignUpFillInfoType::getWfwFormTemplateIds).orElse(null);
+        if (StringUtils.isNotBlank(wfwFormTemplateIds)) {
+            // 表单模板ids转换为list
+            signUpFillInfoType.wfwFormTemplateIds2FormTemplateIds();
+            signUpWfwFormTemplate = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+                    .eq(SignUpWfwFormTemplate::getType, formTypeEnum.getValue())
+                    .in(SignUpWfwFormTemplate::getId, signUpFillInfoType.getFormTemplateIds())).stream().findFirst().orElse(null);
+        }
+        if (signUpWfwFormTemplate != null) {
+            return signUpWfwFormTemplate;
+        }
+        return getSystemTemplateByCode(NORMAL_TEMPLATE_CODE, formTypeEnum);
+
     }
 
     /**列出所有的系统模板

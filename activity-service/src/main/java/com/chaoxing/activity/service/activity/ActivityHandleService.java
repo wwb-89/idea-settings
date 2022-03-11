@@ -396,17 +396,13 @@ public class ActivityHandleService {
 		}
 		List<Integer> waitClearSignedUpIds = Lists.newArrayList();
 		for (SignUpCreateParamDTO signUp : sign.getSignUps()) {
-			// 非万能表单填报类型的报名不进行后续的表单处理
-			if (!signUp.isWfwFormFillInfo()) {
-				continue;
-			}
 			if (signUp.getFillInfoFormId() == null) {
 				// 根据模板类型和模板id获取模板
 				SignUpFillInfoType.TypeEnum signUpFormTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL.getValue(), signUp.getFormType()) ? SignUpFillInfoType.TypeEnum.APPROVAL : SignUpFillInfoType.TypeEnum.WFW_FORM;
 				SignUpWfwFormTemplate.TypeEnum templateTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL, signUpFormTypeEnum) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
 				SignUpWfwFormTemplate template = signUpWfwFormTemplateService.getByIdOrDefaultNormal(signUp.getWfwFormTemplateId(), templateTypeEnum);
-				//
-				WfwFormCreateResultDTO wfwFormResult = wfwFormApiService.createWfwForm(fid, uid, template, signUpFormTypeEnum.getValue());
+
+				WfwFormCreateResultDTO wfwFormResult = wfwFormApiService.createWfwForm(fid, uid, template);
 				signUp.setPcUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getPcUrl).orElse(null));
 				signUp.setOpenAddr(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getOpenAddr).orElse(null));
 				signUp.setWechatUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getWechatUrl).orElse(null));
