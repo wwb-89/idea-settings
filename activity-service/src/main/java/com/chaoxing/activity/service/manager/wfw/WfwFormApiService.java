@@ -12,7 +12,6 @@ import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
-import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.WfwFormConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -516,7 +515,7 @@ public class WfwFormApiService {
 	public WfwFormCreateResultDTO createWfwForm(Integer fid, Integer uid, Integer wfwFormTemplateId, String signUpFormType) {
 		signUpFormType = StringUtils.isBlank(signUpFormType) ? SignUpFillInfoType.TypeEnum.WFW_FORM.getValue() : signUpFormType;
 
-		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
+		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
 		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
 		return createWfwForm(fid, uid, wfwFormTemplate);
 	}
@@ -556,7 +555,7 @@ public class WfwFormApiService {
 			signUpFillInfoType.wfwFormTemplateIds2FormTemplateIds();
 			wfwFormTemplateId = signUpFillInfoType.getFormTemplateIds().stream().findFirst().orElse(null);
 		}
-		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
+		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
 
 		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
 		if (formId == null) {

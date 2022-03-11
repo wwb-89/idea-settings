@@ -565,7 +565,7 @@
                                                             :key="opt.id"
                                                             :label="opt.name"
                                                             :value="opt.id"
-                                                            v-if="opt.type == 'normal'"
+                                                            v-if="opt.type == 'wfw_form'"
                                                     >
                                                     </el-option>
                                                     <!--  注意这有俩个编辑，一个空的一个有数据的 -->
@@ -2158,7 +2158,7 @@
                             if (signUp.fillInfo) {
                                 var approvalNum = 0, wfwFormNum = 0;
                                 $(templateOptions).each(function () {
-                                    if (this.type == 'normal') {
+                                    if (this.type == 'wfw_form') {
                                         wfwFormNum++;
                                     } else if (this.type == 'approval') {
                                         approvalNum++;
@@ -2627,7 +2627,7 @@
                     var { formType } = $this.signUpMap[signUpTplComponentId];
                     var approvalNum = 0, wfwFormNum = 0;
                     $(templateOptions).each(function () {
-                        if (this.type == 'normal') {
+                        if (this.type == 'wfw_form') {
                             wfwFormNum++;
                         } else if (this.type == 'approval') {
                             approvalNum++;

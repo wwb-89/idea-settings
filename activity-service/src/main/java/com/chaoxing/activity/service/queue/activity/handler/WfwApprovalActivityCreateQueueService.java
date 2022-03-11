@@ -252,14 +252,6 @@ public class WfwApprovalActivityCreateQueueService {
                 signUp.setLimitPerson(true);
                 signUp.setPersonLimit(Integer.parseInt(signUpPersonLimit));
             }
-            // 报名填报信息 sign_up_fill_info
-            List<String> fieldNames = WfwFormUtils.listValue(formData, "sign_up_fill_info");
-            if (CollectionUtils.isNotEmpty(fieldNames)) {
-                // 创建表单
-                Integer formId = signApiService.createFormBySystemFieldNames(fieldNames, uid);
-                signUp.setFillInfo(true);
-                signUp.setFillInfoFormId(formId);
-            }
         } else {
             signUp.setDeleted(true);
         }

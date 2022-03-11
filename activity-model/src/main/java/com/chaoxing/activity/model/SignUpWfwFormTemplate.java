@@ -59,7 +59,7 @@ public class SignUpWfwFormTemplate {
     public enum TypeEnum {
 
         /** 标准的 */
-        NORMAL("标准的", "normal"),
+        WFW_FORM("标准的", "wfw_form"),
         APPROVAL("审批", "approval");
 
         private final String name;

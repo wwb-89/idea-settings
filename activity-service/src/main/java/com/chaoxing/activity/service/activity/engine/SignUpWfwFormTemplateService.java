@@ -10,9 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**报名万能表单模版服务
@@ -96,7 +94,7 @@ public class SignUpWfwFormTemplateService {
     public List<SignUpWfwFormTemplate> listNormal() {
         return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
                 .eq(SignUpWfwFormTemplate::getSystem, true)
-                .eq(SignUpWfwFormTemplate::getType, SignUpWfwFormTemplate.TypeEnum.NORMAL.getValue())
+                .eq(SignUpWfwFormTemplate::getType, SignUpWfwFormTemplate.TypeEnum.WFW_FORM.getValue())
                 .eq(SignUpWfwFormTemplate::getDeleted, false)
         );
     }
@@ -149,7 +147,7 @@ public class SignUpWfwFormTemplateService {
             return signUpWfwFormTemplate;
         }
         // 根据报名是否开启审核判断报名表单类型是wfw_form亦或是approval
-        SignUpWfwFormTemplate.TypeEnum formTypeEnum = Optional.ofNullable(signUp.getOpenAudit()).orElse(false) ?  SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
+        SignUpWfwFormTemplate.TypeEnum formTypeEnum = Optional.ofNullable(signUp.getOpenAudit()).orElse(false) ?  SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
         SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(signUp.getOriginId());
         // 如果模板的报名信息填报配置存在，且配置模板ids不为空，根据类型查询第一个满足的表单模板
         String wfwFormTemplateIds = Optional.ofNullable(signUpFillInfoType).map(SignUpFillInfoType::getWfwFormTemplateIds).orElse(null);

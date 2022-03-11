@@ -7,7 +7,6 @@ import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.*;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -129,6 +128,7 @@ public class SignUpCreateParamDTO {
 				.deleted(false)
 				.customSignUpType(CustomSignUpTypeEnum.NORMAL.getValue())
 				.openRoleLimit(false)
+				.formType(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue())
 				.build();
 	}
 

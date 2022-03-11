@@ -399,7 +399,7 @@ public class ActivityHandleService {
 			if (signUp.getFillInfoFormId() == null) {
 				// 根据模板类型和模板id获取模板
 				SignUpFillInfoType.TypeEnum signUpFormTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL.getValue(), signUp.getFormType()) ? SignUpFillInfoType.TypeEnum.APPROVAL : SignUpFillInfoType.TypeEnum.WFW_FORM;
-				SignUpWfwFormTemplate.TypeEnum templateTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL, signUpFormTypeEnum) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.NORMAL;
+				SignUpWfwFormTemplate.TypeEnum templateTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL, signUpFormTypeEnum) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
 				SignUpWfwFormTemplate template = signUpWfwFormTemplateService.getByIdOrDefaultNormal(signUp.getWfwFormTemplateId(), templateTypeEnum);
 
 				WfwFormCreateResultDTO wfwFormResult = wfwFormApiService.createWfwForm(fid, uid, template);
@@ -1232,9 +1232,6 @@ public class ActivityHandleService {
 		if (activityCreateDto.getOpenSignUp()) {
 			SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
 			signUpCreateParam.setFillInfo(activityCreateDto.getOpenFillFormInfo());
-			if (activityCreateDto.getOpenFillFormInfo()) {
-				signUpCreateParam.setFillInfoFormId(signApiService.createFormFillWithFields(activityCreateDto.getFillFormInfo()));
-			}
 			signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
 		}
 		Integer activityId = add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), loginUser);

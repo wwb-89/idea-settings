@@ -118,8 +118,6 @@ public class SignApiService {
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = DomainConstant.SIGN_WEB + "/sign-up/%d/user-list";
-	/** 提供信息表单字符串，创建报名表单url */
-	private static final String CONFIG_FORM_WITH_FIELDS = DomainConstant.SIGN_WEB + "/api/form/config/from-fields";
 	/** 用户报名签到参与情况url */
 	private static final String USER_SIGN_PARTICIPATION_URL = DomainConstant.SIGN_API + "/stat/sign/%d/user-participation?uid=%s";
 	/** 单活动统计 */
@@ -130,8 +128,6 @@ public class SignApiService {
 	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = DomainConstant.SIGN_API + "/sign-in/position-history/add";
 	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = DomainConstant.SIGN_API + "/sign-in/position-history/delete";
 
-	/** 根据字段名称列表创建表单接口 */
-	private static final String CREATE_FORM_BY_FIELD_NAMES_URL = DomainConstant.SIGN_API + "/form/create";
 	/** 根据uid、signIds查询用户能报名的 */
 	private static final String USER_SIGN_UP_ABLE_SIGN_URL = DomainConstant.SIGN_API + "/sign/sign-up-able";
 	/** 根据signIds查询报名的状态信息 */
@@ -694,29 +690,6 @@ public class SignApiService {
 		});
 	}
 
-	/**根据字段名称列表创建表单接口
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-01 17:33:37
-	 * @param fieldNames
-	 * @param uid
-	 * @return java.lang.Integer 表单id
-	*/
-	public Integer createFormBySystemFieldNames(List<String> fieldNames, Integer uid) {
-		String url = CREATE_FORM_BY_FIELD_NAMES_URL;
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		JSONObject params = new JSONObject();
-		params.put("uid", uid);
-		params.put("fields", fieldNames);
-		HttpEntity<JSONObject> httpEntity = new HttpEntity(params, httpHeaders);
-		String result = restTemplate.postForObject(url, httpEntity, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
 	/**统计用户未签到次数
 	 * @Description 
 	 * @author wwb
@@ -747,25 +720,6 @@ public class SignApiService {
 
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getString("data"), (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
-	/**提供信息表单字符串，创建报名表单
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-12 15:35:09
-	* @param fields
-	* @return java.lang.String
-	*/
-	public Integer createFormFillWithFields(String fields) {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<>(fields, httpHeaders);
-		String result = restTemplate.postForObject(CONFIG_FORM_WITH_FIELDS, httpEntity, String.class);
-
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
 			throw new BusinessException(message);
 		});
 	}
