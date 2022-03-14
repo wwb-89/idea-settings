@@ -39,7 +39,9 @@ public class CommonConstant {
 	/** 最大分页 */
 	public static final Integer MAX_PAGE_SIZE = 100;
 	/** 默认时区 */
-	public static final ZoneOffset DEFAULT_ZONEOFFSET = ZoneOffset.of("+8");
+	public static final ZoneOffset DEFAULT_ZONE_OFFSET = ZoneOffset.of("+8");
+	/** 二维码默认后缀 */
+	public static final String QR_CODE_SUFFIX = ".png";
 
 	/** 默认经度 */
 	public static final BigDecimal DEFAULT_LNG = BigDecimal.valueOf(104.07073444090588000);

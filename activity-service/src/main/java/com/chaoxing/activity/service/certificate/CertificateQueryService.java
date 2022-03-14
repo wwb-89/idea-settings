@@ -142,4 +142,15 @@ public class CertificateQueryService {
         ).stream().findFirst().orElse(null);
     }
 
+    /**根据id查询
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-14 10:44:49
+     * @param id
+     * @return com.chaoxing.activity.model.CertificateIssue
+    */
+    public CertificateIssue getById(Integer id) {
+        return certificateIssueMapper.selectById(id);
+    }
+
 }

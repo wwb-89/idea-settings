@@ -87,3 +87,6 @@ server:
     remoteip:
       protocol-header: X-Forwarded-Proto
       protocol-header-https-value: https
+certificate:
+  qr_code:
+    path: /certificate/qr_code

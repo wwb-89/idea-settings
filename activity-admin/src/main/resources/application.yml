@@ -104,3 +104,6 @@ management:
       show-details: always
     env:
       enabled: false
+certificate:
+  qr_code:
+    path: /certificate/qr_code

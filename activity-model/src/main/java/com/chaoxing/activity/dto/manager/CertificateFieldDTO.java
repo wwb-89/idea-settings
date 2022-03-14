@@ -32,18 +32,21 @@ public class CertificateFieldDTO {
     private String no;
     /** 发放日期 */
     private String issueDate;
+    /** 二维码地址 */
+    private String qrCode;
 
     private CertificateFieldDTO() {
 
     }
 
-    public static CertificateFieldDTO build(Activity activity, String no, LocalDateTime issueTime, String userName) {
+    public static CertificateFieldDTO build(Activity activity, String no, LocalDateTime issueTime, String userName, String qrCode) {
         CertificateFieldDTO certificateField = new CertificateFieldDTO();
         certificateField.activityName = activity.getName();
         certificateField.userName = userName;
         certificateField.orgName = Optional.ofNullable(activity.getOrganisers()).orElse("");
         certificateField.no = no;
         certificateField.issueDate = issueTime.format(DATE_FORMATTER);
+        certificateField.qrCode = qrCode;
         return certificateField;
     }
 

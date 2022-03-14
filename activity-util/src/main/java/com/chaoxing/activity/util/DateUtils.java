@@ -48,7 +48,7 @@ public class DateUtils {
 		if (timestamp == null) {
 			return null;
 		}
-		return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), CommonConstant.DEFAULT_ZONEOFFSET);
+		return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), CommonConstant.DEFAULT_ZONE_OFFSET);
 	}
 	/**开始时间戳转换为localDateTime
 	 * @Description
@@ -108,7 +108,7 @@ public class DateUtils {
 		if (time == null) {
 			return null;
 		}
-		return time.toInstant(CommonConstant.DEFAULT_ZONEOFFSET).toEpochMilli();
+		return time.toInstant(CommonConstant.DEFAULT_ZONE_OFFSET).toEpochMilli();
 	}
 
 	/**列出每一天

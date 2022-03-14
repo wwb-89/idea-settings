@@ -29,7 +29,8 @@ public class UrlConstant {
 	public static final String MH_AJAX_SIGN_UP = DomainConstant.API + "/mh/v3/sign-up";
 	/** 阅读测评的地址 */
 	public static final String READING_TEST_URL = DomainConstant.XUEYA + "/school-base/school-reading/%d/%d/book-list";
-
+	/** 证书认证地址 */
+	public static final String CERTIFICATE_ANTI_FAKE_URL = DomainConstant.WEB + "/certificate/%s/anti-fake";
 
 	/** 双选会 */
 	/** 双选会主页url */

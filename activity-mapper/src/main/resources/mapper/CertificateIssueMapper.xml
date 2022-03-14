@@ -7,12 +7,14 @@
         <result column="uid" jdbcType="INTEGER" property="uid" />
         <result column="no" jdbcType="VARCHAR" property="no" />
         <result column="serial_no" jdbcType="INTEGER" property="serialNo" />
+        <result column="qr_code_cloud_id" jdbcType="VARCHAR" property="qrCodeCloudId" />
+        <result column="serial_no" jdbcType="INTEGER" property="serialNo" />
         <result column="issue_time" jdbcType="TIMESTAMP" property="issueTime" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.activity_id, t.uid, t.no, t.serial_no, t.issue_time, t.create_time, t.update_time
+        t.id, t.activity_id, t.uid, t.no, t.serial_no, t.serial_no, t.qr_code_cloud_id, t.issue_time, t.create_time, t.update_time
     </sql>
 
     <select id="pageCertificate" resultType="com.chaoxing.activity.dto.UserCertificateDTO">
@@ -113,7 +115,7 @@
         GROUP BY t.uid
     </select>
 
-    <insert id="batchAdd">
+    <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_certificate_issue ( activity_id, uid, no, serial_no, issue_time )
         VALUES
             <foreach collection="certificateIssues" index="key" item="value" open="" close="" separator=",">

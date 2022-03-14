@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.util.constant.DomainConstant;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -37,12 +34,34 @@ public class CertificateIssue {
     private String no;
     /** 序号; column: serial_no*/
     private Integer serialNo;
+    /** 二维码状态; column: qr_code_status*/
+    private Integer qrCodeStatus;
+    /** 二维码云盘id; column: qr_code_cloud_id*/
+    private String qrCodeCloudId;
     /** 发放时间; column: issue_time*/
     private LocalDateTime issueTime;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    @Getter
+    public enum QrCodeStatusEnum {
+
+        /** 失败 */
+        FAIL("失败", 0),
+        SUCCESS("成功", 1),
+        WAIT("待处理", 2);
+
+        private final String name;
+        private final Integer value;
+
+        QrCodeStatusEnum(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+    }
 
     /**获取证书的预览地址
      * @Description 

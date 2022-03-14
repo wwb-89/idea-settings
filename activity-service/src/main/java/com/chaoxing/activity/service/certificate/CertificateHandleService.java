@@ -10,8 +10,10 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.CertificateIssue;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.event.UserCertificateIssueEventService;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.CertificateApiService;
+import com.chaoxing.activity.service.queue.activity.CertificateQrCodeGenerateQueue;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -62,6 +64,10 @@ public class CertificateHandleService {
     private CertificateQueryService certificateQueryService;
     @Resource
     private UserCertificateIssueEventService userCertificateIssueEventService;
+    @Resource
+    private CertificateQrCodeGenerateQueue certificateQrCodeGenerateQueue;
+    @Resource
+    private CloudApiService cloudApiService;
 
     @Resource
     private DistributedLock distributedLock;
@@ -85,7 +91,7 @@ public class CertificateHandleService {
      * @param serialNo
      * @return java.lang.String
     */
-    public String generateNo(Activity activity, Integer serialNo) {
+    private String generateNo(Activity activity, Integer serialNo) {
         Integer activityId = activity.getId();
         StringBuilder no = new StringBuilder();
         no.append(activity.getCreateFid());
@@ -110,7 +116,14 @@ public class CertificateHandleService {
         // 证书发放记录
         CertificateIssue certificateIssue = certificateValidationService.isIssued(uid, activityId);
         PassportUserDTO passportUser = passportApiService.getByUid(uid);
-        CertificateFieldDTO certificateField = CertificateFieldDTO.build(activity, certificateIssue.getNo(), certificateIssue.getCreateTime(), passportUser.getRealName());
+        String qrCodeCloudId = certificateIssue.getQrCodeCloudId();
+        String qrCode = Optional.ofNullable(qrCodeCloudId).filter(StringUtils::isNotBlank).map(v -> {
+            String imageUrl = cloudApiService.getImageUrl(v);
+            // 目前只支持http
+            imageUrl = imageUrl.replace("https", "http");
+            return imageUrl;
+        }).orElse("");
+        CertificateFieldDTO certificateField = CertificateFieldDTO.build(activity, certificateIssue.getNo(), certificateIssue.getCreateTime(), passportUser.getRealName(), qrCode);
         Integer certificateTemplateId = Optional.ofNullable(activity.getCertificateTemplateId()).orElseThrow(() -> new BusinessException("证书模版不存在"));
         return certificateApiService.getDownloadUrl(certificateTemplateId, activity.getCreateUid(), activity.getCreateFid(), certificateField);
     }
@@ -139,10 +152,13 @@ public class CertificateHandleService {
                         .activityId(activityId)
                         .no(generateNo(activity, serialNo))
                         .serialNo(serialNo)
+                        .qrCodeCloudId("")
                         .issueTime(issueTime)
                         .build();
                 certificateIssueMapper.insert(certificateIssue);
                 userCertificateIssueEventService.issue(uid, activityId);
+                CertificateQrCodeGenerateQueue.QueueParamDTO queueParam = new CertificateQrCodeGenerateQueue.QueueParamDTO(certificateIssue.getId());
+                certificateQrCodeGenerateQueue.push(queueParam);
                 return null;
             }, e -> {
                 log.error("根据uid:{}, activityId: {} 发放证书error:{}", uid, activityId, e.getMessage());
@@ -182,14 +198,19 @@ public class CertificateHandleService {
                 CertificateIssue certificateIssue = CertificateIssue.builder()
                         .uid(uid)
                         .activityId(activityId)
-                        .issueTime(issueTime)
                         .no(generateNo(activity, serialNo))
                         .serialNo(serialNo)
+                        .qrCodeCloudId("")
+                        .issueTime(issueTime)
                         .build();
                 certificateIssues.add(certificateIssue);
             }
             certificateIssueMapper.batchAdd(certificateIssues);
             userCertificateIssueEventService.issue(uids, activityId);
+            for (CertificateIssue certificateIssue : certificateIssues) {
+                CertificateQrCodeGenerateQueue.QueueParamDTO queueParam = new CertificateQrCodeGenerateQueue.QueueParamDTO(certificateIssue.getId());
+                certificateQrCodeGenerateQueue.push(queueParam);
+            }
             return null;
         }, e -> {
             log.error("根据uids:{}, activityId: {} 重新发放证书error:{}", JSON.toJSONString(uids), activityId, e.getMessage());
@@ -222,9 +243,13 @@ public class CertificateHandleService {
                         .eq(CertificateIssue::getId, existCertificateIssue.getId())
                         .set(CertificateIssue::getIssueTime, issueTime)
                         .set(CertificateIssue::getNo, generateNo(activity, serialNo))
+                        .set(CertificateIssue::getQrCodeStatus, CertificateIssue.QrCodeStatusEnum.WAIT.getValue())
+                        .set(CertificateIssue::getQrCodeCloudId, "")
                         .set(CertificateIssue::getSerialNo, serialNo)
                 );
                 userCertificateIssueEventService.issue(uid, activityId);
+                CertificateQrCodeGenerateQueue.QueueParamDTO queueParam = new CertificateQrCodeGenerateQueue.QueueParamDTO(existCertificateIssue.getId());
+                certificateQrCodeGenerateQueue.push(queueParam);
                 return null;
             }, e -> {
                 log.error("根据uid:{}, activityId: {} 重新发放证书error:{}", uid, activityId, e.getMessage());
@@ -271,6 +296,38 @@ public class CertificateHandleService {
         certificateIssueMapper.delete(new LambdaUpdateWrapper<CertificateIssue>()
                 .eq(CertificateIssue::getActivityId, activityId)
                 .in(CertificateIssue::getUid, issuedUids)
+        );
+    }
+
+    /**证书的二维码成功处理
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-14 11:14:26
+     * @param id
+     * @param qrCodeCloudId
+     * @return void
+    */
+    public void certificateQrCodeSuccess(Integer id, String qrCodeCloudId) {
+        qrCodeCloudId = Optional.ofNullable(qrCodeCloudId).orElse("");
+        certificateIssueMapper.update(null, new LambdaUpdateWrapper<CertificateIssue>()
+                .eq(CertificateIssue::getId, id)
+                .set(CertificateIssue::getQrCodeStatus, CertificateIssue.QrCodeStatusEnum.SUCCESS.getValue())
+                .set(CertificateIssue::getQrCodeCloudId, qrCodeCloudId)
+        );
+    }
+
+    /**证书的二维码失败处理
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-14 11:27:38
+     * @param id
+     * @return void
+    */
+    public void certificateQrCodeFail(Integer id) {
+        certificateIssueMapper.update(null, new LambdaUpdateWrapper<CertificateIssue>()
+                .eq(CertificateIssue::getId, id)
+                .set(CertificateIssue::getQrCodeStatus, CertificateIssue.QrCodeStatusEnum.FAIL.getValue())
+                .set(CertificateIssue::getQrCodeCloudId, "")
         );
     }
 
