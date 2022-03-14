@@ -54,7 +54,9 @@ public class CertificateQrCodeGenerateQueueService {
 			String savePath = path + CommonConstant.DEFAULT_FILE_SEPARATOR + qrCodePath + CommonConstant.DEFAULT_FILE_SEPARATOR + certificateIssue.getNo() + CommonConstant.QR_CODE_SUFFIX;
 			QrCodeUtils.generate(code, savePath);
 			// 将文件上传到云盘
-			String result = cloudApiService.upload(new File(savePath), "10.0.23.235");
+			File file = new File(savePath);
+			String result = cloudApiService.upload(file, "10.0.23.235");
+			file.delete();
 			JSONObject jsonObject = JSON.parseObject(result);
 			String status = jsonObject.getString("status");
 			if (Objects.equals(status, "success")) {

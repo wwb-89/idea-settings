@@ -3,11 +3,14 @@ package com.chaoxing.activity.api.controller;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.event.activity.*;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.CertificateIssue;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatHandleService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
+import com.chaoxing.activity.service.certificate.CertificateQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatQueue;
+import com.chaoxing.activity.service.queue.activity.CertificateQrCodeGenerateQueue;
 import com.chaoxing.activity.service.queue.event.activity.*;
 import com.chaoxing.activity.service.queue.user.OrgUserDataPushQueue;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
@@ -64,6 +67,10 @@ public class QueueApiController {
 	private UserStatSummaryQueryService userStatSummaryQueryService;
 	@Resource
 	private ActivityStatHandleService activityStatHandleService;
+	@Resource
+	private CertificateQrCodeGenerateQueue certificateQrCodeGenerateQueue;
+	@Resource
+	private CertificateQueryService certificateQueryService;
 
 	@Resource
 	private RedissonClient redissonClient;
@@ -332,6 +339,23 @@ public class QueueApiController {
 	@RequestMapping("fix/activity-stat-task")
 	public RestRespDTO fixActivityStatTask() {
 		activityStatHandleService.fixActivityStatTask();
+		return RestRespDTO.success();
+	}
+
+	/**修复证书二维码
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-03-14 16:27:41
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("fix/certificate-qr-code")
+	public RestRespDTO fixQrcode() {
+		List<CertificateIssue> certificateIssues = certificateQueryService.listWaitGenerateQrCode();
+		for (CertificateIssue certificateIssue : certificateIssues) {
+			CertificateQrCodeGenerateQueue.QueueParamDTO queueParam = new CertificateQrCodeGenerateQueue.QueueParamDTO(certificateIssue.getId());
+			certificateQrCodeGenerateQueue.push(queueParam);
+		}
 		return RestRespDTO.success();
 	}
 

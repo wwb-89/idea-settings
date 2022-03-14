@@ -25,8 +25,8 @@ public class WfwContactApiServiceTests {
 
 	@Test
 	public void listUserJoinDepartment() {
-		Integer uid = 25418810;
-		Integer fid = 117211;
+		Integer uid = 92932023;
+		Integer fid = 170642;
 		List<WfwDepartmentDTO> departments = wfwContactApiService.listUserJoinDepartment(uid, fid);
 		System.out.println(JSON.toJSONString(departments));
 	}

@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.mapper.SignUpWfwFormTemplateMapper;
 import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -32,28 +33,19 @@ public class SignUpWfwFormTemplateService {
 
     private static final String NORMAL_TEMPLATE_CODE = "normal";
 
-    /**根据code获取系统模板
+    /**获取系统默认报名模板
      * @Description
-     * @author huxiaolong
-     * @Date 2021-12-03 10:40:24
-     * @param code
-     * @return
+     * @author wwb
+     * @Date 2022-03-14 16:00:19
+     * @param templateFormType
+     * @return com.chaoxing.activity.model.SignUpWfwFormTemplate
      */
-    public SignUpWfwFormTemplate getSystemTemplateByCode(String code, SignUpWfwFormTemplate.TypeEnum templateFormType) {
-        if (templateFormType == null) {
-            log.error("模板类型不存在!");
-            return null;
-        }
-        SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
-                .eq(SignUpWfwFormTemplate::getCode, code)
+    private SignUpWfwFormTemplate getSystemNormalTemplate(SignUpWfwFormTemplate.TypeEnum templateFormType) {
+        return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+                .eq(SignUpWfwFormTemplate::getCode, NORMAL_TEMPLATE_CODE)
                 .eq(SignUpWfwFormTemplate::getType, templateFormType.getValue())
                 .eq(SignUpWfwFormTemplate::getSystem, Boolean.TRUE)).stream().findFirst().orElse(null);
-        if (signUpWfwFormTemplate == null) {
-            log.error("code为{}的系统模板不存在", code);
-        }
-        return signUpWfwFormTemplate;
     }
-
 
     /**根据模板id获取模板,若模板不存在，则返回系统默认的通用模板
      * @Description
@@ -65,7 +57,7 @@ public class SignUpWfwFormTemplateService {
     public SignUpWfwFormTemplate getByIdOrDefaultNormal(Integer wfwFormTemplateId, SignUpWfwFormTemplate.TypeEnum templateFormType) {
         SignUpWfwFormTemplate signUpWfwFormTemplate = getById(wfwFormTemplateId);
         if (signUpWfwFormTemplate == null) {
-            signUpWfwFormTemplate = getSystemTemplateByCode(NORMAL_TEMPLATE_CODE, templateFormType);
+            signUpWfwFormTemplate = getSystemNormalTemplate(templateFormType);
         }
         return signUpWfwFormTemplate;
     }
@@ -84,45 +76,57 @@ public class SignUpWfwFormTemplateService {
         return signUpWfwFormTemplateMapper.selectById(wfwFormTemplateId);
     }
 
-    /**查询万能表单模版
+    /**查询市场可用的万能表单报名模板
      * @Description 
      * @author wwb
-     * @Date 2021-12-22 16:02:54
-     * @param 
+     * @Date 2022-03-14 16:13:24
+     * @param marketId
      * @return java.util.List<com.chaoxing.activity.model.SignUpWfwFormTemplate>
     */
-    public List<SignUpWfwFormTemplate> listNormal() {
-        return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
-                .eq(SignUpWfwFormTemplate::getSystem, true)
-                .eq(SignUpWfwFormTemplate::getType, SignUpWfwFormTemplate.TypeEnum.WFW_FORM.getValue())
-                .eq(SignUpWfwFormTemplate::getDeleted, false)
-        );
+    public List<SignUpWfwFormTemplate> listMarketWfwFormSignUpTemplate(Integer marketId) {
+        return listMarketSignUpTemplate(marketId, SignUpWfwFormTemplate.TypeEnum.WFW_FORM);
     }
 
-    /**查询审批模版
-     * @Description 
+    /**查询市场可用的审批报名模板
+     * @Description
      * @author wwb
-     * @Date 2021-12-22 16:03:05
-     * @param 
+     * @Date 2022-03-14 16:13:51
+     * @param marketId
      * @return java.util.List<com.chaoxing.activity.model.SignUpWfwFormTemplate>
     */
-    public List<SignUpWfwFormTemplate> listApproval() {
-        return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+    public List<SignUpWfwFormTemplate> listMarketApprovalSignUpTemplate(Integer marketId) {
+        return listMarketSignUpTemplate(marketId, SignUpWfwFormTemplate.TypeEnum.APPROVAL);
+    }
+
+    private List<SignUpWfwFormTemplate> listMarketSignUpTemplate(Integer marketId, SignUpWfwFormTemplate.TypeEnum type) {
+        List<SignUpWfwFormTemplate> signUpWfwFormTemplates = Lists.newArrayList();
+        if (marketId != null) {
+            List<SignUpWfwFormTemplate> marketSignUpTemplates = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+                    .eq(SignUpWfwFormTemplate::getSystem, false)
+                    .eq(SignUpWfwFormTemplate::getMarketId, marketId)
+                    .eq(SignUpWfwFormTemplate::getType, type.getValue())
+                    .eq(SignUpWfwFormTemplate::getDeleted, false)
+            );
+            signUpWfwFormTemplates.addAll(marketSignUpTemplates);
+        }
+        List<SignUpWfwFormTemplate> systemSignUpTemplates = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
                 .eq(SignUpWfwFormTemplate::getSystem, true)
-                .eq(SignUpWfwFormTemplate::getType, SignUpWfwFormTemplate.TypeEnum.APPROVAL.getValue())
+                .eq(SignUpWfwFormTemplate::getType, type.getValue())
                 .eq(SignUpWfwFormTemplate::getDeleted, false)
         );
+        signUpWfwFormTemplates.addAll(systemSignUpTemplates);
+        return signUpWfwFormTemplates;
     }
 
     /**根据名称查询
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2022-01-20 16:51:28
      * @param name
      * @return com.chaoxing.activity.model.SignUpWfwFormTemplate
-    */
+     */
     public SignUpWfwFormTemplate getByName(String name) {
-        if (StringUtils.isNotBlank(name)) {
+        if (StringUtils.isBlank(name)) {
             return null;
         }
         List<SignUpWfwFormTemplate> signUpWfwFormTemplates = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
@@ -161,7 +165,7 @@ public class SignUpWfwFormTemplateService {
         if (signUpWfwFormTemplate != null) {
             return signUpWfwFormTemplate;
         }
-        return getSystemTemplateByCode(NORMAL_TEMPLATE_CODE, formTypeEnum);
+        return getSystemNormalTemplate(formTypeEnum);
 
     }
 

@@ -27,3 +27,7 @@ WHERE
 UPDATE t_sign_up_wfw_form_template t
 SET t.type = 'wfw_form'
 WHERE t.type = 'normal';
+
+-- 2022-03-14
+ALTER TABLE t_certificate_issue ADD qr_code_status INT DEFAULT 2 COMMENT '二维码状态';
+ALTER TABLE t_certificate_issue ADD qr_code_cloud_id VARCHAR(50) COMMENT '二维码云盘id';

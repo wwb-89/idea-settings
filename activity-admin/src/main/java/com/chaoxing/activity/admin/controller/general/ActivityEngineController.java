@@ -16,7 +16,6 @@ import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
-import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,8 +84,8 @@ public class ActivityEngineController {
         ActivityEngineDTO templateInfo = activityEngineQueryService.findEngineTemplateInfo(templateId, marketId);
         model.addAttribute("templateInfo", templateInfo);
         model.addAttribute("wfwForms", wfwForms);
-        model.addAttribute("wfwFormTemplates", signUpWfwFormTemplateService.listNormal());
-        model.addAttribute("wfwFormApprovalTemplates", signUpWfwFormTemplateService.listApproval());
+        model.addAttribute("wfwFormTemplates", signUpWfwFormTemplateService.listMarketWfwFormSignUpTemplate(marketId));
+        model.addAttribute("wfwFormApprovalTemplates", signUpWfwFormTemplateService.listMarketApprovalSignUpTemplate(marketId));
         model.addAttribute("conditionEnums", ConditionDTO.listWithoutNoLimit());
         model.addAttribute("icons", iconQueryService.list());
         // 市场下的所有分类

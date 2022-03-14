@@ -68,9 +68,13 @@ public class QrCodeUtils {
 			}
 		}
 		File file = new File(savePath);
-		File parentFile = file.getParentFile();
-		if (!parentFile.exists()) {
-			file.mkdirs();
+		if (file.exists()) {
+			file.delete();
+		} else {
+			File parentFile = file.getParentFile();
+			if (!parentFile.exists()) {
+				file.mkdirs();
+			}
 		}
 		ImageIO.write(bufferedImage, "png", file);
 	}

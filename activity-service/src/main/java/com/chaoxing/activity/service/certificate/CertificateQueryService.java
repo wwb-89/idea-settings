@@ -153,4 +153,17 @@ public class CertificateQueryService {
         return certificateIssueMapper.selectById(id);
     }
 
+    /**查询待生成二维码的证书
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-14 16:25:54
+     * @param 
+     * @return java.util.List<com.chaoxing.activity.model.CertificateIssue>
+    */
+    public List<CertificateIssue> listWaitGenerateQrCode() {
+        return certificateIssueMapper.selectList(new LambdaQueryWrapper<CertificateIssue>()
+                .eq(CertificateIssue::getQrCodeStatus, CertificateIssue.QrCodeStatusEnum.WAIT.getValue())
+        );
+    }
+
 }
