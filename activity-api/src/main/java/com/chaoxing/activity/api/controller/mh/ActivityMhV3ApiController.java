@@ -496,6 +496,9 @@ public class ActivityMhV3ApiController {
             if (CollectionUtils.isNotEmpty(signInIds)) {
                 result.add(MhDataBuildUtil.buildBtnField("去签到", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.SIGN_IN.getValue()), userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
+            if (CollectionUtils.isNotEmpty(formCollectionIds)) {
+                result.add(MhDataBuildUtil.buildBtnField("去填写", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), userSignParticipationStat.getFormCollectionUrl(), "1", false, MhBtnSequenceEnum.FORM_COLLECTION.getSequence()));
+            }
         }
         if (openWork && workId != null) {
             List<WorkBtnDTO> workBtnDtos = workApiService.listBtns(workId, uid, wfwfid);
