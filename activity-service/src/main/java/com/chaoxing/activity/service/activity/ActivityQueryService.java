@@ -1309,6 +1309,10 @@ public class ActivityQueryService {
 		if (activity == null) {
 			return Lists.newArrayList();
 		}
+		Integer activityClassifyId = activity.getActivityClassifyId();
+		if (activityClassifyId == null) {
+			return Lists.newArrayList();
+		}
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activity.getActivityFlag());
 		String queryActivityFlag;
 		switch (activityFlagEnum) {
