@@ -527,6 +527,20 @@
   color: #82C3FF;
 }
 
+.dailog .body .el-switch__label {
+  font-weight: 400;
+  color: #333333;
+  margin-right: 16px;
+}
+
+.dailog .body .marginBottom16 {
+  margin-bottom: 16px;
+}
+
+.dailog .body .colorMain3 .el-textarea__inner {
+  color: #0084FF;
+}
+
 .dailog .center-body {
   padding: 0 24px;
 }

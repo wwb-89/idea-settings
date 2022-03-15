@@ -2898,6 +2898,33 @@ input.btn-name,
   color: #27bb2c;
 }
 
+.setForm .bottom-box {
+  padding-top: 24px;
+  border-top: 1px solid #EEEEEE;
+  height: 20px;
+}
+
+.setForm .bottom-box a {
+  font-size: 14px;
+  margin-right: 24px;
+  color: #999999;
+  line-height: 20px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.setForm .bottom-box a i {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 16px;
+  margin-right: 2px;
+  margin-top: 2px;
+}
+
+.setForm .bottom-box a.add-btn {
+  color: #0084FF;
+}
+
 /* 选择器弹窗 */
 .select-dailog {
   width: 600px;
@@ -3101,4 +3128,76 @@ input.btn-name,
   width: 16px;
   height: 16px;
   margin: 2px;
+}
+
+/* 批量管理弹窗 */
+.batch-dialog .dailog {
+  width: 448px;
+}
+
+.batch-dialog .dailog .body {
+  padding: 24px;
+}
+
+.batch-dialog .dailog .body .tree .el-checkbox__label {
+  color: #333333;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.batch-dialog .dailog .body .tree .el-checkbox__inner {
+  width: 16px;
+  height: 16px;
+}
+
+.batch-dialog .dailog .body .tree .el-checkbox__inner::after {
+  top: 2px;
+  left: 5px;
+}
+
+.batch-dialog .dailog .body .tree .el-checkbox__inner::before {
+  top: 6px;
+}
+
+.batch-dialog .dailog .body .tree .tree-head {
+  height: 48px;
+  padding: 0 12px;
+}
+
+.batch-dialog .dailog .body .tree .tree-head .already {
+  cursor: pointer;
+}
+
+.batch-dialog .dailog .body .tree .tree-box {
+  position: relative;
+  height: 252px;
+  padding: 0;
+}
+
+.batch-dialog .dailog .body .tree .tree-box .check-item {
+  position: relative;
+  display: block;
+  padding: 8px 38px 8px 12px;
+  line-height: 32px;
+}
+
+.batch-dialog .dailog .body .tree .tree-box .check-item .icon-drag {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  font-size: 16px;
+  cursor: move;
+  display: none;
+  color: #CCCCCC;
+}
+
+.batch-dialog .dailog .body .tree .tree-box .check-item .icon-drag:hover {
+  color: #0084FF;
+}
+
+.batch-dialog .dailog .body .tree .tree-box .check-item:hover .icon-drag {
+  display: block;
 }

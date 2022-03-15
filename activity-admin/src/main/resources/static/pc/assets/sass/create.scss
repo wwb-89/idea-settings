@@ -2352,6 +2352,29 @@ input.btn-name,
             }
         }
     }
+    .bottom-box{
+        padding-top: 24px;
+        border-top: 1px solid #EEEEEE;
+        height: 20px;
+        a{
+            font-size: 14px;
+            margin-right: 24px;
+            color: #999999;
+            line-height: 20px;
+            display: inline-block;
+            vertical-align: top;
+            i{
+                display: inline-block;
+                vertical-align: top;
+                font-size: 16px;
+                margin-right: 2px;
+                margin-top: 2px;
+            }
+            &.add-btn{
+                color: #0084FF;
+            }
+        }
+    }
 }
 /* 选择器弹窗 */
 .select-dailog{
@@ -2513,6 +2536,69 @@ input.btn-name,
                         width: 16px;
                         height: 16px;
                         margin: 2px;
+                    }
+                }
+            }
+        }
+    }
+}
+/* 批量管理弹窗 */
+.batch-dialog{
+    .dailog{
+        width: 448px;
+        .body{
+            padding: 24px;
+            .tree{
+                .el-checkbox__label{
+                    color: #333333;
+                    font-size: 14px;
+                    font-weight: normal;
+                }
+                .el-checkbox__inner{
+                    width: 16px;
+                    height: 16px;
+                    &::after{
+                        top: 2px;
+                        left: 5px;
+                    }
+                    &::before{
+                        top: 6px;
+                    }
+                }
+                .tree-head{
+                    height: 48px;
+                    padding: 0 12px;
+                    .already{
+                        cursor: pointer;
+                    }
+                }
+                .tree-box{
+                    position: relative;
+                    height: 252px;
+                    padding: 0;
+                    .check-item{
+                        position: relative;
+                        display: block;
+                        padding: 8px 38px 8px 12px;
+                        line-height: 32px;
+                        .icon-drag{
+                            position: absolute;
+                            top: 50%;
+                            right: 12px;
+                            transform: translateY(-50%);
+                            font-size: 16px;
+                            cursor: move;
+                            display: none;
+                            color: #CCCCCC;
+                            &:hover{
+                                color: #0084FF;
+                            }
+                        }
+                        &:hover{
+                            .icon-drag{
+                                display: block;
+                            }
+                        } 
                     }
                 }
             }

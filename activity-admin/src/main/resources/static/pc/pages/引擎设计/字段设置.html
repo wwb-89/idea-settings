@@ -1121,7 +1121,7 @@
                             <el-switch v-model="switch4" class="margin-auto" inactive-text="活动发起时配置字段值">
                             </el-switch>
                         </div>
-                        <div class="condition-box">
+                        <div class="condition-box marginBottom20">
                             <div class="condition-item">
                                 <el-select v-model="form.select5" placeholder="请选择" :value="1">
                                     <el-option label="审核状态" :value="1">审核状态</el-option>
@@ -1143,6 +1143,16 @@
                                 <i class="icon-minus-circle"></i>
                             </div>
                             <div class="add-box"><i class="icon-plus-circle"></i>添加条件</div>
+                        </div>
+                        <div class="marginBottom20">
+                            <el-switch v-model="switch5" class="marginBottom16" inactive-text="不满足条件时提示文字">
+                            </el-switch>
+                            <el-input v-model="tips" type="text" placeholder="请输入" maxlength="40" show-word-limit class=""></el-input>
+                        </div>
+                        <div class="marginBottom20">
+                            <el-switch v-model="switch6" class="marginBottom16" inactive-text="跳转链接">
+                            </el-switch>
+                            <el-input class="colorMain3" v-model="link" type="textarea" :autosize="{ minRows: 1, maxRows: 2}" placeholder="请输入" resize="none"></el-input>
                         </div>
                     </el-form>
                 </div>
@@ -1433,7 +1443,7 @@
                         type:false
                     }
                 ],
-                signInfoDialog: true,
+                signInfoDialog: false,
                 options:[{
                     label: '表单',
                     options: [{
@@ -1459,6 +1469,10 @@
                         label: '人员列表(审核)'
                     }]
                 }],
+                switch5: true,
+                switch6: true,
+                tips: '',
+                link: 'http:appcd.chapxing.comchapxing.comchapxing.comchapxing.comchapxing.com'
             },
             watch: {
                 /* 监听选项列表的改变 */
