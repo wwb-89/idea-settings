@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?v5dc6e');
-  src:  url('fonts/icomoon.eot?v5dc6e#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?v5dc6e') format('truetype'),
-    url('fonts/icomoon.woff?v5dc6e') format('woff'),
-    url('fonts/icomoon.svg?v5dc6e#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?pc8tur');
+  src:  url('fonts/icomoon.eot?pc8tur#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?pc8tur') format('truetype'),
+    url('fonts/icomoon.woff?pc8tur') format('woff'),
+    url('fonts/icomoon.svg?pc8tur#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,26 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-sign-in:before {
+  content: "\e906";
+  color: #999;
+}
+.icon-score:before {
+  content: "\e907";
+  color: #999;
+}
+.icon-user2:before {
+  content: "\e908";
+  color: #999;
+}
+.icon-certificate:before {
+  content: "\e909";
+  color: #999;
+}
+.icon-collection:before {
+  content: "\e90a";
+  color: #999;
+}
 .icon-more-vertical:before {
   content: "\e905";
 }
