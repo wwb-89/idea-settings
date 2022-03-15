@@ -271,7 +271,7 @@ public class TemplateComponentService {
                 .stream()
                 .filter(v -> v.getPid() != 0 || Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP.getValue()) || Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.COMPANY_SIGN_UP.getValue()))
                 .collect(Collectors.toList());
-        List<SignUpWfwFormTemplate> wfwFormTemplates = signUpWfwFormTemplateService.listAllSystem();
+        List<SignUpWfwFormTemplate> wfwFormTemplates = signUpWfwFormTemplateService.listAll();
         templateComponents.forEach(v -> {
             if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
                 // 报名填报信息的模板组件id为报名的模板组件id
@@ -300,7 +300,7 @@ public class TemplateComponentService {
                 .map(TemplateComponentDTO::getComponentId)
                 .collect(Collectors.toList());
         Map<Integer, List<ComponentField>> componentFieldMap = Maps.newHashMap();
-        List<SignUpWfwFormTemplate> wfwFormTemplates = signUpWfwFormTemplateService.listAllSystem();
+        List<SignUpWfwFormTemplate> wfwFormTemplates = signUpWfwFormTemplateService.listAll();
         if (CollectionUtils.isNotEmpty(chooseComponentIds)) {
             List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>().lambda().in(ComponentField::getComponentId, chooseComponentIds));
             componentFields.forEach(v -> {

@@ -175,9 +175,8 @@ public class SignUpWfwFormTemplateService {
      * @Date 2022-02-23 14:28:00
      * @return
      */
-    public List<SignUpWfwFormTemplate> listAllSystem() {
+    public List<SignUpWfwFormTemplate> listAll() {
         return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
-                .eq(SignUpWfwFormTemplate::getSystem, true)
                 .eq(SignUpWfwFormTemplate::getDeleted, false));
     }
 }
