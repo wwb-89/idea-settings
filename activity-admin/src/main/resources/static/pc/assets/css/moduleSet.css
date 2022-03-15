@@ -739,3 +739,213 @@ body {
 .confirm_dialog .btn .ok:hover {
   background: rgba(0, 132, 255, 0.8);
 }
+
+/* 展示设置 */
+.marginTop20 {
+  margin-top: 20px;
+}
+
+.show-setting {
+  padding: 0;
+}
+
+.show-setting .tab-ul {
+  border-bottom: 1px solid #F0F0F0;
+  padding: 0 24px;
+  overflow: hidden;
+}
+
+.show-setting .tab-ul .tab-li {
+  float: left;
+  position: relative;
+  padding: 16px 0;
+  margin-right: 32px;
+  font-size: 16px;
+  line-height: 30px;
+  color: #666666;
+  cursor: pointer;
+}
+
+.show-setting .tab-ul .tab-li.active {
+  font-weight: 600;
+  font-size: 16px;
+  color: #0084FF;
+}
+
+.show-setting .tab-ul .tab-li.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #0084FF;
+}
+
+.show-setting .tab-con {
+  padding: 16px 24px;
+}
+
+.show-setting .tab-con .tips {
+  color: #999999;
+  font-size: 12px;
+}
+
+.show-setting .tab-con .sortable-box {
+  margin-top: 20px;
+}
+
+.show-setting .tab-con .sortable-box .li-name {
+  width: 83%;
+}
+
+.show-setting .tab-con .tab-box.list-style h2 {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 30px;
+  color: #333333;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box {
+  background: #F7F8FA;
+  border-radius: 4px;
+  margin-top: 20px;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item {
+  width: 295.6px;
+  height: 210px;
+  cursor: pointer;
+  float: left;
+  margin: 16px 12px;
+  overflow: hidden;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item .img-box {
+  position: relative;
+  height: 180px;
+  border: 2px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 8px;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item .img-box img {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item .img-box .check {
+  width: 32px;
+  height: 32px;
+  background: url(../images/icon-checked.png) no-repeat;
+  background-size: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: none;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item .img-box .zoom {
+  width: 32px;
+  height: 32px;
+  background: url(../images/icon-zoom1.png) no-repeat;
+  background-size: 100%;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: none;
+  border-radius: 0 0 6px 0;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item:hover .img-box {
+  border: 2px solid rgba(61, 130, 242, 0.5);
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item:hover .img-box .zoom {
+  display: block;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item p {
+  color: rgba(0, 0, 0, 0.8);
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item.active .img-box {
+  border: 2px solid #3D82F2;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box .item.active .img-box .check {
+  display: block;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box.app .item {
+  width: 120px;
+  height: 243px;
+}
+
+.show-setting .tab-con .tab-box.list-style .list-box.app .item .img-box {
+  height: 213px;
+}
+
+/* 填报模块 */
+.write-module {
+  padding: 24px;
+}
+
+.write-module .top-title .btn {
+  margin-right: 24px;
+}
+
+.write-module .top-title .btn i {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 16px;
+  margin-right: 4px;
+  margin-top: 6px;
+}
+
+.write-module .top-title .btn.normal-btn-blue i::before {
+  color: #ffffff;
+}
+
+.write-module .sortable-box .li-drag {
+  width: 2%;
+}
+
+.write-module .sortable-box .li-status {
+  width: 9%;
+}
+
+.write-module .sortable-box .li-operate {
+  width: 13%;
+}
+
+.write-module .sortable-box .li-name .state {
+  height: 20px;
+  line-height: 18px;
+  padding: 0 4px;
+  background: rgba(251, 162, 51, 0.12);
+  border: 1px solid rgba(251, 162, 51, 0.16);
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 2px;
+  color: #FBA233;
+  font-size: 12px;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.write-module .sortable-box .li-name .state.bg1 {
+  background: rgba(0, 132, 255, 0.12);
+  border: 1px solid rgba(0, 132, 255, 0.16);
+  color: #0084FF;
+}
