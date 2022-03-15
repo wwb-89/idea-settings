@@ -577,6 +577,11 @@
             <!--</el-input>-->
             <!--</div>-->
             <!--</div>-->
+            <div class="bottom-box">
+                <a href="javascript:;" class="add-btn"><i class="icon-plus"></i>添加报名批次</a>
+                <a href="javascript:;" @click="batchManageShow=true"><i class="icon-sort"></i>批量管理</a>
+                <a href="javascript:;"><i class="icon-trash-2"></i> 删除</a>
+            </div>
         </form>
     </div>
     <!-- 签到设置 -->
@@ -1427,6 +1432,38 @@
             </div>
         </div>
     </div>
+
+    <!-- 批量管理弹窗 start -->
+    <div class="dailog-box1 batch-dialog" v-show="batchManageShow" >
+        <div class="dailog">
+            <div class="header">
+                <span>批量管理</span>
+                <img src="../assets/images/close.png" alt="" @click="batchManageShow=false" class="close">
+            </div>
+            <div class="body">
+                <div class="tree">
+                    <div class="tree-head">
+                        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="checkAllChange">全选</el-checkbox>
+                        <div class="already">批量删除</div>
+                    </div>
+                    <el-checkbox-group v-model="checkedChild" @change="checkedChange">
+                        <div class="tree-box" id="drag-box">
+                            <div class="check-item" v-for="item in checkList">
+                                <el-checkbox :label="item" :key="item" class=""></el-checkbox>
+                                <i class="icon-drag"></i>
+                            </div>
+                        </div>
+                    </el-checkbox-group>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="batchManageShow=false">取消</div>
+                <div class="normal-btn after-sure">确定</div>
+            </div>
+        </div>
+    </div>
+    <!-- 批量管理弹窗  end-->
+
     <!--音视频播放-start-->
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
@@ -1689,6 +1726,11 @@
             textarea: '您好！活动即将开始，请尽快报名。',
             addIptValue: "", // 选择弹框 input 值
             closeValue: false, // 输入框清空按钮是否显示
+            batchManageShow: false,
+            checkAll: '',
+            checkedChild: [],
+            isIndeterminate: false,
+            checkList: ['报名1','报名2','报名3'],
         },
         mounted: function () {
             // this.initMap()
@@ -1708,8 +1750,26 @@
                     // $("#dragBubble").hide()
                 },
             });
+            $("#drag-box").sortable({
+                scroll: true,
+                axis: "y",
+                dalay: 300,
+                handle: ".icon-drag",
+                start: function () {
+                    // $("#dragBubble").hide()
+                },
+            });
         },
         methods: {
+            checkedChange: function(value){
+                var checkedCount = value.length;
+                this.checkAll = checkedCount === this.checkList.length;
+                this.isIndeterminate = checkedCount > 0 && checkedCount < this.checkList.length;
+            },
+            checkAllChange: function(val){
+                this.checkedChild = val ? this.checkList : [];
+                this.isIndeterminate = false;
+            },
             addOption1: function(){
                 this.option1.push({title: ''})
             },

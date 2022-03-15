@@ -415,6 +415,19 @@
 
             }
         }
+        .el-switch__label{
+            font-weight: 400;
+            color: #333333;
+            margin-right: 16px;
+        }
+        .marginBottom16{
+            margin-bottom: 16px;
+        }
+        .colorMain3{
+            .el-textarea__inner{
+                color: #0084FF;
+            }
+        }
     }
     .center-body {
         padding: 0 24px;
