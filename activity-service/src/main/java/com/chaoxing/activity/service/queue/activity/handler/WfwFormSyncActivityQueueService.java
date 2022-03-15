@@ -236,7 +236,6 @@ public class WfwFormSyncActivityQueueService {
             if (wfwFormCreateResult != null) {
                 // 根据表单模板和表单信息，填充报名表单信息相关属性
                 signUpCreateParam.buildSignUpWfwFormInfo(signUpWfwFormTemplate, wfwFormCreateResult);
-                signUpCreateParam.setFillInfo(true);
             }
             signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
         }

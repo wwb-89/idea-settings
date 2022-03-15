@@ -35,6 +35,7 @@ public class SignUpFillInfoType {
     /** 表单/审批模板ids集合; column: wfw_form_template_ids */
     private String wfwFormTemplateIds;
 
+    // 计算属性
     /** 模板字段设置时，所用到显示已选择的表单id */
     @TableField(exist = false)
     private List<Integer> formTemplateIds;

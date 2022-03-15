@@ -176,7 +176,7 @@ public class WfwApprovalActivityCreateQueueService {
             activity.setActivityPushReminder(activityPushReminder);
         }
         // 根据表单数据创建报名签到
-        SignCreateParamDTO signCreateParam = buildSignFromApproval(formData, loginUser.getUid(), fid, DateUtils.timestamp2Date(activity.getStartTimeStamp()));
+        SignCreateParamDTO signCreateParam = buildSignFromApproval(formData, fid, DateUtils.timestamp2Date(activity.getStartTimeStamp()));
         if (CollectionUtils.isNotEmpty(signCreateParam.getSignUps())) {
             Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
             SignUpCreateParamDTO signUpCreateParam = signCreateParam.getSignUps().get(0);
@@ -184,13 +184,9 @@ public class WfwApprovalActivityCreateQueueService {
             OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
             // 根据报名中的审核标识获取报名表单填报模板
             SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateService.getByNameOrDefaultSignUp(null, signUpCreateParam);
-            WfwFormCreateResultDTO wfwFormCreateResult =
-                    wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate);;
-            if (wfwFormCreateResult != null) {
-                // 根据表单模板和表单信息，填充报名表单信息相关属性
-                signUpCreateParam.buildSignUpWfwFormInfo(signUpWfwFormTemplate, wfwFormCreateResult);
-                signUpCreateParam.setFillInfo(true);
-            }
+            WfwFormCreateResultDTO wfwFormCreateResult = wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate);;
+            // 根据表单模板和表单信息，填充报名表单信息相关属性
+            signUpCreateParam.buildSignUpWfwFormInfo(signUpWfwFormTemplate, wfwFormCreateResult);
             signCreateParam.getSignUps().set(0, signUpCreateParam);
 
         }
@@ -206,18 +202,19 @@ public class WfwApprovalActivityCreateQueueService {
      * @author wwb
      * @Date 2021-06-11 17:49:43
      * @param formData
-     * @param uid
      * @param fid
      * @param activityStartTime
      * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
      */
-    private SignCreateParamDTO buildSignFromApproval(FormDataDTO formData, Integer uid, Integer fid, LocalDateTime activityStartTime) {
+    private SignCreateParamDTO buildSignFromApproval(FormDataDTO formData, Integer fid, LocalDateTime activityStartTime) {
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.buildDefault();
         // 报名
         List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();
         SignUpCreateParamDTO signUp = signUps.get(0);
         String isOpenSignUp = WfwFormUtils.getValue(formData, "is_open_sign_up");
         if (Objects.equals(YES, isOpenSignUp)) {
+            // 申报使用的填报信息都是万能表单（如果使用审批此时没有入口去配置审核人员）
+            signUp.setFormType(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
             signUp.setDeleted(false);
             String signUpOpenAudit = WfwFormUtils.getValue(formData, "sign_up_open_audit");
             signUp.setOpenAudit(Objects.equals(YES, signUpOpenAudit));

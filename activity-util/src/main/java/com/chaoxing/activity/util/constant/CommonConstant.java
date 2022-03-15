@@ -88,4 +88,8 @@ public class CommonConstant {
 	public static final String TEMPLATE_MENU_PREFIX = "template_";
 	/** 模板自定义菜单前缀 */
 	public static final String ACTIVITY_MENU_PREFIX = "activity_";
+
+	// 报名模板
+	/** 带审核的万能表单报名模板id */
+	public static final Integer SIGN_UP_WFW_FORM_WITH_APPROVAL_TEMPLATE_ID = 15;
 }

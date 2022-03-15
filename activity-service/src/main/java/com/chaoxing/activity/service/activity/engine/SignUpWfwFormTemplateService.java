@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.mapper.SignUpWfwFormTemplateMapper;
 import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -148,10 +149,17 @@ public class SignUpWfwFormTemplateService {
         SignUpWfwFormTemplate signUpWfwFormTemplate = getByName(name);
         // 名字存在，返回模板
         if (signUpWfwFormTemplate != null) {
+            signUp.setFillInfo(true);
             return signUpWfwFormTemplate;
         }
-        // 根据报名是否开启审核判断报名表单类型是wfw_form亦或是approval
-        SignUpWfwFormTemplate.TypeEnum formTypeEnum = Optional.ofNullable(signUp.getOpenAudit()).orElse(false) ?  SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
+        // 使用带审核的万能表单（因为审批需要指定审批的人员）
+        SignUpWfwFormTemplate.TypeEnum formTypeEnum = SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
+        Boolean openAudit = Optional.ofNullable(signUp.getOpenAudit()).orElse(false);
+        if (openAudit) {
+            signUp.setFillInfo(true);
+            // 指定带审核的万能表单模板
+            return getById(CommonConstant.SIGN_UP_WFW_FORM_WITH_APPROVAL_TEMPLATE_ID);
+        }
         SignUpFillInfoType signUpFillInfoType = signUpFillInfoTypeService.getByTemplateComponentId(signUp.getOriginId());
         // 如果模板的报名信息填报配置存在，且配置模板ids不为空，根据类型查询第一个满足的表单模板
         String wfwFormTemplateIds = Optional.ofNullable(signUpFillInfoType).map(SignUpFillInfoType::getWfwFormTemplateIds).orElse(null);
