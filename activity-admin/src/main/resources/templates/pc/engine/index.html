@@ -401,7 +401,7 @@
                             <label class="label">必填项</label>
                             <el-switch class="switch" v-model="addEditItem.required"></el-switch>
                         </div>
-                        <div class="switch-box" v-show="addEditItem.switchBtn && showSwitchConfig">
+                        <div class="switch-box" v-show="addEditItem.switchBtn">
                             <label class="label">显示</label>
                             <el-switch class="switch" v-model="addEditItem.show"></el-switch>
                             <label class="label">默认开启</label>
@@ -577,7 +577,7 @@
                                 <div class="add-box" style="cursor: pointer" @click="addConditionDetail"><i class="icon-plus-circle"></i>添加条件</div>
                             </div>
                         </template>
-                        <div class="switch-box" v-show="addEditItem.switchBtn && showSwitchConfig" style="margin-top: 15px">
+                        <div class="switch-box" v-show="addEditItem.switchBtn" style="margin-top: 15px">
                             <label class="label">显示</label>
                             <el-switch class="switch" v-model="addEditItem.show"></el-switch>
                             <label class="label">默认开启</label>
@@ -623,7 +623,7 @@
                             </el-select>
                         </div>
                     </el-form>
-                    <div class="switch-box" v-show="addEditItem.switchBtn && showSwitchConfig" style="padding-top: 15px">
+                    <div class="switch-box" v-show="addEditItem.switchBtn" style="padding-top: 15px">
                         <label class="label">显示</label>
                         <el-switch class="switch" v-model="addEditItem.show"></el-switch>
                         <label class="label">默认开启</label>
@@ -971,8 +971,7 @@
                     selectedClassify: {},
                     selectedClassifyTemplateComponents: [],
                     // 自定义应用接口调用时机
-                    callTimings: [[${callTimings}]],
-                    showSwitchConfig: false
+                    callTimings: [[${callTimings}]]
                 },
                 created: function () {
                     var $this = this;

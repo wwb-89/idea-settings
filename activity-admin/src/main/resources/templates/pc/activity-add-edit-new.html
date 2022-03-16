@@ -1621,7 +1621,8 @@
                                     break;
                             }
                         }
-                        if (_this.children && _this.children.length > 0) {
+                        // 报名开启状态，才会有值
+                        if (_this.children && _this.children.length > 0 && _this.open) {
                             $(_this.children).each(function () {
                                 if (this.switchBtn) {
                                     switch (this.code) {
