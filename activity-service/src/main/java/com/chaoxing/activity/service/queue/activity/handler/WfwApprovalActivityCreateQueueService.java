@@ -23,7 +23,7 @@ import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
-import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.CertificateApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwApprovalApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
@@ -86,7 +86,7 @@ public class WfwApprovalActivityCreateQueueService {
     @Resource
     private WfwContactApiService wfwContactApiService;
     @Resource
-    private SignApiService signApiService;
+    private CertificateApiService certificateApiService;
     @Resource
     private ActivityPushReminderService activityPushReminderService;
     @Resource
@@ -191,6 +191,9 @@ public class WfwApprovalActivityCreateQueueService {
 
         }
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
+        // 默认添加证书模板
+        Integer certificateTemplateId = certificateApiService.copyTemplate(loginUser.getUid(), loginUser.getFid());
+        activity.setCertificateTemplateId(certificateTemplateId);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
         // 发布
