@@ -337,6 +337,9 @@ public class WfwFormUtils {
 			String address = jsonValue.getString("address");
 			BigDecimal lng = jsonValue.getBigDecimal("lng");
 			BigDecimal lat = jsonValue.getBigDecimal("lat");
+			if (StringUtils.isBlank(address) || lng == null || lat == null) {
+				return null;
+			}
 			CoordinateUtils.Coordinate coordinate = CoordinateUtils.gcj02tobd09(lng.doubleValue(), lat.doubleValue());
 			if (StringUtils.isNotBlank(address)) {
 				addressDto = AddressDTO.builder()
