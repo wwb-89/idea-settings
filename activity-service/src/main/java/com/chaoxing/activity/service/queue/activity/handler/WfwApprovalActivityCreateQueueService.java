@@ -213,6 +213,11 @@ public class WfwApprovalActivityCreateQueueService {
         SignUpCreateParamDTO signUp = signUps.get(0);
         String isOpenSignUp = WfwFormUtils.getValue(formData, "is_open_sign_up");
         if (Objects.equals(YES, isOpenSignUp)) {
+            // 是否开启表单填写
+            String signUpFillInfo = WfwFormUtils.getValue(formData, "sign_up_fill_info");
+            if (Objects.equals("是", signUpFillInfo)) {
+                signUp.setFillInfo(true);
+            }
             // 申报使用的填报信息都是万能表单（如果使用审批此时没有入口去配置审核人员）
             signUp.setFormType(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
             signUp.setDeleted(false);
