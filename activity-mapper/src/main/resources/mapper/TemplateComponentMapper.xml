@@ -15,14 +15,19 @@
         <result column="data_origin" jdbcType="VARCHAR" property="dataOrigin" />
         <result column="origin_identify" jdbcType="VARCHAR" property="originIdentify" />
         <result column="field_flag" jdbcType="VARCHAR" property="fieldFlag" />
+        <result column="is_show" jdbcType="BIT" property="show" />
+        <result column="is_disabled" jdbcType="BIT" property="disabled" />
+        <result column="is_open" jdbcType="BIT" property="open" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence, is_deleted, t.type, t.data_origin, t.origin_identify, t.field_flag
+        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence, is_deleted, t.type, t.data_origin,
+        t.origin_identify, t.field_flag, t.is_show, t.is_disabled, t.is_open
     </sql>
 
     <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO
-            t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence`, `type`, data_origin, origin_identify, field_flag )
+            t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence`, `type`,
+                                  data_origin, origin_identify, field_flag, is_show, is_disabled, is_open  )
         VALUES
         <foreach collection="templateComponents" item="item" open="" close="" separator=",">
             (
@@ -36,7 +41,10 @@
                 #{item.type},
                 #{item.dataOrigin},
                 #{item.originIdentify},
-                #{item.fieldFlag}
+                #{item.fieldFlag},
+                #{item.show},
+                #{item.disabled},
+                #{item.open}
             )
         </foreach>
     </insert>
@@ -53,6 +61,10 @@
             t.data_origin as dataOrigin,
             t.origin_identify as originIdentify,
             t.field_flag as fieldFlag,
+            t.is_show as `show`,
+            t.is_disabled as disabled,
+            t.is_open as `open`,
+            t1.is_switch_btn as switchBtn,
             t1.code
         FROM
             t_template_component t

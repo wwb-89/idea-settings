@@ -41,7 +41,7 @@
                                 <i class="icon-edit" @click="openEditDialog(index, item)"></i>
                                 <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
                             </div>
-                            <label :class="{ label: true, required: (item.required && !isSwitchBtn(item.code)) }">{{item.name}}</label>
+                            <label :class="{ label: true, required: (item.required && !item.switchBtn) }">{{item.name}}</label>
                             <div class="input-box">
                                 <!-- 活动名称：activity_name -->
                                 <template v-if="item.code == 'activity_name'">
@@ -51,6 +51,7 @@
                                 <template v-else-if="item.code == 'activity_organisers'">
                                     <el-input style="width: 400px" type="text" placeholder="请填写" maxlength="20" readonly></el-input>
                                 </template>
+
                                 <!-- 活动时间：activity_time_scope -->
                                 <template v-else-if="item.code == 'activity_time_scope'">
                                     <el-date-picker type="daterange"
@@ -218,7 +219,7 @@
                                                 <i class="icon-edit" @click="openEditDialog1(index, idx, it)"></i>
                                                 <i class="icon-delete" @click="removeComponentAssociate2(index, idx, it)"></i>
                                             </div>
-                                            <label :class="{ label: true, required: (it.required && !isSwitchBtn(it.code)) }">{{it.name}}</label>
+                                            <label :class="{ label: true, required: (it.required && !it.switchBtn) }">{{it.name}}</label>
                                             <div class="input-box">
                                                 <template v-if="it.code == 'sign_up_time_scope'">
                                                     <el-date-picker type="daterange"
@@ -396,9 +397,17 @@
                                 <el-switch class="switch" v-model="addEditItem.pushReminderConfig.remindWithinRoleScope"></el-switch>
                             </el-form-item>
                         </template>
-                        <div class="switch-box" v-show="!isSwitchBtn(addEditItem.code)">
+                        <div class="switch-box" v-show="!addEditItem.switchBtn">
                             <label class="label">必填项</label>
                             <el-switch class="switch" v-model="addEditItem.required"></el-switch>
+                        </div>
+                        <div class="switch-box" v-show="addEditItem.switchBtn && showSwitchConfig">
+                            <label class="label">显示</label>
+                            <el-switch class="switch" v-model="addEditItem.show"></el-switch>
+                            <label class="label">默认开启</label>
+                            <el-switch class="switch" v-model="addEditItem.open"></el-switch>
+                            <label class="label">禁用</label>
+                            <el-switch class="switch" v-model="addEditItem.disabled"></el-switch>
                         </div>
                     </el-form>
                 </div>
@@ -469,7 +478,7 @@
                             </div>
                         </template>
                         <div class="switch-box">
-                            <template v-if="!isSwitchBtn(addEditItem.code)">
+                            <template v-if="!addEditItem.switchBtn">
                                 <label class="label">必填项</label>
                                 <el-switch class="switch" v-model="addEditItem.required"></el-switch>
                             </template>
@@ -568,6 +577,14 @@
                                 <div class="add-box" style="cursor: pointer" @click="addConditionDetail"><i class="icon-plus-circle"></i>添加条件</div>
                             </div>
                         </template>
+                        <div class="switch-box" v-show="addEditItem.switchBtn && showSwitchConfig" style="margin-top: 15px">
+                            <label class="label">显示</label>
+                            <el-switch class="switch" v-model="addEditItem.show"></el-switch>
+                            <label class="label">默认开启</label>
+                            <el-switch class="switch" v-model="addEditItem.open"></el-switch>
+                            <label class="label">禁用</label>
+                            <el-switch class="switch" v-model="addEditItem.disabled"></el-switch>
+                        </div>
                     </el-form>
                 </div>
                 <div class="footer">
@@ -605,27 +622,15 @@
                                 </el-option-group>
                             </el-select>
                         </div>
-<!--                        <el-form-item label="表单模板" class="marginBottom20">-->
-<!--                            <el-select v-model="innerAddEditItem.wfwFormTemplateId" placeholder="请选择关联表单">-->
-<!--                                <el-option v-for="item in wfwFormTemplates"-->
-<!--                                           :key="item.id"-->
-<!--                                           :label="item.name"-->
-<!--                                           :value="item.id"-->
-<!--                                >-->
-<!--                                </el-option>-->
-<!--                            </el-select>-->
-<!--                        </el-form-item>-->
-<!--                        <el-form-item label="审批模板" class="marginBottom20">-->
-<!--                            <el-select v-model="innerAddEditItem.wfwFormApprovalTemplateId" placeholder="请选择关联审批">-->
-<!--                                <el-option v-for="item in wfwFormApprovalTemplates"-->
-<!--                                           :key="item.id"-->
-<!--                                           :label="item.name"-->
-<!--                                           :value="item.id"-->
-<!--                                >-->
-<!--                                </el-option>-->
-<!--                            </el-select>-->
-<!--                        </el-form-item>-->
                     </el-form>
+                    <div class="switch-box" v-show="addEditItem.switchBtn && showSwitchConfig" style="padding-top: 15px">
+                        <label class="label">显示</label>
+                        <el-switch class="switch" v-model="addEditItem.show"></el-switch>
+                        <label class="label">默认开启</label>
+                        <el-switch class="switch" v-model="addEditItem.open"></el-switch>
+                        <label class="label">禁用</label>
+                        <el-switch class="switch" v-model="addEditItem.disabled"></el-switch>
+                    </div>
                 </div>
                 <div class="footer">
                     <div class="btn-box">
@@ -767,7 +772,7 @@
                             <i></i>添加{{addEditItem.name}}
                         </div>
                         <div class="switch-box display-flex1">
-                            <template v-if="!isSwitchBtn(addEditItem.code)">
+                            <template v-if="!addEditItem.switchBtn">
                                 <label class="label">必填项</label>
                                 <el-switch class="switch" v-model="addEditItem.required"></el-switch>
                             </template>
@@ -967,8 +972,7 @@
                     selectedClassifyTemplateComponents: [],
                     // 自定义应用接口调用时机
                     callTimings: [[${callTimings}]],
-                    // 开关的系统组件code列表
-                    switchBtnComptCodes: [[${switchBtnComptCodes}]]
+                    showSwitchConfig: false
                 },
                 created: function () {
                     var $this = this;
@@ -1033,10 +1037,6 @@
                     });
                 },
                 methods:{
-                    isSwitchBtn: function (code) {
-                        var $this = this;
-                        return $this.switchBtnComptCodes.indexOf(code) != -1;
-                    },
                     initData: function () {
                         var $this = this;
                         var {template, components, templateComponents} = $this.templateInfo;
@@ -1141,7 +1141,12 @@
                             type: component.type,
                             dataOrigin: component.dataOrigin,
                             originIdentify: component.originIdentify,
-                            fieldFlag: component.fieldFlag
+                            fieldFlag: component.fieldFlag,
+                            switchBtn: component.switchBtn,
+                            show: true,
+                            open: component.code == 'clazz_interaction',
+                            disabled: false
+
                         };
                     },
                     getInitSignUpCondition: function () {
@@ -1150,7 +1155,8 @@
                     getInitSignUpFillInfoType: function () {
                         var $this = this;
                         var wfwFormApprovalTemplateId = ($this.wfwFormApprovalTemplates[0] && $this.wfwFormApprovalTemplates[0].id) || ''
-                        return { type: 'wfw_form', formTemplateIds: [], wfwFormTemplateId: $this.wfwFormTemplates[0].id, wfwFormApprovalTemplateId: wfwFormApprovalTemplateId}
+                        var wfwFormTemplateId = ($this.wfwFormTemplates[0] && $this.wfwFormTemplates[0].id) || ''
+                        return { type: 'wfw_form', formTemplateIds: [], wfwFormTemplateId: wfwFormTemplateId, wfwFormApprovalTemplateId: wfwFormApprovalTemplateId}
                     },
                     getInitTemplateAppConfig: function () {
                         return {
@@ -1318,7 +1324,11 @@
                                     required: $this.defaultRequiredCodes.indexOf(this.code) != -1,
                                     sequence: childIdx++,
                                     code: this.code,
-                                    type: this.type
+                                    switchBtn: this.switchBtn,
+                                    type: this.type,
+                                    show: this.show,
+                                    open: this.open,
+                                    disabled: this.disabled
                                 };
                                 $this.innerAttrSupplement(childTplComponent);
                                 tplComponentChildren.push(childTplComponent);
@@ -2039,7 +2049,10 @@
                                         sequence: this.sequence,
                                         children: this.children,
                                         signUpCondition: this.signUpCondition,
-                                        signUpFillInfoType: this.signUpFillInfoType
+                                        signUpFillInfoType: this.signUpFillInfoType,
+                                        show: this.show,
+                                        open: this.open,
+                                        disabled: this.disabled
                                     })
                                 })
                             }
@@ -2059,6 +2072,9 @@
                                 originIdentify: _this.originIdentify,
                                 fieldFlag: _this.fieldFlag,
                                 pushReminderConfig: _this.pushReminderConfig,
+                                show: _this.show,
+                                open: _this.open,
+                                disabled: _this.disabled,
                                 children: newChildren
                             });
                         });

@@ -53,6 +53,15 @@ public class TemplateComponentDTO {
 
     private String fieldFlag;
 
+    private Boolean switchBtn;
+
+    private Boolean show;
+
+    private Boolean disabled;
+
+    private Boolean open;
+
+
     private List<TemplateComponentDTO> children;
 
     /** 选择组件自定义选项值列表 */

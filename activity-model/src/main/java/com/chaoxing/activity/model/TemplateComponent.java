@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.ibatis.annotations.ResultMap;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_template_component")
+@TableName(value = "t_template_component", resultMap = "BaseResultMap")
 public class TemplateComponent {
 
     /** 主键; column: id*/
@@ -62,6 +63,17 @@ public class TemplateComponent {
     private String originIdentify;
     /** 字段标识; column: field_flag*/
     private String fieldFlag;
+
+    /** 是否显示，0：否，1：是; column: is_show  */
+    @TableField(value = "is_show")
+    private Boolean show;
+    /** 是否禁用，0：否，1：是; column: is_disabled */
+    @TableField(value = "is_disabled")
+    private Boolean disabled;
+    /** 是否默认开启，0：否，1：是; column: is_open */
+    @TableField(value = "is_open")
+    private Boolean open;
+
 
     @TableField(exist = false)
     private List<TemplateComponent> children;
@@ -142,6 +154,9 @@ public class TemplateComponent {
                 .customAppConfigs(o.getCustomAppConfigs())
                 .customAppInterfaceCalls(o.getCustomAppInterfaceCalls())
                 .pushReminderConfig(o.getPushReminderConfig())
+                .open(o.getOpen())
+                .show(o.getShow())
+                .disabled(o.getDisabled())
                 .build(), result);
         return result;
     }

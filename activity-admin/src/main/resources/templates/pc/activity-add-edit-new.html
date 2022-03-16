@@ -289,11 +289,11 @@
                             </div>
                         </div>
                         <!--作品征集设置-->
-                        <div class="form-item align-start" v-else-if="item.code == 'work'" data-name="template-component" :data-id="item.id">
+                        <div class="form-item align-start" v-else-if="item.code == 'work' && item.show" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
-                                    <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
+                                    <el-switch v-model="activity.openWork" class="examine-switch" :disabled="item.disabled"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                                 <div class="set-box configurationForm" v-show="activity.openWork" @click="workManage">
@@ -303,11 +303,11 @@
                             </div>
                         </div>
                         <!--考核-->
-                        <div class="form-item align-start" v-else-if="item.code == 'inspection_config'" data-name="template-component" :data-id="item.id">
+                        <div class="form-item align-start" v-else-if="item.code == 'inspection_config' && item.show" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
-                                    <el-switch v-model="activity.openInspectionConfig" class="examine-switch"></el-switch>
+                                    <el-switch v-model="activity.openInspectionConfig" class="examine-switch" :disabled="item.disabled"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                                 <div class="set-box configurationForm" v-show="activity.openInspectionConfig" @click="toInspectionConfig">
@@ -317,21 +317,21 @@
                             </div>
                         </div>
                         <!--小组设置-->
-                        <div class="form-item align-start" v-else-if="item.code == 'group'" data-name="template-component" :data-id="item.id">
+                        <div class="form-item align-start" v-else-if="item.code == 'group' && item.show" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
-                                    <el-switch v-model="activity.openGroup" class="examine-switch"></el-switch>
+                                    <el-switch v-model="activity.openGroup" class="examine-switch" :disabled="item.disabled"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                             </div>
                         </div>
                         <!--阅读设置-->
-                        <div class="form-item align-start" v-else-if="item.code == 'reading'" data-name="template-component" :data-id="item.id">
+                        <div class="form-item align-start" v-else-if="item.code == 'reading' && item.show" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
-                                    <el-switch v-model="activity.openReading" class="examine-switch"></el-switch>
+                                    <el-switch v-model="activity.openReading" class="examine-switch" :disabled="item.disabled"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                                 <div class="set-box configurationForm" v-show="activity.openReading" @click="readManage">
@@ -341,21 +341,21 @@
                             </div>
                         </div>
                         <!--班级互动-->
-                        <div class="form-item align-start" v-else-if="item.code == 'clazz_interaction'" data-name="template-component" :data-id="item.id">
+                        <div class="form-item align-start" v-else-if="item.code == 'clazz_interaction' && item.show" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
-                                    <el-switch v-model="activity.openClazzInteraction" class="examine-switch"></el-switch>
+                                    <el-switch v-model="activity.openClazzInteraction" class="examine-switch" :disabled="item.disabled"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                             </div>
                         </div>
                         <!--推送提醒-->
-                        <div class="form-item align-start" v-else-if="item.code == 'push_reminder'" data-name="template-component" :data-id="item.id">
+                        <div class="form-item align-start" v-else-if="item.code == 'push_reminder' && item.show" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
-                                    <el-switch v-model="activity.openPushReminder" class="examine-switch"></el-switch>
+                                    <el-switch v-model="activity.openPushReminder" class="examine-switch" :disabled="item.disabled"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                                 <div class="set-box configurationForm" v-show="activity.openPushReminder" @click="toPushReminderConfig(item.id)">
@@ -385,11 +385,11 @@
                             </div>
                         </div>
                         <!--评价-->
-                        <div v-else-if="item.code == 'activity_rating'" data-name="template-component" :data-id="item.id">
+                        <div v-else-if="item.code == 'activity_rating' && item.show" data-name="template-component" :data-id="item.id">
                             <div class="form-item">
                                 <label class="label">{{item.name}}</label>
                                 <div class="input-box">
-                                    <el-switch v-model="activity.openRating" class="examine-switch"></el-switch>
+                                    <el-switch v-model="activity.openRating" class="examine-switch" :disabled="item.disabled"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                             </div>
@@ -402,12 +402,12 @@
                             </div>
                         </div>
                         <!--定时发布-->
-                        <template v-else-if="item.code == 'timing_release'">
+                        <template v-else-if="item.code == 'timing_release' && item.show">
                             <div data-name="template-component" :data-id="item.id">
                                 <div class="form-item">
                                     <label class="label">{{item.name}}</label>
                                     <div class="input-box">
-                                        <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
+                                        <el-switch v-model="activity.timingRelease" class="examine-switch" :disabled="item.disabled"></el-switch>
                                         <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                     </div>
                                 </div>
@@ -443,10 +443,10 @@
                             </div>
                         </div>
                         <!--报名设置列表-->
-                        <div v-else-if="signUpMap[item.id] && (item.code == 'sign_up' || item.code =='company_sign_up')" data-name="template-component" :data-id="item.id">
+                        <div v-else-if="signUpMap[item.id] && (item.code == 'sign_up' || item.code =='company_sign_up') && item.show" data-name="template-component" :data-id="item.id">
                             <div class="set-box">
                                 <div class="title set">{{item.name}}</div>
-                                <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
+                                <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)" :disabled="item.disabled"></el-switch>
                             </div>
                             <!-- 点击参与设置 -->
                             <form action="" onsubmit="return false;" class="setForm" v-show="!signUpMap[item.id].deleted">
@@ -480,10 +480,10 @@
                                         </div>
                                     </div>
                                     <!--参与角色限制-->
-                                    <div class="form-item" v-else-if="it.code == 'sign_up_role_limit'" style="flex-wrap: wrap">
+                                    <div class="form-item" v-else-if="it.code == 'sign_up_role_limit' && it.show" style="flex-wrap: wrap">
                                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                         <div class="input-box">
-                                            <el-switch v-model="signUpMap[item.id].openRoleLimit"></el-switch>
+                                            <el-switch v-model="signUpMap[item.id].openRoleLimit" :disabled="it.disabled"></el-switch>
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                         <div class="join-box" v-show="signUpMap[item.id].openRoleLimit" style="margin-left: 115px;margin-top: 12px;">
@@ -545,11 +545,11 @@
                                         </div>
                                     </div>
                                     <!--报名填报信息-->
-                                    <div class="form-item sign-info" v-else-if="it.code == 'sign_up_fill_info'">
+                                    <div class="form-item sign-info" v-else-if="it.code == 'sign_up_fill_info' && it.show">
                                         <label class="label">{{it.name}}</label>
                                         <div class="input-box">
                                             <div class="set-box">
-                                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it)"></el-switch>
+                                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it)" :disabled="it.disabled"></el-switch>
                                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                             </div>
                                             <div class="radio-box" v-show="signUpMap[item.id].fillInfo && !signUpMap[item.id].fillInfoFormId">
@@ -612,19 +612,19 @@
                                         </div>
                                     </div>
                                     <!--报名名单公开-->
-                                    <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
+                                    <div class="form-item" v-else-if="it.code == 'sign_up_public_list' && it.show">
                                         <label class="label">{{it.name}}</label>
                                         <div class="input-box">
-                                            <el-switch v-model="signUpMap[item.id].publicList"></el-switch>
+                                            <el-switch v-model="signUpMap[item.id].publicList" :disabled="it.disabled"></el-switch>
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                     </div>
                                     <!--限制取消报名-->
-                                    <template v-else-if="it.code == 'sign_up_cancel_signed_up' && signUpMap[item.id].formType != 'approval'">
+                                    <template v-else-if="it.code == 'sign_up_cancel_signed_up' && it.show && signUpMap[item.id].formType != 'approval'">
                                         <div class="form-item">
                                             <label class="label">{{it.name}}</label>
                                             <div class="input-box">
-                                                <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)"></el-switch>
+                                                <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)" :disabled="it.disabled"></el-switch>
                                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                             </div>
                                         </div>
@@ -650,18 +650,18 @@
                                             </div>
                                         </div>
                                     </template>
-                                    <div class="form-item" v-else-if="it.code == 'on_site_sign_up'">
+                                    <div class="form-item" v-else-if="it.code == 'on_site_sign_up' && it.show">
                                         <label class="label">{{it.name}}</label>
                                         <div class="input-box">
-                                            <el-switch v-model="signUpMap[item.id].onSiteSignUp"></el-switch>
+                                            <el-switch v-model="signUpMap[item.id].onSiteSignUp" :disabled="it.disabled"></el-switch>
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                     </div>
-                                    <div class="form-item align-start" v-else-if="it.code == 'sign_up_condition'">
+                                    <div class="form-item align-start" v-else-if="it.code == 'sign_up_condition' && it.show">
                                         <label class="label" style="line-height: 20px;">{{it.name}}</label>
                                         <div class="input-box column">
                                             <div class="set-box">
-                                                <el-switch v-model="signUpConditionMap[it.id].enable"></el-switch>
+                                                <el-switch v-model="signUpConditionMap[it.id].enable" :disabled="it.disabled"></el-switch>
                                                 <el-tooltip style="position: relative; bottom: 3px" class="item-tips fl" effect="dark" disabled :content="signUpConditionTips(it.name, it.id)" placement="top">
                                                     <el-button>报名条件</el-button>
                                                 </el-tooltip>
@@ -683,11 +683,11 @@
                             </form>
                         </div>
                         <!--自定义应用配置-->
-                        <div class="form-item align-start" v-else-if="item.type == 'custom_app'" data-name="template-component" :data-id="item.id">
+                        <div class="form-item align-start" v-else-if="item.type == 'custom_app' && item.show" data-name="template-component" :data-id="item.id">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box column">
                                 <div class="set-box">
-                                    <el-switch v-model="customAppEnableMap[item.id]" class="examine-switch"></el-switch>
+                                    <el-switch v-model="customAppEnableMap[item.id]" class="examine-switch" :disabled="item.disabled"></el-switch>
                                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                             </div>
@@ -837,6 +837,7 @@
                         <div class="form-items">
                             <label class="label">接收人</label>
                             <div class="items receive-box" v-if="activityPushReminder.remindWithinRoleScope">
+
                                 <ul class="add-box" style="height: 28px;">
                                     <li v-for="(scope, scIndex) in ['发布范围', '角色范围']" :key="'scope-' + scIndex" style="padding-right: 8px; border-radius: 0">
                                         <span>{{scope}}</span>
@@ -1464,6 +1465,10 @@
                 }
                 // 分类显示组件map封装
                 $this.packageClassifyShowComponentsMap();
+                // 如果是活动创建，初始化开关值
+                if (activityApp.isEmpty($this.activity.id)) {
+                    $this.handleActivitySwitchData();
+                }
             },
             mounted: function () {
                 var $this = this;
@@ -1575,6 +1580,76 @@
                 }
             },
             methods: {
+                handleActivitySwitchData: function () {
+                    var $this = this;
+                    var commonSwitchCode = []
+                    $($this.templateComponents).each(function () {
+                        var _this = this;
+                        if (_this.switchBtn) {
+                            switch (this.code) {
+                                case 'work':
+                                    $this.activity.openWork = _this.open;
+                                    break;
+                                case 'activity_rating':
+                                    $this.activity.openRating = _this.open;
+                                    break;
+                                case 'timing_release':
+                                    $this.activity.timingRelease = _this.open;
+                                    break;
+                                case 'reading':
+                                    $this.activity.openReading = _this.open;
+                                    break;
+                                case 'group':
+                                    $this.activity.openGroup = _this.open;
+                                    break;
+                                case 'inspection_config':
+                                    $this.activity.openInspectionConfig = _this.open;
+                                    break;
+                                case 'clazz_interaction':
+                                    $this.activity.openClazzInteraction = _this.open;
+                                    break;
+                                case 'push_reminder':
+                                    $this.activity.openPushReminder = _this.open;
+                                    break;
+                                case 'company_sign_up':
+                                    $this.signUpMap[this.id].enable = _this.open;
+                                    $this.signUpEnableChanged(this.id);
+                                    break;
+                                case 'sign_up':
+                                    $this.signUpMap[this.id].enable = _this.open;
+                                    $this.signUpEnableChanged(this.id);
+                                    break;
+                            }
+                        }
+                        if (_this.children && _this.children.length > 0) {
+                            $(_this.children).each(function () {
+                                if (this.switchBtn) {
+                                    switch (this.code) {
+                                        case 'sign_up_fill_info':
+                                            $this.signUpMap[_this.id].fillInfo = this.open;
+                                            $this.formFillSwitchChange(this.open, this);
+                                            break;
+                                        case 'sign_up_public_list':
+                                            $this.signUpMap[_this.id].publicList = this.open;
+                                            break;
+                                        case 'sign_up_cancel_signed_up':
+                                            $this.signUpMap[_this.id].endNotAllowCancel = this.open;
+                                            $this.endNotAllowCancelChange(_this.id)
+                                            break;
+                                        case 'sign_up_condition':
+                                            $this.signUpConditionMap[_this.id].enable = this.open;
+                                            break;
+                                        case 'on_site_sign_up':
+                                            $this.signUpMap[_this.id].onSiteSignUp = this.open;
+                                            break;
+                                    }
+                                }
+                            });
+                        }
+
+
+                    });
+                },
                 // 使用jquery循环来显示隐藏
                 showOrHideComponent: function () {
                     var $this = this;
