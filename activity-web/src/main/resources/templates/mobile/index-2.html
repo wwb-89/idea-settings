@@ -51,7 +51,8 @@
                 <div class="info">
                     <h2 class="title"><span class="info-top" v-show="activity.top">置顶</span>{{activity.name}}</h2>
                     <div class="time">
-                        <span>{{activity.startTime | timestampScopeFormat(activity.endTime)}}</span>
+                        <span v-if="flag == 'preach_online'">{{activity.startTime | timestampScopeFormatForPreachOnline(activity.endTime)}}</span>
+                        <span v-else>{{activity.startTime | timestampScopeFormat(activity.endTime)}}</span>
                         <div class="clear"></div>
                     </div>
                     <div class="type-box">
@@ -152,6 +153,7 @@
                     classifyNames: [[${classifyNames}]],
                     activityQueryDates: [[${activityQueryDates}]],
                     cloudDomain: [[${cloudDomain}]],
+                    flag: [[${flag}]],
                     classifies: [],
                     activityTypes: [],
                     regions: [[${regions}]],

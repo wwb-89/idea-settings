@@ -107,7 +107,8 @@
 						</div>
 						<div class="card-info">
 							<h2 class="title overHidden1" @click="detail(index)"><span class="info-top" v-show="item.top">置顶</span>{{item.name}}</h2>
-							<p class="time">{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
+							<p class="time" v-if="flag == 'preach_online'">{{item.startTime | timestampScopeFormatForPreachOnline(item.endTime)}}</p>
+							<p class="time" v-else>{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
 							<div class="type-box">
 								<span class="type-item" v-for="(tagName, index) of item.tagNames" :key="'tag-name-' + index">{{tagName}}</span>
 							</div>
@@ -140,6 +141,7 @@
                 cloudDomain: [[${cloudDomain}]],
 				loginUser: [[${session._login_user_}]],
 				fids: [[${fids}]],
+				flag: [[${flag}]],
 				signUpKeyword: [[${signUpKeyword}]],
 				classifyNames: [[${classifyNames}]],
                 activityQueryDates: [[${activityQueryDates}]],

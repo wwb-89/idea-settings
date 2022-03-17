@@ -330,6 +330,47 @@
     activityApp.prototype.isEmbedded = function () {
         return window.parent !== window;
     };
+    activityApp.prototype.timestampScopeFormat = function (startTimestamp, endTimestamp, format) {
+        var $this = this;
+        var thisYear = new Date().getFullYear();
+        var start = "";
+        var startDateObj = null;
+        var end = "";
+        var endDateObj = null;
+        if (!$this.isEmpty(startTimestamp)) {
+            startDateObj = moment(startTimestamp);
+        }
+        if (!$this.isEmpty(endTimestamp)) {
+            endDateObj = moment(endTimestamp);
+        }
+        var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
+        // 是不是同一天
+        var isSameDay = startDateObj && endDateObj && startDateObj.year() == endDateObj.year() && startDateObj.month() == endDateObj.month() && startDateObj.date() == endDateObj.date();
+        if (format) {
+            start = startDateObj ? startDateObj.format(format) : "";
+            end = endDateObj ? endDateObj.format(format) : "";
+        } else if (isThisYear) {
+            start = startDateObj ? startDateObj.format("MM-DD HH:mm") : "";
+            if (isSameDay) {
+                end = endDateObj ? endDateObj.format("HH:mm") : "";
+            } else {
+                end = endDateObj ? endDateObj.format("MM-DD HH:mm") : "";
+            }
+        } else {
+            start = startDateObj ? startDateObj.format("YYYY-MM-DD HH:mm") : "";
+            if (isSameDay) {
+                end = endDateObj ? endDateObj.format("HH:mm") : "";
+            } else {
+                end = endDateObj ? endDateObj.format("YYYY-MM-DD HH:mm") : "";
+            }
+        }
+        var result = start;
+        if (!$this.isEmpty(start) && !$this.isEmpty(end)) {
+            result += " ~ ";
+        }
+        result += end;
+        return result;
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
@@ -367,42 +408,9 @@ Vue.filter("timestampFormat", function (timestamp) {
 
 });
 Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp, format) {
-    var thisYear = new Date().getFullYear();
-    var start = "";
-    var startDateObj = null;
-    var end = "";
-    var endDateObj = null;
-    if (!activityApp.isEmpty(startTimestamp)) {
-        startDateObj = moment(startTimestamp);
-    }
-    if (!activityApp.isEmpty(endTimestamp)) {
-        endDateObj = moment(endTimestamp);
-    }
-    var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
-    // 是不是同一天
-    var isSameDay = startDateObj && endDateObj && startDateObj.year() == endDateObj.year() && startDateObj.month() == endDateObj.month() && startDateObj.date() == endDateObj.date();
-    if (format) {
-        start = startDateObj ? startDateObj.format(format) : "";
-        end = endDateObj ? endDateObj.format(format) : "";
-    } else if (isThisYear) {
-        start = startDateObj ? startDateObj.format("MM-DD HH:mm") : "";
-        if (isSameDay) {
-            end = endDateObj ? endDateObj.format("HH:mm") : "";
-        } else {
-            end = endDateObj ? endDateObj.format("MM-DD HH:mm") : "";
-        }
-    } else {
-        start = startDateObj ? startDateObj.format("YYYY-MM-DD HH:mm") : "";
-        if (isSameDay) {
-            end = endDateObj ? endDateObj.format("HH:mm") : "";
-        } else {
-            end = endDateObj ? endDateObj.format("YYYY-MM-DD HH:mm") : "";
-        }
-    }
-    var result = start;
-    if (!activityApp.isEmpty(start) && !activityApp.isEmpty(end)) {
-        result += " ~ ";
-    }
-    result += end;
-    return result;
+    return activityApp.timestampScopeFormat(startTimestamp, endTimestamp, format);
+});
+Vue.filter("timestampScopeFormatForPreachOnline", function (startTimestamp, endTimestamp, format) {
+    var str = activityApp.timestampScopeFormat(startTimestamp, endTimestamp, format);
+    return str.split("~")[0];
 });
