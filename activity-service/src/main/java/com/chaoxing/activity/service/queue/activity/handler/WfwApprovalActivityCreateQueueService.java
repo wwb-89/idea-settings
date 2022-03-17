@@ -221,6 +221,13 @@ public class WfwApprovalActivityCreateQueueService {
             if (Objects.equals("是", signUpFillInfo)) {
                 signUp.setFillInfo(true);
             }
+            // 选择的报名表单模板id
+            String signUpFormTemplateIdStr = WfwFormUtils.getValue(formData, "sign_up_form_template_id");
+            if (StringUtils.isNotBlank(signUpFormTemplateIdStr)) {
+                Integer signUpFormTemplateId = Integer.parseInt(signUpFormTemplateIdStr);
+                signUp.setFillInfo(true);
+                signUp.setWfwFormTemplateId(signUpFormTemplateId);
+            }
             // 申报使用的填报信息都是万能表单（如果使用审批此时没有入口去配置审核人员）
             signUp.setFormType(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue());
             signUp.setDeleted(false);

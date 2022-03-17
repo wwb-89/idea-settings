@@ -533,7 +533,7 @@ public class Activity {
      * @return java.lang.String
      */
     public String getManageUrl() {
-        return String.format(UrlConstant.ATIVITY_MANAGE_URL, getId());
+        return String.format(UrlConstant.ACTIVITY_MANAGE_URL, getId());
     }
 
     /**活动评价地址
