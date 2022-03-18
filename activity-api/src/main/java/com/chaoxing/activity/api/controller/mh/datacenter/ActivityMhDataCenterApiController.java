@@ -374,7 +374,7 @@ public class ActivityMhDataCenterApiController {
         Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
         List<Activity> activities = activityQueryService.listActivityIdsByMarketIdOrFid(marketId, wfwfid);
         // 活动数统计
-        String activityNum = Optional.of(activities.size()).map(String::valueOf).orElse("0");
+        String activityNum = Optional.ofNullable(activities.size()).map(String::valueOf).orElse("0");
         // 评论数统计
         Integer countRatingNum = activityRatingQueryService.countActivityRatingNum(marketId, wfwfid);
         String ratingNum = Optional.ofNullable(countRatingNum).map(String::valueOf).orElse("0");

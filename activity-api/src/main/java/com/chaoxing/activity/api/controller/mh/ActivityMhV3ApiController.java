@@ -216,7 +216,7 @@ public class ActivityMhV3ApiController {
         }
         // 积分
         if (activity.getIntegral() != null && activity.getIntegral().compareTo(new BigDecimal(0)) != 0) {
-            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), fieldCodeNameMap.getOrDefault("integral", "积分"), Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
+            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), fieldCodeNameMap.getOrDefault("integral", "积分"), Optional.ofNullable(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
         }
         // 评价
         Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(false);

@@ -243,8 +243,8 @@ public class ActivityUpdateParamDTO {
 	 * @return com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO
 	 */
 	public static ActivityUpdateParamDTO buildActivityUpdateParam(Activity activity, ActivityCreateParamDTO waitUpdateInfo) {
-		Long startTime = Optional.of(waitUpdateInfo.getStartTimeStamp()).orElse(Optional.ofNullable(activity.getStartTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null));
-		Long endTime = Optional.of(waitUpdateInfo.getEndTimeStamp()).orElse(Optional.ofNullable(activity.getEndTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null));
+		Long startTime = Optional.ofNullable(waitUpdateInfo.getStartTimeStamp()).orElse(Optional.ofNullable(activity.getStartTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null));
+		Long endTime = Optional.ofNullable(waitUpdateInfo.getEndTimeStamp()).orElse(Optional.ofNullable(activity.getEndTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null));
 
 		return ActivityUpdateParamDTO.builder()
 				.id(activity.getId())

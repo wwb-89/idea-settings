@@ -163,7 +163,7 @@ public class XxtNoticeApiService {
 		Optional.ofNullable(content).filter(StringUtils::isNotBlank).orElseThrow(() -> new BusinessException("通知内容不能为空"));
 		Optional.ofNullable(senderUid).orElseThrow(() -> new BusinessException("消息发送者不能为空"));
 		Optional.ofNullable(receiverUids).filter(CollectionUtils::isNotEmpty).orElseThrow(() -> new BusinessException("接收消息的用户不能为空"));
-		Optional.of(receiverUids.size()).filter(v -> v.compareTo(EACH_MAX_SEND_NUM) < 1).orElseThrow(() -> new BusinessException("每次发送的用户不能超过" + EACH_MAX_SEND_NUM));
+		Optional.ofNullable(receiverUids.size()).filter(v -> v.compareTo(EACH_MAX_SEND_NUM) < 1).orElseThrow(() -> new BusinessException("每次发送的用户不能超过" + EACH_MAX_SEND_NUM));
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		Optional.ofNullable(title).filter(StringUtils::isNotBlank).ifPresent(v -> params.add("title", v));
 		params.add("uid", senderUid);

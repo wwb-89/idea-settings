@@ -1236,7 +1236,7 @@ public class ActivityHandleService {
 		}
 		Integer activityId = add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), loginUser);
 		// 若活动由市场所建，新增活动市场与活动关联，共享活动到其他机构
-		List<Integer> shareFids = Optional.of(activityCreateDto.getSharedFids()).filter(StringUtils::isNotBlank)
+		List<Integer> shareFids = Optional.ofNullable(activityCreateDto.getSharedFids()).filter(StringUtils::isNotBlank)
 				.map(v -> Arrays.stream(v.split(",")).map(Integer::valueOf).collect(Collectors.toList())).orElse(Lists.newArrayList());
 		Activity activity = activityQueryService.getById(activityId);
 		activityMarketService.shareActivityToFids(activity, shareFids, loginUser.buildOperateUserDTO());
