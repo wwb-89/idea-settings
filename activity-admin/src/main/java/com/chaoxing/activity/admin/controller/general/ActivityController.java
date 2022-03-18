@@ -196,9 +196,11 @@ public class ActivityController {
 		List<String> formIds = signUpConditions.stream().map(SignUpCondition::getOriginIdentify).filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
 		Map<String, List<WfwFormFieldVO>> formFieldStructures = Maps.newHashMap();
 		if (CollectionUtils.isNotEmpty(formIds)) {
+			// 活动市场/模板的创建机构
+			Integer templateFid = template.getFid();
 			formFieldStructures = formIds.stream().collect(Collectors.toMap(
 					v -> v,
-					v -> formApiService.getFormStructure(Integer.valueOf(v), fid)
+					v -> formApiService.getFormStructure(Integer.valueOf(v), templateFid)
 							.stream().map(WfwFormFieldVO::buildFromWfwFormFieldDTO)
 							.collect(Collectors.toList()),
 					(v1, v2) -> v2));

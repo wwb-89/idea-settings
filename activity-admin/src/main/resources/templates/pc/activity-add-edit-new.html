@@ -1188,8 +1188,9 @@
                     if (_this.activityConditionDetails) {
                         $(_this.activityConditionDetails).each(function () {
                             var fieldObj = $this.formStructureMap[_this.originIdentify];
-                            $this.$set(this, "compt", fieldObj[this.fieldName].compt);
-                            $this.$set(this, "options", fieldObj[this.fieldName].options || []);
+                            var obj = fieldObj[this.fieldName];
+                            $this.$set(this, "compt", obj ? obj.compt : "");
+                            $this.$set(this, "options", obj ? obj.options : []);
                         })
                     }
                     $this.$set($this.signUpConditionMap, this.templateComponentId, _this);
