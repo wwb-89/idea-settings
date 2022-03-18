@@ -108,8 +108,9 @@ public class ActivityMhService {
             // 主办方
             fields.add(MhDataBuildUtil.buildField(fieldCodeNameMap.getOrDefault("activity_organisers", "主办方"), record.getOrganisers(), ++fieldFlag));
             // 开始结束时间
-            fields.add(MhDataBuildUtil.buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()), ++fieldFlag));
-            fields.add(MhDataBuildUtil.buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()), ++fieldFlag));
+            String startTimeFieldName = fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间");
+            fields.add(MhDataBuildUtil.buildField(startTimeFieldName + "(开始)", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()), ++fieldFlag));
+            fields.add(MhDataBuildUtil.buildField(startTimeFieldName + "(结束)", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()), ++fieldFlag));
             // 报名数据封装
             String emptySignUpText = urlParams.getString("emptySignUp");
             String signUpStatus = Optional.ofNullable(emptySignUpText).orElse(""), signUpStartTime = "", signUpEndTime = "";
@@ -132,8 +133,9 @@ public class ActivityMhService {
             // 已报名人数
             fields.add(MhDataBuildUtil.buildField("已报名人数", signedUpNum, ++fieldFlag));
             // 报名开始结束时间
-            fields.add(MhDataBuildUtil.buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpStartTime, ++fieldFlag));
-            fields.add(MhDataBuildUtil.buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpEndTime, ++fieldFlag));
+            String signUpTimeFieldName = fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间");
+            fields.add(MhDataBuildUtil.buildField(signUpTimeFieldName + "(开始)", signUpStartTime, ++fieldFlag));
+            fields.add(MhDataBuildUtil.buildField(signUpTimeFieldName + "(结束)", signUpEndTime, ++fieldFlag));
             // 人数限制
             fields.add(MhDataBuildUtil.buildField(fieldCodeNameMap.getOrDefault("sign_up_person_limit", "人数限制"), personLimit == 0 ? "不限" : signStat.getLimitNum(), ++fieldFlag));
             // 活动状态
