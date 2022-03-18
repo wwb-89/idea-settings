@@ -182,8 +182,17 @@ public class WfwApprovalActivityCreateQueueService {
             SignUpCreateParamDTO signUpCreateParam = signCreateParam.getSignUps().get(0);
             signUpCreateParam.setOriginId(originId);
             OperateUserDTO operateUser = loginUser.buildOperateUserDTO();
+            Integer wfwFormTemplateId = signUpCreateParam.getWfwFormTemplateId();
+            SignUpWfwFormTemplate signUpWfwFormTemplate = null;
+            if (wfwFormTemplateId != null) {
+                signUpWfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
+                Optional.ofNullable(signUpWfwFormTemplate).orElseThrow(() -> new BusinessException("报名模板不存在"));
+            }
             // 根据报名中的审核标识获取报名表单填报模板
-            SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateService.getByNameOrDefaultSignUp(null, signUpCreateParam);
+            if (signUpWfwFormTemplate == null) {
+                signUpWfwFormTemplate = signUpWfwFormTemplateService.getByNameOrDefaultSignUp(null, signUpCreateParam);
+            }
+            signUpCreateParam.setFormType(signUpWfwFormTemplate.getType());
             WfwFormCreateResultDTO wfwFormCreateResult = wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate);;
             // 根据表单模板和表单信息，填充报名表单信息相关属性
             signUpCreateParam.buildSignUpWfwFormInfo(signUpWfwFormTemplate, wfwFormCreateResult);
