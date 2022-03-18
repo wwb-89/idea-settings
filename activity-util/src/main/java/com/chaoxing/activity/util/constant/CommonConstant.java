@@ -88,6 +88,8 @@ public class CommonConstant {
 	public static final String TEMPLATE_MENU_PREFIX = "template_";
 	/** 模板自定义菜单前缀 */
 	public static final String ACTIVITY_MENU_PREFIX = "activity_";
+	/** 组件查询字段前缀 */
+	public static final String COMPONENT_SUFFIX = "component_";
 
 	// 报名模板
 	/** 带审核的万能表单报名模板id */

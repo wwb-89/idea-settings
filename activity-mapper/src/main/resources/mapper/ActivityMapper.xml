@@ -121,6 +121,12 @@
                     #{value}
                 </foreach>
             </if>
+            <!--关联组件值-->
+            <if test="params.activityComponentValue != null ">
+                INNER JOIN t_activity_component_value t7 ON t.id = t7.activity_id
+                AND t7.component_id = #{params.activityComponentValue.componentId}
+                AND t7.`value` = #{params.activityComponentValue.value}
+            </if>
         WHERE
             <!--状态-->
             <choose>

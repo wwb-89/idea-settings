@@ -13,6 +13,7 @@ import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.dto.stat.UserSummaryStatDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityComponentValue;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.ActivityMhService;
@@ -41,10 +42,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -143,6 +141,16 @@ public class ActivityMhDataCenterApiController {
                 activityClassifyId = activityClassify.getInteger("id");
             }
         }
+        // 遍历json获取组件id
+        Set<String> keys = params.keySet();
+        ActivityComponentValue activityComponentValue = new ActivityComponentValue();
+        for (String key : keys) {
+            if (key.startsWith(CommonConstant.COMPONENT_SUFFIX)) {
+                activityComponentValue.setComponentId(Integer.parseInt(key.replace(CommonConstant.COMPONENT_SUFFIX, "")));
+                activityComponentValue.setValue(params.getString(key));
+                break;
+            }
+        }
         String preParams = params.getString("preParams");
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 状态
@@ -162,6 +170,7 @@ public class ActivityMhDataCenterApiController {
                 .sw(sw)
                 .activityClassifyId(activityClassifyId)
                 .tags(tags)
+                .activityComponentValue(activityComponentValue)
                 .build();
         List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
         activityQuery.setFids(fids);
