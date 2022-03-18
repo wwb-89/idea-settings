@@ -156,7 +156,7 @@
                         <div class="form-item" v-else-if="item.code == 'activity_organisers'" data-name="template-component" :data-id="item.id">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box" style="width: 400px;">
-                                <el-input type="text" placeholder="请填写" v-model.trim="activity.organisers" maxlength="20"></el-input>
+                                <el-input type="text" placeholder="请填写" v-model.trim="activity.organisers" maxlength="50"></el-input>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
