@@ -11,7 +11,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.ibatis.annotations.ResultMap;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -73,6 +72,17 @@ public class TemplateComponent {
     /** 是否默认开启，0：否，1：是; column: is_open */
     @TableField(value = "is_open")
     private Boolean open;
+    /** 报名条件使用的字段 */
+    /** 不满足条件时是否提示文字，0：否，1：是; column: is_not_match_show_tips */
+    @TableField(value = "is_not_match_show_tips")
+    private Boolean notMatchShowTips;
+    /** 不满足条件时的提示文字; column: not_match_tips */
+    private String notMatchTips;
+    /** 不满足条件时是否点击跳转，0：否，1：是; column: is_not_match_jump */
+    @TableField(value = "is_not_match_jump")
+    private Boolean notMatchJump;
+    /** 不满足条件时跳转链接; column: not_match_jump_url */
+    private String notMatchJumpUrl;
 
 
     @TableField(exist = false)
@@ -157,6 +167,10 @@ public class TemplateComponent {
                 .open(o.getOpen())
                 .show(o.getShow())
                 .disabled(o.getDisabled())
+                .notMatchShowTips(o.getNotMatchShowTips())
+                .notMatchTips(o.getNotMatchTips())
+                .notMatchJump(o.getNotMatchJump())
+                .notMatchJumpUrl(o.getNotMatchJumpUrl())
                 .build(), result);
         return result;
     }

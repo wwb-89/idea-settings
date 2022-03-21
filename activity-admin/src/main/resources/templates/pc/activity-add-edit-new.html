@@ -870,28 +870,6 @@
                 </div>
             </div>
         </div>
-        <!-- 删除分类弹窗 -->
-        <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此' + activityClassifyTitle" :cancel="'保留'" :sure="'删除'" @callback="deleteClassifySubmit"></vue-confirm>
-        <!-- 活动地图弹窗 -->
-        <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
-        <!-- 活动发布范围弹窗 -->
-        <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
-        <!--报名参与角色-->
-        <sign-up-participate-role :dom-id="'sign-up-participate-role-tree'" :fid="fid" :area-code="areaCode" ref="signUpParticipateRoleWindow" @callback="sureSignUpParticipateRole"></sign-up-participate-role>
-        <!-- 报名参与范围弹窗 -->
-        <vue-custom-participate-scope :dom-scope-id="'sign-up-participate-scope-tree'" ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
-        <!-- 通知提醒范围弹窗 -->
-        <vue-custom-participate-scope :dom-scope-id="'reminder-scope-tree'" ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
-        <!--报名条件配置-->
-        <vue-sign-up-condition ref="signUpConfigDialogWindow" @callback="confirmSignUpConditionDetails"></vue-sign-up-condition>
-        <!--自定义富文本-->
-        <vue-rich-text ref="richTextEditDialogWindow" @callback="confirmRichTextEdit"></vue-rich-text>
-        <!--预览url复制容器-->
-        <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
-        <!--活动是线下但是没有选择地点的提示-->
-        <vue-confirm ref="offlineEmptyAddressWindow" :message="'未填写位置信息，展示页面中的地图位置可能不准确'" :cancel="'取消'" :sure="'继续保存'" @callback="ignoreOfflineEmptyAddress"></vue-confirm>
-        <!--重新选择门户模版-->
-        <vue-confirm ref="reSelectWebTemplateWindow" :message="'重新选择展示页面可能会导致部分数据丢失'" :cancel="'取消'" :sure="'继续'" @callback="sureReSelectWebTemplate"></vue-confirm>
 
         <!--  切换填报形式提示弹窗 -->
         <div class="dailog-box1" v-show="showSwitchFormDialog">
@@ -955,6 +933,28 @@
             </div>
         </div>
     </div>
+    <!-- 删除分类弹窗 -->
+    <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此' + activityClassifyTitle" :cancel="'保留'" :sure="'删除'" @callback="deleteClassifySubmit"></vue-confirm>
+    <!-- 活动地图弹窗 -->
+    <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
+    <!-- 活动发布范围弹窗 -->
+    <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
+    <!--报名参与角色-->
+    <sign-up-participate-role :dom-id="'sign-up-participate-role-tree'" :fid="fid" :area-code="areaCode" ref="signUpParticipateRoleWindow" @callback="sureSignUpParticipateRole"></sign-up-participate-role>
+    <!-- 报名参与范围弹窗 -->
+    <vue-custom-participate-scope :dom-scope-id="'sign-up-participate-scope-tree'" ref="signUpParticipateScopeWindow" @sure-callback="sureSignUpParticipateScope"></vue-custom-participate-scope>
+    <!-- 通知提醒范围弹窗 -->
+    <vue-custom-participate-scope :dom-scope-id="'reminder-scope-tree'" ref="reminderParticipateScopeWindow" @sure-callback="sureReminderReceiverScope"></vue-custom-participate-scope>
+    <!--报名条件配置-->
+    <vue-sign-up-condition ref="signUpConfigDialogWindow" @callback="confirmSignUpConditionDetails"></vue-sign-up-condition>
+    <!--自定义富文本-->
+    <vue-rich-text ref="richTextEditDialogWindow" @callback="confirmRichTextEdit"></vue-rich-text>
+    <!--预览url复制容器-->
+    <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
+    <!--活动是线下但是没有选择地点的提示-->
+    <vue-confirm ref="offlineEmptyAddressWindow" :message="'未填写位置信息，展示页面中的地图位置可能不准确'" :cancel="'取消'" :sure="'继续保存'" @callback="ignoreOfflineEmptyAddress"></vue-confirm>
+    <!--重新选择门户模版-->
+    <vue-confirm ref="reSelectWebTemplateWindow" :message="'重新选择展示页面可能会导致部分数据丢失'" :cancel="'取消'" :sure="'继续'" @callback="sureReSelectWebTemplate"></vue-confirm>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>

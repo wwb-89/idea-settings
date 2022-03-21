@@ -495,7 +495,7 @@
                 </div>
             </div>
         </div>
-        <!-- 报名条件-->
+        <!-- 报名条件弹窗 start-->
         <div class="dialog-mask" v-show="signUpConditionDialog">
             <div class="dailog">
                 <div class="header">
@@ -540,7 +540,7 @@
                                 <label>设置条件</label>
                                 <el-switch v-model="innerAddEditItem.configOnActivity" class="margin-auto" inactive-text="活动发起时配置字段值"></el-switch>
                             </div>
-                            <div class="condition-box">
+                            <div class="condition-box marginBottom20">
                                 <div class="condition-item" v-for="(item, index) in innerAddEditItem.templateConditionDetails">
                                     <el-select v-model="item.fieldName" placeholder="请选择" @change="conditionFieldChange">
                                         <el-option  v-for="(it, idx) in wfwFormFields"
@@ -576,6 +576,14 @@
                                 </div>
                                 <div class="add-box" style="cursor: pointer" @click="addConditionDetail"><i class="icon-plus-circle"></i>添加条件</div>
                             </div>
+                            <div class="marginBottom20">
+                                <el-switch v-model="addEditItem.notMatchShowTips" :class="{'marginBottom16': addEditItem.notMatchShowTips}" inactive-text="不满足条件时提示文字"></el-switch>
+                                <el-input v-show="addEditItem.notMatchShowTips" v-model.trim="addEditItem.notMatchTips" type="text" placeholder="请输入" maxlength="40" show-word-limit class=""></el-input>
+                            </div>
+                            <div class="marginBottom20">
+                                <el-switch v-model="addEditItem.notMatchJump" :class="{'marginBottom16': addEditItem.notMatchJump}" inactive-text="跳转链接"></el-switch>
+                                <el-input v-show="addEditItem.notMatchJump" v-model.trim="addEditItem.notMatchJumpUrl" class="colorMain3" type="textarea" :autosize="{ minRows: 1, maxRows: 2}" placeholder="请输入" resize="none"></el-input>
+                            </div>
                         </template>
                         <div class="switch-box" v-show="addEditItem.switchBtn" style="margin-top: 15px">
                             <label class="label">显示</label>
@@ -595,6 +603,7 @@
                 </div>
             </div>
         </div>
+        <!-- 报名条件弹窗 end-->
         <!-- 报名信息填写-->
         <div class="dialog-mask" v-show="fillInfoDialog">
             <div class="dailog">
@@ -1127,7 +1136,7 @@
                         var $this = this;
                         var componentType = $this.componentTypeList[$this.activeCpTypeIndex];
                         ++$this.currMaxSequence;
-                        return {
+                        var templateComponent = {
                             id: uuid(),
                             pid: componentType.virtualId,
                             templateId: $this.currTemplateId,
@@ -1144,18 +1153,37 @@
                             switchBtn: component.switchBtn,
                             show: true,
                             open: component.code == 'clazz_interaction',
-                            disabled: false
-
+                            disabled: false,
+                            /** 报名条件添加 start */
+                            notMatchShowTips: component.notMatchShowTips,
+                            notMatchTips: component.notMatchTips,
+                            notMatchJump: component.notMatchJump,
+                            notMatchJumpUrl: component.notMatchJumpUrl,
+                            /** 报名条件添加 end */
                         };
+                        debugger;
+                        return templateComponent;
                     },
                     getInitSignUpCondition: function () {
-                        return { fid: this.fid, originIdentify: '', fieldName: '', allowSignedUp: false, configOnActivity: false, templateConditionDetails: [] }
+                        return {
+                            fid: this.fid,
+                            originIdentify: '',
+                            fieldName: '',
+                            allowSignedUp: false,
+                            configOnActivity: false,
+                            templateConditionDetails: []
+                        };
                     },
                     getInitSignUpFillInfoType: function () {
                         var $this = this;
-                        var wfwFormApprovalTemplateId = ($this.wfwFormApprovalTemplates[0] && $this.wfwFormApprovalTemplates[0].id) || ''
-                        var wfwFormTemplateId = ($this.wfwFormTemplates[0] && $this.wfwFormTemplates[0].id) || ''
-                        return { type: 'wfw_form', formTemplateIds: [], wfwFormTemplateId: wfwFormTemplateId, wfwFormApprovalTemplateId: wfwFormApprovalTemplateId}
+                        var wfwFormApprovalTemplateId = ($this.wfwFormApprovalTemplates[0] && $this.wfwFormApprovalTemplates[0].id) || '';
+                        var wfwFormTemplateId = ($this.wfwFormTemplates[0] && $this.wfwFormTemplates[0].id) || '';
+                        return {
+                            type: 'wfw_form',
+                            formTemplateIds: [],
+                            wfwFormTemplateId: wfwFormTemplateId,
+                            wfwFormApprovalTemplateId: wfwFormApprovalTemplateId
+                        };
                     },
                     getInitTemplateAppConfig: function () {
                         return {
@@ -1327,6 +1355,10 @@
                                     type: this.type,
                                     show: this.show,
                                     open: this.open,
+                                    notMatchShowTips: this.notMatchShowTips,
+                                    notMatchTips: this.notMatchTips,
+                                    notMatchJump: this.notMatchJump,
+                                    notMatchJumpUrl: this.notMatchJumpUrl,
                                     disabled: this.disabled
                                 };
                                 $this.innerAttrSupplement(childTplComponent);
@@ -2051,6 +2083,10 @@
                                         signUpFillInfoType: this.signUpFillInfoType,
                                         show: this.show,
                                         open: this.open,
+                                        notMatchShowTips: this.notMatchShowTips,
+                                        notMatchTips: this.notMatchTips,
+                                        notMatchJump: this.notMatchJump,
+                                        notMatchJumpUrl: this.notMatchJumpUrl,
                                         disabled: this.disabled
                                     })
                                 })
@@ -2074,6 +2110,10 @@
                                 show: _this.show,
                                 open: _this.open,
                                 disabled: _this.disabled,
+                                notMatchShowTips: _this.notMatchShowTips,
+                                notMatchTips: _this.notMatchTips,
+                                notMatchJump: _this.notMatchJump,
+                                notMatchJumpUrl: _this.notMatchJumpUrl,
                                 children: newChildren
                             });
                         });

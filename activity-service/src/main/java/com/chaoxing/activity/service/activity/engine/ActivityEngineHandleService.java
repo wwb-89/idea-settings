@@ -39,13 +39,13 @@ public class ActivityEngineHandleService {
     * @Description
     * @author huxiaolong
     * @Date 2021-07-08 16:21:07
-    * @param activityEngineDTO
+    * @param activityEngineDto
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void handleEngineTemplate(Integer fid, Integer marketId, Integer uid, ActivityEngineDTO activityEngineDTO) {
-        Template template = activityEngineDTO.getTemplate();
-        List<TemplateComponent> templateComponents = TemplateComponent.buildFromDTO(activityEngineDTO.getTemplateComponents());
+    public void handleEngineTemplate(Integer fid, Integer marketId, Integer uid, ActivityEngineDTO activityEngineDto) {
+        Template template = activityEngineDto.getTemplate();
+        List<TemplateComponent> templateComponents = TemplateComponent.buildFromDTO(activityEngineDto.getTemplateComponents());
         if (template.getSystem() && template.getFid() == null) {
             // todo 临时测试，默认新建一个template
             Template newTemplate = Template.builder()
@@ -57,10 +57,10 @@ public class ActivityEngineHandleService {
                     .createUid(uid)
                     .updateUid(uid)
                     .build();
-            activityEngineDTO.setTemplate(newTemplate);
-            saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds());
+            activityEngineDto.setTemplate(newTemplate);
+            saveOperation(newTemplate, templateComponents, activityEngineDto.getCustomComponentIds());
         } else {
-            updateOperation(template, templateComponents, activityEngineDTO.getDelTemplateComponentIds());
+            updateOperation(template, templateComponents, activityEngineDto.getDelTemplateComponentIds());
         }
     }
 

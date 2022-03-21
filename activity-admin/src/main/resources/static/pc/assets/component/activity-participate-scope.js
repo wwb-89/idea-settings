@@ -75,6 +75,10 @@ Vue.component('vue-activity-participate-scope', {
                 if (data.success) {
                     $this.loaded = true;
                     $this.orgs = $this.supportOnlySelectParentNodeHandle(data.data);
+                    // 解决level冲突的问题
+                    $($this.orgs).each(function () {
+                        this.businessLevel = this.level;
+                    });
                     // 处理下数
                     $this.initTree();
                     if ($this.orgs.length < 1) {
@@ -172,7 +176,9 @@ Vue.component('vue-activity-participate-scope', {
                 var checkStatus = this.getCheckStatus();
                 if (!checkStatus.half && selectedFids.indexOf(this.fid) == -1) {
                     selectedFids.push(this.fid);
-                    selectedOrgs.push(this);
+                    var org = $.extend({}, this);
+                    org.level = org.businessLevel;
+                    selectedOrgs.push(org);
                 }
             });
             $this.selectedOrgs = selectedOrgs;

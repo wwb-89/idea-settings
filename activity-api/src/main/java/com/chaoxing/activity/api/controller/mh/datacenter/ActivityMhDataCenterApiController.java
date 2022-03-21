@@ -143,9 +143,10 @@ public class ActivityMhDataCenterApiController {
         }
         // 遍历json获取组件id
         Set<String> keys = params.keySet();
-        ActivityComponentValue activityComponentValue = new ActivityComponentValue();
+        ActivityComponentValue activityComponentValue = null;
         for (String key : keys) {
             if (key.startsWith(CommonConstant.COMPONENT_SUFFIX)) {
+                activityComponentValue = new ActivityComponentValue();
                 activityComponentValue.setComponentId(Integer.parseInt(key.replace(CommonConstant.COMPONENT_SUFFIX, "")));
                 activityComponentValue.setValue(params.getString(key));
                 break;
