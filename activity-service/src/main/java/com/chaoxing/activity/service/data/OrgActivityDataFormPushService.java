@@ -220,7 +220,7 @@ public class OrgActivityDataFormPushService {
                 continue;
             }
             // 发起人
-            if ("create_user".equals(alias)) {
+            if ("create_user".equals(alias) || "user".equals(alias)) {
                 JSONObject user = new JSONObject();
                 user.put("id", activity.getCreateUid());
                 user.put("name", activity.getCreateUserName());

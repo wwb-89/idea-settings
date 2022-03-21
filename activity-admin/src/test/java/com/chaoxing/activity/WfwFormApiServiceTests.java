@@ -25,7 +25,10 @@ public class WfwFormApiServiceTests {
 
     @Test
     public void getCreateUrl() {
-        String url = wfwFormApiService.buildEditFormUrl(117211, 25418810, null, "wfw_form");
+        Integer formId = 174669;
+        Integer fid = 147004;
+        Integer uid = 25418810;
+        String url = wfwFormApiService.buildEditFormUrl(fid, formId, uid, "wfw_form");
         System.out.println(url);
     }
 

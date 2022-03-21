@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.WfwFormConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -488,18 +489,12 @@ public class WfwFormApiService {
 		}
 		LocalDateTime now = LocalDateTime.now();
 		params.put("datetime", now.format(DATE_TIME_FORMATTER));
-//		params.put("sign", WfwFormConstant.CREATE_SIGN);
 		params.put("sign", WfwFormConstant.CREATE_SIGN);
 		params.put("formType", formType);
-//		String enc = getEnc(params, WfwFormConstant.KEY);
 		String enc = getEnc(params, WfwFormConstant.CREATE_KEY);
 		params.put("enc", enc);
 		// 封装url
-		StringBuilder url = new StringBuilder(CREATE_URL + "?");
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			url.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
-		}
-		return url.toString();
+		return UrlUtils.packageParam2URL(CREATE_URL, params);
 	}
 
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url

@@ -12,6 +12,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,7 +87,7 @@ public class UrlUtils {
      * @param paramMap
      * @return java.lang.String
      */
-    public static String packageParam2URL(String url, Map<String, String> paramMap) {
+    public static String packageParam2URL(String url, Map<String, Object> paramMap) {
         if (!Pattern.matches(URL_REGEX, url)) {
             throw new BusinessException("url非法");
         }
@@ -94,7 +95,7 @@ public class UrlUtils {
         Map<CharSequence, CharSequence> existQueryParam = Maps.newHashMap(UrlQuery.of(urlItem.getQuery(), StandardCharsets.UTF_8).getQueryMap());
         paramMap.forEach((paramKey, paramValue) -> {
             if (!existQueryParam.containsKey(paramKey)) {
-                existQueryParam.put(paramKey, paramValue);
+                existQueryParam.put(paramKey, Optional.ofNullable(paramValue).map(Object::toString).orElse(""));
             }
         });
         String realUrl = urlItem.getProtocol() + "://" + urlItem.getHost() + urlItem.getPath();

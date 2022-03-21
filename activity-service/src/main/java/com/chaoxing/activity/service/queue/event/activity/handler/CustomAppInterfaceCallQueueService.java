@@ -1,29 +1,17 @@
 package com.chaoxing.activity.service.queue.event.activity.handler;
 
-import cn.hutool.core.util.URLUtil;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.engine.CustomAppInterfaceCallHandleService;
 import com.chaoxing.activity.service.activity.engine.CustomAppInterfaceCallQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
-import com.chaoxing.activity.service.queue.IQueue;
 import com.chaoxing.activity.service.queue.event.activity.CustomAppInterfaceCallQueue;
 import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.redisson.api.RedissonClient;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -78,7 +66,7 @@ public class CustomAppInterfaceCallQueueService {
             if (StringUtils.isBlank(url)) {
                 throw new BusinessException("自定义应用接口:" + interfaceCallId + "不存在!");
             }
-            Map<String, String> additionalParams = Maps.newHashMap();
+            Map<String, Object> additionalParams = Maps.newHashMap();
             additionalParams.put("activityId", String.valueOf(activityId));
             additionalParams.put("state", String.valueOf(fid));
             url = UrlUtils.packageParam2URL(url, additionalParams);
