@@ -39,9 +39,6 @@ public class ActivityEngineDTO {
     private List<Integer> delCustomComponentIds;
 
     /** 模板组件关联信息list */
-//    private List<TemplateComponent> templateComponents;
-
-    /** 模板组件关联信息list */
     private List<TemplateComponentDTO> templateComponents;
 
 }

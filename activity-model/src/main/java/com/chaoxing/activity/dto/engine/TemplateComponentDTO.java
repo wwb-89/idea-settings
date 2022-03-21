@@ -60,6 +60,15 @@ public class TemplateComponentDTO {
     private Boolean disabled;
 
     private Boolean open;
+    /** 报名条件使用的字段 */
+    /** 不满足条件时是否提示文字，0：否，1：是 */
+    private Boolean notMatchShowTips;
+    /** 不满足条件时的提示文字 */
+    private String notMatchTips;
+    /** 不满足条件时是否点击跳转，0：否，1：是 */
+    private Boolean notMatchJump;
+    /** 不满足条件时跳转链接 */
+    private String notMatchJumpUrl;
 
 
     private List<TemplateComponentDTO> children;

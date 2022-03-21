@@ -48,8 +48,8 @@ public class ActivityEngineApiController {
     @PostMapping("market/{marketId}/template/publish")
     public RestRespDTO publish(HttpServletRequest request, Integer fid, @PathVariable Integer marketId, String templateInfoStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        ActivityEngineDTO activityEngineDTO = JSON.parseObject(templateInfoStr, ActivityEngineDTO.class);
-        activityEngineHandleService.handleEngineTemplate(fid, marketId, loginUser.getUid(), activityEngineDTO);
+        ActivityEngineDTO activityEngineDto = JSON.parseObject(templateInfoStr, ActivityEngineDTO.class);
+        activityEngineHandleService.handleEngineTemplate(fid, marketId, loginUser.getUid(), activityEngineDto);
         return RestRespDTO.success();
     }
 }

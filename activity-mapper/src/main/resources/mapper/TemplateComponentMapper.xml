@@ -18,16 +18,21 @@
         <result column="is_show" jdbcType="BIT" property="show" />
         <result column="is_disabled" jdbcType="BIT" property="disabled" />
         <result column="is_open" jdbcType="BIT" property="open" />
+        <result column="is_not_match_show_tips" jdbcType="BIT" property="notMatchShowTips" />
+        <result column="not_match_tips" jdbcType="VARCHAR" property="notMatchTips" />
+        <result column="is_not_match_jump" jdbcType="BIT" property="notMatchJump" />
+        <result column="not_match_jump_url" jdbcType="VARCHAR" property="notMatchJumpUrl" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence, is_deleted, t.type, t.data_origin,
-        t.origin_identify, t.field_flag, t.is_show, t.is_disabled, t.is_open
+        t.origin_identify, t.field_flag, t.is_show, t.is_disabled, t.is_open, t.is_not_match_show_tips, t.not_match_tips, t.is_not_match_jump, t.not_match_jump_url
     </sql>
 
     <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO
             t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence`, `type`,
-                                  data_origin, origin_identify, field_flag, is_show, is_disabled, is_open  )
+                                  data_origin, origin_identify, field_flag, is_show, is_disabled, is_open, t.is_not_match_show_tips, t.not_match_tips,
+                                t.is_not_match_jump, t.not_match_jump_url  )
         VALUES
         <foreach collection="templateComponents" item="item" open="" close="" separator=",">
             (
@@ -44,7 +49,11 @@
                 #{item.fieldFlag},
                 #{item.show},
                 #{item.disabled},
-                #{item.open}
+                #{item.open},
+                #{item.notMatchShowTips},
+                #{item.notMatchTips},
+                #{item.notMatchJump},
+                #{item.notMatchJumpUrl}
             )
         </foreach>
     </insert>
@@ -65,7 +74,11 @@
             t.is_disabled as disabled,
             t.is_open as `open`,
             t1.is_switch_btn as switchBtn,
-            t1.code
+            t1.code,
+            t.is_not_match_show_tips notMatchShowTips,
+            t.not_match_tips,
+            t.is_not_match_jump notMatchJump,
+            t.not_match_jump_url
         FROM
             t_template_component t
             INNER JOIN t_component t1 ON t.component_id = t1.id
