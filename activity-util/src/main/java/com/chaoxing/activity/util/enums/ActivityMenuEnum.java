@@ -100,8 +100,8 @@ public enum ActivityMenuEnum {
         ENTER_VENUE("进入会场", "enter_venue", IconEnum.UNIVERSAL.getValue(), false, 20, "no_limit"),
         /** 去签到，点击跳转签到列表页 */
         TO_SIGN_IN("去签到", "to_sign_in", IconEnum.SIGN_IN.getValue(), false, 30, "after_sign_up"),
-        /** 去填写，点击跳转表单采集填写列表页 */
-        TO_FILL_FORM_COLLECTION("去填写", "to_fill_form_collection", IconEnum.UNIVERSAL.getValue(), false, 40, "after_sign_up"),
+        /** 填写表单，点击跳转表单采集填写列表页 */
+        TO_FILL_FORM_COLLECTION("填写表单", "to_fill_form_collection", IconEnum.UNIVERSAL.getValue(), false, 40, "after_sign_up"),
         /** 阅读测评 */
         TO_READING("阅读测评", "to_reading", IconEnum.READING_TEST.getValue(), false, 50, "after_sign_up"),
         /** 讨论小组 */

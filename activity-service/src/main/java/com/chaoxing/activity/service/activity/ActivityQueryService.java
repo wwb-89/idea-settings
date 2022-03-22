@@ -683,7 +683,7 @@ public class ActivityQueryService {
 					buttons.add(ButtonDTO.build("去签到", userSignParticipationStat.getSignInUrl(), ButtonDTO.BtnSequenceEnum.SIGN_IN));
 				}
 				if (CollectionUtils.isNotEmpty(userSignParticipationStat.getFormCollectionIds())) {
-					buttons.add(ButtonDTO.build("去填写", userSignParticipationStat.getFormCollectionUrl(), ButtonDTO.BtnSequenceEnum.FORM_COLLECTION));
+					buttons.add(ButtonDTO.build("填写表单", userSignParticipationStat.getFormCollectionUrl(), ButtonDTO.BtnSequenceEnum.FORM_COLLECTION));
 				}
 				Boolean openWork = Optional.ofNullable(activity.getOpenWork()).orElse(false);
 				Integer workId = activity.getWorkId();
