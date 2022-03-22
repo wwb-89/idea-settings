@@ -11,8 +11,8 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
+import com.chaoxing.activity.dto.stat.SignStatSummaryDTO;
 import com.chaoxing.activity.dto.stat.UserNotSignedInNumStatDTO;
-import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -630,18 +630,18 @@ public class SignApiService {
 		});
 	}
 
-	/**获取活动统计汇总记录
+	/**获取报名签到统计汇总记录
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-05-25 15:42:02
 	 * @param signId
-	 * @return java.lang.Integer
+	 * @return com.chaoxing.activity.dto.stat.SignStatSummaryDTO
 	 */
-	public ActivityStatSummary getActivityStatSummary(Integer signId) {
+	public SignStatSummaryDTO getActivityStatSummary(Integer signId) {
 		String url = String.format(STAT_ACTIVITY_SUMMARY_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getJSONObject("data").toJavaObject(ActivityStatSummary.class), (message) -> {
+		return resultHandle(jsonObject, () -> jsonObject.getJSONObject("data").toJavaObject(SignStatSummaryDTO.class), (message) -> {
 			throw new BusinessException(message);
 		});
 	}

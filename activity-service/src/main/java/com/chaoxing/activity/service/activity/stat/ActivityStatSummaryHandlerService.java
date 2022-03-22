@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.activity.stat;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.chaoxing.activity.dto.stat.SignStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStatSummary;
@@ -81,7 +82,7 @@ public class ActivityStatSummaryHandlerService {
                 .eq(ActivityStatSummary::getActivityId, activityId));
         if (signId != null) {
             // 获取最新的活动统计汇总数据
-            ActivityStatSummary latestStatSummary = signApiService.getActivityStatSummary(signId);
+            SignStatSummaryDTO latestStatSummary = signApiService.getActivityStatSummary(signId);
 
             defaultStatSummary.setSignedInNum(latestStatSummary.getSignedInNum());
             defaultStatSummary.setSignedUpNum(latestStatSummary.getSignedUpNum());

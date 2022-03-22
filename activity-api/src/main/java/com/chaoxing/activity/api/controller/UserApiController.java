@@ -50,7 +50,7 @@ public class UserApiController {
     }
 
     /**查询用户的执教班级
-     * @Description
+     * @Description 鄂尔多斯活动定制
      * @author wwb
      * @Date 2021-09-03 11:25:05
      * @param uid
