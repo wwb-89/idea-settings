@@ -123,11 +123,6 @@ public class SignApiService {
 	/** 单活动统计 */
 	public static final String STAT_SINGLE_ACTIVITY_URL = DomainConstant.SIGN_API + "/stat/sign/%d/single-activity?startTime=%s&endTime=%s";
 
-	/** 签到位置搜索缓存 */
-	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = DomainConstant.SIGN_API + "/sign-in/position-history";
-	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = DomainConstant.SIGN_API + "/sign-in/position-history/add";
-	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = DomainConstant.SIGN_API + "/sign-in/position-history/delete";
-
 	/** 根据uid、signIds查询用户能报名的 */
 	private static final String USER_SIGN_UP_ABLE_SIGN_URL = DomainConstant.SIGN_API + "/sign/sign-up-able";
 	/** 根据signIds查询报名的状态信息 */
@@ -528,69 +523,6 @@ public class SignApiService {
 		}, (message) -> {
 			throw new BusinessException(message);
 		});
-	}
-
-	/**查询签到位置历史记录
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-04-07 18:50:54
-	 * @param uid
-	 * @param fid
-	 * @return java.util.List<java.lang.String>
-	*/
-	public List<String> listSignInPositionHistory(Integer uid, Integer fid) {
-		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		params.add("uid", uid);
-		params.add("fid", fid);
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
-		String result = restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_LIST_URL, httpEntity, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		List<String> positions = resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), String.class), (message) -> {
-
-		});
-		return Optional.ofNullable(positions).orElse(Lists.newArrayList());
-	}
-
-	/**新增签到位置历史记录
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-04-07 18:51:05
-	 * @param uid
-	 * @param fid
-	 * @param jsonStr
-	 * @return void
-	*/
-	public void addSignInPositionHistory(Integer uid, Integer fid, String jsonStr) {
-		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		params.add("uid", uid);
-		params.add("fid", fid);
-		params.add("jsonStr", jsonStr);
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
-		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_ADD_URL, httpEntity, String.class);
-	}
-
-	/**删除签到位置历史记录
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-04-07 18:51:15
-	 * @param uid
-	 * @param fid
-	 * @param jsonStr
-	 * @return void
-	*/
-	public void deleteSignInPositionHistory(Integer uid, Integer fid, String jsonStr) {
-		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		params.add("uid", uid);
-		params.add("fid", fid);
-		params.add("jsonStr", jsonStr);
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
-		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_DELETE_URL, httpEntity, String.class);
 	}
 
 	/**报名签到每日统计
