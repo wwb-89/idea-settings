@@ -3,13 +3,9 @@ package com.chaoxing.activity.api.controller;
 import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.UserResult;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.wfw.WfwOrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.UcApiService;
-import com.chaoxing.activity.service.user.result.UserResultQueryService;
+import com.chaoxing.activity.service.manager.wfw.WfwOrganizationalStructureApiService;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,33 +30,11 @@ import java.util.Optional;
 public class UserApiController {
 
     @Resource
-    private ActivityQueryService activityQueryService;
-    @Resource
-    private UserResultQueryService userResultQueryService;
-    @Resource
     private PassportApiService passportApiService;
     @Resource
     private UcApiService ucApiService;
     @Resource
     private WfwOrganizationalStructureApiService organizationalStructureApiService;
-
-    /**是否合格的描述
-     * @Description
-     * @author wwb
-     * @Date 2021-06-25 09:43:16
-     * @param uid
-     * @param signId
-     * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @RequestMapping("{uid}/qualified/description")
-    public RestRespDTO isQualified(@PathVariable Integer uid, Integer signId) {
-        Activity activity = activityQueryService.getBySignId(signId);
-        String resultQualifiedDescription = UserResult.QualifiedStatusEnum.WAIT.getName();
-        if (activity != null) {
-            resultQualifiedDescription = userResultQueryService.getResultQualifiedDescription(uid, activity.getId());
-        }
-        return RestRespDTO.success(resultQualifiedDescription);
-    }
 
     /**根据uid获取用户姓名
      * @Description
