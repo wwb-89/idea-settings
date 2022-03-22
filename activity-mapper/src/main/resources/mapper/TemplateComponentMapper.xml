@@ -31,8 +31,7 @@
     <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO
             t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence`, `type`,
-                                  data_origin, origin_identify, field_flag, is_show, is_disabled, is_open, t.is_not_match_show_tips, t.not_match_tips,
-                                t.is_not_match_jump, t.not_match_jump_url  )
+                                  data_origin, origin_identify, field_flag, is_show, is_disabled, is_open, is_not_match_show_tips, not_match_tips, is_not_match_jump, not_match_jump_url  )
         VALUES
         <foreach collection="templateComponents" item="item" open="" close="" separator=",">
             (
