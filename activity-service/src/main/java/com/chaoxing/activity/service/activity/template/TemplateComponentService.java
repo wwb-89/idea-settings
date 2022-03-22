@@ -10,6 +10,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.*;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
@@ -331,20 +332,6 @@ public class TemplateComponentService {
         });
     }
 
-    /**根据tplComponentIds查询模板组件
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-09-26 15:30:06
-    * @param tplComponentIds
-    * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
-    */
-    public List<TemplateComponent> listByTplComponentIds(List<Integer> tplComponentIds) {
-        if (CollectionUtils.isEmpty(tplComponentIds)) {
-            return Lists.newArrayList();
-        }
-        return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>().in(TemplateComponent::getId, tplComponentIds));
-    }
-
     /**新增模板组件关联
      * @Description
      * @author huxiaolong
@@ -540,4 +527,17 @@ public class TemplateComponentService {
                 .orderByAsc(TemplateComponent::getTemplateId, TemplateComponent::getSequence)
         );
     }
+
+    /**根据上级模板组件id查询下级报名条件模板组件列表
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-22 17:53:21
+     * @param superiorTemplateComponentId
+     * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+    */
+    public List<TemplateComponent> listSignUpConditionTemplateComponent(Integer superiorTemplateComponentId) {
+        List<TemplateComponent> subTemplateComponents = listSubTemplateComponent(superiorTemplateComponentId);
+        return subTemplateComponents.stream().filter(v -> v.getComponentId().equals(CommonConstant.COMPONENT_ID_SIGN_UP)).collect(Collectors.toList());
+    }
+
 }

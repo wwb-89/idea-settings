@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.dto.engine.TemplateComponentDTO;
+import com.chaoxing.activity.dto.verification.UserSignUpAbleVerificationDTO;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -174,4 +176,23 @@ public class TemplateComponent {
                 .build(), result);
         return result;
     }
+
+    public void fillUserSignUpAbleVerification(UserSignUpAbleVerificationDTO userSignUpAbleVerification) {
+        userSignUpAbleVerification.verifyFail();
+        Boolean notMatchShowTips = Optional.ofNullable(getNotMatchShowTips()).orElse(false);
+        if (!notMatchShowTips) {
+            return;
+        }
+        String notMatchTips = getNotMatchTips();
+        if (StringUtils.isBlank(notMatchTips)) {
+            return;
+        }
+        String notMatchJumpUrl = "";
+        Boolean notMatchJump = Optional.ofNullable(getNotMatchJump()).orElse(false);
+        if (notMatchJump) {
+            notMatchJumpUrl = Optional.ofNullable(getNotMatchJumpUrl()).orElse("");
+        }
+        userSignUpAbleVerification.verifyFail(notMatchTips, notMatchJumpUrl);
+    }
+
 }

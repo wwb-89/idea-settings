@@ -94,4 +94,7 @@ public class CommonConstant {
 	// 报名模板
 	/** 带审核的万能表单报名模板id */
 	public static final Integer SIGN_UP_WFW_FORM_WITH_APPROVAL_TEMPLATE_ID = 15;
+	
+	/** 报名条件组件id */
+	public static final Integer COMPONENT_ID_SIGN_UP = 38;
 }

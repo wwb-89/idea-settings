@@ -2,8 +2,10 @@ package com.chaoxing.activity.service.activity.engine;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.chaoxing.activity.dto.blacklist.UserBlacklistResultDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.verification.UserSignUpAbleVerificationDTO;
 import com.chaoxing.activity.mapper.ActivitySignUpConditionMapper;
 import com.chaoxing.activity.mapper.SignUpConditionEnableMapper;
 import com.chaoxing.activity.mapper.SignUpConditionMapper;
@@ -12,12 +14,12 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
+import com.chaoxing.activity.service.blacklist.BlacklistQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.util.enums.ConditionEnum;
-import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +66,10 @@ public class SignUpConditionService {
 	private SignApiService signApiService;
 	@Resource
 	private MarketSignupConfigService marketSignupConfigService;
+	@Resource
+	private BlacklistQueryService blacklistQueryService;
+	@Resource
+	private SignUpConditionService signUpConditionService;
 
 	/**新增报名条件
 	 * @Description
@@ -203,31 +209,44 @@ public class SignUpConditionService {
 		return tplConditionsMap;
 	}
 
-	/**根据模版组件id查询报名条件
-	 * @Description
+	/**查询模板组件设置的报名条件列表
+	 * @Description 
 	 * @author wwb
-	 * @Date 2021-07-16 10:32:57
-	 * @param signId
-	 * @param templateComponentId 报名模板组件关联id
+	 * @Date 2022-03-22 17:57:59
+	 * @param templateComponentIds
 	 * @return java.util.List<com.chaoxing.activity.model.SignUpCondition>
 	*/
-	public List<SignUpCondition> listBySignUp(Integer signId, Integer templateComponentId) {
-		List<TemplateComponent> subTemplateComponents = templateComponentService.listSubTemplateComponent(templateComponentId);
-		List<Integer> subTemplateComponentIds = Optional.ofNullable(subTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
-		List<SignUpCondition> signUpConditions = Lists.newArrayList();
-		if (CollectionUtils.isNotEmpty(subTemplateComponentIds)) {
-			// 查询出报名组件下的报名条件列表
-			signUpConditions = signUpConditionMapper.selectList(new LambdaQueryWrapper<SignUpCondition>().in(SignUpCondition::getTemplateComponentId, subTemplateComponentIds));
-		}
+	private List<SignUpCondition> listByTemplateComponentIds(List<Integer> templateComponentIds, Integer activityId) {
+		List<SignUpCondition> signUpConditions = signUpConditionMapper.selectList(new LambdaQueryWrapper<SignUpCondition>().in(SignUpCondition::getTemplateComponentId, templateComponentIds));
+		// 封装报名条件明细
 		if (CollectionUtils.isNotEmpty(signUpConditions)) {
-			Activity activity = activityQueryService.getBySignId(signId);
-			Integer activityId = activity.getId();
 			// 查询启用的报名条件
 			List<Integer> enabledTemplateComponentIds = listActivityEnabledTemplateComponentId(activityId);
 			signUpConditions = signUpConditions.stream().filter(v -> enabledTemplateComponentIds.contains(v.getTemplateComponentId())).collect(Collectors.toList());
-			signUpConditions.forEach(v -> {
-				v.setActivityConditionDetails(listActivityConditionDetailBySignUpCondition(activityId, v));
-			});
+			// 所有活动的条件明细
+			List<ActivitySignUpCondition> allActivitySignUpConditions = activitySignUpConditionMapper.selectList(new LambdaQueryWrapper<ActivitySignUpCondition>()
+					.eq(ActivitySignUpCondition::getActivityId, activityId));
+			Map<Integer, List<ActivitySignUpCondition>> activityTemplateComponentIdValueMap = allActivitySignUpConditions.stream().collect(Collectors.groupingBy(ActivitySignUpCondition::getTemplateComponentId, Collectors.toList()));
+			// 所有模板组件设置的条件明细
+			List<ActivitySignUpCondition> allTemplateComponentActivitySignUpConditions = templateSignUpConditionMapper.selectList(new LambdaQueryWrapper<TemplateSignUpCondition>()
+							.in(TemplateSignUpCondition::getTemplateComponentId, templateComponentIds))
+					.stream().map(ActivitySignUpCondition::buildFromTemplateSignUpCondition).collect(Collectors.toList());
+			Map<Integer, List<ActivitySignUpCondition>> templateComponentIdValueMap = allTemplateComponentActivitySignUpConditions.stream().collect(Collectors.groupingBy(ActivitySignUpCondition::getTemplateComponentId, Collectors.toList()));
+			for (SignUpCondition signUpCondition : signUpConditions) {
+				List<ActivitySignUpCondition> activitySignUpConditions = null;
+				Integer sucTplComponentId = signUpCondition.getTemplateComponentId();
+				if (sucTplComponentId == null || !signUpCondition.getAllowSignedUp()) {
+					// 忽略
+				}else {
+					if (signUpCondition.getConfigOnActivity()) {
+						activitySignUpConditions = activityTemplateComponentIdValueMap.get(sucTplComponentId);
+					} else {
+						activitySignUpConditions = templateComponentIdValueMap.get(sucTplComponentId);
+					}
+				}
+				activitySignUpConditions = Optional.ofNullable(activitySignUpConditions).orElse(Lists.newArrayList());
+				signUpCondition.setActivityConditionDetails(activitySignUpConditions);
+			}
 		}
 		return signUpConditions;
 	}
@@ -243,32 +262,45 @@ public class SignUpConditionService {
 	 * @param uid
 	 * @param signId
 	 * @param templateComponentId 报名的模版组件id
-	 * @return boolean
+	 * @return com.chaoxing.activity.dto.verification.UserSignUpAbleVerificationDTO
 	*/
-	public void userCanSignUp(Integer uid, Integer signId, Integer templateComponentId) {
-		userMatchSignUpCondition(uid, signId, templateComponentId);
-		// 验证活动市场的报名限制
+	public UserSignUpAbleVerificationDTO userCanSignUp(Integer uid, Integer signId, Integer templateComponentId) {
+		UserSignUpAbleVerificationDTO userSignUpAbleVerification = userMatchSignUpCondition(uid, signId, templateComponentId);
+		if (!userSignUpAbleVerification.getVerified()) {
+			// 不满足报名条件
+			return userSignUpAbleVerification;
+		}
 		Activity activity = activityQueryService.getBySignId(signId);
 		Integer marketId = Optional.ofNullable(activity).map(Activity::getMarketId).orElse(null);
 		if (marketId == null) {
-			return;
+			return userSignUpAbleVerification;
 		}
+		// 黑名单
+		Blacklist userBlacklist = blacklistQueryService.getUserBlacklist(uid, marketId);
+		if (userBlacklist != null) {
+			UserBlacklistResultDTO userBlacklistResult = UserBlacklistResultDTO.buildFromBlacklist(userBlacklist, uid);
+			userSignUpAbleVerification.inBlacklist(userBlacklistResult.getUnlockTime());
+			return userSignUpAbleVerification;
+		}
+		// 验证活动市场的报名限制
 		MarketSignUpConfig marketSignUpConfig = marketSignupConfigService.get(marketId);
 		Integer signUpActivityLimit = Optional.ofNullable(marketSignUpConfig).map(MarketSignUpConfig::getSignUpActivityLimit).orElse(0);
 		if (signUpActivityLimit < 1) {
 			// 没做限制
-			return;
+			return userSignUpAbleVerification;
 		}
 		// 查询用户报名的活动（正在进行的）数量：先查询报名的signId列表，根据signId列表查询正在进行的活动数量
 		List<Integer> signedUpSignIds = signApiService.listUserSignedUpSignIds(uid);
 		if (CollectionUtils.isEmpty(signedUpSignIds)) {
-			return;
+			return userSignUpAbleVerification;
 		}
 		// 根据报名成功的报名签到id列表查询进行中的活动数量
 		Integer signedUpActivityNum = activityQueryService.countIngActivityNumBySignIds(marketId, signedUpSignIds);
 		if (signedUpActivityNum.compareTo(signUpActivityLimit) >= 0) {
-			throw new BusinessException("同时报名活动数超过限制");
+			userSignUpAbleVerification.verifyFail("同时报名活动数超过限制");
+			return userSignUpAbleVerification;
 		}
+		return userSignUpAbleVerification;
 	}
 
 	/**用户满足报名条件（忽略其他市场同时报名限制、黑名单等）
@@ -278,24 +310,39 @@ public class SignUpConditionService {
 	 * @param uid
 	 * @param signId
 	 * @param templateComponentId
-	 * @return void
+	 * @return com.chaoxing.activity.dto.verification.UserSignUpAbleVerificationDTO
 	*/
-	public void userMatchSignUpCondition(Integer uid, Integer signId, Integer templateComponentId) {
-		List<SignUpCondition> signUpConditions = listBySignUp(signId, templateComponentId);
-		boolean signUpConditionValidate = false;
-		if (CollectionUtils.isNotEmpty(signUpConditions)) {
-			for (SignUpCondition signUpCondition : signUpConditions) {
-				if (whetherCanSignUp(signUpCondition, uid)) {
-					signUpConditionValidate = true;
-					break;
-				}
+	private UserSignUpAbleVerificationDTO userMatchSignUpCondition(Integer uid, Integer signId, Integer templateComponentId) {
+		UserSignUpAbleVerificationDTO userSignUpAbleVerification = UserSignUpAbleVerificationDTO.buildDefault();
+		// 查询每一个报名条件
+		List<TemplateComponent> signUpConditionTemplateComponents = templateComponentService.listSignUpConditionTemplateComponent(templateComponentId);
+		if (CollectionUtils.isEmpty(signUpConditionTemplateComponents)) {
+			return userSignUpAbleVerification;
+		}
+		List<Integer> templateComponentIds = signUpConditionTemplateComponents.stream().map(TemplateComponent::getId).collect(Collectors.toList());
+		// 查询报名条件列表
+		Activity activity = activityQueryService.getBySignId(signId);
+		if (activity == null) {
+			return userSignUpAbleVerification;
+		}
+		List<SignUpCondition> signUpConditions = listByTemplateComponentIds(templateComponentIds, activity.getId());
+		if (CollectionUtils.isEmpty(signUpConditions)) {
+			// 没有报名条件
+			return userSignUpAbleVerification;
+		}
+		Map<Integer, SignUpCondition> templateComponentIdSignUpConditionMap = signUpConditions.stream().collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
+		for (TemplateComponent signUpConditionTemplateComponent : signUpConditionTemplateComponents) {
+			// 找到匹配的报名条件
+			SignUpCondition signUpCondition = templateComponentIdSignUpConditionMap.get(signUpConditionTemplateComponent.getId());
+			if (signUpCondition == null) {
+				continue;
 			}
-		} else {
-			signUpConditionValidate = true;
+			if (!whetherCanSignUp(signUpCondition, uid)) {
+				signUpConditionTemplateComponent.fillUserSignUpAbleVerification(userSignUpAbleVerification);
+				return userSignUpAbleVerification;
+			}
 		}
-		if (!signUpConditionValidate) {
-			throw new BusinessException("不满足报名条件");
-		}
+		return userSignUpAbleVerification;
 	}
 
 	/**是否可以报名
@@ -523,15 +570,18 @@ public class SignUpConditionService {
 			if (CollectionUtils.isNotEmpty(v.getDeleteDetailIds())) {
 				activitySignUpConditionMapper.deleteBatchIds(v.getDeleteDetailIds());
 			}
-			v.getActivityConditionDetails().forEach(u -> {
-				if (u.getId() == null) {
-					u.setActivityId(activityId);
-					u.setTemplateComponentId(v.getTemplateComponentId());
-					waitSaveData.add(u);
-				} else {
-					activitySignUpConditionMapper.updateById(u);
-				}
-			});
+			List<ActivitySignUpCondition> activityConditionDetails = v.getActivityConditionDetails();
+			if (CollectionUtils.isNotEmpty(activityConditionDetails)) {
+				v.getActivityConditionDetails().forEach(u -> {
+					if (u.getId() == null) {
+						u.setActivityId(activityId);
+						u.setTemplateComponentId(v.getTemplateComponentId());
+						waitSaveData.add(u);
+					} else {
+						activitySignUpConditionMapper.updateById(u);
+					}
+				});
+			}
 		});
 		if (CollectionUtils.isEmpty(waitSaveData)) {
 			return;
@@ -619,36 +669,5 @@ public class SignUpConditionService {
 		});
 		return result;
 	}
-
-
-	/**根据报名条件查询活动报名条件明细
-	 * 1、报名条件开启活动发布时配置时，直接查询活动报名条件明细表
-	 * 2、报名条件未开启上述条件时，查询模板报名条件明细表，并转换为活动报名条件明细
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-11-05 10:35:37
-	 * @param signUpCondition
-	 * @return java.util.List<com.chaoxing.activity.model.ActivitySignUpCondition>
-	 */
-	public List<ActivitySignUpCondition> listActivityConditionDetailBySignUpCondition(SignUpCondition signUpCondition) {
-		return listActivityConditionDetailBySignUpCondition(null, signUpCondition);
-	}
-
-	public List<ActivitySignUpCondition> listActivityConditionDetailBySignUpCondition(Integer activityId, SignUpCondition signUpCondition) {
-		Integer sucTplComponentId = signUpCondition.getTemplateComponentId();
-		if (sucTplComponentId == null || !signUpCondition.getAllowSignedUp()) {
-			return Lists.newArrayList();
-		}
-		if (signUpCondition.getConfigOnActivity()) {
-			return activitySignUpConditionMapper.selectList(new LambdaQueryWrapper<ActivitySignUpCondition>()
-					.eq(activityId != null, ActivitySignUpCondition::getActivityId, activityId)
-					.eq(ActivitySignUpCondition::getTemplateComponentId, sucTplComponentId));
-		}
-		return templateSignUpConditionMapper.selectList(new LambdaQueryWrapper<TemplateSignUpCondition>()
-				.eq(TemplateSignUpCondition::getTemplateComponentId, sucTplComponentId))
-				.stream().map(ActivitySignUpCondition::buildFromTemplateSignUpCondition).collect(Collectors.toList());
-
-	}
-
 
 }
