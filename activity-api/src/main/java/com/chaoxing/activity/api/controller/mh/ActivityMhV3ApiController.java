@@ -464,10 +464,10 @@ public class ActivityMhV3ApiController {
                     result.add(MhDataBuildUtil.buildBtnField(signUpKeyword + "已结束", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getSignUpNotStart()) {
                     result.add(MhDataBuildUtil.buildBtnField(signUpKeyword + "未开始", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
-                } else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-                    result.add(MhDataBuildUtil.buildBtnField("不在参与范围内", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getNoPlaces()) {
                     result.add(MhDataBuildUtil.buildBtnField("名额已满", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                } else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
+                    result.add(MhDataBuildUtil.buildBtnField("不在参与范围内", cloudApiService.buildImageUrl(MhAppIconEnum.THREE.UNIVERSAL.getValue()), "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else {
                     String showName = signUpKeyword + "参加";
                     List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();

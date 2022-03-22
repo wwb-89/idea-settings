@@ -261,10 +261,10 @@ public class ActivityMhV2ApiController {
 					result.addAll(buildBtnField("报名已结束", getFlag(availableFlags), "none", "0"));
 				} else if (userSignParticipationStat.getSignUpNotStart()) {
 					result.addAll(buildBtnField("报名未开始", getFlag(availableFlags), "none", "0"));
-				} else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-					result.addAll(buildBtnField("不在参与范围内", getFlag(availableFlags), "none", "0"));
 				} else if (userSignParticipationStat.getNoPlaces()) {
 					result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "none", "0"));
+				} else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
+					result.addAll(buildBtnField("不在参与范围内", getFlag(availableFlags), "none", "0"));
 				} else {
 					String showName = "报名参加";
 					List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
