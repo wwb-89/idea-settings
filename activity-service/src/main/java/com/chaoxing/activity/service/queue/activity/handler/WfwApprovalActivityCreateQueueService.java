@@ -167,7 +167,7 @@ public class WfwApprovalActivityCreateQueueService {
         // 根据表单数据创建活动
         ActivityCreateParamDTO activity = ActivityCreateParamDTO.buildFromFormData(formData, classify.getId(), orgName);
         activity.setOriginType(Activity.OriginTypeEnum.ACTIVITY_DECLARATION.getValue());
-        activity.setOrigin(String.valueOf(formUserId));
+        activity.setOrigin(String.valueOf(formId));
         // 补充活动必要信息
         activity.setAdditionalAttrs(webTemplateId, marketId, templateId, flag);
         // 处理通知的叶子结构
@@ -199,6 +199,7 @@ public class WfwApprovalActivityCreateQueueService {
             signCreateParam.getSignUps().set(0, signUpCreateParam);
 
         }
+        int i = 1 / 0;
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         // 默认添加证书模板
         Integer certificateTemplateId = certificateApiService.copyTemplate(loginUser.getUid(), loginUser.getFid());
