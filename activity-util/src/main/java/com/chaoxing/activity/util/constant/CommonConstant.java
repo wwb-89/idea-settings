@@ -1,9 +1,12 @@
 package com.chaoxing.activity.util.constant;
 
+import com.google.common.collect.Lists;
+
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * @author wwb
@@ -96,5 +99,5 @@ public class CommonConstant {
 	public static final Integer SIGN_UP_WFW_FORM_WITH_APPROVAL_TEMPLATE_ID = 15;
 	
 	/** 报名条件组件id */
-	public static final Integer COMPONENT_ID_SIGN_UP = 38;
+	public static final List<Integer> SIGN_UP_COMPONENT_IDS = Lists.newArrayList(29, 38);
 }

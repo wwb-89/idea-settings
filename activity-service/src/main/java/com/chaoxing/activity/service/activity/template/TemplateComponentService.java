@@ -537,7 +537,7 @@ public class TemplateComponentService {
     */
     public List<TemplateComponent> listSignUpConditionTemplateComponent(Integer superiorTemplateComponentId) {
         List<TemplateComponent> subTemplateComponents = listSubTemplateComponent(superiorTemplateComponentId);
-        return subTemplateComponents.stream().filter(v -> v.getComponentId().equals(CommonConstant.COMPONENT_ID_SIGN_UP)).collect(Collectors.toList());
+        return subTemplateComponents.stream().filter(v -> CommonConstant.SIGN_UP_COMPONENT_IDS.contains(v.getComponentId())).collect(Collectors.toList());
     }
 
 }
