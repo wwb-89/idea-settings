@@ -102,6 +102,12 @@
                             colorDark : "#000000",
                             colorLight : "#ffffff",
                         });
+                        var height = $('.img-box img').height();
+                        var imgContainerHeight = $(".img-box").height();
+                        if (height > imgContainerHeight) {
+                            var top = 0 - parseInt((height - imgContainerHeight) / 2);
+                            $('.img-box img').css('margin-top', top);
+                        }
                         html2canvas(document.querySelector(".poster-box"),{useCORS: true}).then(canvas => {
                             $this.imageData = canvas.toDataURL('image/png', 1);
                             $('#canvasImage')[0].src = $this.imageData;

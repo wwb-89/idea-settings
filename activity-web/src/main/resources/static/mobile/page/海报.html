@@ -77,14 +77,21 @@
         }
         /*多行省略  end*/
 
-        var text = $(".text-list .info");
-        for (var i = 0; i < text.length; i++) {
-            getHeight(text[i], 40);
-        };
-        getHeight($('.text-title')[0], 52);
+      var text = $(".text-list .info");
+      for (var i = 0; i < text.length; i++) {
+          getHeight(text[i], 40);
+      }
+      getHeight($('.text-title')[0], 52);
+
+      var height = $('.img-box img').height();
+      var imgContainerHeight = $(".img-box").height();
+      if (height > imgContainerHeight) {
+          var top = 0 - parseInt((height - imgContainerHeight) / 2);
+          $('.img-box img').css('margin-top', top);
+      }
 
 
-        new QRCode(document.getElementById('canvas'),{
+      new QRCode(document.getElementById('canvas'),{
             text: "http://www.runoob.com",
             width: 128,
             height: 128,
