@@ -22,7 +22,6 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
-import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
@@ -69,6 +68,10 @@ import java.util.stream.Collectors;
 @Service
 public class WfwFormSyncActivityQueueService {
 
+    /** 是 */
+    private static final String YES = "是";
+    private static final String NO = "否";
+
     @Resource
     private ActivityQueryService activityQueryService ;
     @Resource
@@ -97,8 +100,6 @@ public class WfwFormSyncActivityQueueService {
     private MarketQueryService marketQueryService;
     @Resource
     private WorkApiService workApiService;
-    @Resource
-    private SignUpFillInfoTypeService signUpFillInfoTypeService;
     @Resource
     private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
 
@@ -276,10 +277,10 @@ public class WfwFormSyncActivityQueueService {
         Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
         SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
         signUpCreateParam.setOriginId(originId);
-        if (Objects.equals(openSignUp, "否")) {
+        if (Objects.equals(openSignUp, NO)) {
             return null;
         }
-        if (Objects.equals(openSignUp, "是")) {
+        if (Objects.equals(openSignUp, YES)) {
             // 报名时间
             TimeScopeDTO signUpTimeScope = resolveSignUpTime(formUserRecord);
             signUpCreateParam.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
@@ -291,6 +292,13 @@ public class WfwFormSyncActivityQueueService {
             if (personLimit) {
                 signUpCreateParam.setPersonLimit(Integer.valueOf(signUpPersonLimit));
             }
+            // 是否开启现场报名
+            String signUpOnSite = WfwFormUtils.getValue(formUserRecord, "on_site_sign_up");
+            signUpCreateParam.setOnSiteSignUp(Objects.equals(YES, signUpOnSite));
+            String signUpEndAllowCancel = WfwFormUtils.getValue(formUserRecord, "sign_up_end_allow_cancel");
+            signUpCreateParam.setEndAllowCancel(Objects.equals(YES, signUpEndAllowCancel));
+            String signUpPublicList = WfwFormUtils.getValue(formUserRecord, "sign_up_public_list");
+            signUpCreateParam.setPublicList(Objects.equals(YES, signUpPublicList));
             // 使用万能表单后 报名不支持审核
             signUpCreateParam.setOpenAudit(false);
             // 通讯录参与范围
@@ -469,12 +477,12 @@ public class WfwFormSyncActivityQueueService {
             return null;
         }
         String openSignIn = formatData.getValues().get(0).getString("val");
-        if (Objects.equals(openSignIn, "否") || Objects.equals(openSignIn, "无需签到")) {
+        if (Objects.equals(openSignIn, NO) || Objects.equals(openSignIn, "无需签到")) {
             return null;
         }
         SignInCreateParamDTO signIn = SignInCreateParamDTO.buildDefaultSignIn();
         String way;
-        if (Objects.equals(openSignIn, "是")) {
+        if (Objects.equals(openSignIn, YES)) {
             way = formatData.getValues().get(1).getString("val");
         } else {
             way = openSignIn;
