@@ -63,7 +63,7 @@ public class ActivityManagerService {
         return activityManagerMapper.paging(page, activityId);
     }
 
-    /**新增
+    /**初始化创建者
      * @Description
      * @author wwb
      * @Date 2021-03-28 21:29:24
@@ -71,7 +71,7 @@ public class ActivityManagerService {
      * @param loginUser
      * @return boolean
      */
-    public boolean add(ActivityManager activityManager, LoginUserDTO loginUser){
+    public boolean initCreator(ActivityManager activityManager, LoginUserDTO loginUser){
         Integer activityId = activityManager.getActivityId();
         boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid());
         if (!creator) {

@@ -49,23 +49,6 @@ public class ActivityManagerApiController {
  		return RestRespDTO.success(page);
 	}
 
-	/**新增
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-28 21:28:13
-	 * @param request
-	 * @param activityId
-	 * @param activityManager
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@LoginRequired
-	@RequestMapping("add")
-	public RestRespDTO activityAddManager(HttpServletRequest request, @PathVariable Integer activityId, ActivityManager activityManager) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityManagerService.add(activityManager, loginUser);
-		return RestRespDTO.success(activityManager);
-	}
-
 	/**批量新增
 	 * @Description 
 	 * @author wwb
@@ -122,8 +105,8 @@ public class ActivityManagerApiController {
 	* @author huxiaolong
 	* @Date 2021-09-28 14:18:32
 	* @param request
-* @param activityId
-* @param activityManagerStr
+	* @param activityId
+	* @param activityManagerStr
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@LoginRequired

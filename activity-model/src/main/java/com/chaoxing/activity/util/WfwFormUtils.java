@@ -139,6 +139,23 @@ public class WfwFormUtils {
 		return null;
 	}
 
+	public static List<FormUserDTO> listUser(FormDataDTO formDataDto, String alias) {
+		List<FormUserDTO> users = Lists.newArrayList();
+		List<JSONObject> jsonValues = listJsonValue(formDataDto, alias);
+		if (CollectionUtils.isNotEmpty(jsonValues)) {
+			for (JSONObject jsonValue : jsonValues) {
+				String uidString = jsonValue.getString(PUID_KEY);
+				if (StringUtils.isNotBlank(uidString)) {
+					users.add(FormUserDTO.builder()
+							.puid(Integer.parseInt(uidString))
+							.uname(jsonValue.getString(UNAME_KEY))
+							.build());
+				}
+			}
+		}
+		return users;
+	}
+
 	/**获取图片
 	 * @Description 
 	 * @author wwb

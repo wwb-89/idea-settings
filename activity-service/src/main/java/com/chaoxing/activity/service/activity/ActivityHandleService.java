@@ -70,10 +70,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**数据处理服务
@@ -263,10 +260,8 @@ public class ActivityHandleService {
 		// 若活动由市场所建，新增活动市场与活动关联
 		activityMarketService.associate(activity);
 		// 默认添加活动市场管理
-		// 添加管理员
-		ActivityManager activityManager = ActivityManager.buildCreator(activity);
-		activityManagerService.add(activityManager, loginUser);
-
+		// 处理管理员
+		handleManager(activity, activityCreateParamDto.getManagers(), loginUser);
 		// 处理发布范围
 		if (CollectionUtils.isNotEmpty(releaseClassIds)) {
 			activityClassService.batchAddOrUpdate(activityId, releaseClassIds);
@@ -280,6 +275,21 @@ public class ActivityHandleService {
 		// 接口调用
 		customAppInterfaceCallQueueService.interfaceCall(activity, loginUser.getFid(), CustomAppInterfaceCall.CallTimingEnum.CREATE_CALL);
 		return activityId;
+	}
+
+	private void handleManager(Activity activity, List<ActivityManager> activityManagers, LoginUserDTO loginUser) {
+		ActivityManager activityManager = ActivityManager.buildCreator(activity);
+		activityManagerService.initCreator(activityManager, loginUser);
+		Iterator<ActivityManager> iterator = activityManagers.iterator();
+		while (iterator.hasNext()) {
+			ActivityManager next = iterator.next();
+			if (Objects.equals(next.getUid(), activity.getCreateUid())) {
+				iterator.remove();
+			}
+		}
+		if (CollectionUtils.isNotEmpty(activityManagers)) {
+			activityManagerService.batchAdd(activityManagers, loginUser);
+		}
 	}
 
 	/**新增并发布

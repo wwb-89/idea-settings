@@ -7,10 +7,8 @@ import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityDetail;
-import com.chaoxing.activity.model.ActivityPushReminder;
-import com.chaoxing.activity.model.SignUpCondition;
+import com.chaoxing.activity.dto.manager.form.FormUserDTO;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -166,8 +164,10 @@ public class ActivityCreateParamDTO {
 	private Boolean openPushReminder;
 	/** 是否已发布 */
 	private Boolean released;
-
+	/** 活动推送提醒 */
 	private ActivityPushReminder activityPushReminder;
+	/** 活动管理员 */
+	private List<ActivityManager> managers;
 
 	// 附加
 	/** 网页模版名称 */
@@ -485,6 +485,16 @@ public class ActivityCreateParamDTO {
 					.receiveScopes(DepartmentDTO.convert2ContactsParticipateScopes(noticeRemindScopes))
 					.build());
 		}
+		// 活动管理员
+		List<FormUserDTO> managers = WfwFormUtils.listUser(formData, "manager");
+		List<ActivityManager> activityManagers = Lists.newArrayList();
+		for (FormUserDTO formUser : managers) {
+			activityManagers.add(ActivityManager.builder()
+					.uid(formUser.getPuid())
+					.userName(formUser.getUname())
+					.build());
+		}
+		activityCreateParamDto.setManagers(activityManagers);
 		// 网页模版
 		String webTemplateName = WfwFormUtils.getValue(formData, "web_template");
 		activityCreateParamDto.setWebTemplateName(webTemplateName);

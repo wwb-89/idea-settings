@@ -199,7 +199,6 @@ public class WfwApprovalActivityCreateQueueService {
             signCreateParam.getSignUps().set(0, signUpCreateParam);
 
         }
-        int i = 1 / 0;
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         // 默认添加证书模板
         Integer certificateTemplateId = certificateApiService.copyTemplate(loginUser.getUid(), loginUser.getFid());
