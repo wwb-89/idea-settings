@@ -1,6 +1,5 @@
 package com.chaoxing.activity.api.controller.form;
 
-import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwApprovalActivityCreateDTO;
 import com.chaoxing.activity.service.queue.activity.WfwApprovalActivityCreateQueue;
@@ -10,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * @author wwb
@@ -54,20 +51,6 @@ public class FormActivityApiController {
                 .webTemplateId(templateId)
                 .build();
         formActivityCreateQueueService.push(formCreateActivity);
-        return RestRespDTO.success();
-    }
-
-    /**表单审核
-     * @Description 
-     * @author wwb
-     * @Date 2021-08-03 14:17:46
-     * @param request
-     * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @RequestMapping("audit")
-    public RestRespDTO audit(HttpServletRequest request) {
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        log.info("接收到表单数据审核信息: {}", JSON.toJSONString(parameterMap));
         return RestRespDTO.success();
     }
 
