@@ -36,14 +36,6 @@
 					<label class="label">应用名称</label>
 					<el-input type="name" v-model.trim="market.name" placeholder="请输入"></el-input>
 				</div>
-				<div class="input-box" style="display: flex;">
-					<label class="label">组织架构</label>
-					<el-checkbox-group v-model="organizationalStructures" @change="organizationalStructureChange()">
-						<el-checkbox label="contacts">通讯录</el-checkbox>
-						<el-checkbox label="organization">组织架构</el-checkbox>
-						<el-checkbox label="regional">区域架构</el-checkbox>
-					</el-checkbox-group>
-				</div>
 				<div class="input-box">
 					<label class="label">应用图标</label>
 					<div class="icon-box">
@@ -121,9 +113,7 @@
 				iconWindowShow: false,
 				market: [[${market}]],
 				backUrl: [[${backUrl}]],
-                activityFlag: [[${activityFlag}]],
-				// 组织架构
-                organizationalStructures: []
+                activityFlag: [[${activityFlag}]]
 			},
             created: function () {
 				var $this = this;
@@ -132,21 +122,7 @@
                 if (activityApp.isEmpty($this.market.id)) {
                     $this.market.name = "活动广场";
                 }
-                // 新增的时候设置organizationalStructures(目前只保留通讯录)
-                if ($this.market.enableContacts) {
-                    $this.organizationalStructures.push("contacts");
-                }
-                if (!activityApp.isEmpty($this.market.id)) {
-                    if ($this.market.enableOrganization) {
-                        $this.organizationalStructures.push("organization");
-                    }
-                    if ($this.market.enableRegional) {
-                        $this.organizationalStructures.push("regional");
-                    }
-                } else {
-                    $this.$set($this.market, "enableOrganization", false);
-                    $this.$set($this.market, "enableRegional", false);
-                }
+	            $this.$set($this.market, "enableOrganization", true);
             },
 			mounted: function () {
 				var $this = this;
