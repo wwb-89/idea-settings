@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
@@ -74,8 +75,10 @@ public class SignUpFillInfoType {
      * @return
      */
     public void formTemplateIds2WfwFormTemplateIds() {
-        if (CollectionUtils.isNotEmpty(this.formTemplateIds)) {
-            this.wfwFormTemplateIds = this.formTemplateIds.stream().sorted().map(String::valueOf).collect(Collectors.joining(","));
+        if (CollectionUtils.isEmpty(this.formTemplateIds)) {
+            this.wfwFormTemplateIds = "";
+        }else {
+            this.wfwFormTemplateIds = this.formTemplateIds.stream().sorted().map(String::valueOf).collect(Collectors.joining(CommonConstant.DEFAULT_SEPARATOR));
         }
     }
 

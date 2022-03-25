@@ -97,7 +97,7 @@ public class ActivityApiController {
 		List<Integer> releaseClassIds = StringUtils.isBlank(releaseClassIdJsonStr) ? null : JSON.parseArray(releaseClassIdJsonStr, Integer.class);
 		List<WfwAreaDTO> wfwRegionalArchitectures = StringUtils.isBlank(participateScopeJsonStr) ? null : JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
-		release = Optional.ofNullable(release).orElse(false);release = Optional.ofNullable(release).orElse(false);
+		release = Optional.ofNullable(release).orElse(false);
 		if (release) {
 			activityHandleService.editAndRelease(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser);
 		} else {

@@ -2682,7 +2682,7 @@
                 confirmSwitchForm: function () {
                     var $this = this;
                     var tplComponentId = $this.operateSignUpOriginId;
-                    $this.signUpMap[tplComponentId].formType = $this.signUpMap[tplComponentId].formType == 'wfw_form' ? 'approval' : 'wfw_form';
+                    $this.signUpMap[tplComponentId].formType = $this.signUpMap[tplComponentId].formType == 'wfw_form' ? 'wfw_form' : 'approval';
                     $this.$set($this.signUpMap[tplComponentId], "openAddr", "");
                     $this.$set($this.signUpMap[tplComponentId], "pcUrl", "");
                     $this.$set($this.signUpMap[tplComponentId], "wechatUrl", "");
