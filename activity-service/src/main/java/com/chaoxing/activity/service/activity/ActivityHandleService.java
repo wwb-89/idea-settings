@@ -280,6 +280,9 @@ public class ActivityHandleService {
 	private void handleManager(Activity activity, List<ActivityManager> activityManagers, LoginUserDTO loginUser) {
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.initCreator(activityManager, loginUser);
+		if (CollectionUtils.isEmpty(activityManagers)) {
+			return;
+		}
 		Iterator<ActivityManager> iterator = activityManagers.iterator();
 		while (iterator.hasNext()) {
 			ActivityManager next = iterator.next();
