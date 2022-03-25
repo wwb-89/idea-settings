@@ -430,14 +430,6 @@
                 release: function (index) {
                     var $this = this;
                     $this.operateIndex = index;
-                    var activity = $this.activities[$this.operateIndex];
-                    if (activityApp.isEmpty(activity.pageId)) {
-                        app.showMsg("活动未创建完成，请选择活动模板", function () {
-                            var url = $this.adminDomain + "/activity/" + activity.id + "/edit?step=2";
-                            window.open(url);
-                        });
-                        return;
-                    }
                     $this.$refs.release.show = true;
                 },
                 releaseSubmit: function () {
