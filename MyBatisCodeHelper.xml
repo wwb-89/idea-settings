@@ -3,7 +3,6 @@
     <option name="profile">
       <Profile>
         <option name="disableCompleteWithJdbcType" value="true" />
-        <option name="theUsageCount" value="1650857870843" />
         <option name="usejava8LocalDateTimeEct" value="true" />
         <option name="userMacSet">
           <set>
