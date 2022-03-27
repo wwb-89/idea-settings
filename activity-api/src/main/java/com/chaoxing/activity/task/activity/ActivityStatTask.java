@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 public class ActivityStatTask {
 
     @Resource
-    private ActivityStatQueue activityStatQueueService;
+    private ActivityStatQueue activityStatQueue;
 
     @Resource
     private ActivityStatHandleService activityStatHandleService;
@@ -38,7 +38,7 @@ public class ActivityStatTask {
     public void generateActivityStatTask() {
         log.info("生成活动统计任务 start");
         try {
-            activityStatQueueService.addActivityStatTask();
+            activityStatQueue.addActivityStatTask();
             log.info("生成活动统计任务 success");
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class ActivityStatTask {
     @Scheduled(fixedDelay = 10L)
     public void handleActivityStatTask() throws InterruptedException {
         log.info("处理活动统计任务 start");
-        Integer taskId = activityStatQueueService.popActivityStatTask();
+        Integer taskId = activityStatQueue.popActivityStatTask();
         if (taskId == null) {
             log.info("处理活动统计任务 忽略");
             return;
@@ -75,7 +75,7 @@ public class ActivityStatTask {
                 log.info("根据参数:{} 处理活动统计任务 success", taskId);
             }else{
                 log.error("根据参数:{} 处理活动统计任务 error", taskId);
-                activityStatQueueService.pushActivityStatTask(taskId);
+                activityStatQueue.pushActivityStatTask(taskId);
             }
             log.info("处理活动统计任务 end");
         }
