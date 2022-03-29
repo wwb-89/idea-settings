@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
-	<style>
+	<style th:inline="css">
         * {
             margin: 0;
             padding: 0;
@@ -112,6 +112,29 @@
             text-overflow: ellipsis;
             max-width: 90%;
         }
+        .static-map-style1 .empty-data {
+            width: 100%;
+            height: 100%;
+            background-image: url([(@{/mapIframe/bg-pc.png})]);
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+        }
+        .static-map-style1 .empty-data .empty-txt{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            box-sizing: border-box;
+            color: #333333;
+            font-size: 14px;
+            line-height: 20px;
+            padding: 10px;
+            border: 1px solid #E9E9E9;
+            box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.04);
+            border-radius: 4px;
+        }
         @media only screen and (min-width: 1px) and (max-width: 767px) {
             .static-map-style1 {
                 min-width: 0;
@@ -133,6 +156,17 @@
                 width: calc(100% - 32px);
                 font-size: 1rem;
             }
+            .static-map-style1 .empty-data {
+                background-image: url("bg-app.png");
+                background-size: cover;
+            }
+            .static-map-style1 .empty-data .empty-txt{
+                font-size: 0.6875rem;
+                line-height: 0.9375rem;
+                padding: 0.5rem;
+                box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.04);
+                border-radius:0.25rem;
+            }
         }
 		[v-cloak] {
 			display: none;
@@ -143,7 +177,12 @@
 <div id="vm" v-cloak style="position: relative;">
 	<div class="static-map-style1" style="background-color: white;position: relative;">
 		<div class="map-box">
-			<div class="eng-map-container"></div>
+			<!--有数据-->
+			<div class="eng-map-container" v-if="lat"></div>
+			<!-- 空数据 -->
+			<div class="empty-data" v-else>
+				<p class="empty-txt">暂无线下举办地点</p>
+			</div>
 		</div>
 	</div>
 </div>
@@ -155,6 +194,8 @@
         vm = new Vue({
 	        el: "#vm",
 	        data: {
+		        lat: [[${lat}]],
+		        lng: [[${lng}]],
                 signWebDomain: [[${signWebDomain}]],
                 points: [
                     {
@@ -168,7 +209,9 @@
 	        },
             mounted: function () {
 				var $this = this;
-                $this.init();
+	            if ($this.lat) {
+		            $this.init();
+	            }
             },
 	        methods: {
                 init: function () {

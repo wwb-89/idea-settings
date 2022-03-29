@@ -2,7 +2,6 @@ package com.chaoxing.activity.web.controller.proxy;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -40,8 +39,8 @@ public class MapController {
     @RequestMapping("location/from-mh")
     public String location(Model model,  @RequestParam Integer websiteId) {
         Activity activity = activityQueryService.getByWebsiteId(websiteId);
-        BigDecimal lng = Optional.ofNullable(activity).map(Activity::getLongitude).orElse(CommonConstant.DEFAULT_LNG);
-        BigDecimal lat = Optional.ofNullable(activity).map(Activity::getDimension).orElse(CommonConstant.DEFAULT_LAT);
+        BigDecimal lng = Optional.ofNullable(activity).map(Activity::getLongitude).orElse(null);
+        BigDecimal lat = Optional.ofNullable(activity).map(Activity::getDimension).orElse(null);
         model.addAttribute("lng", lng);
         model.addAttribute("lat", lat);
         String address = Optional.ofNullable(activity).map(Activity::getAddress).filter(StringUtils::isNotBlank).orElse("") +
