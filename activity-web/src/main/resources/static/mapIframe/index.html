@@ -112,6 +112,29 @@
             text-overflow: ellipsis;
             max-width: 90%;
         }
+        .static-map-style1 .empty-data {
+            width: 100%;
+            height: 100%;
+            background-image: url("bg-pc.png");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+        }
+        .static-map-style1 .empty-data .empty-txt{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            box-sizing: border-box;
+            color: #333333;
+            font-size: 14px;
+            line-height: 20px;
+            padding: 10px;
+            border: 1px solid #E9E9E9;
+            box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.04);
+            border-radius: 4px;
+        }
         @media only screen and (min-width: 1px) and (max-width: 767px) {
             .static-map-style1 {
                 min-width: 0;
@@ -133,6 +156,17 @@
                 width: calc(100% - 32px);
                 font-size: 1rem;
             }
+            .static-map-style1 .empty-data {
+                background-image: url("bg-app.png");
+                background-size: cover;
+            }
+            .static-map-style1 .empty-data .empty-txt{
+                font-size: 0.6875rem;
+                line-height: 0.9375rem;
+                padding: 0.5rem;
+                box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.04);
+                border-radius:0.25rem;
+            }
         }
 
     </style>
@@ -141,7 +175,12 @@
 <div style="position: relative;">
 <div class="static-map-style1" style="background-color: white;position: relative;">
     <div class="map-box">
-        <div class="eng-map-container"></div>
+        <!-- 有数据 -->
+        <div class="eng-map-container" style="display: none;"></div>
+        <!-- 空数据 -->
+        <div class="empty-data" style="display: block;">
+            <p class="empty-txt">暂无线下举办地点</p>
+        </div>
     </div>
 </div>
 </div>
