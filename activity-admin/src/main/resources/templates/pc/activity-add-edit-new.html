@@ -915,7 +915,7 @@
             <div class="body" style="max-height: 400px;">
                 <div class="form">
                     <div class="choose-box word-drag-inner" id="word-drag-inner">
-                        <div class="sort-item" name="classify" :data-id="classify.id" v-for="(classify, index) of activityClassifies" :key="'edit-classify-' + index">
+                        <div class="sort-item" name="classify" :data-id="classify.id" v-for="(classify, index) of sortActivityClassifies" :key="'edit-classify-' + index">
                             <i class="icon-drag-inner icon-drag"></i>
                             <label class="label">{{activityClassifyTitle}}{{index + 1}}</label>
                             <el-input v-model.trim="classify.name" type="text" :disabled="!classify.owner" placeholder="请输入" class="weight318" maxlength="10" show-word-limit @blur="addEditClassifySubmit(index)"></el-input>
@@ -1013,6 +1013,7 @@
                 webTemplates: [[${webTemplates}]],
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
+                sortActivityClassifies: [[${activityClassifies}]],
                 currGroupType: 'wfw',
                 // 文件上传
                 uploader: null,
