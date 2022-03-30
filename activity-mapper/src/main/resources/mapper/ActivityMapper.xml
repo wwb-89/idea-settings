@@ -179,7 +179,7 @@
                                     AND #{params.minTimeStr} BETWEEN t.start_time AND t.end_time
                                 </when>
                                 <otherwise>
-                                    AND #{params.maxTimeStr} BETWEEN t.start_time AND t.end_time
+                                    AND #{params.maxTimeStr} > t.end_time
                                 </otherwise>
                             </choose>
                         </otherwise>
@@ -288,7 +288,7 @@
                                 AND #{params.minTimeStr} BETWEEN t.start_time AND t.end_time
                             </when>
                             <otherwise>
-                                AND #{params.maxTimeStr} BETWEEN t.start_time AND t.end_time
+                                AND #{params.maxTimeStr} > AND t.end_time
                             </otherwise>
                         </choose>
                     </otherwise>

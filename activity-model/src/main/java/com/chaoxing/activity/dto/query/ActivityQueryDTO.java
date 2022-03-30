@@ -93,20 +93,20 @@ public class ActivityQueryDTO {
 				maxTimeStr = "";
 				break;
 			case NEARLY_A_MONTH:
+				maxTimeStr = today.format(dateFormatter);
 				minTimeStr = today.atTime(0, 0, 0).plusMonths(-1).format(dateTimeFormatter);
-				maxTimeStr = "";
 				break;
 			case NEARLY_THREE_MONTH:
+				maxTimeStr = today.format(dateFormatter);
 				minTimeStr = today.atTime(0, 0, 0).plusMonths(-3).format(dateTimeFormatter);
-				maxTimeStr = "";
 				break;
 			case NEARLY_SIX_MONTH:
+				maxTimeStr = today.format(dateFormatter);
 				minTimeStr = today.atTime(0, 0, 0).plusMonths(-6).format(dateTimeFormatter);
-				maxTimeStr = "";
 				break;
 			case NEARLY_A_YEAR:
+				maxTimeStr = today.format(dateFormatter);
 				minTimeStr = today.atTime(0, 0, 0).plusYears(-1).format(dateTimeFormatter);
-				maxTimeStr = "";
 				break;
 			case TODAY:
 				minTimeStr = today.atTime(0, 0, 0).format(dateTimeFormatter);
