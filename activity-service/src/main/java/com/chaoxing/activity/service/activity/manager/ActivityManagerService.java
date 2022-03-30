@@ -69,23 +69,18 @@ public class ActivityManagerService {
      * @Date 2021-03-28 21:29:24
      * @param activityManager
      * @param loginUser
-     * @return boolean
+     * @return void
      */
-    public boolean initCreator(ActivityManager activityManager, LoginUserDTO loginUser){
+    public void initCreator(ActivityManager activityManager, LoginUserDTO loginUser){
         Integer activityId = activityManager.getActivityId();
-        boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid());
-        if (!creator) {
-            throw new BusinessException("无权限");
-        }
+        activityValidationService.isManageAble(activityId, loginUser.getUid());
         activityManager.setCreateUid(loginUser.getUid());
         List<ActivityManager> activityManagers = activityManagerMapper.selectList(new LambdaQueryWrapper<ActivityManager>()
                 .eq(ActivityManager::getActivityId, activityId)
                 .eq(ActivityManager::getUid, activityManager.getUid()));
         if (CollectionUtils.isEmpty(activityManagers)) {
             activityManagerMapper.insert(activityManager);
-            return true;
         }
-        return false;
     }
 
     /**批量新增
@@ -104,10 +99,7 @@ public class ActivityManagerService {
         for (ActivityManager activityManager : activityManagers) {
             activityManager.setActivityId(activityId);
         }
-        boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid()) || activityAuthService.isAuthorizedUser(activityId, loginUser.getUid());
-        if (!creator) {
-            throw new BusinessException("无权限");
-        }
+        activityValidationService.isManageAble(activityId, loginUser.getUid());
         List<Integer> uids = activityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList());
         List<ActivityManager> existActivityManagers = activityManagerMapper.selectList(new LambdaQueryWrapper<ActivityManager>()
                 .eq(ActivityManager::getActivityId, activityId)
@@ -140,11 +132,7 @@ public class ActivityManagerService {
      * @return void
     */
     public void delete(Integer activityId, Integer uid, LoginUserDTO loginUser) {
-        boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid()) || activityAuthService.isAuthorizedUser(activityId, loginUser.getUid());
-        if (!creator) {
-            throw new BusinessException("无权限");
-        }
-//        Activity activity = activityValidationService.creator(activityId, loginUser.getUid());
+        activityValidationService.isManageAble(activityId, loginUser.getUid());
         Activity activity = activityQueryService.getById(activityId);
         // 不能删除创建者
         if (Objects.equals(uid, activity.getCreateUid())) {

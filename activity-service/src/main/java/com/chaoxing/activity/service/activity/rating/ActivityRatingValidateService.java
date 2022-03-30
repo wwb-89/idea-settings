@@ -106,9 +106,7 @@ public class ActivityRatingValidateService {
 	*/
 	public ActivityRatingDetail editAble(Integer activityRatingDetailId, Integer uid) {
 		ActivityRatingDetail activityRatingDetail = detailExist(activityRatingDetailId);
-		if (!Objects.equals(activityRatingDetail.getCreateUid(), uid)) {
-			throw new BusinessException("无权限");
-		}
+		activityValidationService.isManageAble(activityRatingDetail.getActivityId(), uid);
 		return activityRatingDetail;
 	}
 

@@ -215,11 +215,7 @@ public class ActivityValidationService {
 	 */
 	public Activity manageAble(Integer activityId, Integer uid) {
 		Activity activity = activityQueryService.getById(activityId);
-		boolean isManager = isManageAble(activity, uid);
-		if (!isManager) {
-			throw new BusinessException("无权限");
-		}
-		return activity;
+		return manageAble(activity, uid);
 	}
 
 	/**可管理活动
