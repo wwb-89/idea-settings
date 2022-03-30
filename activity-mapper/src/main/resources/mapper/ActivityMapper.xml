@@ -114,6 +114,8 @@
             </if>
             <if test="params.sw != null and params.sw != ''">
                 LEFT JOIN t_activity_scope t5 ON t.id = t5.activity_id
+                LEFT JOIN t_activity_tag t8 ON t.id = t8.activity_id
+                LEFT JOIN t_tag t9 ON t8.tag_id = t9.id
             </if>
             <if test="params.tagIds != null and params.tagIds.size() != 0">
                 INNER JOIN t_activity_tag t6 ON t.id = t6.activity_id AND t6.tag_id IN
@@ -210,6 +212,7 @@
                     t.`name` LIKE CONCAT('%', #{params.sw}, '%')
                     OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
                     OR t5.name LIKE CONCAT('%', #{params.sw}, '%')
+                    OR t9.name LIKE CONCAT('%', #{params.sw}, '%')
                 )
             </if>
             AND t.is_archived = 0
