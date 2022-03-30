@@ -20,13 +20,13 @@ import javax.annotation.Resource;
 public class ActivityNameTimeChangeEventQueueService {
 
     @Resource
-    private WorkInfoSyncQueue activityWorkInfoSyncQueueService;
+    private WorkInfoSyncQueue activityWorkInfoSyncQueue;
 
     public void handle(ActivityNameTimeChangeEventOrigin eventOrigin) {
         if (eventOrigin == null) {
             return;
         }
-        activityWorkInfoSyncQueueService.push(eventOrigin.getActivityId());
+        activityWorkInfoSyncQueue.push(eventOrigin.getActivityId());
     }
 
 }

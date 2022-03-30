@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class ActivityStatSummaryTask {
 
     @Resource
-    private ActivityStatSummaryQueue activityStatSummaryQueueService;
+    private ActivityStatSummaryQueue activityStatSummaryQueue;
 
     @Resource
     private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
@@ -39,7 +39,7 @@ public class ActivityStatSummaryTask {
     @Scheduled(fixedDelay = 10L)
     public void handleSignStat() throws InterruptedException {
         log.info("根据参数执行活动数据汇总 start");
-        Integer activityId = activityStatSummaryQueueService.pop();
+        Integer activityId = activityStatSummaryQueue.pop();
         if (activityId == null) {
             return;
         }
@@ -48,7 +48,7 @@ public class ActivityStatSummaryTask {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("活动 :{} 的活动统计汇总计算error:{}", activityId, e.getMessage());
-            activityStatSummaryQueueService.push(activityId);
+            activityStatSummaryQueue.push(activityId);
         }
     }
 

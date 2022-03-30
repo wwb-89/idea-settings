@@ -25,7 +25,7 @@ import javax.annotation.Resource;
 public class FormActivityApiController {
 
     @Resource
-    private WfwApprovalActivityCreateQueue formActivityCreateQueueService;
+    private WfwApprovalActivityCreateQueue wfwApprovalActivityCreateQueue;
 
     /**创建活动
      * @Description 通过活动申报来创建活动
@@ -50,7 +50,7 @@ public class FormActivityApiController {
                 .flag(flag)
                 .webTemplateId(templateId)
                 .build();
-        formActivityCreateQueueService.push(formCreateActivity);
+        wfwApprovalActivityCreateQueue.push(formCreateActivity);
         return RestRespDTO.success();
     }
 

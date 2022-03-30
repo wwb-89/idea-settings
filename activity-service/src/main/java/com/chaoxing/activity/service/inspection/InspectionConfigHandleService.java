@@ -48,9 +48,9 @@ public class InspectionConfigHandleService {
 	@Resource
 	private InspectionConfigQueryService inspectionConfigQueryService;
 	@Resource
-	private ActivityInspectionResultDecideQueue activityInspectionResultDecideQueueService;
+	private ActivityInspectionResultDecideQueue activityInspectionResultDecideQueue;
 	@Resource
-	private UserResultQueue userResultQueueService;
+	private UserResultQueue userResultQueue;
 	@Resource
 	private UserResultQueryService userResultQueryService;
 
@@ -101,7 +101,7 @@ public class InspectionConfigHandleService {
 		List<UserResult> userResults = userResultQueryService.listByActivityId(activityId);
 		if (CollectionUtils.isNotEmpty(userResults)) {
 			for (UserResult userResult : userResults) {
-				userResultQueueService.push(new UserResultQueue.QueueParamDTO(userResult.getUid(), userResult.getActivityId()));
+				userResultQueue.push(new UserResultQueue.QueueParamDTO(userResult.getUid(), userResult.getActivityId()));
 			}
 		}
 	}
@@ -176,7 +176,7 @@ public class InspectionConfigHandleService {
 		}
 		// 如果活动已经结束需要重新判定成绩
 		if (activity != null && activity.isEnded() && standardChanged) {
-			activityInspectionResultDecideQueueService.push(activityId);
+			activityInspectionResultDecideQueue.push(activityId);
 		}
 		return configId;
 	}

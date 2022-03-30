@@ -28,7 +28,7 @@ public class ActivityEndEventQueueService {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private ActivityInspectionResultDecideQueue activityInspectionResultDecideQueueService;
+    private ActivityInspectionResultDecideQueue activityInspectionResultDecideQueue;
     @Resource
     private BlacklistAutoAddQueue blacklistAutoAddQueueService;
     @Resource
@@ -45,7 +45,7 @@ public class ActivityEndEventQueueService {
         }
         Integer oldStatus = eventOrigin.getOldStatus();
         // 当活动结束时触发用户合格判定
-        activityInspectionResultDecideQueueService.push(activityId);
+        activityInspectionResultDecideQueue.push(activityId);
         // 当活动结束时触发黑名单判定
         blacklistAutoAddQueueService.push(new BlacklistAutoAddQueue.QueueParamDTO(activityId));
         // 活动结束，大数据积分推送

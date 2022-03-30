@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class QueueApiController {
 
 	@Resource
-	private ActivityStatQueue activityStatQueueService;
+	private ActivityStatQueue activityStatQueue;
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -97,7 +97,7 @@ public class QueueApiController {
 	*/
 	@RequestMapping("init/activity/stat")
 	public RestRespDTO initStatActivityQueue() {
-		activityStatQueueService.batchAddActivityStatTask();
+		activityStatQueue.batchAddActivityStatTask();
 		return RestRespDTO.success();
 	}
 

@@ -27,7 +27,7 @@ import java.util.Optional;
 public class ActivityReleaseStatusChangeEventService {
 
     @Resource
-    private ActivityReleaseScopeChangeQueue activityReleaseScopeChangeQueueService;
+    private ActivityReleaseScopeChangeQueue activityReleaseScopeChangeQueue;
     @Resource
     private ActivityReleaseEventQueue activityReleaseEventQueue;
     @Resource
@@ -58,7 +58,7 @@ public class ActivityReleaseStatusChangeEventService {
             activityCancelReleaseEventQueue.push(activityCancelReleaseEventOrigin);
         }
         // 活动发布范围改变
-        activityReleaseScopeChangeQueueService.push(activityId);
+        activityReleaseScopeChangeQueue.push(activityId);
     }
 
 }

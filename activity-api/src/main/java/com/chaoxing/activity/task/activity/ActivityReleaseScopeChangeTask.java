@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class ActivityReleaseScopeChangeTask {
 
 	@Resource
-	private ActivityReleaseScopeChangeQueue activityReleaseScopeChangeQueueService;
+	private ActivityReleaseScopeChangeQueue activityReleaseScopeChangeQueue;
 	@Resource
 	private ActivityModuleService activityModuleService;
 	@Resource
@@ -42,7 +42,7 @@ public class ActivityReleaseScopeChangeTask {
 	@Scheduled(fixedDelay = 10L)
 	public void clearScopeCache() throws InterruptedException {
 		log.info("处理活动发布范围改变任务 start");
-		Integer activityId = activityReleaseScopeChangeQueueService.pop();
+		Integer activityId = activityReleaseScopeChangeQueue.pop();
 		try {
 			if (activityId == null) {
 				return;
@@ -56,7 +56,7 @@ public class ActivityReleaseScopeChangeTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("根据参数:{} 处理活动发布范围改变任务 error:{}", activityId, e.getMessage());
-			activityReleaseScopeChangeQueueService.push(activityId);
+			activityReleaseScopeChangeQueue.push(activityId);
 		}
 
 	}

@@ -27,7 +27,7 @@ import java.util.Optional;
 public class ActivityDataChangeEventService {
 
 	@Resource
-	private ActivityTimingReleaseQueue activityTimingReleaseQueueService;
+	private ActivityTimingReleaseQueue activityTimingReleaseQueue;
 	@Resource
 	private ActivityIntegralChangeEventQueue activityIntegralChangeEventQueue;
 	@Resource
@@ -218,7 +218,7 @@ public class ActivityDataChangeEventService {
 			}
 			if (timingReleaseTimeChange) {
 				// 定时发布
-				activityTimingReleaseQueueService.push(queueParam);
+				activityTimingReleaseQueue.push(queueParam);
 			}
 		}
 	}

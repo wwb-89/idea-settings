@@ -58,7 +58,7 @@ public class ActivityStatHandleService {
     private ActivityStatTaskDetailMapper activityStatTaskDetailMapper;
 
     @Resource
-    private ActivityStatQueue activityStatQueueService;
+    private ActivityStatQueue activityStatQueue;
 
     private static final String ACTIVITY_STAT_LOCK_CACHE_KEY_PREFIX = CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity_stat" + CacheConstant.CACHE_KEY_SEPARATOR;
 
@@ -296,7 +296,7 @@ public class ActivityStatHandleService {
                 .set(ActivityStatTaskDetail::getErrorMessage, "")
         );
         for (ActivityStatTask activityStatTask : activityStatTasks) {
-            activityStatQueueService.pushActivityStatTask(activityStatTask.getId());
+            activityStatQueue.pushActivityStatTask(activityStatTask.getId());
         }
     }
 }

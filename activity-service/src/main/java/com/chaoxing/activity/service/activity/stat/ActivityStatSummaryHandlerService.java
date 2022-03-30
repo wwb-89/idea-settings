@@ -38,7 +38,7 @@ public class ActivityStatSummaryHandlerService {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private ActivityStatSummaryQueue activityStatSummaryQueueService;
+    private ActivityStatSummaryQueue activityStatSummaryQueue;
 
     /**给活动初始化统计汇总数据
      * @Description 当创建活动的时候添加一条默认数据
@@ -108,7 +108,7 @@ public class ActivityStatSummaryHandlerService {
     public void addOrUpdateAllActivityStatSummary() {
         List<Integer> activityIds = activityQueryService.list().stream().map(Activity::getId).collect(Collectors.toList());
         for (Integer activityId : activityIds) {
-            activityStatSummaryQueueService.push(activityId);
+            activityStatSummaryQueue.push(activityId);
         }
     }
 
