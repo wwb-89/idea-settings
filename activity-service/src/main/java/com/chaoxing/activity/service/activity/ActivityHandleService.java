@@ -28,7 +28,7 @@ import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.engine.CustomAppConfigHandleService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
-import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.service.activity.template.signup.SignUpWfwFormTemplateQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
@@ -160,7 +160,7 @@ public class ActivityHandleService {
 	@Resource
 	private WfwFormApiService wfwFormApiService;
 	@Resource
-	private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+	private SignUpWfwFormTemplateQueryService signUpWfwFormTemplateQueryService;
 
 	/**新增活动
 	 * @Description 
@@ -413,7 +413,7 @@ public class ActivityHandleService {
 				// 根据模板类型和模板id获取模板
 				SignUpFillInfoType.TypeEnum signUpFormTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL.getValue(), signUp.getFormType()) ? SignUpFillInfoType.TypeEnum.APPROVAL : SignUpFillInfoType.TypeEnum.WFW_FORM;
 				SignUpWfwFormTemplate.TypeEnum templateTypeEnum = Objects.equals(SignUpFillInfoType.TypeEnum.APPROVAL, signUpFormTypeEnum) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
-				SignUpWfwFormTemplate template = signUpWfwFormTemplateService.getByIdOrDefaultNormal(signUp.getWfwFormTemplateId(), templateTypeEnum);
+				SignUpWfwFormTemplate template = signUpWfwFormTemplateQueryService.getByIdOrDefaultNormal(signUp.getWfwFormTemplateId(), templateTypeEnum);
 
 				WfwFormCreateResultDTO wfwFormResult = wfwFormApiService.createWfwForm(fid, uid, template);
 				signUp.setPcUrl(Optional.ofNullable(wfwFormResult).map(WfwFormCreateResultDTO::getPcUrl).orElse(null));

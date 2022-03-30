@@ -5,6 +5,8 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
+import com.chaoxing.activity.model.SignUpFillInfoType;
+import com.chaoxing.activity.service.manager.wfw.WfwApprovalApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.WfwFormUtils;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
@@ -33,8 +35,8 @@ public class WfwFormApiController {
 
 	@Resource
 	private WfwFormApiService wfwFormApiService;
-
-
+	@Resource
+	private WfwApprovalApiService wfwApprovalApiService;
 
 	/**查询微服务表单的字段列表
 	 * @Description 
@@ -83,7 +85,14 @@ public class WfwFormApiController {
 	*/
 	@RequestMapping("build/edit-url")
 	public RestRespDTO getWfwFormEditUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer formId, @RequestParam String signUpFormType) {
-		return RestRespDTO.success(wfwFormApiService.buildEditFormUrl(fid, formId, uid, signUpFormType));
+		SignUpFillInfoType.TypeEnum type = SignUpFillInfoType.TypeEnum.fromValue(signUpFormType);
+		String url = "";
+		if (Objects.equals(SignUpFillInfoType.TypeEnum.WFW_FORM, type)) {
+			url = wfwFormApiService.buildEditUrl(formId, uid, fid);
+		} else {
+			url = wfwApprovalApiService.buildEditUrl(formId, uid, fid);
+		}
+		return RestRespDTO.success(url);
 	}
 
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url

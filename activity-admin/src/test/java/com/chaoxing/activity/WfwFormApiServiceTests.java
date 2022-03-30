@@ -1,5 +1,6 @@
 package com.chaoxing.activity;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
@@ -28,7 +29,7 @@ public class WfwFormApiServiceTests {
         Integer formId = 174669;
         Integer fid = 147004;
         Integer uid = 25418810;
-        String url = wfwFormApiService.buildEditFormUrl(fid, formId, uid, "wfw_form");
+        String url = wfwFormApiService.buildEditUrl(fid, formId, uid);
         System.out.println(url);
     }
 
@@ -58,7 +59,10 @@ public class WfwFormApiServiceTests {
 
     @Test
     public void structure() {
-        List<FormStructureDTO> formStructure = wfwFormApiService.getFormStructure(133519, 170642);
+        Integer formId = 182565;
+        Integer fid = 5210;
+        List<FormStructureDTO> formStructure = wfwFormApiService.getFormStructure(formId, fid);
+        System.out.println(JSON.toJSONString(formStructure, true));
     }
 
 }

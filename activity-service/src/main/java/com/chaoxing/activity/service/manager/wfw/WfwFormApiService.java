@@ -11,7 +11,7 @@ import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateResultDTO;
 import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
-import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.service.activity.template.signup.SignUpWfwFormTemplateQueryService;
 import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.constant.WfwFormConstant;
@@ -69,8 +69,10 @@ public class WfwFormApiService {
 	/** 高级检索 */
 	private static final String ADVANCED_SEARCH_URL = DomainConstant.WFW_FORM_API + "/api/apps/forms/user/advanced/search/list";
 
-	/** 页面创建url */
+	/** 表单创建页面 */
 	private static final String CREATE_URL = DomainConstant.WFW_FORM_API + "/api/manager/third/user/login/apps/create";
+	/** 表单编辑页面url */
+	private static final String EDIT_URL = DomainConstant.WFW_FORM_API + "/api/manager/third/user/login/apps/create";
 	/** 表单后台地址 */
 	private static final String FORM_ADMIN_URL = DomainConstant.WFW_FORM_API + "/api/manager/third/user/login/apps/manager?fid=%d&uid=%d&datetime=%s&sign=%s&formId=%d&formType=%d&enc=%s";
 	/** 接口创建表单url */
@@ -80,7 +82,7 @@ public class WfwFormApiService {
 	private RestTemplate restTemplate;
 
 	@Resource
-	private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+	private SignUpWfwFormTemplateQueryService signUpWfwFormTemplateQueryService;
 	@Resource
 	private SignUpFillInfoTypeService signUpFillInfoTypeService;
 
@@ -469,32 +471,52 @@ public class WfwFormApiService {
 		return new ArrayList<>(fieldValueSet);
 	}
 
+	/**生成万能表单创建页面url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-03-29 16:56:11
+	 * @param sign
+	 * @param key
+	 * @param uid
+	 * @param fid
+	 * @return java.lang.String
+	*/
+	public String buildCreateUrl(String sign, String key, Integer uid, Integer fid) {
+		Map<String, Object> params = Maps.newTreeMap();
+		params.put("fid", fid);
+		params.put("uid", uid);
+		LocalDateTime now = LocalDateTime.now();
+		params.put("datetime", now.format(DATE_TIME_FORMATTER));
+		params.put("sign", sign);
+		params.put("formType", 2);
+		String enc = getEnc(params, key);
+		params.put("enc", enc);
+		// 封装url
+		return UrlUtils.packageParam2URL(CREATE_URL, params);
+	}
+
 	/**表单编辑接口调用（万能表单和审批）
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2022-02-23 15:48:11
-	 * @param fid 机构fid
 	 * @param formId 表单id
 	 * @param uid 用户id
-	 * @param signUpFormType 报名表单类型(wfw_form; approval)
+	 * @param fid 机构fid
 	 * @return
 	 */
-	public String buildEditFormUrl(Integer fid, Integer formId, Integer uid, String signUpFormType) {
-		Integer formType = Objects.equals(SignUpFillInfoType.TypeEnum.WFW_FORM.getValue(), signUpFormType) ? 2 : 1;
+	public String buildEditUrl(Integer formId, Integer uid, Integer fid) {
 		Map<String, Object> params = Maps.newTreeMap();
 		params.put("fid", fid);
 		params.put("uid", uid);
-		if (formId != null) {
-			params.put("formId", formId);
-		}
+		params.put("formId", formId);
 		LocalDateTime now = LocalDateTime.now();
 		params.put("datetime", now.format(DATE_TIME_FORMATTER));
 		params.put("sign", WfwFormConstant.CREATE_SIGN);
-		params.put("formType", formType);
+		params.put("formType", 2);
 		String enc = getEnc(params, WfwFormConstant.CREATE_KEY);
 		params.put("enc", enc);
 		// 封装url
-		return UrlUtils.packageParam2URL(CREATE_URL, params);
+		return UrlUtils.packageParam2URL(EDIT_URL, params);
 	}
 
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url
@@ -511,7 +533,7 @@ public class WfwFormApiService {
 		signUpFormType = StringUtils.isBlank(signUpFormType) ? SignUpFillInfoType.TypeEnum.WFW_FORM.getValue() : signUpFormType;
 
 		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
-		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateQueryService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
 		return createWfwForm(fid, uid, wfwFormTemplate);
 	}
 
@@ -552,7 +574,7 @@ public class WfwFormApiService {
 		}
 		SignUpWfwFormTemplate.TypeEnum templateFormType = Objects.equals(signUpFormType, SignUpFillInfoType.TypeEnum.APPROVAL.getValue()) ? SignUpWfwFormTemplate.TypeEnum.APPROVAL : SignUpWfwFormTemplate.TypeEnum.WFW_FORM;
 
-		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
+		SignUpWfwFormTemplate wfwFormTemplate = signUpWfwFormTemplateQueryService.getByIdOrDefaultNormal(wfwFormTemplateId, templateFormType);
 		if (formId == null) {
 			return createWfwForm(fid, uid, wfwFormTemplate);
 		}

@@ -1,10 +1,11 @@
-package com.chaoxing.activity.service.activity.engine;
+package com.chaoxing.activity.service.activity.template.signup;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.mapper.SignUpWfwFormTemplateMapper;
 import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.chaoxing.activity.model.SignUpWfwFormTemplate;
+import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +19,14 @@ import java.util.Optional;
 /**报名万能表单模版服务
  * @author wwb
  * @version ver 1.0
- * @className SignUpWfwFormTemplateService
+ * @className SignUpWfwFormTemplateQueryService
  * @description
  * @blame wwb
  * @date 2021-11-18 16:44:35
  */
 @Slf4j
 @Service
-public class SignUpWfwFormTemplateService {
+public class SignUpWfwFormTemplateQueryService {
 
     @Resource
     private SignUpWfwFormTemplateMapper signUpWfwFormTemplateMapper;
@@ -41,11 +42,15 @@ public class SignUpWfwFormTemplateService {
      * @param templateFormType
      * @return com.chaoxing.activity.model.SignUpWfwFormTemplate
      */
-    private SignUpWfwFormTemplate getSystemNormalTemplate(SignUpWfwFormTemplate.TypeEnum templateFormType) {
+    public SignUpWfwFormTemplate getSystemNormalTemplate(SignUpWfwFormTemplate.TypeEnum templateFormType) {
         return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
                 .eq(SignUpWfwFormTemplate::getCode, NORMAL_TEMPLATE_CODE)
                 .eq(SignUpWfwFormTemplate::getType, templateFormType.getValue())
-                .eq(SignUpWfwFormTemplate::getSystem, Boolean.TRUE)).stream().findFirst().orElse(null);
+                .eq(SignUpWfwFormTemplate::getSystem, Boolean.TRUE)
+                .eq(SignUpWfwFormTemplate::getEnable, true)
+                .eq(SignUpWfwFormTemplate::getDeleted, false)
+                .orderByAsc(SignUpWfwFormTemplate::getSequence)
+        ).stream().findFirst().orElse(null);
     }
 
     /**根据模板id获取模板,若模板不存在，则返回系统默认的通用模板
@@ -106,14 +111,18 @@ public class SignUpWfwFormTemplateService {
                     .eq(SignUpWfwFormTemplate::getSystem, false)
                     .eq(SignUpWfwFormTemplate::getMarketId, marketId)
                     .eq(SignUpWfwFormTemplate::getType, type.getValue())
+                    .eq(SignUpWfwFormTemplate::getEnable, true)
                     .eq(SignUpWfwFormTemplate::getDeleted, false)
+                    .orderByAsc(SignUpWfwFormTemplate::getSequence)
             );
             signUpWfwFormTemplates.addAll(marketSignUpTemplates);
         }
         List<SignUpWfwFormTemplate> systemSignUpTemplates = signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
                 .eq(SignUpWfwFormTemplate::getSystem, true)
                 .eq(SignUpWfwFormTemplate::getType, type.getValue())
+                .eq(SignUpWfwFormTemplate::getEnable, true)
                 .eq(SignUpWfwFormTemplate::getDeleted, false)
+                .orderByAsc(SignUpWfwFormTemplate::getSequence)
         );
         signUpWfwFormTemplates.addAll(systemSignUpTemplates);
         return signUpWfwFormTemplates;
@@ -185,6 +194,36 @@ public class SignUpWfwFormTemplateService {
      */
     public List<SignUpWfwFormTemplate> listAll() {
         return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
-                .eq(SignUpWfwFormTemplate::getDeleted, false));
+                .eq(SignUpWfwFormTemplate::getEnable, true)
+                .eq(SignUpWfwFormTemplate::getDeleted, false)
+        );
     }
+
+    /**查询市场下的模板
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-29 15:43:36
+     * @param marketId
+     * @return java.util.List<com.chaoxing.activity.model.SignUpWfwFormTemplate>
+    */
+    public List<SignUpWfwFormTemplate> listMarketTemplate(Integer marketId) {
+        return signUpWfwFormTemplateMapper.selectList(new LambdaQueryWrapper<SignUpWfwFormTemplate>()
+                .eq(SignUpWfwFormTemplate::getMarketId, marketId)
+                .eq(SignUpWfwFormTemplate::getSystem, false)
+                .eq(SignUpWfwFormTemplate::getDeleted, false)
+                .orderByAsc(SignUpWfwFormTemplate::getSequence)
+        );
+    }
+
+    /**查询市场下模板最大的sequence
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-29 19:44:34
+     * @param marketId
+     * @return java.lang.Integer
+    */
+    public Integer getMarketMaxSequence(Integer marketId) {
+        return signUpWfwFormTemplateMapper.getMarketMaxSequence(marketId);
+    }
+
 }

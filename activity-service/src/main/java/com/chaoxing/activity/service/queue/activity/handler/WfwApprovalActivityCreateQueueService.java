@@ -16,7 +16,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
-import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.service.activity.template.signup.SignUpWfwFormTemplateQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
@@ -92,7 +92,7 @@ public class WfwApprovalActivityCreateQueueService {
     @Resource
     private WfwFormApiService wfwFormApiService;
     @Resource
-    private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+    private SignUpWfwFormTemplateQueryService signUpWfwFormTemplateQueryService;
 
     /**创建活动
      * @Description
@@ -185,12 +185,12 @@ public class WfwApprovalActivityCreateQueueService {
             Integer wfwFormTemplateId = signUpCreateParam.getWfwFormTemplateId();
             SignUpWfwFormTemplate signUpWfwFormTemplate = null;
             if (wfwFormTemplateId != null) {
-                signUpWfwFormTemplate = signUpWfwFormTemplateService.getById(wfwFormTemplateId);
+                signUpWfwFormTemplate = signUpWfwFormTemplateQueryService.getById(wfwFormTemplateId);
                 Optional.ofNullable(signUpWfwFormTemplate).orElseThrow(() -> new BusinessException("报名模板不存在"));
             }
             // 根据报名中的审核标识获取报名表单填报模板
             if (signUpWfwFormTemplate == null) {
-                signUpWfwFormTemplate = signUpWfwFormTemplateService.getByNameOrDefaultSignUp(null, signUpCreateParam);
+                signUpWfwFormTemplate = signUpWfwFormTemplateQueryService.getByNameOrDefaultSignUp(null, signUpCreateParam);
             }
             signUpCreateParam.setFormType(signUpWfwFormTemplate.getType());
             WfwFormCreateResultDTO wfwFormCreateResult = wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate);;

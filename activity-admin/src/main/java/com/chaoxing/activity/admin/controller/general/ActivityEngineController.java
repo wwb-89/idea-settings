@@ -9,7 +9,7 @@ import com.chaoxing.activity.service.activity.IconQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.classify.component.ClassifyShowComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
-import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.service.activity.template.signup.SignUpWfwFormTemplateQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
@@ -44,7 +44,7 @@ public class ActivityEngineController {
     @Resource
     private TemplateQueryService templateQueryService;
     @Resource
-    private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+    private SignUpWfwFormTemplateQueryService signUpWfwFormTemplateQueryService;
     @Resource
     private IconQueryService iconQueryService;
     @Resource
@@ -82,8 +82,8 @@ public class ActivityEngineController {
         ActivityEngineDTO templateInfo = activityEngineQueryService.findEngineTemplateInfo(templateId, marketId);
         model.addAttribute("templateInfo", templateInfo);
         model.addAttribute("wfwForms", wfwForms);
-        model.addAttribute("wfwFormTemplates", signUpWfwFormTemplateService.listMarketWfwFormSignUpTemplate(marketId));
-        model.addAttribute("wfwFormApprovalTemplates", signUpWfwFormTemplateService.listMarketApprovalSignUpTemplate(marketId));
+        model.addAttribute("wfwFormTemplates", signUpWfwFormTemplateQueryService.listMarketWfwFormSignUpTemplate(marketId));
+        model.addAttribute("wfwFormApprovalTemplates", signUpWfwFormTemplateQueryService.listMarketApprovalSignUpTemplate(marketId));
         model.addAttribute("conditionEnums", ConditionDTO.listWithoutNoLimit());
         model.addAttribute("icons", iconQueryService.list());
         // 市场下的所有分类

@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.form.FormAdvanceSearchFilterConditionDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
+import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.constant.DomainConstant;
+import com.chaoxing.activity.util.constant.WfwFormConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -45,24 +47,32 @@ public class WfwApprovalApiService {
     private static final String SIGN = "approveData_activity";
     /** key */
     private static final String KEY = "XtTpP2MjfoHZa^5!s8";
+    /** 表单每页数据限制 */
+    private static final int MAX_PAGE_SIZE_LIMIT = 100;
 
     /** 获取表单指定数据url */
     private static final String LIST_FORM_SPECIFIED_DATA_URL = DomainConstant.WFW_FORM_API + "/api/approve/forms/user/data/list";
     /** 获取表单数据列表 */
     private static final String ADVANCED_SEARCH_URL = DomainConstant.WFW_FORM_API + "/api/approve/forms/advanced/search/list";
-    /** 表单每页数据限制 */
-    private static final int MAX_PAGE_SIZE_LIMIT = 100;
+    /** 审批创建页面 */
+    private static final String CREATE_URL = DomainConstant.WFW_FORM_API + "/api/manager/third/user/login/apps/create";
+    /** 审批编辑页面url */
+    private static final String EDIT_URL = DomainConstant.WFW_FORM_API + "/api/manager/third/user/login/apps/create";
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
 
     private String getEnc(Map<String, Object> encParamMap) {
+        return getEnc(encParamMap, KEY);
+    }
+
+    private String getEnc(Map<String, Object> encParamMap, String key) {
         StringBuilder enc = new StringBuilder();
         for (Map.Entry<String, Object> entry : encParamMap.entrySet()) {
             enc.append("[").append(entry.getKey()).append("=")
                     .append(entry.getValue()).append("]");
         }
-        return DigestUtils.md5Hex(enc + "[" + KEY + "]");
+        return DigestUtils.md5Hex(enc + "[" + key + "]");
     }
 
     /**获取表单记录
@@ -174,6 +184,54 @@ public class WfwApprovalApiService {
             String errorMessage = jsonObject.getString("msg");
             throw new BusinessException(errorMessage);
         }
+    }
+
+    /**构建审批创建页面url
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-29 17:08:02
+     * @param sign
+     * @param key
+     * @param uid
+     * @param fid
+     * @return java.lang.String
+    */
+    public String buildCreateUrl(String sign, String key, Integer uid, Integer fid) {
+        Map<String, Object> params = Maps.newTreeMap();
+        params.put("uid", uid);
+        params.put("fid", fid);
+        LocalDateTime now = LocalDateTime.now();
+        params.put("datetime", now.format(DATE_TIME_FORMATTER));
+        params.put("sign", sign);
+        params.put("formType", 1);
+        String enc = getEnc(params, key);
+        params.put("enc", enc);
+        // 封装url
+        return UrlUtils.packageParam2URL(CREATE_URL, params);
+    }
+
+    /**构建审批修改页面url
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-29 17:08:32
+     * @param formId
+     * @param uid
+     * @param fid
+     * @return java.lang.String
+    */
+    public String buildEditUrl(Integer formId, Integer uid, Integer fid) {
+        Map<String, Object> params = Maps.newTreeMap();
+        params.put("uid", uid);
+        params.put("fid", fid);
+        params.put("formId", formId);
+        LocalDateTime now = LocalDateTime.now();
+        params.put("datetime", now.format(DATE_TIME_FORMATTER));
+        params.put("sign", WfwFormConstant.CREATE_SIGN);
+        params.put("formType", 1);
+        String enc = getEnc(params, WfwFormConstant.CREATE_KEY);
+        params.put("enc", enc);
+        // 封装url
+        return UrlUtils.packageParam2URL(EDIT_URL, params);
     }
 
 }

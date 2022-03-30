@@ -2652,7 +2652,8 @@
                     }
                     app.ajaxPost(url, params, function (res) {
                         if (res.success) {
-                            $this.wfwFormConfigWindow = window.open(res.data);
+                            var addEditUrl = res.data;
+                            $this.wfwFormConfigWindow = window.open(addEditUrl);
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {

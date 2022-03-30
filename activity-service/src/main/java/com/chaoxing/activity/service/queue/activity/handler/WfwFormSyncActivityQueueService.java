@@ -22,7 +22,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
-import com.chaoxing.activity.service.activity.engine.SignUpWfwFormTemplateService;
+import com.chaoxing.activity.service.activity.template.signup.SignUpWfwFormTemplateQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityPushReminderService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
@@ -101,7 +101,7 @@ public class WfwFormSyncActivityQueueService {
     @Resource
     private WorkApiService workApiService;
     @Resource
-    private SignUpWfwFormTemplateService signUpWfwFormTemplateService;
+    private SignUpWfwFormTemplateQueryService signUpWfwFormTemplateQueryService;
 
     @Resource
     private WfwFormActivityDataUpdateQueue wfwFormActivityDataUpdateQueue;
@@ -231,7 +231,7 @@ public class WfwFormSyncActivityQueueService {
         if (signUpCreateParam != null) {
             // 是否指定了报名使用的万能表单模板
             String signUpFormTemplateName = WfwFormUtils.getValue(formUserRecord, "sign_up_form_template_name");
-            SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateService.getByNameOrDefaultSignUp(signUpFormTemplateName, signUpCreateParam);
+            SignUpWfwFormTemplate signUpWfwFormTemplate = signUpWfwFormTemplateQueryService.getByNameOrDefaultSignUp(signUpFormTemplateName, signUpCreateParam);
             WfwFormCreateResultDTO wfwFormCreateResult =
                     wfwFormApiService.createWfwForm(operateUser.getFid(), operateUser.getUid(), signUpWfwFormTemplate);;
             if (wfwFormCreateResult != null) {

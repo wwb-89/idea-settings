@@ -40,6 +40,12 @@ public class SignUpWfwFormTemplate {
     private String key;
     /** 表单id; column: form_id*/
     private Integer formId;
+    /** 填写地址; column: open_addr*/
+    private String openAddr;
+    /** 填写地址; column: pc_url*/
+    private String pcUrl;
+    /** 填写地址; column: wechat_url*/
+    private String wechatUrl;
     /** 表单所属机构id; column: fid*/
     private Integer fid;
     /** 市场id; column: market_id*/
@@ -47,6 +53,11 @@ public class SignUpWfwFormTemplate {
     /** 是否系统表单; column: is_system*/
     @TableField(value = "is_system")
     private Boolean system;
+    /** 顺序; column: sequence*/
+    private Integer sequence;
+    /** 是否启用; column: is_enable*/
+    @TableField(value = "is_enable")
+    private Boolean enable;
     /** 是否被删除; column: is_deleted*/
     @TableField(value = "is_deleted")
     private Boolean deleted;
@@ -59,7 +70,7 @@ public class SignUpWfwFormTemplate {
     public enum TypeEnum {
 
         /** 标准的 */
-        WFW_FORM("标准的", "wfw_form"),
+        WFW_FORM("万能表单", "wfw_form"),
         APPROVAL("审批", "approval");
 
         private final String name;
@@ -79,7 +90,18 @@ public class SignUpWfwFormTemplate {
             }
             return null;
         }
+    }
 
+    public void asWfwForm(String sign, String key) {
+        this.type = TypeEnum.WFW_FORM.getValue();
+        this.sign = sign;
+        this.key = key;
+    }
+
+    public void asApproval(String sign, String key) {
+        this.type = TypeEnum.APPROVAL.getValue();
+        this.sign = sign;
+        this.key = key;
     }
 
 }
