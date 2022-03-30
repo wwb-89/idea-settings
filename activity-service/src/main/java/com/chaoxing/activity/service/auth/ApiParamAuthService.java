@@ -35,6 +35,15 @@ public class ApiParamAuthService {
 		}
 	}
 
+	public void loginProxyAuth(String loginName, Integer fid, String enc) {
+		String clearText = "";
+		clearText = clearText + loginName + fid + CommonConstant.LOGIN_AUTH_KEY;
+		String realEnc = DigestUtils.md5Hex(clearText);
+		if (!realEnc.equalsIgnoreCase(enc)) {
+			throw new BusinessException("enc认证不通过");
+		}
+	}
+
 	/**有时效性的登录验证
 	 * @Description 
 	 * @author wwb

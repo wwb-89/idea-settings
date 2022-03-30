@@ -196,11 +196,24 @@ public class PassportApiService {
 		if (org.apache.commons.lang3.StringUtils.isBlank(account)) {
 			account = passportUser.getMobile();
 		}
+		return avoidCloseLogin(account, fid, response);
+	}
+
+	/**免密登录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-03-30 15:19:11
+	 * @param loginName
+	 * @param fid
+	 * @param response
+	 * @return java.util.List<javax.servlet.http.Cookie>
+	*/
+	public List<Cookie> avoidCloseLogin(String loginName, Integer fid, HttpServletResponse response) {
 		String url = AVOID_CLOSE_LOGIN_URL;
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		String enc = getLoginEnc(fid, account);
+		String enc = getLoginEnc(fid, loginName);
 		params.add("schoolid", fid);
-		params.add("name", account);
+		params.add("name", loginName);
 		params.add("enc", enc);
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(params, null);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
@@ -212,7 +225,7 @@ public class PassportApiService {
 			HttpHeaders headers = responseEntity.getHeaders();
 			return CookieUtils.writeCookie(headers, response);
 		} else if (LOGIN_FAIL_RESULT_STATUS.equals(resultStatus)) {
-			enc = getLoginEnc(null, account);
+			enc = getLoginEnc(null, loginName);
 			params.remove("schoolid");
 			params.remove("enc");
 			params.add("enc", enc);

@@ -24,8 +24,8 @@ public class UcApiServiceTests {
 
 	@Test
 	public void getUserExtraInfoByFidAndUid() {
-		Integer uid = 25418810;
-		Integer fid = 117211;
+		Integer uid = 145705461;
+		Integer fid = 167721;
 		UserExtraInfoDTO userExtraInfo = ucApiService.getUserExtraInfoByFidAndUid(fid, uid);
 		System.out.println(JSON.toJSONString(userExtraInfo));
 	}
