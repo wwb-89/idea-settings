@@ -208,7 +208,7 @@ public class SignUpFillInTemplateConfigController {
 	@ResponseBody
 	public RestRespDTO editApproval(HttpServletRequest request, @PathVariable Integer marketId, SignUpWfwFormTemplate signUpWfwFormTemplate) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		signUpWfwFormTemplateHandleService.add(signUpWfwFormTemplate, loginUser.buildOperateUserDTO());
+		signUpWfwFormTemplateHandleService.edit(signUpWfwFormTemplate, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 
