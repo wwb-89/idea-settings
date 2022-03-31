@@ -41,7 +41,7 @@
             <div class="tabContent">
                 <div class="card-list card-list1">
                     <ul>
-                        <li v-for="(activity, index) of activities" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" @click="toActivityView(index)">
+                        <li v-for="(activity, index) of activities" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4) || currentTab.code != 'signedUp'" @click="toActivityView(index)">
                             <div class="inner">
                                 <div class="img-box">
                                     <p v-if="currentTab.code == 'signedUp'" :class="calSignedUpClass(activity)">{{activity | calSignedUpStatusDescription}}</p>
@@ -133,39 +133,37 @@
         });
         var vm = new Vue({
             el: '#activity-list',
-            data: function () {
-                return {
-                    // domain
-                    mainDomain: [[${mainDomain}]],
-                    adminDomain: [[${adminDomain}]],
-                    cloudDomain: [[${cloudDomain}]],
-                    // other model params
-                    title: [[${title}]],
-                    addBtnName: [[${addBtnName}]],
-                    addUrl: [[${addUrl}]],
-                    hasManageActivity: [[${hasManageActivity}]],    // 是否含有管理的活动
-                    hideList: [],
-                    currentTab: {},
-                    dataLoading: false,
-                    dataLoaded: false,
-                    dataNoMore: false,
-                    queryParams: {},
-                    tabList: [],
-                    sw: '',
-                    activities: [],
-                    // 操作的活动下标
-                    operateIndex: "",
-                    isEmbedded: activityApp.isEmbedded(),
-                    mescroll: null,
-                    createActivity: false, //创建活动
-                    searchRightStyle: {
-                        position: 'absolute',
-                        right: '40px'
-                    },
-                    searchLeftStyle: {
-                        position: 'absolute',
-                        left: '32px'
-                    }
+            data: {
+                // domain
+                mainDomain: [[${mainDomain}]],
+                adminDomain: [[${adminDomain}]],
+                cloudDomain: [[${cloudDomain}]],
+                // other model params
+                title: [[${title}]],
+                addBtnName: [[${addBtnName}]],
+                addUrl: [[${addUrl}]],
+                hasManageActivity: [[${hasManageActivity}]],    // 是否含有管理的活动
+                hideList: [],
+                currentTab: {},
+                dataLoading: false,
+                dataLoaded: false,
+                dataNoMore: false,
+                queryParams: {},
+                tabList: [],
+                sw: '',
+                activities: [],
+                // 操作的活动下标
+                operateIndex: "",
+                isEmbedded: activityApp.isEmbedded(),
+                mescroll: null,
+                createActivity: false, //创建活动
+                searchRightStyle: {
+                    position: 'absolute',
+                    right: '40px'
+                },
+                searchLeftStyle: {
+                    position: 'absolute',
+                    left: '32px'
                 }
             },
             computed: {
