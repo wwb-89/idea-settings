@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.Comparator;
 import java.util.List;
 
 /**通讯录api
@@ -25,10 +26,11 @@ public class WfwContactApiServiceTests {
 
 	@Test
 	public void listUserJoinDepartment() {
-		Integer uid = 92932023;
+		Integer uid = 58488158;
 		Integer fid = 170642;
 		List<WfwDepartmentDTO> departments = wfwContactApiService.listUserJoinDepartment(uid, fid);
-		System.out.println(JSON.toJSONString(departments));
+		departments.sort(Comparator.comparing(WfwDepartmentDTO::getLevel).reversed());
+		System.out.println(JSON.toJSONString(departments.get(0)));
 	}
 
 	@Test

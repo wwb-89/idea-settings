@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**微服务通讯录api服务
@@ -44,6 +41,8 @@ public class WfwContactApiService {
 	private static final String SEARCH_CONTACTS_URL = DomainConstant.WFW_CONTACTS + "/apis/roster/searchRosterUser?puid={uid}&keyword={keyword}&page={page}&pageSize={pageSize}";
 	/** 获取部门列表url */
 	private static final String GET_DEPARTMENT_URL = DomainConstant.WFW_CONTACTS + "/apis/dept/getDeptsByServer?type=unit&fid={fid}&puid={uid}&cpage={page}&pageSize={pageSize}";
+	/** 用户在机构下加入的部门url */
+	private static final String GET_USER_DEPT_URL = DomainConstant.WFW_CONTACTS + "/apis/dept/getDeptsInfoByFidAndPuid4Server?fid={fid}&puid={puid}&cpage={cpage}&pageSize={pageSize}";
 	/** 获取机构下部门列表url */
 	private static final String GET_ORG_DEPARTMENT_URL = DomainConstant.WFW_CONTACTS + "/apis/dept/getDeptsInfoByFidAndName4Server?fid={fid}&offsetValue={offsetValue}";
 	/** 获取部门人员列表url */
@@ -205,11 +204,11 @@ public class WfwContactApiService {
 	 * @return java.util.List<com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO>
 	*/
 	public List<WfwDepartmentDTO> listUserJoinDepartment(Integer uid, Integer fid) {
-		String forObject = restTemplate.getForObject(GET_DEPARTMENT_URL, String.class, fid, uid, 1, Integer.MAX_VALUE);
+		String forObject = restTemplate.getForObject(GET_USER_DEPT_URL, String.class, fid, uid, 1, Integer.MAX_VALUE);
 		JSONObject jsonObject = JSON.parseObject(forObject);
 		Integer result = jsonObject.getInteger("result");
 		if (Objects.equals(result, 1)) {
-			String wfwContactersJsonStr = jsonObject.getString("msg");
+			String wfwContactersJsonStr = jsonObject.getString("data");
 			List<WfwDepartmentDTO> wfwDepartments = JSON.parseArray(wfwContactersJsonStr, WfwDepartmentDTO.class);
 			// 过滤上级部门
 			if (wfwDepartments == null) {
@@ -233,6 +232,8 @@ public class WfwContactApiService {
 	*/
 	public WfwDepartmentDTO getUserDepartment(Integer uid, Integer fid) {
 		List<WfwDepartmentDTO> wfwDepartments = listUserJoinDepartment(uid, fid);
+		// 找到level最大的
+		wfwDepartments.sort(Comparator.comparing(WfwDepartmentDTO::getLevel).reversed());
 		return wfwDepartments.stream().findFirst().orElse(null);
 
 	}
