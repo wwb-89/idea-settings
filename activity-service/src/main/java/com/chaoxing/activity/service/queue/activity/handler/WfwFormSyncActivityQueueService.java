@@ -134,7 +134,7 @@ public class WfwFormSyncActivityQueueService {
                     return null;
                 }).filter(StringUtils::isNotBlank).findFirst().map(Integer::parseInt).orElse(null);
         if (activityId == null) {
-            activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
+            activity = activityQueryService.getByFormUserId(formId, formUserId);
         } else {
             activity = activityQueryService.getById(activityId);
         }
@@ -157,7 +157,8 @@ public class WfwFormSyncActivityQueueService {
     */
     public void add(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
         flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
-        Activity activity = ApplicationContextHolder.getBean(WfwFormSyncActivityQueueService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
+        WfwFormSyncActivityQueueService wfwFormSyncActivityQueueService = ApplicationContextHolder.getBean(WfwFormSyncActivityQueueService.class);
+        Activity activity = wfwFormSyncActivityQueueService.createActivity(fid, formId, formUserId, webTemplateId, flag);
         // 回写数据
         if (activity != null) {
             WfwFormActivityDataUpdateQueue.QueueParamDTO queueParam = WfwFormActivityDataUpdateQueue.QueueParamDTO.builder()
@@ -185,7 +186,7 @@ public class WfwFormSyncActivityQueueService {
             return null;
         }
         // 判断活动是否存在，若存在，回写表单数据，并则返回；若不存在，则不进行活动创建
-        Activity activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
+        Activity activity = activityQueryService.getByFormUserId(formId, formUserId);
         if (activity != null) {
             return activity;
         }
@@ -368,7 +369,7 @@ public class WfwFormSyncActivityQueueService {
             return;
         }
         log.info("根据万能表单数据:{} 更新活动", JSON.toJSONString(formUserRecord));
-        Activity activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
+        Activity activity = activityQueryService.getByFormUserId(formId, formUserId);
         if (activity == null) {
             // 查找表单记录中的活动id
             Integer activityId = formUserRecord.getIntegerValue(WfwFormAliasConstant.ACTIVITY_ID);
@@ -524,7 +525,7 @@ public class WfwFormSyncActivityQueueService {
         Integer activityId = Optional.ofNullable(WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_ID)).filter(StringUtils::isNotBlank).map(Integer::valueOf).orElse(null);
         Activity activity;
         if (activityId == null) {
-            activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
+            activity = activityQueryService.getByFormUserId(formId, formUserId);
             activityId = Optional.ofNullable(activity).map(Activity::getId).orElse(null);
         } else {
             activity = activityQueryService.getById(activityId);

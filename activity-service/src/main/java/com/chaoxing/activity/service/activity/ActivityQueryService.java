@@ -869,8 +869,7 @@ public class ActivityQueryService {
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
 	 */
 	public List<Activity> list() {
-		return activityMapper.selectList(new QueryWrapper<Activity>()
-				.lambda()
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
 		);
 	}
@@ -1257,11 +1256,15 @@ public class ActivityQueryService {
 	 * @param formUserId
 	 * @return boolean
 	 */
-	public Activity getByWfwFormUserId(Integer formId, Integer formUserId) {
+	public Activity getByFormUserId(Integer formId, Integer formUserId) {
 		if (formId == null || formUserId == null) {
 			return null;
 		}
-		return activityMapper.selectList(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId)).stream().findFirst().orElse(null);
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getOriginType, Activity.OriginTypeEnum.WFW_FORM.getValue())
+				.eq(Activity::getOrigin, formId)
+				.eq(Activity::getOriginFormUserId, formUserId)
+		).stream().findFirst().orElse(null);
 	}
 
 	/**查询marketId下非删除状态的活动

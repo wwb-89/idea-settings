@@ -1290,7 +1290,7 @@ public class ActivityHandleService {
 		if (formId == null || formUserId == null) {
 			return;
 		}
-		Activity activity = activityQueryService.getByWfwFormUserId(formId, formUserId);
+		Activity activity = activityQueryService.getByFormUserId(formId, formUserId);
 		if (activity != null) {
 			LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), "", activity.getCreateFid(), "");
 			deleteActivity(activity, loginUser.buildOperateUserDTO());
