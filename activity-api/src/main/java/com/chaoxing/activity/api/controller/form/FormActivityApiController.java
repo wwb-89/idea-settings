@@ -16,6 +16,9 @@ import javax.annotation.Resource;
  * @className FormActivityApiController
  * @description
  * @blame wwb
+ * @deprecated
+ * @see WfwApprovalActivityApiController
+ * @see WfwFormActivityApiController
  * @date 2021-05-11 14:51:41
  */
 @Slf4j

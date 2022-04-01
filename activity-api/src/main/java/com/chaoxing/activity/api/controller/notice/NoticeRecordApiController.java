@@ -67,7 +67,7 @@ public class NoticeRecordApiController {
 	}
 
 	/**分页查询通知记录
-	 * @Description 
+	 * @Description 厦门项目
 	 * @author wwb
 	 * @Date 2022-02-15 15:51:50
 	 * @param request
@@ -85,7 +85,7 @@ public class NoticeRecordApiController {
 	}
 
 	/**根据通知记录id查询
-	 * @Description 
+	 * @Description 厦门项目
 	 * @author wwb
 	 * @Date 2022-02-15 16:08:00
 	 * @param id
