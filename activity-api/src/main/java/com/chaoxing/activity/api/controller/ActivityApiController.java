@@ -25,7 +25,7 @@ import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.ActivityAuthService;
+import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;

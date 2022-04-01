@@ -286,6 +286,7 @@ public class ActivityHandleService {
 		Iterator<ActivityManager> iterator = activityManagers.iterator();
 		while (iterator.hasNext()) {
 			ActivityManager next = iterator.next();
+			next.setActivityId(activity.getId());
 			if (Objects.equals(next.getUid(), activity.getCreateUid())) {
 				iterator.remove();
 			}

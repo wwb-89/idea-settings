@@ -226,10 +226,22 @@ public class ActivityMhAppController {
 		JSONObject jsonObject = JSON.parseObject(data);
 		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
 		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(RECOMMEND_ACTIVITY_PAGE_SIZE);
+		// 推荐的活动需要排除源活动
+		pageSize = pageSize + 1;
 		Integer createFid = activity.getCreateFid();
 		// 查询机构下的活动列表
 		Page<Activity> page = new Page(pageNum, pageSize);
 		page = activityQueryService.listOrgParticipatedOrCreated(page, createFid);
+		List<Activity> records = page.getRecords();
+		if (CollectionUtils.isNotEmpty(records)) {
+			Iterator<Activity> iterator = records.iterator();
+			while (iterator.hasNext()) {
+				Activity next = iterator.next();
+				if (Objects.equals(next.getId(), activity.getId())) {
+					iterator.remove();
+				}
+			}
+		}
 		return packageRecommendActivity(page);
 	}
 

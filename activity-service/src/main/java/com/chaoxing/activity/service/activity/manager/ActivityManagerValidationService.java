@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.activity.manager;
 
 import com.chaoxing.activity.model.ActivityManager;
-import com.chaoxing.activity.service.activity.ActivityAuthService;
+import com.chaoxing.activity.service.auth.ActivityAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

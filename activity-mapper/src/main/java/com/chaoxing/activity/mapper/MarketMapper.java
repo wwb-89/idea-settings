@@ -40,18 +40,14 @@ public interface MarketMapper extends BaseMapper<Market> {
      */
     List<Integer> listOrgAssociatedActivityMarketId(@Param("fid") Integer fid, @Param("activityId") Integer activityId);
 
-    /**
-     * 根据来源查询活动市场
-     *
-     * @param fid
-     * @param originType
-     * @param origin
-     * @param flag
-     * @return com.chaoxing.activity.model.Market
-     * @Description
+    /**查询机构指定flag的活动市场
+     * @Description 
      * @author wwb
-     * @Date 2021-11-29 11:11:09
-     */
-    Market getMarketByOriginAndFlag(@Param("fid") Integer fid, @Param("originType") String originType, @Param("origin") String origin, @Param("flag") String flag);
+     * @Date 2022-04-01 11:09:42
+     * @param fid
+     * @param flag
+     * @return java.util.List<com.chaoxing.activity.model.Market>
+    */
+    List<Market> listOrgSpecifiedFlag(@Param("fid") Integer fid, @Param("flag") String flag);
 
 }

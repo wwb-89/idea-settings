@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.activity;
+package com.chaoxing.activity.service.auth;
 
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
@@ -99,11 +99,26 @@ public class ActivityAuthService {
      * @return
      */
     public void authorizedUser(Integer activityId, Integer uid, String enc) {
-        String cacheKey = generateCacheKey(activityId, uid);
         // enc验证非法，返回
         if (!validateEnc(activityId, uid, enc)) {
            return;
         }
+        authorizedUserIgnoreEnc(activityId, uid);
+    }
+
+    /**给用户授权（忽略enc）
+     * @Description 
+     * @author wwb
+     * @Date 2022-04-01 12:21:41
+     * @param activityId
+     * @param uid
+     * @return void
+    */
+    public void authorizedUserIgnoreEnc(Integer activityId, Integer uid) {
+        if (uid == null) {
+            return;
+        }
+        String cacheKey = generateCacheKey(activityId, uid);
         // 如果存在key，续期
         if (isAuthorizedUser(activityId, uid)) {
             redisTemplate.expire(cacheKey, 30, TimeUnit.MINUTES);
@@ -111,4 +126,5 @@ public class ActivityAuthService {
         }
         redisTemplate.opsForValue().set(cacheKey, 1, 30, TimeUnit.MINUTES);
     }
+
 }

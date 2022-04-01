@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.activity.market;
 
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.service.auth.MarketAuthService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ public class MarketValidationService {
 
 	@Resource
 	private MarketQueryService marketQueryService;
+	@Resource
+	private MarketAuthService marketAuthService;
 
 	/**活动市场存在
 	 * @Description 
@@ -38,7 +41,7 @@ public class MarketValidationService {
 		return activityMarket;
 	}
 
-	/**是否有活动市场的全县
+	/**是否有活动市场的权限
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-07-27 14:42:58
@@ -47,11 +50,16 @@ public class MarketValidationService {
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
 	public Market manageAble(Integer marketId, OperateUserDTO operateUserDto) {
-		Market activityMarket = exist(marketId);
-		if (!Objects.equals(activityMarket.getFid(), operateUserDto.getFid())) {
-			throw new BusinessException("无权限");
+		Market market = exist(marketId);
+		boolean sameOrg = Objects.equals(market.getFid(), operateUserDto.getFid());
+		if (sameOrg) {
+			return market;
 		}
-		return activityMarket;
+		boolean authorizedUser = marketAuthService.isAuthorizedUser(marketId, operateUserDto.getUid());
+		if (authorizedUser) {
+			return market;
+		}
+		throw new BusinessException("无权限");
 	}
 
 }

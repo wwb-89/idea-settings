@@ -64,7 +64,7 @@ public class MarketController {
 		return "pc/market/market-index-new";
 	}
 
-	/**微服务创建营应用页面
+	/**微服务创建微服务应用页面
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-07-18 20:11:11
@@ -79,7 +79,7 @@ public class MarketController {
 	public String newFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, String activityFlag, String backUrl) {
 		fid = Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid());
 		activityFlag = Optional.ofNullable(activityFlag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
-		MarketCreateParamDTO market = MarketCreateParamDTO.build(fid, classifyId, activityFlag, Market.OriginTypeEnum.WFW, null);
+		MarketCreateParamDTO market = MarketCreateParamDTO.buildFromWfw(fid, classifyId, activityFlag, null);
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
 		model.addAttribute("activityFlag", activityFlag);

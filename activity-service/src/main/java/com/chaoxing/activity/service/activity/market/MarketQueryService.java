@@ -78,7 +78,7 @@ public class MarketQueryService {
 	*/
 	public Market getByWfwFormId(Integer wfwFormId) {
 		List<Market> markets = marketMapper.selectList(new LambdaQueryWrapper<Market>()
-				.eq(Market::getOriginType, Market.OriginTypeEnum.WFW_FORM)
+				.eq(Market::getOriginType, Market.OriginTypeEnum.WFW_FORM.getValue())
 				.eq(Market::getOrigin, String.valueOf(wfwFormId))
 		);
 		return markets.stream().findFirst().orElse(null);
@@ -126,21 +126,16 @@ public class MarketQueryService {
 		return Optional.ofNullable(template).map(Template::getMarketId).orElse(null);
 	}
 
-	/**获取万能表单创建的活动市场id
+	/**查询机构指定的flag市场列表
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-11-29 11:09:30
+	 * @Date 2022-04-01 11:11:20
 	 * @param fid
-	 * @param formId
 	 * @param flag
-	 * @return com.chaoxing.activity.model.Market
+	 * @return java.util.List<com.chaoxing.activity.model.Market>
 	*/
-	public Market getWfwFormMarketIdByFlag(Integer fid, Integer formId, String flag) {
-		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
-		if (activityFlagEnum == null) {
-			return null;
-		}
-		return marketMapper.getMarketByOriginAndFlag(fid, Market.OriginTypeEnum.WFW_FORM.getValue(), String.valueOf(formId), flag);
+	public List<Market> listOrgSpecifiedFlag(Integer fid, String flag) {
+		return marketMapper.listOrgSpecifiedFlag(fid, flag);
 	}
 
 	/**查询市场不需要的组件id列表

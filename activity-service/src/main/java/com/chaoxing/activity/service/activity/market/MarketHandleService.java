@@ -15,13 +15,14 @@ import com.chaoxing.activity.service.activity.ActivityMarketService;
 import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAppApiService;
-import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -55,32 +56,32 @@ public class MarketHandleService {
 	@Resource
 	private MarketSignupConfigService marketSignupConfigService;
 
-
-	/**单独创建活动市场
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-25 15:32:59
-	* @param activityMarketCreateParamDto
-	* @param operateUserDto
-	* @return com.chaoxing.activity.model.Market
-	*/
-	@Transactional(rollbackFor = Exception.class)
-	public Market createMarket(MarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
-		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
-		activityMarket.perfectCreator(operateUserDto);
-		activityMarket.perfectSequence(marketMapper.getMaxSequence(operateUserDto.getFid()));
-		add(activityMarket);
-		return activityMarket;
-	}
-
 	private void add(Market market) {
 		marketMapper.insert(market);
 		// 活动市场报名配置
 		marketSignupConfigService.init(market.getId());
 	}
 
+	/**创建活动市场
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-07-14 20:38:43
+	 * @param marketCreateParamDto
+	 * @param activityFlagEnum
+	 * @param operateUserDto
+	 * @return void
+	 */
+	private Market add(MarketCreateParamDTO marketCreateParamDto, Activity.ActivityFlagEnum activityFlagEnum, OperateUserDTO operateUserDto) {
+		Market activityMarket = marketCreateParamDto.buildActivityMarket();
+		activityMarket.perfectCreator(operateUserDto);
+		add(activityMarket);
+		// 给市场克隆一个模版
+		templateHandleService.cloneTemplate(activityMarket, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
+		return activityMarket;
+	}
+
 	/**创建活动市场且克隆一个模板
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-07-14 16:34:09
 	 * @param marketCreateParamDto
@@ -89,13 +90,27 @@ public class MarketHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public Market add(MarketCreateParamDTO marketCreateParamDto, OperateUserDTO operateUserDto) {
-		Market market = createMarket(marketCreateParamDto, operateUserDto);
-		// 给市场克隆一个模版
 		String activityFlag = marketCreateParamDto.getActivityFlag();
-		// 没有指定模版就使用系统的normal
 		Activity.ActivityFlagEnum activityFlagEnum = Optional.ofNullable(Activity.ActivityFlagEnum.fromValue(activityFlag)).orElse(Activity.ActivityFlagEnum.NORMAL);
-		templateHandleService.cloneTemplate(market, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
+		Market market = add(marketCreateParamDto, activityFlagEnum, operateUserDto);
 		return market;
+	}
+
+	/**创建活动市场
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-07-14 20:33:29
+	 * @param fid
+	 * @param activityFlag
+	 * @param operateUserDto
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void add(Integer fid, String activityFlag, OperateUserDTO operateUserDto) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
+		MarketCreateParamDTO activityMarketCreateParamDto = MarketCreateParamDTO.buildSystem(fid, activityFlagEnum.getValue());
+		activityMarketCreateParamDto.setName(activityFlagEnum.getName());
+		add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
 	}
 
 	/**创建活动市场
@@ -108,19 +123,16 @@ public class MarketHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public Market addFromWfw(MarketCreateParamDTO marketCreateParamDto, OperateUserDTO operateUserDto) {
-		marketCreateParamDto.setOriginType(Market.OriginTypeEnum.WFW.getValue());
-		Market market = add(marketCreateParamDto, operateUserDto);
+		marketCreateParamDto = MarketCreateParamDTO.buildFromWfw(marketCreateParamDto.getFid(), marketCreateParamDto.getClassifyId(), marketCreateParamDto.getActivityFlag(), marketCreateParamDto.getOrigin());
+		String activityFlag = marketCreateParamDto.getActivityFlag();
+		Market market = add(marketCreateParamDto, Activity.ActivityFlagEnum.fromValue(activityFlag), operateUserDto);
 		// 创建微服务应用
-		Integer wfwAppId = addWfwApp(market, marketCreateParamDto.getClassifyId());
+		WfwAppParamDTO wfwAppParam = WfwAppParamDTO.buildFromActivityMarket(market, marketCreateParamDto.getClassifyId());
+		Integer wfwAppId = wfwAppApiService.newApp(wfwAppParam);
 		// 绑定应用的微服务id
 		market.bindWfwApp(wfwAppId);
 		update(MarketUpdateParamDTO.buildFromActivityMarket(market));
 		return market;
-	}
-
-	private Integer addWfwApp(Market activityMarket, Integer classifyId) {
-		WfwAppParamDTO wfwAppParamDTO = WfwAppParamDTO.buildFromActivityMarket(activityMarket, classifyId);
-		return wfwAppApiService.newApp(wfwAppParamDTO);
 	}
 
 	/**修改活动市场
@@ -135,31 +147,8 @@ public class MarketHandleService {
 		Market activityMarket = marketUpdateParamDto.buildActivityMarket();
 		marketMapper.updateById(activityMarket);
 		// 修改微服务应用
-		updateWfwApp(activityMarket, marketUpdateParamDto.getClassifyId());
-		return activityMarket;
-	}
-
-	private void updateWfwApp(Market activityMarket, Integer classifyId) {
-		WfwAppParamDTO wfwAppParamDTO = WfwAppParamDTO.buildFromActivityMarket(activityMarket, classifyId);
-		wfwAppApiService.updateApp(wfwAppParamDTO);
-	}
-
-	/**创建活动市场
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-14 20:38:43
-	 * @param marketCreateParamDto
-	 * @param activityFlagEnum
-	 * @param operateUserDto
-	 * @return void
-	*/
-	@Transactional(rollbackFor = Exception.class)
-	public Market add(MarketCreateParamDTO marketCreateParamDto, Activity.ActivityFlagEnum activityFlagEnum, OperateUserDTO operateUserDto) {
-		Market activityMarket = marketCreateParamDto.buildActivityMarket();
-		activityMarket.perfectCreator(operateUserDto);
-		add(activityMarket);
-		// 给市场克隆一个模版
-		templateHandleService.cloneTemplate(activityMarket, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
+		WfwAppParamDTO wfwAppParam = WfwAppParamDTO.buildFromActivityMarket(activityMarket, marketUpdateParamDto.getClassifyId());
+		wfwAppApiService.updateApp(wfwAppParam);
 		return activityMarket;
 	}
 
@@ -173,23 +162,6 @@ public class MarketHandleService {
 	public void update(MarketUpdateParamDTO marketUpdateParamDto) {
 		Market activityMarket = marketUpdateParamDto.buildActivityMarket();
 		marketMapper.updateById(activityMarket);
-	}
-
-	/**创建活动市场
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-14 20:33:29
-	 * @param fid
-	 * @param activityFlag
-	 * @param operateUserDto
-	 * @return void
-	*/
-	@Transactional(rollbackFor = Exception.class)
-	public void add(Integer fid, String activityFlag, OperateUserDTO operateUserDto) {
-		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
-		MarketCreateParamDTO activityMarketCreateParamDto = MarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue(), Market.OriginTypeEnum.SYSTEM, null);
-		activityMarketCreateParamDto.setName(activityFlagEnum.getName());
-		ApplicationContextHolder.getBean(MarketHandleService.class).add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
 	}
 
 	/**更新活动市场
@@ -211,48 +183,58 @@ public class MarketHandleService {
 	}
 
 	/**根据机构id，活动标识查询模板,判断市场是否存在; 市场不存在则创建市场
-	 * 返回市场id
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-08-25 14:39:27
 	 * @param fid
 	 * @param activityFlagEnum
-	 * @return com.chaoxing.activity.model.Template
+	 * @param loginUser
+	 * @return java.lang.Integer 市场id
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public Integer getOrCreateMarket(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUser) {
 		Optional.ofNullable(activityFlagEnum).orElseThrow(() -> new BusinessException("未知的flag"));
 		Integer marketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
 		if (marketId == null) {
 			// 创建一个活动市场
-			Market market = ApplicationContextHolder.getBean(MarketHandleService.class).add(MarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue(), Market.OriginTypeEnum.SYSTEM, null), activityFlagEnum, loginUser.buildOperateUserDTO());
+			MarketCreateParamDTO marketCreateParam = MarketCreateParamDTO.buildSystem(fid, activityFlagEnum.getValue());
+			Market market = add(marketCreateParam, activityFlagEnum, loginUser.buildOperateUserDTO());
 			marketId = market.getId();
 		}
 		return marketId;
 	}
 
 	/**获取或新增万能表单对应的活动市场id
-	 * @Description 
+	 * @Description
+	 * 1、根据formId查找关联的市场id，市场id一旦被表单id关联后续就不能修改flag
+	 * 2、如果没查询到则按照flag去创建
+	 * 3、如果非normal的flag已经存在则中止
 	 * @author wwb
 	 * @Date 2021-11-29 11:08:16
 	 * @param fid
-	 * @param activityFlagEnum
+	 * @param flag
 	 * @param formId
-	 * @param loginUser
-	 * @return java.lang.Integer
+	 * @param operateUser
+	 * @return java.lang.Integer 市场id
 	*/
-	public Integer getOrCreateWfwFormMarket(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, Integer formId, LoginUserDTO loginUser) {
-		Optional.ofNullable(activityFlagEnum).orElseThrow(() -> new BusinessException("未知的flag"));
-		Market market = marketQueryService.getWfwFormMarketIdByFlag(fid, formId, activityFlagEnum.getValue());
-		if (market == null) {
-			// 同一个机构只有"normal"才能创建多个，其它的只能创建一个相同flag的活动市场
-			if (!Objects.equals(Activity.ActivityFlagEnum.NORMAL, activityFlagEnum)) {
-				Integer existFlagMarketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
-				if (existFlagMarketId != null) {
-					return existFlagMarketId;
-				}
-			}
-			market = ApplicationContextHolder.getBean(MarketHandleService.class).add(MarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue(), Market.OriginTypeEnum.WFW_FORM, String.valueOf(formId)), activityFlagEnum, loginUser.buildOperateUserDTO());
+	@Transactional(rollbackFor = Exception.class)
+	public Integer getOrCreateWfwFormMarket(Integer fid, String flag, Integer formId, OperateUserDTO operateUser) {
+		Market existMarket = marketQueryService.getByWfwFormId(formId);
+		if (existMarket != null) {
+			return existMarket.getId();
 		}
+		flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+		Optional.ofNullable(activityFlagEnum).orElseThrow(() -> new BusinessException("未知的flag"));
+		if (!Objects.equals(Activity.ActivityFlagEnum.NORMAL, activityFlagEnum)) {
+			// 查询机构该flag下所有的活动市场
+			List<Market> markets = marketQueryService.listOrgSpecifiedFlag(fid, flag);
+			if (CollectionUtils.isNotEmpty(markets)) {
+				throw new BusinessException("活动市场已经存在");
+			}
+		}
+		MarketCreateParamDTO marketCreateParam = MarketCreateParamDTO.buildFromWfwForm(fid, flag, formId);
+		Market market = add(marketCreateParam, activityFlagEnum, operateUser);
 		return market.getId();
 	}
 

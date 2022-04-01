@@ -40,6 +40,7 @@ import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -898,18 +899,15 @@ public class ActivityQueryService {
 	 * @Date 2021-05-11 16:13:28
 	 * @param originTypeEnum
 	 * @param origin
+	 * @param formUserId
 	 * @return com.chaoxing.activity.model.Activity
 	 */
-	public Activity getByOriginTypeAndOrigin(Activity.OriginTypeEnum originTypeEnum, String origin) {
-		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
-				.lambda()
+	public Activity getByOriginTypeAndOrigin(Activity.OriginTypeEnum originTypeEnum, String origin, Integer formUserId) {
+		return activityMapper.selectList(new LambdaQueryWrapper<Activity>()
 				.eq(Activity::getOriginType, originTypeEnum.getValue())
 				.eq(Activity::getOrigin, origin)
-		);
-		if (CollectionUtils.isNotEmpty(activities)) {
-			return activities.get(0);
-		}
-		return null;
+				.eq(Activity::getOriginFormUserId, formUserId)
+		).stream().findFirst().orElse(null);
 	}
 
 	/**根据机构id, 给定的活动时间范围，查询在此范围内进行中的活动id列表

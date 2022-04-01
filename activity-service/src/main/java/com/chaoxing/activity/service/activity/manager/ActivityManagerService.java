@@ -9,7 +9,7 @@ import com.chaoxing.activity.mapper.ActivityManagerMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.model.ActivityMenuConfig;
-import com.chaoxing.activity.service.activity.ActivityAuthService;
+import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
@@ -96,9 +96,6 @@ public class ActivityManagerService {
             return;
         }
         Integer activityId = activityManagers.get(0).getActivityId();
-        for (ActivityManager activityManager : activityManagers) {
-            activityManager.setActivityId(activityId);
-        }
         activityValidationService.isManageAble(activityId, loginUser.getUid());
         List<Integer> uids = activityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList());
         List<ActivityManager> existActivityManagers = activityManagerMapper.selectList(new LambdaQueryWrapper<ActivityManager>()

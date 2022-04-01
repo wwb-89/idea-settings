@@ -118,7 +118,7 @@ public class WfwApprovalActivityCreateQueueService {
             return;
         }
         // 是否已经创建了活动，根据formUserId来判断
-        Activity existActivity = activityQueryService.getByOriginTypeAndOrigin(Activity.OriginTypeEnum.ACTIVITY_DECLARATION, String.valueOf(formUserId));
+        Activity existActivity = activityQueryService.getByOriginTypeAndOrigin(Activity.OriginTypeEnum.ACTIVITY_DECLARATION, String.valueOf(formId), formUserId);
         if (existActivity != null) {
             return;
         }
@@ -276,7 +276,7 @@ public class WfwApprovalActivityCreateQueueService {
         } else {
             signUp.setDeleted(true);
         }
-
+        List<SignInCreateParamDTO> realSignIns = Lists.newArrayList();
         List<SignInCreateParamDTO> signIns = signCreateParam.getSignIns();
         // 签到
         SignInCreateParamDTO signIn = signIns.get(0);
@@ -313,8 +313,7 @@ public class WfwApprovalActivityCreateQueueService {
                     signIn.setScanCodeWay(SignInCreateParamDTO.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
-        } else {
-            signIn.setDeleted(true);
+            realSignIns.add(signIn);
         }
         // 签退
         SignInCreateParamDTO signOut = signIns.get(1);
@@ -347,9 +346,9 @@ public class WfwApprovalActivityCreateQueueService {
                     signOut.setScanCodeWay(SignInCreateParamDTO.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
-        } else {
-            signOut.setDeleted(true);
+            realSignIns.add(signOut);
         }
+        signCreateParam.setSignIns(realSignIns);
         return signCreateParam;
     }
 

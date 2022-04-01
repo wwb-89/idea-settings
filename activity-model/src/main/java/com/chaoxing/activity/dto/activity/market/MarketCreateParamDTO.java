@@ -60,7 +60,21 @@ public class MarketCreateParamDTO {
 				.build();
 	}
 
-	public static MarketCreateParamDTO build(Integer fid, Integer classifyId, String flag, Market.OriginTypeEnum originType, String origin) {
+	public static MarketCreateParamDTO buildSystem(Integer fid, String flag) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+		return MarketCreateParamDTO.builder()
+				.name(activityFlagEnum.getName())
+				.iconCloudId(DEFAULT_ICON_CLOUD_ID)
+				.fid(fid)
+				.activityFlag(flag)
+				.enableContacts(false)
+				.enableOrganization(true)
+				.enableRegional(false)
+				.originType(Market.OriginTypeEnum.SYSTEM.getValue())
+				.build();
+	}
+
+	public static MarketCreateParamDTO buildFromWfw(Integer fid, Integer classifyId, String flag, String origin) {
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
 		return MarketCreateParamDTO.builder()
 				.name(activityFlagEnum.getName())
@@ -68,11 +82,26 @@ public class MarketCreateParamDTO {
 				.fid(fid)
 				.classifyId(classifyId)
 				.activityFlag(flag)
-				.enableContacts(true)
+				.enableContacts(false)
 				.enableOrganization(true)
-				.enableRegional(true)
-				.originType(originType.getValue())
+				.enableRegional(false)
+				.originType(Market.OriginTypeEnum.WFW.getValue())
 				.origin(origin)
+				.build();
+	}
+
+	public static MarketCreateParamDTO buildFromWfwForm(Integer fid, String flag, Integer formId) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+		return MarketCreateParamDTO.builder()
+				.name(activityFlagEnum.getName())
+				.iconCloudId(DEFAULT_ICON_CLOUD_ID)
+				.fid(fid)
+				.activityFlag(flag)
+				.enableContacts(false)
+				.enableOrganization(true)
+				.enableRegional(false)
+				.originType(Market.OriginTypeEnum.WFW_FORM.getValue())
+				.origin(String.valueOf(formId))
 				.build();
 	}
 

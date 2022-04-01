@@ -193,7 +193,7 @@ public class WfwFormSyncActivityQueueService {
         String orgName = passportApiService.getOrgName(fid);
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgName);
         // 获取模板和市场信息
-        Integer marketId = marketHandleService.getOrCreateWfwFormMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), formId, loginUser);
+        Integer marketId = marketHandleService.getOrCreateWfwFormMarket(fid, flag, formId, loginUser.buildOperateUserDTO());
         Template template = templateQueryService.getMarketFirstTemplate(marketId);
         // 活动分类
         String activityClassifyName = WfwFormUtils.getValue(formUserRecord, WfwFormAliasConstant.ACTIVITY_CLASSIFY);

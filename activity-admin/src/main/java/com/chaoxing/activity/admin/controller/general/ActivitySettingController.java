@@ -11,7 +11,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.MarketSignUpConfig;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.model.Tag;
-import com.chaoxing.activity.service.activity.ActivityAuthService;
+import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.IconQueryService;

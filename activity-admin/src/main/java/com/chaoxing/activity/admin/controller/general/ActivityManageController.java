@@ -11,7 +11,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
-import com.chaoxing.activity.service.activity.ActivityAuthService;
+import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.rmi.server.UID;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
