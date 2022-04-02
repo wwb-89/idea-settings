@@ -141,7 +141,21 @@ public class ActivityMhV3ApiController {
      */
     @RequestMapping("activity/btns")
     public RestRespDTO mhActivityBtns(@RequestBody String data) {
-       return RestRespDTO.success(packageBtns(data, false));
+        JSONObject jsonObject = packageBtns(data, false, false);
+        return RestRespDTO.success(jsonObject);
+    }
+
+    /**通用活动门户按钮数据源（忽略报名条件）
+     * @Description 
+     * @author wwb
+     * @Date 2022-04-02 19:32:49
+     * @param data
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("activity/btns/ignore-work-condition")
+    public RestRespDTO mhActivityBtnsIgnoreWorkCondition(@RequestBody String data) {
+        JSONObject jsonObject = packageBtns(data, false, true);
+        return RestRespDTO.success(jsonObject);
     }
 
     /**厦门门户活动按钮数据源
@@ -153,10 +167,11 @@ public class ActivityMhV3ApiController {
      */
     @RequestMapping("xm/activity/btns")
     public RestRespDTO xmMhActivityBtns(@RequestBody String data) {
-        return RestRespDTO.success(packageBtns(data, true));
+        JSONObject jsonObject = packageBtns(data, true, false);
+        return RestRespDTO.success(jsonObject);
     }
     
-    public JSONObject packageBtns(String data, Boolean isMultiOrg) {
+    public JSONObject packageBtns(String data, Boolean isMultiOrg, boolean ignoreWorkCondition) {
         Activity activity = getActivityByData(data);
         JSONObject jsonObject = new JSONObject();
         if (activity == null) {
@@ -173,7 +188,7 @@ public class ActivityMhV3ApiController {
         String excludeBtnNamesStr = urlParams.getString("excludeBtnNames");
         List<String> excludeBtnNames = MhPreParamsUtils.resolveStringV(excludeBtnNamesStr);
 
-        jsonObject.put("results", packageBtns(activity, uid, wfwfid, excludeBtnNames, isMultiOrg));
+        jsonObject.put("results", packageBtns(activity, uid, wfwfid, excludeBtnNames, isMultiOrg, ignoreWorkCondition));
         return jsonObject;
     }
 
@@ -393,9 +408,10 @@ public class ActivityMhV3ApiController {
      * @param wfwfid
      * @param excludeBtnNames 排除的按钮名称
      * @param isMultiOrg 是否多机构(厦门项目报名多机构选择)
+     * @param ignoreWorkCondition 获取作品征集的按钮是否忽略条件
      * @return java.util.List<com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>
      */
-    private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer uid, Integer wfwfid, List<String> excludeBtnNames, Boolean isMultiOrg) {
+    private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer uid, Integer wfwfid, List<String> excludeBtnNames, Boolean isMultiOrg, boolean ignoreWorkCondition) {
         Integer signId = activity.getSignId();
         List<MhGeneralAppResultDataDTO> result = Lists.newArrayList();
         Integer status = activity.getStatus();
@@ -410,9 +426,6 @@ public class ActivityMhV3ApiController {
         List<Integer> signInIds = userSignParticipationStat.getSignInIds();
         List<Integer> formCollectionIds = userSignParticipationStat.getFormCollectionIds();
         List<Integer> signUpIds = userSignParticipationStat.getSignUpIds();
-        Boolean openWork = activity.getOpenWork();
-        openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
-        Integer workId = activity.getWorkId();
         /*boolean isManager = activityValidationService.isManageAble(activity, uid);*/
         boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
         boolean signedUp = true;
@@ -500,8 +513,16 @@ public class ActivityMhV3ApiController {
                 result.add(MhDataBuildUtil.buildBtnField("填写表单", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.DEFAULT_ICON.getValue()), userSignParticipationStat.getFormCollectionUrl(), "1", false, MhBtnSequenceEnum.FORM_COLLECTION.getSequence()));
             }
         }
+        Boolean openWork = activity.getOpenWork();
+        openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
+        Integer workId = activity.getWorkId();
         if (openWork && workId != null) {
-            List<WorkBtnDTO> workBtnDtos = workApiService.listBtns(workId, uid, wfwfid);
+            List<WorkBtnDTO> workBtnDtos;
+            if (ignoreWorkCondition) {
+                workBtnDtos = workApiService.listBtns(workId, uid, wfwfid);
+            } else {
+                workBtnDtos = workApiService.listBtnsIgnoreCondition(workId, uid, wfwfid);
+            }
             for (WorkBtnDTO workBtnDto : workBtnDtos) {
                 Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
                 Boolean needValidate = Optional.ofNullable(workBtnDto.getNeedValidate()).orElse(false);

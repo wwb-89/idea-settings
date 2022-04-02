@@ -50,6 +50,7 @@ public class WorkApiService {
 	/** 作品征集按钮yrl（鄂尔多斯定制） */
 	private static final String ERDOS_WORK_BTN_URL = DomainConstant.WORK_API + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
 	private static final String WORK_BTN_URL = DomainConstant.WORK_API + "/activity/user/custom/permission?activityId=%d&uid=%s&fid=%d";
+	private static final String IGNORE_CONDITION_WORK_BTN_URL = DomainConstant.WORK_API + "/activity/user/syds/permission?activityId=%d&uid=%s&fid=%d";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -203,6 +204,19 @@ public class WorkApiService {
 	*/
 	public List<WorkBtnDTO> listBtns(Integer workId, Integer uid, Integer fid) {
 		return listBtns(workId, uid, fid, WORK_BTN_URL);
+	}
+
+	/**忽略条件
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-04-02 19:35:09
+	 * @param workId
+	 * @param uid
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.dto.work.WorkBtnDTO>
+	*/
+	public List<WorkBtnDTO> listBtnsIgnoreCondition(Integer workId, Integer uid, Integer fid) {
+		return listBtns(workId, uid, fid, IGNORE_CONDITION_WORK_BTN_URL);
 	}
 
 	/**查询作品征集的按钮列表
