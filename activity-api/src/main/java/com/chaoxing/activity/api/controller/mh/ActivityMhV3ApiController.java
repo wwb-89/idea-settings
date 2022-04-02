@@ -286,7 +286,7 @@ public class ActivityMhV3ApiController {
         Integer workId = activity.getWorkId();
         if (openWork && workId != null) {
             Integer workNum = Optional.ofNullable(workApiService.getWorkNum(workId)).orElse(0);
-            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.WORK_NUM.getValue()), signUpKeyword, String.valueOf(workNum), mainFields);
+            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.WORK_NUM.getValue()), "作品", String.valueOf(workNum), mainFields);
         }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
