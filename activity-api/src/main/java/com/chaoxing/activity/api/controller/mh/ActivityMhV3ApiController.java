@@ -277,10 +277,36 @@ public class ActivityMhV3ApiController {
         MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
         // 获取报名量
         SignActivityStatDTO signActivityStat = signApiService.singleActivityStat(activity.getSignId(), startTimeStr, endTimeStr);
+        String signedUpNum = "0";
         if (signActivityStat != null) {
-            String signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
-            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
+            signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
         }
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
+        jsonObject.put("results", mainFields);
+        return RestRespDTO.success(jsonObject);
+    }
+
+    /**活动相关统计数据接口（忽略报名）
+     * @Description 
+     * @author wwb
+     * @Date 2022-04-02 20:41:21
+     * @param data
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("activity/stat/info/exclude-sign-up")
+    public RestRespDTO activityStatInfoIncludeWork(@RequestBody String data) {
+        Activity activity = getActivityByData(data);
+        List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        JSONObject jsonObject = new JSONObject();
+        if (activity == null) {
+            jsonObject.put("results", mainFields);
+            return RestRespDTO.success(jsonObject);
+        }
+        String pvNum = Optional.ofNullable(activityStatQueryService.getPvByActivity(activity)).map(String::valueOf).orElse("0");
+        // 获取收藏量
+        Integer collectedNum = Optional.ofNullable(activityCollectionQueryService.listCollectedUid(activity.getId())).orElse(Lists.newArrayList()).size();
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
         // 作品征集数
         Boolean openWork = Optional.ofNullable(activity.getOpenWork()).orElse(false);
         Integer workId = activity.getWorkId();
