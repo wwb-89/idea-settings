@@ -1,8 +1,6 @@
 package com.chaoxing.activity.task.event.activity;
 
 import com.alibaba.fastjson.JSON;
-import com.chaoxing.activity.dto.event.activity.ActivityTimeChangeEventOrigin;
-import com.chaoxing.activity.service.activity.engine.CustomAppInterfaceCallHandleService;
 import com.chaoxing.activity.service.queue.event.activity.CustomAppInterfaceCallQueue;
 import com.chaoxing.activity.service.queue.event.activity.handler.CustomAppInterfaceCallQueueService;
 import lombok.extern.slf4j.Slf4j;

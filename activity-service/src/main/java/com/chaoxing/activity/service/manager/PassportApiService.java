@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
+import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -13,7 +14,6 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -108,10 +108,11 @@ public class PassportApiService {
 			JSONArray logininfos = jsonObject.getJSONArray("logininfos");
 			int orgSize = logininfos.size();
 			List<OrgDTO> affiliations = Lists.newArrayList();
+			PassportApiService passportApiService = ApplicationContextHolder.getBean(PassportApiService.class);
 			for (int i = 0; i < orgSize; i++) {
 				JSONObject orgJsonObject = logininfos.getJSONObject(i);
 				Integer fid = orgJsonObject.getInteger("fid");
-				String orgName = ((PassportApiService) AopContext.currentProxy()).getOrgName(fid);
+				String orgName = passportApiService.getOrgName(fid);
 				OrgDTO orgDTO = OrgDTO.builder()
 						.fid(fid)
 						.name(orgName)
@@ -278,8 +279,9 @@ public class PassportApiService {
 	public List<OrgDTO> listOrg(List<Integer> fids) {
 		List<OrgDTO> result = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(fids)) {
+			PassportApiService passportApiService = ApplicationContextHolder.getBean(PassportApiService.class);
 			for (Integer fid : fids) {
-				String orgName = ((PassportApiService)AopContext.currentProxy()).getOrgName(fid);
+				String orgName = passportApiService.getOrgName(fid);
 				OrgDTO org = OrgDTO.builder()
 						.fid(fid)
 						.name(orgName)

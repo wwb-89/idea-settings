@@ -2,8 +2,8 @@ package com.chaoxing.activity.task.event.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.event.activity.ActivityAboutStartEventOrigin;
-import com.chaoxing.activity.service.queue.event.activity.handler.ActivityAboutStartEventQueueService;
 import com.chaoxing.activity.service.queue.event.activity.ActivityAboutStartEventQueue;
+import com.chaoxing.activity.service.queue.event.activity.handler.ActivityAboutStartEventQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
