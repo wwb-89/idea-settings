@@ -14,10 +14,12 @@ import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityMarketService;
 import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAppApiService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +57,8 @@ public class MarketHandleService {
 	private ActivityHandleService activityHandleService;
 	@Resource
 	private MarketSignupConfigService marketSignupConfigService;
+	@Resource
+	private CloudApiService cloudApiService;
 
 	private void add(Market market) {
 		marketMapper.insert(market);
@@ -127,6 +131,11 @@ public class MarketHandleService {
 		String activityFlag = marketCreateParamDto.getActivityFlag();
 		Market market = add(marketCreateParamDto, Activity.ActivityFlagEnum.fromValue(activityFlag), operateUserDto);
 		// 创建微服务应用
+		String iconUrl = market.getIconUrl();
+		if (StringUtils.isBlank(iconUrl)) {
+			iconUrl = cloudApiService.buildImageUrl(market.getIconCloudId());
+			market.setIconUrl(iconUrl);
+		}
 		WfwAppParamDTO wfwAppParam = WfwAppParamDTO.buildFromActivityMarket(market, marketCreateParamDto.getClassifyId());
 		Integer wfwAppId = wfwAppApiService.newApp(wfwAppParam);
 		// 绑定应用的微服务id
