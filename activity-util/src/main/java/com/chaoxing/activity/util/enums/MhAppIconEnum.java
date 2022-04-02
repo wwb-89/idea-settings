@@ -44,6 +44,8 @@ public enum MhAppIconEnum {
         ORGANISER("organiser", "0c8caee495a7e1b4fb6ebddedb705445"),
         /** 报名数 */
         SIGNED_UP_NUM("signed-up-num", "4ccd8f1195ca7712ac806ac441d14991"),
+        /** 作品数 */
+        WORK_NUM("work-num", "ac53551d7beaf28e527291b41e864fcb"),
         /** 评价 */
         RATING_1("rating_1", "0c3dbf1ae772af825c12c45ab32f7791"),
         RATING_2("rating_2", "94dc65252f38202b9fc92cc50f5cbd74"),

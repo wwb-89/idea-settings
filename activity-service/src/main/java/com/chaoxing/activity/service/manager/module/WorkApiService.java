@@ -51,6 +51,8 @@ public class WorkApiService {
 	private static final String ERDOS_WORK_BTN_URL = DomainConstant.WORK_API + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
 	private static final String WORK_BTN_URL = DomainConstant.WORK_API + "/activity/user/custom/permission?activityId=%d&uid=%s&fid=%d";
 	private static final String IGNORE_CONDITION_WORK_BTN_URL = DomainConstant.WORK_API + "/activity/user/syds/permission?activityId=%d&uid=%s&fid=%d";
+	/** 获取作品数量 */
+	private static final String GET_WORK_NUM_URL = DomainConstant.WORK_API + "/activity/stat/work-num?activityId=%d";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -244,6 +246,31 @@ public class WorkApiService {
 			return JSON.parseArray(jsonObject.getString("data"), WorkBtnDTO.class);
 		} else {
 			return Lists.newArrayList();
+		}
+	}
+
+	/**获取作品数量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-04-02 20:19:12
+	 * @param workId
+	 * @return java.lang.Integer
+	*/
+	public Integer getWorkNum(Integer workId) {
+		if (workId == null) {
+			return 0;
+		}
+		String url = String.format(GET_WORK_NUM_URL, workId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getInteger("data");
+		} else {
+			String message = jsonObject.getString("message");
+			log.error("根据参数:{} 获取作品数量 error:{}", workId, message);
+			return 0;
 		}
 	}
 

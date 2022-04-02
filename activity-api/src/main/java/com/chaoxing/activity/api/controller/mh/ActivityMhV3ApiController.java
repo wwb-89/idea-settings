@@ -273,16 +273,21 @@ public class ActivityMhV3ApiController {
         String pvNum = Optional.ofNullable(activityStatQueryService.getPvByActivity(activity)).map(String::valueOf).orElse("0");
         // 获取收藏量
         Integer collectedNum = Optional.ofNullable(activityCollectionQueryService.listCollectedUid(activity.getId())).orElse(Lists.newArrayList()).size();
-        // 获取报名量
-        SignActivityStatDTO signActivityStat = signApiService.singleActivityStat(activity.getSignId(), startTimeStr, endTimeStr);
-        String signedUpNum = "0";
-        if (signActivityStat != null) {
-            signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
-        }
         MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
         MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
-        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
-
+        // 获取报名量
+        SignActivityStatDTO signActivityStat = signApiService.singleActivityStat(activity.getSignId(), startTimeStr, endTimeStr);
+        if (signActivityStat != null) {
+            String signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
+            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
+        }
+        // 作品征集数
+        Boolean openWork = Optional.ofNullable(activity.getOpenWork()).orElse(false);
+        Integer workId = activity.getWorkId();
+        if (openWork && workId != null) {
+            Integer workNum = Optional.ofNullable(workApiService.getWorkNum(workId)).orElse(0);
+            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.WORK_NUM.getValue()), signUpKeyword, String.valueOf(workNum), mainFields);
+        }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }

@@ -541,7 +541,13 @@ public class SignApiService {
 		String url = String.format(STAT_SINGLE_ACTIVITY_URL, signId, startTime, endTime);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class), (message) -> {
+		return resultHandle(jsonObject, () -> {
+			String data = jsonObject.getString("data");
+			if (StringUtils.isBlank(data)) {
+				return null;
+			}
+			return JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class);
+		}, (message) -> {
 			throw new BusinessException(message);
 		});
 	}
