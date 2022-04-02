@@ -45,8 +45,10 @@ public class MhApiService {
 	private static final String UPDATE_WEB_TITLE_URL = DomainConstant.MH + "/web-others/%d/page-name?name=%s&uid=%d";
 	/** 根据pageId查询website */
 	public static final String GET_WEBSITE_URL = DomainConstant.MH + "/website/%d/get-by-page";
-	/** 网站总访问量 */
+	/** 网站总访问量（根据websiteId） */
 	private static final String WEBSITE_TOTAL_VIEW_NUM_URL = DomainConstant.MH + "/data-count/website/%d/homepage/pv";
+	/** 网站总访问量（pageId） */
+	private static final String PAGE_TOTAL_VIEW_NUM_URL = DomainConstant.MH + "/pv/%d/page?all=1&q=1000000";
 	/** 网站按天访问量统计 */
 	public static final String WEBSITE_DAILY_VIEW_NUM_STAT_URL = DomainConstant.MH + "/data-count/website/%d/daily-uv?startTime=%s&endTime=%s";
 	/** 获取评价的地址 */
@@ -156,6 +158,29 @@ public class MhApiService {
 		Integer code = jsonObject.getInteger("code");
 		if (Objects.equals(code, 1)) {
 			return jsonObject.getInteger("data");
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**根据pageId获取
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-04-02 19:20:15
+	 * @param pageId
+	 * @return java.lang.Integer
+	*/
+	public Integer countPagePv(Integer pageId) {
+		if (pageId == null) {
+			return 0;
+		}
+		String url = String.format(PAGE_TOTAL_VIEW_NUM_URL, pageId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Integer code = jsonObject.getInteger("code");
+		if (Objects.equals(code, 1)) {
+			return jsonObject.getJSONObject("data").getInteger("history");
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);

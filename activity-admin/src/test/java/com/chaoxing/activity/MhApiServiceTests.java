@@ -30,4 +30,12 @@ public class MhApiServiceTests {
         System.out.println(evaluationUrl);
     }
 
+    @Test
+    public void countPagePv() {
+        Integer pageId = 250238;
+        Integer num = mhApiService.countPagePv(pageId);
+        System.out.println("访问量:" + num);
+
+    }
+
 }

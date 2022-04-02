@@ -197,17 +197,8 @@ public class ActivityStatQueryService {
 	 * @return 
 	 */
 	public Integer getPvByActivity(Activity activity) {
-		Integer websiteId = activity.getWebsiteId();
 		Integer pageId = activity.getPageId();
-		if (websiteId == null && pageId != null) {
-			websiteId = mhApiService.getWebsiteIdByPageId(pageId);
-			activity.setWebsiteId(websiteId);
-		}
-		if (websiteId == null) {
-			log.error("websiteId为空");
-			return 0;
-		}
-		return mhApiService.countWebsitePv(websiteId);
+		return mhApiService.countPagePv(pageId);
 	}
 
 	private List<DailyStatDTO> fullConvert2(List<String> daily, List<DailyStatDTO> origins) {
