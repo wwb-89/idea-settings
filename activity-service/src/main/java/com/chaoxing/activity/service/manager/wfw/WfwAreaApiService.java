@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.service.manager.PassportApiService;
+import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.DomainConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -237,7 +238,8 @@ public class WfwAreaApiService {
 	*/
 	public List<Integer> listSubFid(Integer fid) {
 		List<Integer> fids = Lists.newArrayList();
-		List<WfwAreaDTO> wfwRegionalArchitectures = listByFid(fid);
+		WfwAreaApiService wfwAreaApiService = ApplicationContextHolder.getBean(WfwAreaApiService.class);
+		List<WfwAreaDTO> wfwRegionalArchitectures = wfwAreaApiService.listByFid(fid);
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
