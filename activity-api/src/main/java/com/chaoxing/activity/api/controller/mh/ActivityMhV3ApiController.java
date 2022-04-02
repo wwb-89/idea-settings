@@ -519,9 +519,9 @@ public class ActivityMhV3ApiController {
         if (openWork && workId != null) {
             List<WorkBtnDTO> workBtnDtos;
             if (ignoreWorkCondition) {
-                workBtnDtos = workApiService.listBtns(workId, uid, wfwfid);
-            } else {
                 workBtnDtos = workApiService.listBtnsIgnoreCondition(workId, uid, wfwfid);
+            } else {
+                workBtnDtos = workApiService.listBtns(workId, uid, wfwfid);
             }
             for (WorkBtnDTO workBtnDto : workBtnDtos) {
                 Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
