@@ -443,14 +443,20 @@ public class ActivityMhV3ApiController {
      * @return java.util.List<com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>
      */
     private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer uid, Integer wfwfid, List<String> excludeBtnNames, Boolean isMultiOrg, boolean ignoreWorkCondition) {
+        ignoreWorkCondition = Optional.ofNullable(ignoreWorkCondition).orElse(false);
         Integer signId = activity.getSignId();
         List<MhGeneralAppResultDataDTO> result = Lists.newArrayList();
         Integer status = activity.getStatus();
         Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
         boolean activityEnded = Objects.equals(Activity.StatusEnum.ENDED, statusEnum);
-        UserSignParticipationStatDTO userSignParticipationStat = signApiService.userParticipationStat(signId, uid);
+        UserSignParticipationStatDTO userSignParticipationStat;
+        if (ignoreWorkCondition) {
+            userSignParticipationStat = UserSignParticipationStatDTO.buildDefault();
+        } else {
+            userSignParticipationStat = signApiService.userParticipationStat(signId, uid);
+        }
         if (userSignParticipationStat == null) {
-            return result;
+            userSignParticipationStat = UserSignParticipationStatDTO.buildDefault();
         }
         Integer activityId = activity.getId();
         Integer activityCreateFid = activity.getCreateFid();

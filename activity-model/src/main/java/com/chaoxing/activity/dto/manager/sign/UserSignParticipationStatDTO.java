@@ -1,6 +1,7 @@
 package com.chaoxing.activity.dto.manager.sign;
 
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -70,6 +71,21 @@ public class UserSignParticipationStatDTO {
 			this.signUpUrl += "&";
 		}
 		this.signUpUrl += "isMultiOrg=" + isMultiOrg;
+	}
+
+	public static UserSignParticipationStatDTO buildDefault() {
+		return UserSignParticipationStatDTO.builder()
+				.signUpIds(Lists.newArrayList())
+				.signUps(Lists.newArrayList())
+				.signUpNotStart(false)
+				.signUpEnded(false)
+				.noPlaces(false)
+				.inParticipationScope(true)
+				.signInIds(Lists.newArrayList())
+				.formCollectionIds(Lists.newArrayList())
+				.signedUp(true)
+				.signUpAudit(false)
+				.build();
 	}
 
 }

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="common_js(scripts)">
+    <script type="text/javascript" th:inline="text">
+        var ctx = "[[@{/}]]".replace(/\/$/, "");
+    </script>
+    <!-- 引入与硬件交互的js -->
+    <script type="text/javascript" src="//apps.chaoxing.com/res/js/CXJSBridge.js"></script>
+    <script type="text/javascript" src="/static/assets/js/jquery.min.js" th:src="@{/assets/js/jquery.min.js}"></script>
+    <script type="text/javascript" src="/static/assets/js/json2.js" th:src="@{/assets/js/json2.js}"></script>
+    <script type="text/javascript" src="/static/assets/js/moment.js" th:src="@{/assets/js/moment.js}"></script>
+    <script type="text/javascript" src="/static/assets/js/jquery.md5.js" th:src="@{/assets/js/jquery.md5.js}"></script>
+    <script type="text/javascript" src="/static/assets/js/vue.js" th:src="@{/assets/js/vue.js}"></script>
+    <script type="text/javascript" src="/static/mobile/assets/js/dialog.min.js" th:src="@{/mobile/assets/js/dialog.min.js}"></script>
+    <script type="text/javascript" src="/static/assets/js/activity.app.js" th:src="@{/assets/js/activity.app.js}"></script>
+    <script type="text/javascript" src="/static/mobile/assets/js/app.mobile.js" th:src="@{/mobile/assets/js/app.mobile.js}"></script>
+    <th:block th:replace="${scripts}" />
+</div>
