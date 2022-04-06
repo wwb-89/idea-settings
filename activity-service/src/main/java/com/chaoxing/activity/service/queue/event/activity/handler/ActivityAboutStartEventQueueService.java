@@ -51,6 +51,11 @@ public class ActivityAboutStartEventQueueService {
     public void handle(ActivityAboutStartEventOrigin eventOrigin) {
         Activity activity = activityQueryService.getById(eventOrigin.getActivityId());
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_START.getValue());
+        Boolean enable = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getEnable).orElse(false);
+        if (!enable) {
+            // 未启用
+            return;
+        }
         if (!needHandle(eventOrigin.getStartTime(), activity)) {
             return;
         }

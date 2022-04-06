@@ -85,6 +85,11 @@ public class BlacklistUserNoticeHandleService {
         String organisers = noticeTemplateField.getActivityOrganisers();
         // 封装移出黑名单通知
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(marketId, SystemNoticeTemplate.NoticeTypeEnum.MANUAL_ADD_TO_BLACKLIST.getValue());
+        Boolean enable = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getEnable).orElse(false);
+        if (!enable) {
+            // 未启用
+            return;
+        }
         String defaultTitle = generateManualAddBlacklistTitle(organisers);
         String defaultContent = generateManualAddBlacklistTitle(organisers);
         pushNoticeInQueue(defaultTitle, defaultContent, noticeTemplateField, noticeTemplate, uids);
@@ -121,6 +126,11 @@ public class BlacklistUserNoticeHandleService {
         Integer autoRemoveHours = Optional.ofNullable(noticeTemplateField.getAutoRemoveHours()).orElse(null);
         // 封装移出黑名单通知
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(marketId, SystemNoticeTemplate.NoticeTypeEnum.AUTO_ADD_TO_BLACKLIST.getValue());
+        Boolean enable = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getEnable).orElse(false);
+        if (!enable) {
+            // 未启用
+            return;
+        }
         String defaultTitle = generateAutoAddBlacklistTitle(organisers);
         String defaultContent = generateAutoAddBlacklistContent(activityName, activityTime, enableAutoRemove, autoRemoveHours);
         pushNoticeInQueue(defaultTitle, defaultContent, noticeTemplateField, noticeTemplate, uids);
@@ -146,6 +156,11 @@ public class BlacklistUserNoticeHandleService {
         String organisers = noticeTemplateField.getActivityOrganisers();
         // 封装移出黑名单通知
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(marketId, SystemNoticeTemplate.NoticeTypeEnum.REMOVE_FROM_BLACKLIST.getValue());
+        Boolean enable = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getEnable).orElse(false);
+        if (!enable) {
+            // 未启用
+            return;
+        }
         for (Map.Entry<Integer, LocalDateTime> entry : userAddBlacklistTimeMap.entrySet()) {
             Integer uid = entry.getKey();
             LocalDateTime addTime = entry.getValue();

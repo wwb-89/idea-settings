@@ -108,6 +108,11 @@ public class UserSignedUpEventQueueService {
             return;
         }
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.SIGN_UP_SUCCESS.getValue());
+        Boolean enable = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getEnable).orElse(false);
+        if (!enable) {
+            // 未启用
+            return;
+        }
         NoticeTemplateFieldDTO noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
         String waitConvertTitle;
         String waitConvertContent;

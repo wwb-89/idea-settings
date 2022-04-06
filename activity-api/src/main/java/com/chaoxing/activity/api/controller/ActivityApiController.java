@@ -21,11 +21,9 @@ import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
-import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -36,6 +34,7 @@ import com.chaoxing.activity.service.activity.create.ActivityCreateService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.certificate.CertificateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -82,9 +81,6 @@ public class ActivityApiController {
 
 	/** 登录地址占位 */
 	private static final String LOGIN_URL_PLACEHOLDER = "url_placeholder";
-
-	@Resource
-	private ActivityMapper activityMapper;
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -445,12 +441,10 @@ public class ActivityApiController {
 		Page page = HttpServletRequestUtils.buid(request);
 		page = userResultQueryService.pageUserResult(page, UserResultQueryDTO.builder().activityId(activityId).build());
 		List<UserResultDTO> records = page.getRecords();
-		List<UserResultVO> userResultVOList = Lists.newArrayList();
+		List<UserResultVO> userResults = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(records)) {
-			records.forEach(v -> {
-				userResultVOList.add(UserResultVO.buildUserResult(v));
-			});
-			page.setRecords(userResultVOList);
+			records.forEach(v -> userResults.add(UserResultVO.buildUserResult(v)));
+			page.setRecords(userResults);
 		}
 
 		return RestRespDTO.success(page);
@@ -648,8 +642,10 @@ public class ActivityApiController {
 	 * @Date 2021-11-17 14:27:56
 	 * @param marketId
 	 * @param noticeType
+	 * @deprecated 未找到调用方
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
+	@Deprecated
 	@RequestMapping("notice-template")
 	public RestRespDTO getNoticeTemplate(Integer marketId, String noticeType) {
 		return RestRespDTO.success(marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(marketId, noticeType));
@@ -660,8 +656,10 @@ public class ActivityApiController {
 	 * @author huxiaolong
 	 * @Date 2021-11-17 14:27:48
 	 * @param signId
+	 * @deprecated 未找到调用方
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
+	@Deprecated
 	@RequestMapping("notice-template/field")
 	public RestRespDTO getNoticeTemplate(@RequestParam Integer signId) {
 		Activity activity = activityQueryService.getBySignId(signId);

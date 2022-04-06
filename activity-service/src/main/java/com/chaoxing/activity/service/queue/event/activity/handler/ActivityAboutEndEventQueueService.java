@@ -71,6 +71,11 @@ public class ActivityAboutEndEventQueueService {
             return;
         }
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_ABOUT_END.getValue());
+        Boolean enable = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getEnable).orElse(false);
+        if (!enable) {
+            // 未启用
+            return;
+        }
         NoticeTemplateFieldDTO noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
 
         String waitConvertTitle = generateTitle(noticeTemplateField, noticeTemplate);

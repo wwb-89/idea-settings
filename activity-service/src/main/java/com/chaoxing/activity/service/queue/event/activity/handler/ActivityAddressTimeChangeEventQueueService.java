@@ -52,6 +52,11 @@ public class ActivityAddressTimeChangeEventQueueService {
             return;
         }
         MarketNoticeTemplateDTO noticeTemplate = marketNoticeTemplateService.getMarketOrSystemNoticeTemplate(activity.getMarketId(), SystemNoticeTemplate.NoticeTypeEnum.ACTIVITY_INFO_CHANGE.getValue());
+        Boolean enable = Optional.ofNullable(noticeTemplate).map(MarketNoticeTemplateDTO::getEnable).orElse(false);
+        if (!enable) {
+            // 没有启用
+            return;
+        }
         NoticeTemplateFieldDTO noticeTemplateField = systemNoticeTemplateService.buildNoticeField(activity);
         String title = generateTitle(activity, noticeTemplateField, noticeTemplate);
         String content = generateContent(activity, noticeTemplateField, noticeTemplate);
