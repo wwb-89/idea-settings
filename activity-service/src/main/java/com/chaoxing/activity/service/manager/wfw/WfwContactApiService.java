@@ -218,7 +218,7 @@ public class WfwContactApiService {
 			return wfwDepartments.stream().filter(v -> !pids.contains(v.getId())).collect(Collectors.toList());
 		} else {
 			log.error("根据uid:{}, fid:{} 查询用户加入的部门error", uid, fid);
-			throw new BusinessException("查询部门列表失败");
+			return Lists.newArrayList();
 		}
 	}
 
