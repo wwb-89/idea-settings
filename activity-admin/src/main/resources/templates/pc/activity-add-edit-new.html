@@ -1106,7 +1106,7 @@
                 // 班级
                 classDataLoading: false,
                 // 需要显示其他类型的活动市场id列表
-                showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]]),
+                showOtherActivityType: false,
                 isCreator: [[${activity == null || activity.createUid == session._login_user_.uid}]],
                 // 给报名填报信息默认创建的万能表单
                 signUpFillInfoDefaultWfwFormMap: {},
@@ -1166,8 +1166,12 @@
                         }
                     }
                 });
+                if (!activityApp.isEmpty($this.activity)) {
+                    $this.marketId = $this.activity.marketId;
+                }
+                $this.showOtherActivityType = activityApp.showOtherActivityType($this.marketId);
                 // 表单字段map封装
-                var formFields = [[${formFieldStructures}]] || {}
+                var formFields = [[${formFieldStructures}]] || {};
                 var formIds = Object.keys(formFields);
                 $this.formStructureMap = {}
                 $(formIds).each(function (i) {
