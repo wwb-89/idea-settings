@@ -85,7 +85,7 @@ public class UserSignedUpEventQueueService {
         userSignStatSummaryQueue.push(new UserSignStatSummaryQueue.QueueParamDTO(uid, activityId));
         // 如果班级互动需要通知将用户加入班级
         Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
-        if (openClazzInteraction) {
+        if (openClazzInteraction && activity.getClazzId() != null) {
             clazzInteractionAddUserQueue.push(new ClazzInteractionAddUserQueue.QueueParamDTO(uid, activityId));
         }
         // 记录用户行为
