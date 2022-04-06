@@ -3130,11 +3130,11 @@
                         name: "",
                         owner: true
                     };
-                    $this.activityClassifies.push(classify);
+                    $this.sortActivityClassifies.push(classify);
                 },
                 addEditClassifySubmit: function (index) {
                     var $this = this;
-                    var addEditClassify = $this.activityClassifies[index];
+                    var addEditClassify = $this.sortActivityClassifies[index];
                     if (activityApp.isEmpty(addEditClassify.name)) {
                         app.showMsg("名称不能为空");
                         return;
