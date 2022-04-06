@@ -949,3 +949,303 @@ body {
   border: 1px solid rgba(0, 132, 255, 0.16);
   color: #0084FF;
 }
+
+/* 模板管理 */
+.module-manage {
+  /* 选择模板弹窗 */
+}
+
+.module-manage .module-list .module-item {
+  position: relative;
+  padding: 56px 56px 33px;
+  border-bottom: 1px solid #E7E9F0;
+  font-size: 0;
+  background: #fff;
+}
+
+.module-manage .module-list .module-item:hover .delete-btn {
+  display: block;
+}
+
+.module-manage .module-list .module-item .icon-drag {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  display: block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.module-manage .module-list .module-item .icon-drag::before {
+  color: #cccccc;
+}
+
+.module-manage .module-list .module-item .icon-drag:hover::before {
+  color: #3D82F2;
+}
+
+.module-manage .module-list .module-item .img-box {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 320px;
+  height: 182px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-right: 40px;
+}
+
+.module-manage .module-list .module-item .img-box > img {
+  width: 100%;
+}
+
+.module-manage .module-list .module-item .img-box:hover .preview-mask {
+  display: block;
+}
+
+.module-manage .module-list .module-item .img-box .preview-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background: rgba(1, 15, 36, 0.5);
+  text-align: center;
+  display: none;
+}
+
+.module-manage .module-list .module-item .img-box .preview-mask .preview {
+  display: block;
+  width: 92px;
+  height: 40px;
+  line-height: 40px;
+  background: #fff;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #3d82f2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.module-manage .module-list .module-item .edit-info {
+  display: inline-block;
+  vertical-align: middle;
+  width: calc(100% - 660px);
+}
+
+.module-manage .module-list .module-item .edit-info .disable .name {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 25px;
+  color: #000000;
+}
+
+.module-manage .module-list .module-item .edit-info .disable:hover .icon-edit {
+  display: inline-block;
+}
+
+.module-manage .module-list .module-item .edit-info .disable .icon-edit {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 2.5px;
+  margin-left: 16px;
+  width: 20px;
+  height: 20px;
+  background-image: url(../images/icons/edit-stroke2.png);
+  background-size: 100%;
+  cursor: pointer;
+  display: none;
+}
+
+.module-manage .module-list .module-item .edit-info .editing {
+  display: none;
+}
+
+.module-manage .module-list .module-item .edit-info .editing .name-ipt {
+  width: 200px;
+  height: 28px;
+  font-size: 18px;
+  color: #333;
+  border: none;
+  border-bottom: 1px solid #3D82F2;
+  padding-bottom: 2px;
+}
+
+.module-manage .module-list .module-item .edit-info .editing .btn {
+  display: inline-block;
+  vertical-align: top;
+  margin: 2px 0 2px 16px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.module-manage .module-list .module-item .edit-info .editing .btn.icon-finish {
+  background-image: url(../images/icons/icon-sure.png);
+  background-size: 100%;
+}
+
+.module-manage .module-list .module-item .edit-info .editing .btn.icon-finish:hover {
+  background-image: url(../images/icons/icon-sure-hover.png);
+  background-size: 100%;
+}
+
+.module-manage .module-list .module-item .edit-info .editing .btn.icon-cancel {
+  background-image: url(../images/icons/icon-cancel.png);
+  background-size: 100%;
+}
+
+.module-manage .module-list .module-item .edit-info .editing .btn.icon-cancel:hover {
+  background-image: url(../images/icons/icon-cancel-hover.png);
+  background-size: 100%;
+}
+
+.module-manage .module-list .module-item .edit-btn {
+  position: absolute;
+  right: 150px;
+  top: 132px;
+  display: block;
+  width: 54px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border: 1px solid #82C3FF;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 30px;
+  font-size: 13px;
+  color: #0084FF;
+  margin-left: 40px;
+}
+
+.module-manage .module-list .module-item .delete-btn {
+  display: none;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 20px;
+  position: absolute;
+  top: 16px;
+  right: 0;
+  z-index: 3;
+  font-size: 20px;
+}
+
+.module-manage .module-list .module-item .delete-btn:hover {
+  background: #F6F6F6;
+}
+
+.module-manage .choose-module .dialog-wrap {
+  width: 680px;
+}
+
+.module-manage .choose-module .dialog-content {
+  padding: 0 22px 20px;
+  height: 471px;
+  overflow-y: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.module-manage .choose-module .dialog-content .module-exp {
+  font-size: 0;
+  overflow: hidden;
+}
+
+.module-manage .choose-module .dialog-content .module-exp li {
+  float: left;
+  width: calc((100% - 60px)/3);
+  height: 130px;
+  margin: 20px 10px 0;
+}
+
+.module-manage .choose-module .dialog-content .module-exp li .img-box {
+  position: relative;
+  -webkit-filter: drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.1));
+          filter: drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  overflow: hidden;
+  height: 100px;
+}
+
+.module-manage .choose-module .dialog-content .module-exp li .img-box > img {
+  width: 100%;
+}
+
+.module-manage .choose-module .dialog-content .module-exp li .img-box:hover .mask {
+  display: block;
+}
+
+.module-manage .choose-module .dialog-content .module-exp li .img-box .mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background: -webkit-gradient(linear, left bottom, left top, from(rgba(0, 0, 0, 0.6)), to(rgba(0, 0, 0, 0.6)));
+  background: -o-linear-gradient(bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
+  border: 1px solid #DDDDDD;
+  text-align: center;
+  font-size: 0;
+  display: none;
+}
+
+.module-manage .choose-module .dialog-content .module-exp li .img-box .mask > a {
+  display: inline-block;
+  vertical-align: top;
+  width: 54px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  background: #FFFFFF;
+  border-radius: 30px;
+  color: #0084FF;
+  font-size: 13px;
+  margin: 38px 9px;
+}
+
+.module-manage .choose-module .dialog-content .module-exp li .text {
+  margin-top: 10px;
+  padding: 0 10px;
+  color: #000000;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dialog-box .footer {
+  text-align: center;
+  font-size: 0;
+}
+
+.dialog-box .footer .btn {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.dialog-box .footer .btn + .btn {
+  margin-left: 24px;
+}
+
+.btn-normal {
+  padding: 6px 14px;
+}
