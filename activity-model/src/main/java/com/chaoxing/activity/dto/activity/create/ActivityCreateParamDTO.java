@@ -239,6 +239,7 @@ public class ActivityCreateParamDTO {
 				.certificateTemplateId(getCertificateTemplateId())
 				.openPushReminder(getOpenPushReminder())
 				.released(getReleased())
+				.createAreaCode(getCreateAreaCode())
 				.build();
 	}
 
