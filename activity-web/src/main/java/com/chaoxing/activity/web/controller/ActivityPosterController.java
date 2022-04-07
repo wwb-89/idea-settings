@@ -40,9 +40,9 @@ public class ActivityPosterController {
         model.addAttribute("mainDomain", DomainConstant.MAIN);
         model.addAttribute("webDomain", DomainConstant.WEB);
         if (UserAgentUtils.isMobileAccess(request)) {
-            return "mobile/activity/poster/index";
+            return "mobile/activity/poster/index-new";
         } else {
-            return "pc/activity/poster/index";
+            return "pc/activity/poster/index-new";
         }
     }
 }

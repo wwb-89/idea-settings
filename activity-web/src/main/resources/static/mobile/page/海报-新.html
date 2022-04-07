@@ -82,6 +82,8 @@
 
       var height = $('.img-box img').height();
       var imgContainerHeight = $(".img-box").height();
+      console.log("heighth" + height);
+      console.log("imgContainerHeight" + imgContainerHeight);
       if (height > imgContainerHeight) {
           var top = 0 - parseInt((height - imgContainerHeight) / 2);
           $('.img-box img').css('margin-top', top);
