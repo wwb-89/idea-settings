@@ -36,5 +36,10 @@ public class SignStatDTO {
 	private Integer limitNum;
 	/** 是否公开报名名单 */
 	private Boolean publicList;
+
+	public boolean signUpInProcess() {
+		LocalDateTime now = LocalDateTime.now();
+		return now.isAfter(signUpStartTime) && now.isBefore(signUpEndTime);
+	}
 	
 }

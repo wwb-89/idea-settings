@@ -270,10 +270,17 @@ public class ActivityMhV3ApiController {
         // 获取浏览量
         String startTimeStr = activity.getStartTime().format(DateUtils.FULL_TIME_FORMATTER);
         String endTimeStr = activity.getEndTime().format(DateUtils.FULL_TIME_FORMATTER);
-        String pvNum = Optional.ofNullable(activityStatQueryService.getPvByActivity(activity)).map(String::valueOf).orElse("0");
+        String pvValue = "";
+        Integer pv = Optional.ofNullable(activityStatQueryService.getPvByActivity(activity)).orElse(0);
+        if (pv.compareTo(99999) > 0) {
+            // 十万后改单位
+            pvValue = pv / 10000 + "万";
+        } else {
+            pvValue = pv.toString();
+        }
         // 获取收藏量
         Integer collectedNum = Optional.ofNullable(activityCollectionQueryService.listCollectedUid(activity.getId())).orElse(Lists.newArrayList()).size();
-        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvNum , mainFields);
+        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvValue , mainFields);
         MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
         // 获取报名量
         SignActivityStatDTO signActivityStat = signApiService.singleActivityStat(activity.getSignId(), startTimeStr, endTimeStr);

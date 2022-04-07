@@ -578,4 +578,5 @@ public class Activity {
                 Objects.equals(activityFlag, ActivityFlagEnum.SUBJECT.getValue()) ||
                 Objects.equals(activityFlag, ActivityFlagEnum.STUDIO.getValue());
     }
+
 }

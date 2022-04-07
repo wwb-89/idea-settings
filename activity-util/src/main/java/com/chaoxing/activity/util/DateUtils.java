@@ -189,4 +189,33 @@ public class DateUtils {
 		return activityTimeScope;
 	}
 
+	/**计算今天是周几
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-04-07 15:43:47
+	 * @param time
+	 * @return java.lang.String
+	*/
+	public static String calDayOfWeek(LocalDateTime time) {
+		int value = time.getDayOfWeek().getValue();
+		switch (value) {
+			case 1:
+				return "周一";
+			case 2:
+				return "周二";
+			case 3:
+				return "周三";
+			case 4:
+				return "周四";
+			case 5:
+				return "周五";
+			case 6:
+				return "周日=六";
+			case 7:
+				return "周日";
+			default:
+		}
+		return "";
+	}
+
 }
