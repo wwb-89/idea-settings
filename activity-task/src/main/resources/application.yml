@@ -8,9 +8,6 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
-      filter:
-        config:
-          enabled: true
       connection-init-sqls: set names utf8mb4;
       initial-size: 2
       min-idle: 1
@@ -27,8 +24,24 @@ spring:
       async-init: true
       stat-view-servlet:
         enabled: true
-        loginUsername: admin
-        loginPassword: druid_passwd
+        allow: 127.0.0.1,216.24.178.244
+        reset-enable: false
+        loginUsername: 18781935192
+        loginPassword: NIio6VsBHLZ6AguL
+      filters: stat,wall,log4j2
+      ## 状态监控
+      filter:
+        enabled: true
+        db-type: mysql
+        log-slow-sql: true
+        slow-sql-millis: 2000
+      ## 监控过滤器
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        session-stat-enable: true
+      aop-patterns: com.chaoxing.activity.service.manager.*
   ## redis相关
   redis:
     redisson:
