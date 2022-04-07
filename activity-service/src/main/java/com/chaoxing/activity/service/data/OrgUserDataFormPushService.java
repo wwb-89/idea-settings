@@ -289,6 +289,11 @@ public class OrgUserDataFormPushService {
                     data.add(activity.getEndTime().format(DATE_TIME_FORMATTER));
                     item.put("val", data);
                     result.add(item);
+                } else if (Objects.equals(alias, "activity_score")) {
+                    BigDecimal activityScore = Optional.ofNullable(userStatSummary.getActivityScore()).orElse(BigDecimal.ZERO);
+                    data.add(activityScore);
+                    item.put("val", data);
+                    result.add(item);
                 }
                 handledAlias.add(alias);
             }

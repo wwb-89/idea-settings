@@ -11,6 +11,7 @@ import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.event.UserQualifiedStatusChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
+import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
 import com.chaoxing.activity.util.CalculateUtils;
@@ -56,6 +57,8 @@ public class UserResultHandleService {
     private UserStatSummaryQueryService userStatSummaryQueryService;
     @Resource
     private PassportApiService passportApiService;
+    @Resource
+    private UserStatSummaryHandleService userStatSummaryHandleService;
 
     @Resource
     private UserQualifiedStatusChangeEventService userQualifiedStatusChangeEventService;
@@ -68,6 +71,7 @@ public class UserResultHandleService {
      * @param activityId
      * @return void
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updateUserResult(Integer uid, Integer activityId) {
         BigDecimal score = calUserActivityScore(uid, activityId);
         UserResult existUserResult = userResultQueryService.getUserResult(uid, activityId);
@@ -86,6 +90,7 @@ public class UserResultHandleService {
                     .set(UserResult::getTotalScore, score)
             );
         }
+        userStatSummaryHandleService.updateUserActivityScore(uid, activityId);
     }
 
     /**新增用户成绩
@@ -95,12 +100,15 @@ public class UserResultHandleService {
      * @param userResult
      * @return void
      */
+    @Transactional(rollbackFor = Exception.class)
     public void addUserResult(UserResult userResult) {
         // 补充用户姓名、账号
-        PassportUserDTO user = passportApiService.getByUid(userResult.getUid());
+        Integer uid = userResult.getUid();
+        PassportUserDTO user = passportApiService.getByUid(uid);
         userResult.setRealName(Optional.ofNullable(user).map(PassportUserDTO::getRealName).orElse(""));
         userResult.setUname(Optional.ofNullable(user).map(PassportUserDTO::getLoginName).orElse(""));
         userResultMapper.insert(userResult);
+        userStatSummaryHandleService.updateUserActivityScore(uid, userResult.getActivityId());
     }
 
     /**计算用户成绩

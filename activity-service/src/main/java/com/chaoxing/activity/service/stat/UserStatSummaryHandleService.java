@@ -7,6 +7,7 @@ import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.event.UserStatSummaryChangeEventService;
@@ -317,6 +318,49 @@ public class UserStatSummaryHandleService {
         for (UserStatSummary userStatSummary : userStatSummaries) {
             userStatSummaryChangeEventService.handle(userStatSummary.getUid(), activityId);
         }
+    }
+
+    /**更新用户活动得分
+     * @Description 
+     * @author wwb
+     * @Date 2022-04-07 17:28:45
+     * @param uid
+     * @param activityId
+     * @return void
+    */
+    public void updateUserActivityScore(Integer uid, Integer activityId) {
+        List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
+                .lambda()
+                .eq(UserStatSummary::getUid, uid)
+                .eq(UserStatSummary::getActivityId, activityId)
+        );
+        // 获取得分
+        UserResult userResult = userResultQueryService.getUserResult(uid, activityId);
+        if (userResult == null) {
+            return;
+        }
+        BigDecimal score = userResult.getTotalScore();
+        if (CollectionUtils.isNotEmpty(userStatSummaries)) {
+            // 更新
+            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
+                    .lambda()
+                    .eq(UserStatSummary::getUid, uid)
+                    .eq(UserStatSummary::getActivityId, activityId)
+                    .set(UserStatSummary::getActivityScore, score)
+            );
+        } else {
+            Activity activity = activityQueryService.getById(activityId);
+            // 新增
+            UserStatSummary userStatSummary = UserStatSummary.builder()
+                    .uid(uid)
+                    .activityId(activityId)
+                    .activityIntegral(Optional.ofNullable(activity.getIntegral()).orElse(BigDecimal.ZERO))
+                    .realName(passportApiService.getUserRealName(uid))
+                    .activityScore(score)
+                    .build();
+            userStatSummaryMapper.insert(userStatSummary);
+        }
+        userStatSummaryChangeEventService.handle(uid, activityId);
     }
 
 }

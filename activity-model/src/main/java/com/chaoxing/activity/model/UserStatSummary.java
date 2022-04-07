@@ -66,6 +66,8 @@ public class UserStatSummary {
     private BigDecimal integral;
     /** 活动积分; column: activity_integral*/
     private BigDecimal activityIntegral;
+    /** 活动积分; column: activity_score*/
+    private BigDecimal activityScore;
     /** 参与时长; column: participate_time_length*/
     private Integer participateTimeLength;
     /** 是否合格; column: is_qualified*/
