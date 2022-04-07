@@ -689,7 +689,7 @@
                                     </div>
                                     <div class="delete-btn-icon icon-minus-circle fs16" @click="removeAppConfig('frontend', ftIndex)"></div>
                                 </div>
-                                <a href="javascript:;" class="fs14 color-blue" @click="addAppConfig('frontend')">
+                                <a href="javascript:" class="fs14 color-blue" @click="addAppConfig('frontend')">
                                     <i class="icon-plus-circle"></i>
                                     <span>添加</span>
                                 </a>
@@ -716,7 +716,7 @@
                                     </div>
                                     <div class="delete-btn-icon icon-minus-circle fs16" @click="removeAppConfig('backend', beIndex)"></div>
                                 </div>
-                                <a href="javascript:;" class="fs14 color-blue" @click="addAppConfig('backend')">
+                                <a href="javascript:" class="fs14 color-blue" @click="addAppConfig('backend')">
                                     <i class="icon-plus-circle"></i>
                                     <span>添加</span>
                                 </a>
@@ -735,12 +735,12 @@
                                     </div>
                                     <div class="delete-btn-icon icon-minus-circle fs16" style="top: 8px" @click="removeInterfaceCall(ifIndex)"></div>
                                 </div>
-                                <a href="javascript:;" class="fs14 color-blue" @click="addInterfaceCall()">
+                                <a href="javascript:" class="fs14 color-blue" @click="addInterfaceCall()">
                                     <i class="icon-plus-circle"></i>
                                     <span>添加</span>
                                 </a>
                             </div>
-                            <div style="margin-top: 20px">
+                            <div v-show="innerAddEditItem.interfaceCalls && innerAddEditItem.interfaceCalls.length > 0" style="margin-top: 20px">
                                 <el-select style="width: 100%" v-model="innerAddEditItem.callTimings" multiple placeholder="请选择触发条件">
                                     <el-option
                                             v-for="item in callTimings"
