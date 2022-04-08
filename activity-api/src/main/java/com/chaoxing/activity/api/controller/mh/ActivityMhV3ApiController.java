@@ -160,6 +160,7 @@ public class ActivityMhV3ApiController {
         String signUpListUrl = "";
         if (signStat != null) {
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
+                signedUpNumDescribe += "已报名 ";
                 // 已报名人数
                 int signedUpNum = Optional.ofNullable(signStat.getSignedUpNum()).orElse(0);
                 int limitNum = Optional.ofNullable(signStat.getLimitNum()).orElse(0);
