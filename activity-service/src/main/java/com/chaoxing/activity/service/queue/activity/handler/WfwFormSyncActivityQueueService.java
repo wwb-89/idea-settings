@@ -377,12 +377,13 @@ public class WfwFormSyncActivityQueueService {
                 activity = activityQueryService.getById(activityId);
             }
         }
+        WfwFormSyncActivityQueueService wfwFormSyncActivityQueueService = ApplicationContextHolder.getBean(WfwFormSyncActivityQueueService.class);
         // 若活动不存在，则新增
         if (activity == null) {
             flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
-            activity = ApplicationContextHolder.getBean(WfwFormSyncActivityQueueService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
+            activity = wfwFormSyncActivityQueueService.createActivity(fid, formId, formUserId, webTemplateId, flag);
         } else {
-            activity = ApplicationContextHolder.getBean(WfwFormSyncActivityQueueService.class).update(formUserRecord, fid, activity.getId());
+            activity = wfwFormSyncActivityQueueService.update(formUserRecord, fid, activity.getId());
         }
         // 回写数据
         if (activity != null) {

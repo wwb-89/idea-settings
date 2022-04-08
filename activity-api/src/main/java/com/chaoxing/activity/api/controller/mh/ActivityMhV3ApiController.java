@@ -160,9 +160,15 @@ public class ActivityMhV3ApiController {
         String signUpListUrl = "";
         if (signStat != null) {
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                signedUpNumDescribe = String.valueOf(signStat.getSignedUpNum());
-                if (signStat.getLimitNum() != null && signStat.getLimitNum() > 0) {
-                    signedUpNumDescribe += "/" + signStat.getLimitNum();
+                // 已报名人数
+                int signedUpNum = Optional.ofNullable(signStat.getSignedUpNum()).orElse(0);
+                int limitNum = Optional.ofNullable(signStat.getLimitNum()).orElse(0);
+                if (limitNum > 0) {
+                    // 有限制人数
+                    signedUpNum = signedUpNum > limitNum ? limitNum : signedUpNum;
+                    signedUpNumDescribe = signedUpNum + "/" + limitNum;
+                } else {
+                    signedUpNumDescribe = String.valueOf(signedUpNum);
                 }
             }
             // 开启了报名名单公开则显示报名人数链接

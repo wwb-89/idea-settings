@@ -207,7 +207,7 @@ public class WfwApprovalApiService {
         String enc = getEnc(params, key);
         params.put("enc", enc);
         // 封装url
-        return UrlUtils.packageParam2URL(CREATE_URL, params);
+        return UrlUtils.packageParam2Url(CREATE_URL, params);
     }
 
     /**构建审批修改页面url
@@ -231,7 +231,7 @@ public class WfwApprovalApiService {
         String enc = getEnc(params, WfwFormConstant.CREATE_KEY);
         params.put("enc", enc);
         // 封装url
-        return UrlUtils.packageParam2URL(EDIT_URL, params);
+        return UrlUtils.packageParam2Url(EDIT_URL, params);
     }
 
 }

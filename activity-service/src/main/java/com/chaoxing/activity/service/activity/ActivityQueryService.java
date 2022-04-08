@@ -722,8 +722,8 @@ public class ActivityQueryService {
 				// 班级互动
 				Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
 				if (openClazzInteraction) {
-					String homePageURL= DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activityId;
-					buttons.add(ButtonDTO.build("进入主页", homePageURL, ButtonDTO.BtnSequenceEnum.ACTIVITY));
+					String homePageUrl= DomainConstant.XIAMEN_TRAINING_PLATFORM_API + "/activity/detail?id=" + activityId;
+					buttons.add(ButtonDTO.build("进入主页", homePageUrl, ButtonDTO.BtnSequenceEnum.ACTIVITY));
 				}
 				// 查询菜单配置前端按钮
 
