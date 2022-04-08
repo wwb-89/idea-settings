@@ -167,9 +167,9 @@ public class ActivityMhV3ApiController {
                 if (limitNum > 0) {
                     // 有限制人数
                     signedUpNum = signedUpNum > limitNum ? limitNum : signedUpNum;
-                    signedUpNumDescribe = signedUpNum + "/" + limitNum;
+                    signedUpNumDescribe += signedUpNum + "/" + limitNum;
                 } else {
-                    signedUpNumDescribe = String.valueOf(signedUpNum);
+                    signedUpNumDescribe += String.valueOf(signedUpNum);
                 }
             }
             // 开启了报名名单公开则显示报名人数链接
