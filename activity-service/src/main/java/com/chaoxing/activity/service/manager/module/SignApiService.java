@@ -544,7 +544,7 @@ public class SignApiService {
 		return resultHandle(jsonObject, () -> {
 			String data = jsonObject.getString("data");
 			if (StringUtils.isBlank(data)) {
-				return null;
+				return SignActivityStatDTO.buildDefault();
 			}
 			return JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class);
 		}, (message) -> {
