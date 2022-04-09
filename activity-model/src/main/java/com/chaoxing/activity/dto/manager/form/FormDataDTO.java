@@ -39,7 +39,6 @@ public class FormDataDTO {
 	private String uname;
 	/** ==== 活动表单审核相关字段 ==== */
 	private Integer aprvStatusTypeId;
-	private Integer aprvStatus;
 	private String mobile;
 	private String organize;
 	/** ==== 活动表单审核相关字段 ==== */
