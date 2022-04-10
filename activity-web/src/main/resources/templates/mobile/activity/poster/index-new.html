@@ -111,8 +111,6 @@
 							$('.img-box img').css('margin-top', top);
 						}
 						html2canvas(document.querySelector(".poster-box"), {useCORS: true}).then(canvas => {
-							canvas.width= document.documentElement.clientWidth;
-							canvas.height= document.documentElement.clientHeight;
 							$this.imageData = canvas.toDataURL('image/png', 1.0);
 							$('#canvasImage')[0].src = $this.imageData;
 							$('#canvasImage').addClass('hasData');

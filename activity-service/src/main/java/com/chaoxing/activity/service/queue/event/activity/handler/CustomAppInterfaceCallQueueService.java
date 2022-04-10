@@ -69,7 +69,7 @@ public class CustomAppInterfaceCallQueueService {
             Map<String, Object> additionalParams = Maps.newHashMap();
             additionalParams.put("activityId", String.valueOf(activityId));
             additionalParams.put("state", String.valueOf(fid));
-            url = UrlUtils.packageParam2URL(url, additionalParams);
+            url = UrlUtils.packageParam2Url(url, additionalParams);
             restTemplate.getForObject(url, String.class);
         } catch (Exception e) {
             // 设置失败状态及异常信息

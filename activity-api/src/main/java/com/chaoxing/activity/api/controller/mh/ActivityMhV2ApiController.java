@@ -114,11 +114,15 @@ public class ActivityMhV2ApiController {
 				// 报名时间
 				hashMap.put("102", buildField(fieldCodeNameRelation.get("sign_up_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()), "102"));
 				hashMap.put("103", buildField("报名结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime()), "103"));
-				Integer participateNum = signStat.getSignedUpNum();
-				String signedUpNumDescribe = String.valueOf(participateNum);
-				Integer limitNum = signStat.getLimitNum();
-				if (limitNum.intValue() > 0) {
-					signedUpNumDescribe += "/" + limitNum;
+				int participateNum = Optional.ofNullable(signStat.getSignedUpNum()).orElse(0);
+				int limitNum = Optional.ofNullable(signStat.getLimitNum()).orElse(0);
+				String signedUpNumDescribe = "";
+				if (limitNum > 0) {
+					// 有限制人数
+					participateNum = participateNum > limitNum ? limitNum : participateNum;
+					signedUpNumDescribe += participateNum + "/" + limitNum;
+				} else {
+					signedUpNumDescribe = String.valueOf(participateNum);
 				}
 				hashMap.put("106", buildField("报名人数", signedUpNumDescribe, "106"));
 				// 开启了报名名单公开则显示报名人数链接

@@ -87,7 +87,7 @@ public class UrlUtils {
      * @param paramMap
      * @return java.lang.String
      */
-    public static String packageParam2URL(String url, Map<String, Object> paramMap) {
+    public static String packageParam2Url(String url, Map<String, Object> paramMap) {
         if (!Pattern.matches(URL_REGEX, url)) {
             throw new BusinessException("url非法");
         }

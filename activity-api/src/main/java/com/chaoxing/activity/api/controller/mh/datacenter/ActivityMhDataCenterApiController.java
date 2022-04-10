@@ -141,8 +141,10 @@ public class ActivityMhDataCenterApiController {
                 activityClassifyId = activityClassify.getInteger("id");
             }
         }
+        String preParams = params.getString("preParams");
+        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 遍历json获取组件id
-        Set<String> keys = params.keySet();
+        Set<String> keys = urlParams.keySet();
         ActivityComponentValue activityComponentValue = null;
         for (String key : keys) {
             if (key.startsWith(CommonConstant.COMPONENT_SUFFIX)) {
@@ -152,8 +154,6 @@ public class ActivityMhDataCenterApiController {
                 break;
             }
         }
-        String preParams = params.getString("preParams");
-        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // 状态
         String statusParams = urlParams.getString("status");
         List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);

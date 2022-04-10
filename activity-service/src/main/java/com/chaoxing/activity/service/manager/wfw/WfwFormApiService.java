@@ -150,9 +150,7 @@ public class WfwFormApiService {
 	 * @return com.chaoxing.secondclassroom.dto.manager.form.FormDataDTO
 	 */
 	public FormDataDTO getFormRecord(@NotNull Integer formUserId, Integer formId, Integer fid) {
-		List<Integer> formUserIds = Lists.newArrayList();
-		formUserIds.add(formUserId);
-		List<FormDataDTO> formDataDtos = listFormRecord(formUserIds, formId, fid);
+		List<FormDataDTO> formDataDtos = listFormRecord(Lists.newArrayList(formUserId), formId, fid);
 		return Optional.ofNullable(formDataDtos).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
@@ -492,7 +490,7 @@ public class WfwFormApiService {
 		String enc = getEnc(params, key);
 		params.put("enc", enc);
 		// 封装url
-		return UrlUtils.packageParam2URL(CREATE_URL, params);
+		return UrlUtils.packageParam2Url(CREATE_URL, params);
 	}
 
 	/**表单编辑接口调用（万能表单和审批）
@@ -516,7 +514,7 @@ public class WfwFormApiService {
 		String enc = getEnc(params, WfwFormConstant.CREATE_KEY);
 		params.put("enc", enc);
 		// 封装url
-		return UrlUtils.packageParam2URL(EDIT_URL, params);
+		return UrlUtils.packageParam2Url(EDIT_URL, params);
 	}
 
 	/**根据id为wfwFormTemplateId的万能表单模板创建表单，并带上新表单的编辑页面url

@@ -22,9 +22,11 @@ import java.util.List;
 @AllArgsConstructor
 public class SignActivityStatDTO {
 
-    /** 报名数 */
+    /** 报名数量 */
+    private Integer signUpNum;
+    /** 报名次数 */
     private Integer signedUpNum;
-    /** 签到数 */
+    /** 签到次数 */
     private Integer signedInNum;
     /** 报名趋势 */
     private List<DailyStatDTO> signUpTrend;

@@ -160,9 +160,16 @@ public class ActivityMhV3ApiController {
         String signUpListUrl = "";
         if (signStat != null) {
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                signedUpNumDescribe = String.valueOf(signStat.getSignedUpNum());
-                if (signStat.getLimitNum() != null && signStat.getLimitNum() > 0) {
-                    signedUpNumDescribe += "/" + signStat.getLimitNum();
+                signedUpNumDescribe += "已报名 ";
+                // 已报名人数
+                int signedUpNum = Optional.ofNullable(signStat.getSignedUpNum()).orElse(0);
+                int limitNum = Optional.ofNullable(signStat.getLimitNum()).orElse(0);
+                if (limitNum > 0) {
+                    // 有限制人数
+                    signedUpNum = signedUpNum > limitNum ? limitNum : signedUpNum;
+                    signedUpNumDescribe += signedUpNum + "/" + limitNum;
+                } else {
+                    signedUpNumDescribe += String.valueOf(signedUpNum);
                 }
             }
             // 开启了报名名单公开则显示报名人数链接
@@ -343,10 +350,10 @@ public class ActivityMhV3ApiController {
             return RestRespDTO.success(jsonObject);
         }
         String signUpKeyword = getSignUpKeyword(activity.getMarketId());
-        // 获取浏览量
+        // 浏览
         String startTimeStr = activity.getStartTime().format(DateUtils.FULL_TIME_FORMATTER);
         String endTimeStr = activity.getEndTime().format(DateUtils.FULL_TIME_FORMATTER);
-        String pvValue = "";
+        String pvValue;
         Integer pv = Optional.ofNullable(activityStatQueryService.getPvByActivity(activity)).orElse(0);
         if (pv.compareTo(99999) > 0) {
             // 十万后改单位
@@ -354,17 +361,25 @@ public class ActivityMhV3ApiController {
         } else {
             pvValue = pv.toString();
         }
-        // 获取收藏量
-        Integer collectedNum = Optional.ofNullable(activityCollectionQueryService.listCollectedUid(activity.getId())).orElse(Lists.newArrayList()).size();
         MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.BROWSE.getValue()), "浏览", pvValue , mainFields);
+        // 收藏
+        List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activity.getId());
+        Integer collectedNum = Optional.ofNullable(collectedUids).orElse(Lists.newArrayList()).size();
         MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.COLLECTED.getValue()), "收藏", String.valueOf(collectedNum), mainFields);
-        // 获取报名量
+        // 报名
         SignActivityStatDTO signActivityStat = signApiService.singleActivityStat(activity.getSignId(), startTimeStr, endTimeStr);
-        String signedUpNum = "0";
-        if (signActivityStat != null) {
-            signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
+        int signUpNum = Optional.ofNullable(signActivityStat.getSignUpNum()).orElse(0);
+        if (signUpNum > 0) {
+            String signedUpNum = Optional.ofNullable(signActivityStat.getSignedUpNum()).map(String::valueOf).orElse("0");
+            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
         }
-        MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), signUpKeyword, signedUpNum, mainFields);
+        // 作品
+        Boolean openWork = Optional.ofNullable(activity.getOpenWork()).orElse(false);
+        Integer workId = activity.getWorkId();
+        if (openWork && workId != null) {
+            Integer workNum = Optional.ofNullable(workApiService.getWorkNum(workId)).orElse(0);
+            MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.WORK_NUM.getValue()), "作品", String.valueOf(workNum), mainFields);
+        }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
@@ -376,6 +391,7 @@ public class ActivityMhV3ApiController {
      * @param data
      * @return com.chaoxing.activity.dto.RestRespDTO
     */
+    @Deprecated
     @RequestMapping("activity/stat/info/exclude-sign-up")
     public RestRespDTO activityStatInfoIncludeWork(@RequestBody String data) {
         Activity activity = getActivityByData(data);
