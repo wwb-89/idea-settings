@@ -150,7 +150,7 @@ public class ActivityMhDataCenterApiController {
             if (key.startsWith(CommonConstant.COMPONENT_SUFFIX)) {
                 activityComponentValue = new ActivityComponentValue();
                 activityComponentValue.setComponentId(Integer.parseInt(key.replace(CommonConstant.COMPONENT_SUFFIX, "")));
-                activityComponentValue.setValue(params.getString(key));
+                activityComponentValue.setValue(urlParams.getString(key));
                 break;
             }
         }
