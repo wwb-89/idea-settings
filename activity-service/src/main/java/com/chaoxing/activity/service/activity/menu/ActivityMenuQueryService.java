@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ActivityMenuQueryService {
+
     @Resource
     private ActivityManagerValidationService activityManagerValidationService;
     @Resource
@@ -97,7 +98,25 @@ public class ActivityMenuQueryService {
      * @return
      */
     public List<ActivityMenuConfig> listByActivityId(Integer activityId) {
-        return activityMenuConfigMapper.selectList(new LambdaQueryWrapper<ActivityMenuConfig>().eq(ActivityMenuConfig::getActivityId, activityId).orderByAsc(ActivityMenuConfig::getSequence));
+        return activityMenuConfigMapper.selectList(new LambdaQueryWrapper<ActivityMenuConfig>()
+                .eq(ActivityMenuConfig::getActivityId, activityId)
+                .orderByAsc(ActivityMenuConfig::getSequence)
+        );
+    }
+
+    /**获取活动已配置且启用的的菜单列表
+     * @Description 
+     * @author wwb
+     * @Date 2022-04-12 15:11:47
+     * @param activityId
+     * @return java.util.List<com.chaoxing.activity.model.ActivityMenuConfig>
+    */
+    public List<ActivityMenuConfig> listEnableByActivityId(Integer activityId) {
+        return activityMenuConfigMapper.selectList(new LambdaQueryWrapper<ActivityMenuConfig>()
+                .eq(ActivityMenuConfig::getActivityId, activityId)
+                .eq(ActivityMenuConfig::getEnable, true)
+                .orderByAsc(ActivityMenuConfig::getSequence)
+        );
     }
 
     /**获取活动可配置的菜单列表
