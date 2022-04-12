@@ -1,6 +1,7 @@
 package com.chaoxing.activity.api.controller.activity;
 
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.activity.menu.ActivityMenuConfigDTO;
 import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class ActivityMenuApiController {
 	@RequestMapping("list")
 	public RestRespDTO listActivityMenu(@PathVariable Integer activityId) {
 		List<ActivityMenuConfig> activityMenuConfigs = activityMenuQueryService.listEnableByActivityId(activityId);
-		return RestRespDTO.success(activityMenuConfigs);
+		return RestRespDTO.success(ActivityMenuConfigDTO.buildFromActivityMenuConfig(activityMenuConfigs));
 	}
 
 }

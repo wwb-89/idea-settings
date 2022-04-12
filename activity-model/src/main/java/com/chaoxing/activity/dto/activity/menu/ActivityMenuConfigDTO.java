@@ -1,9 +1,13 @@
 package com.chaoxing.activity.dto.activity.menu;
 
+import com.chaoxing.activity.model.ActivityMenuConfig;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @description:
@@ -17,16 +21,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ActivityMenuConfigDTO {
 
-    private Integer id;
+    /** 菜单编码 */
+    private String menu;
 
-    private String name;
+    public static ActivityMenuConfigDTO buildFromActivityMenuConfig(ActivityMenuConfig activityMenuConfig) {
+        return ActivityMenuConfigDTO.builder()
+                .menu(activityMenuConfig.getMenu())
+                .build();
+    }
 
-    private String code;
-
-    private Boolean enable;
-
-    private Boolean system;
-
-    private Integer sequence;
+    public static List<ActivityMenuConfigDTO> buildFromActivityMenuConfig(List<ActivityMenuConfig> activityMenuConfigs) {
+        return activityMenuConfigs.stream().map(ActivityMenuConfigDTO::buildFromActivityMenuConfig).collect(Collectors.toList());
+    }
 
 }
