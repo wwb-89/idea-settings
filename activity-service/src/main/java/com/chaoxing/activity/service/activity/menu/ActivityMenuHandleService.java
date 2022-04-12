@@ -233,9 +233,9 @@ public class ActivityMenuHandleService {
             v.setSequence(i.incrementAndGet());
             if (menuId == null) {
                 // 菜单id不存在，则需要新增活动菜单配置，仅仅活动菜单配置
-                ActivityMenuConfig activityMenuConfig = ActivityMenuConfig.buildFromMenuDTO(v);
+                /*ActivityMenuConfig activityMenuConfig = ActivityMenuConfig.buildFromMenuDTO(v);
                 activityMenuConfigMapper.insert(activityMenuConfig);
-                v.setId(activityMenuConfig.getId());
+                v.setId(activityMenuConfig.getId());*/
                 return;
             }
             activityMenuConfigMapper.update(null, new LambdaUpdateWrapper<ActivityMenuConfig>()
