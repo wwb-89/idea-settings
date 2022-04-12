@@ -103,22 +103,22 @@
                                     <p class="tips first">{{item.introduction}}</p>
                                 </template>
                                 <template v-else-if="item.code == 'period'">
-                                    <el-input type="number" min="0" step="0.1" v-model="scoreNum" placeholder="请输入" readonly></el-input>
+                                    <el-input type="number" min="0" step="0.1" v-model.trim="scoreNum" placeholder="请输入" readonly></el-input>
                                     <span class="score">学时</span>
                                     <span class="tips first" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'credit'">
-                                    <el-input type="number" min="0" step="0.1" v-model="scoreNum" placeholder="请输入" readonly></el-input>
+                                    <el-input type="number" min="0" step="0.1" v-model.trim="scoreNum" placeholder="请输入" readonly></el-input>
                                     <span class="score">first</span>
                                     <span class="tips first" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'integral'">
-                                    <el-input type="number" min="0" v-model="scoreNum"placeholder="请输入" readonly></el-input>
+                                    <el-input type="number" min="0" v-model.trim="scoreNum"placeholder="请输入" readonly></el-input>
                                     <span class="score">分</span>
                                     <span class="tips first" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'max_participate_time_length'">
-                                    <el-input type="number" min="1" step="1" v-model="scoreNum" placeholder="不限" readonly></el-input>
+                                    <el-input type="number" min="1" step="1" v-model.trim="scoreNum" placeholder="不限" readonly></el-input>
                                     <span class="score">小时</span>
                                     <span class="tips first" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
@@ -366,8 +366,8 @@
                 </div>
                 <div class="body">
                     <el-form class="form" label-width="72px">
-                        <el-input v-model="addEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="addEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
+                        <el-input v-model.trim="addEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
+                        <el-input v-model.trim="addEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
                         <template v-if="inputTypes.indexOf(addEditItem.type) != -1">
                             <el-form-item label="类型" class="marginBottom20">
                                 <el-select v-model="addEditItem.type" placeholder="请选择">
@@ -394,7 +394,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="接口地址" class="marginBottom20" v-show="addEditItem.dataOrigin == 'interface'">
-                                <el-input v-model="addEditItem.originIdentify" type="text" placeholder="接口地址" class="marginBottom24"></el-input>
+                                <el-input v-model.trim="addEditItem.originIdentify" type="text" placeholder="接口地址" class="marginBottom24"></el-input>
                             </el-form-item>
                         </template>
                         <template v-if="addEditItem.code == 'push_reminder' && addEditItem.pushReminderConfig">
@@ -433,8 +433,8 @@
                 </div>
                 <div class="body">
                     <el-form class="form" label-width="72px">
-                        <el-input v-model="addEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="addEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
+                        <el-input v-model.trim="addEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
+                        <el-input v-model.trim="addEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
                         <el-form-item label="数据来源" class="marginBottom20">
                             <el-select v-model="addEditItem.dataOrigin" placeholder="请选择" @change="changeDataOrigin">
                                 <el-option
@@ -474,7 +474,7 @@
                             <div class="choose-box">
                                 <div class="input-box" v-for="(item,index) in addEditItem.componentFields">
                                     <label class="label">选项{{index + 1}}</label>
-                                    <el-input v-model="item.fieldName" type="text" placeholder="请输入" class="weight348"></el-input>
+                                    <el-input v-model.trim="item.fieldName" type="text" placeholder="请输入" class="weight348"></el-input>
                                     <i :class="{'del-circle': true, 'disable': addEditItem.componentFields && addEditItem.componentFields.length <= 1}" @click="delEditItemFields(index)"></i>
                                 </div>
                             </div>
@@ -509,8 +509,8 @@
                 </div>
                 <div class="body">
                     <el-form ref="form"  label-width="72px">
-                        <el-input v-model="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
-                        <el-input v-model="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model.trim="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model.trim="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
                         <el-form-item label="数据来源" class="marginBottom20">
                             <el-select v-model="innerAddEditItem.originIdentify" placeholder="请选择关联表单" @change="loadWfwFormFields">
                                 <el-option v-for="item in wfwForms"
@@ -574,7 +574,7 @@
                                                 >
                                                 </el-option>
                                             </el-select>
-                                            <el-input v-else v-model="item.value" placeholder="请输入"></el-input>
+                                            <el-input v-else v-model.trim="item.value" placeholder="请输入"></el-input>
                                         </template>
                                     </template>
                                     <i class="icon-minus-circle" @click="removeConditionDetail(index)"></i>
@@ -618,11 +618,11 @@
                 </div>
                 <div class="body">
                     <el-form ref="form"  label-width="72px">
-                        <el-input v-model="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
-                        <el-input v-model="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model.trim="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model.trim="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
                         <div class="input-box">
                             <label class="label fl">指定模板</label>
-                            <el-select v-model="innerAddEditItem.formTemplateIds" class="fl weightLabelRight" size="small" multiple collapse-tags placeholder="请选择">
+                            <el-select v-model.trim="innerAddEditItem.formTemplateIds" class="fl weightLabelRight" size="small" multiple collapse-tags placeholder="请选择">
                                 <el-option-group
                                         v-for="group in wfwFormTplOptions"
                                         :key="group.label"
@@ -663,8 +663,8 @@
                 </div>
                 <div class="body">
                     <div class="form">
-                        <el-input v-model="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
-                        <el-input v-model="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model.trim="addEditItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model.trim="addEditItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
 <!--                        <div class="content-tip fs13 color999 marginBottom20">-->
 <!--                            <span>在活动里访问链接时，或自动追加参数，点击 </span><a href="#" target="_blank" class="color-blue">查看参数</a>-->
 <!--                        </div>-->
@@ -681,10 +681,10 @@
                                     <div class="left-box">
                                         <div class="line1 marginBottom16">
                                             <div class="icon-img" @click="openIconDialog('frontend', ftIndex)"><img :src="cloudDomain + '/star3/origin/' + frontendItem.defaultIconCloudId" alt=""></div>
-                                            <el-input v-model="frontendItem.title" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                                            <el-input v-model.trim="frontendItem.title" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
                                         </div>
                                         <div class="line2">
-                                            <el-input v-model="frontendItem.url" type="text" placeholder="链接"></el-input>
+                                            <el-input v-model.trim="frontendItem.url" type="text" placeholder="链接"></el-input>
                                         </div>
                                     </div>
                                     <div class="delete-btn-icon icon-minus-circle fs16" @click="removeAppConfig('frontend', ftIndex)"></div>
@@ -708,10 +708,10 @@
                                     <div class="left-box">
                                         <div class="line1 marginBottom16">
                                             <div class="icon-img" @click="openIconDialog('backend', beIndex)"><img :src="cloudDomain + '/star3/origin/' + backendItem.defaultIconCloudId" alt=""></div>
-                                            <el-input v-model="backendItem.title" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
+                                            <el-input v-model.trim="backendItem.title" type="text" placeholder="标题" maxlength="4" show-word-limit></el-input>
                                         </div>
                                         <div class="line2">
-                                            <el-input v-model="backendItem.url" type="text" placeholder="链接"></el-input>
+                                            <el-input v-model.trim="backendItem.url" type="text" placeholder="链接"></el-input>
                                         </div>
                                     </div>
                                     <div class="delete-btn-icon icon-minus-circle fs16" @click="removeAppConfig('backend', beIndex)"></div>
@@ -730,7 +730,7 @@
                                 <div class="link-list marginBottom16" v-for="(interface ,ifIndex) in innerAddEditItem.interfaceCalls" :key="'interface-call-' + ifIndex">
                                     <div class="left-box">
                                         <div class="line2">
-                                            <el-input v-model="interface.url" type="text" placeholder="接口"></el-input>
+                                            <el-input v-model.trim="interface.url" type="text" placeholder="接口"></el-input>
                                         </div>
                                     </div>
                                     <div class="delete-btn-icon icon-minus-circle fs16" style="top: 8px" @click="removeInterfaceCall(ifIndex)"></div>
