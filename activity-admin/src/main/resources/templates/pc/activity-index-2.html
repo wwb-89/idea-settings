@@ -89,124 +89,122 @@
         xiamenTrainingPlatformDomain = xiamenTrainingPlatformDomain.replace(/http(|s):\/\//, "")
         var vm = new Vue({
             el: '#vue',
-            data: function () {
-                return {
-                    limitNum: 9,
-                    mainDomain: [[${mainDomain}]],
-                    signWebDomain: [[${signWebDomain}]],
-                    cloudDomain: [[${cloudDomain}]],
-                    workDomain: [[${workDomain}]],
-                    activity: [[${activity}]],
-                    loginUser: [[${session._login_user_}]],
-                    signActivityManageIndex: [[${signActivityManageIndex}]],
-                    isCreator: [[${isCreator}]],
-                    customMenus: [],    // 自定义菜单列表
-                    visibleMenus: [],   //  当前用户所能看到的菜单code列表
-                    // 系统应用菜单enums
-                    systemMenus: {
-                        // 报名签到
-                        sign_up: {
-                            name: [[${signActivityManageIndex.signUpKeyword == null || signActivityManageIndex.signUpKeyword == '' ? '报名' : signActivityManageIndex.signUpKeyword}]] + "名单",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-project-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-project-active.png",
-                            url: "//" + signWebSimpleDomain + "/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]],
-                            selected: false
-                        },
-                        sign_in: {
-                            name: "签到管理",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-sign-in-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-sign-in-active.png",
-                            url: "//" + signWebSimpleDomain + "/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]],
-                            selected: false
-                        },
-                        form_collection: {
-                            name: "表单采集",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-active.png",
-                            url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
-                            selected: false
-                        },
-                        works: {
-                            name: "作品审核",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-collection-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-collection-active.png",
-                            url: [[${workDomain}]] + "/zj/activity/" + [[${activity.workId}]] + "/work/audit/noPowerIndex",
-                            selected: false
-                        },
-                        task: {
-                            name: "任务",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-active.png",
-                            url: [[${xiamenTrainingPlatformDomain}]] + "/activity/task?activityId=" + [[${activity.id}]],
-                            selected: false
-                        },
-                        discuss: {
-                            name: "讨论",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-active.png",
-                            url: [[${xiamenTrainingPlatformDomain}]] + "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
-                            selected: false
-                        },
-                        homework: {
-                            name: "作业",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-active.png",
-                            url: [[${xiamenTrainingPlatformDomain}]] + "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
-                            selected: false
-                        },
-                        review_management: {
-                            name: "评审",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-active.png",
-                            url: [[${xiamenTrainingPlatformDomain}]] + "/review/list?activityId=" + [[${activity.id}]],
-                            selected: false
-                        },
-                        results_manage: {
-                            name: "考核管理",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-assess-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-assess-active.png",
-                            url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage",
-                            selected: false
-                        },
-                        // 证书
-                        certificate: {
-                            name: "证书发放",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-certificate-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-certificate-active.png",
-                            url: ctx + "/activity/" + [[${activity.id}]] + "/certificate",
-                            selected: false
-                        },
-                        // 通知
-                        notice: {
-                            name: "发通知",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-volume-notice-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-volume-notice-active.png",
-                            url: "//" + signWebSimpleDomain + "/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]],
-                            selected: false
-                        },
-                        // 统计
-                        stat: {
-                            name: "统计",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-statistics-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-statistics-active.png",
-                            url: ctx + "/activity/" + [[${activity.id}]] + "/stat",
-                            selected: false
-                        },
-                        setting: {
-                            name: "设置",
-                            defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-setting2-default.png",
-                            activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-setting2-active.png",
-                            url: ctx + "/activity/" + [[${activity.id}]] + "/setting/index?style=2",
-                            selected: false
-                        }
+            data: {
+                limitNum: 9,
+                mainDomain: [[${mainDomain}]],
+                signWebDomain: [[${signWebDomain}]],
+                cloudDomain: [[${cloudDomain}]],
+                workDomain: [[${workDomain}]],
+                activity: [[${activity}]],
+                loginUser: [[${session._login_user_}]],
+                signActivityManageIndex: [[${signActivityManageIndex}]],
+                isCreator: [[${isCreator}]],
+                customMenus: [],    // 自定义菜单列表
+                visibleMenus: [],   //  当前用户所能看到的菜单code列表
+                // 系统应用菜单enums
+                systemMenus: {
+                    // 报名签到
+                    sign_up: {
+                        name: [[${signActivityManageIndex.signUpKeyword == null || signActivityManageIndex.signUpKeyword == '' ? '报名' : signActivityManageIndex.signUpKeyword}]] + "名单",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-project-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-project-active.png",
+                        url: "//" + signWebSimpleDomain + "/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]],
+                        selected: false
                     },
-                    menus: [],
-                    iframeUrl: "",
-                    activityHomeQrcodeShow: false,
-                    activityHomeQrcodeGenerated: false,
-                    isEmbedded: activityApp.isEmbedded(),
-                    backUrl: [[${backUrl}]]
-                }
+                    sign_in: {
+                        name: "签到管理",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-sign-in-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-sign-in-active.png",
+                        url: "//" + signWebSimpleDomain + "/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]],
+                        selected: false
+                    },
+                    form_collection: {
+                        name: "表单采集",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-file-text-active.png",
+                        url: "//" + signWebSimpleDomain + "/manage/form-collection/list?signId=" + [[${signActivityManageIndex.signId}]],
+                        selected: false
+                    },
+                    works: {
+                        name: "作品审核",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-collection-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-collection-active.png",
+                        url: [[${workDomain}]] + "/zj/activity/" + [[${activity.workId}]] + "/work/audit/noPowerIndex",
+                        selected: false
+                    },
+                    task: {
+                        name: "任务",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-form-active.png",
+                        url: [[${xiamenTrainingPlatformDomain}]] + "/activity/task?activityId=" + [[${activity.id}]],
+                        selected: false
+                    },
+                    discuss: {
+                        name: "讨论",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-discuss-active.png",
+                        url: [[${xiamenTrainingPlatformDomain}]] + "/activity/discuss?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                        selected: false
+                    },
+                    homework: {
+                        name: "作业",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-module-active.png",
+                        url: [[${xiamenTrainingPlatformDomain}]] + "/activity/work?activityId=" + [[${activity.id}]] + "&uid=" + [[${session._login_user_.uid}]],
+                        selected: false
+                    },
+                    review_management: {
+                        name: "评审",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-audit-active.png",
+                        url: [[${xiamenTrainingPlatformDomain}]] + "/review/list?activityId=" + [[${activity.id}]],
+                        selected: false
+                    },
+                    results_manage: {
+                        name: "考核管理",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-assess-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-assess-active.png",
+                        url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage",
+                        selected: false
+                    },
+                    // 证书
+                    certificate: {
+                        name: "证书发放",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-certificate-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-certificate-active.png",
+                        url: ctx + "/activity/" + [[${activity.id}]] + "/certificate",
+                        selected: false
+                    },
+                    // 通知
+                    notice: {
+                        name: "发通知",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-volume-notice-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-volume-notice-active.png",
+                        url: "//" + signWebSimpleDomain + "/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]],
+                        selected: false
+                    },
+                    // 统计
+                    stat: {
+                        name: "统计",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-statistics-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-statistics-active.png",
+                        url: ctx + "/activity/" + [[${activity.id}]] + "/stat",
+                        selected: false
+                    },
+                    setting: {
+                        name: "设置",
+                        defaultIconUrl: ctx + "/pc/assets/images/unified-icons/icon-setting2-default.png",
+                        activeIconUrl: ctx + "/pc/assets/images/unified-icons/icon-setting2-active.png",
+                        url: ctx + "/activity/" + [[${activity.id}]] + "/setting/index?style=2",
+                        selected: false
+                    }
+                },
+                menus: [],
+                iframeUrl: "",
+                activityHomeQrcodeShow: false,
+                activityHomeQrcodeGenerated: false,
+                isEmbedded: activityApp.isEmbedded(),
+                backUrl: [[${backUrl}]]
             },
             created: function () {
                 var $this = this;
@@ -349,7 +347,7 @@
                     containerMinHeight = containerMinHeight.replace(/px/gi, "");
                     var containerHeight = $(".container").height();
                     // 窗口的高度
-                    var windowHeight = $(window).height() - 40 - 62;
+                    var windowHeight = $(window).height() - 40;
                     // iframe的高度
                     var iframeHeight = $("#content").height();
                     // iframe中内容的真实高度

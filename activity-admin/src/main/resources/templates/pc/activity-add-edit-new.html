@@ -2109,13 +2109,6 @@
                         app.showMsg(tips + $this.activityClassifyTitle + "失败");
                     });
                 },
-                toDeleteActivityClassify: function (index, e) {
-                    e.stopPropagation();
-                    var $this = this;
-                    var activityClassify = $this.activityClassifies[index];
-                    $this.deleteActivityClassifyId = activityClassify.id;
-                    $this.$refs.deleteClassifyWindow.show = true;
-                },
                 getSingleTemplateComponentByCode: function (code) {
                     var $this = this;
                     var templateComponet = null;
@@ -3181,6 +3174,12 @@
                             var data = data.data;
                             data.owner = true;
                             $this.activityClassifies.splice($this.operateClassifyIndex, 1, data);
+                            $($this.sortActivityClassifies).each(function (i) {
+                                if (!this.id) {
+                                    $this.$set($this.sortActivityClassifies[i], "id", data.id);
+                                    return false;
+                                }
+                            });
                         } else {
                             var message = data.message;
                             if (activityApp.isEmpty(message)) {
@@ -3203,6 +3202,7 @@
                     if (!classify.id) {
                         // 直接删除
                         $this.activityClassifies.splice($this.operateClassifyIndex, 1);
+                        return;
                     }
                     var url = ctx + "/api/market/" + $this.marketId + "/classify/" + classify.id + "/delete";
                     if (!$this.marketId) {
@@ -3215,7 +3215,14 @@
                             if ($this.activity.activityClassifyId == $this.activityClassifies[$this.operateClassifyIndex].id) {
                                 $this.$set($this.activity, "activityClassifyId", null);
                             }
-                            $this.activityClassifies.splice($this.operateClassifyIndex, 1);
+                            var deleteId = $this.sortActivityClassifies[$this.operateClassifyIndex].id;
+                            $this.sortActivityClassifies.splice($this.operateClassifyIndex, 1);
+                            $($this.activityClassifies).each(function (i) {
+                                if (this.id == deleteId) {
+                                    $this.activityClassifies.splice(i, 1);
+                                    return false;
+                                }
+                            });
                         } else {
                             var message = data.message;
                             if (activityApp.isEmpty(message)) {
