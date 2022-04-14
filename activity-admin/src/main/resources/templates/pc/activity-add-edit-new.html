@@ -2242,7 +2242,6 @@
                                     return false;
                                 }
                             }
-
                             if (signUp.fillInfo) {
                                 var approvalNum = 0, wfwFormNum = 0;
                                 $(templateOptions).each(function () {
@@ -2261,24 +2260,7 @@
                                         return false;
                                     }
                                 }
-                                // if (activityApp.isEmpty(signUp.fillInfoFormId)) {
-                                //     app.showMsg("请配置" + signUp.name + "填报信息");
-                                //     return false;
-                                // }
-                            } /*else {
-                                // 给没有开启报名填报信息的报名设置万能表单
-                                if (activityApp.isEmpty(signUp.fillInfoFormId) && signUp.formType != "form") {
-                                    var wfwFormInfo = $this.signUpFillInfoDefaultWfwFormMap[originId];
-                                    if (wfwformInfo) {
-                                        $this.$set($this.signUpMap[originId], "formType", "wfw_form");
-                                        $this.$set($this.signUpMap[originId], "openAddr", wfwFormInfo.openAddr);
-                                        $this.$set($this.signUpMap[originId], "pcUrl", wfwFormInfo.pcUrl);
-                                        $this.$set($this.signUpMap[originId], "wechatUrl", wfwFormInfo.wechatUrl);
-                                        $this.$set($this.signUpMap[originId], "fillInfoFormId", wfwFormInfo.fillInfoFormId);
-                                    }
-                                }
-                            }*/
-
+                            }
                             if (activityApp.isEmpty(signUp.btnName)) {
                                 app.showMsg(signUp.name + "按钮名称不能为空");
                                 return false;

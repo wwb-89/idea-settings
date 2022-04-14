@@ -582,7 +582,7 @@
                                     if ("sign_up_fill_info" == this.code) {
                                         var signUpFillInfoType = this.signUpFillInfoType;
                                         if (!activityApp.isEmpty(signUpFillInfoType)) {
-                                            signUp.formType = signUpFillInfoType.type;
+                                            signUp.formType = signUpFillInfoType.type || signUp.formType;
                                         }
                                     }
                                 });
@@ -877,7 +877,7 @@
                                             approvalNum++;
                                         }
                                     });
-                                    if (activityApp.isEmpty(signUp.wfwFormTemplateId)) {
+                                    if (activityApp.isEmpty(signUp.fillInfoFormId) && activityApp.isEmpty(signUp.wfwFormTemplateId)) {
                                         if (signUp.formType == 'wfw_form' && wfwFormNum > 0) {
                                             app.showMsg("请选择" + signUp.name + "填报信息模板");
                                             return false;
