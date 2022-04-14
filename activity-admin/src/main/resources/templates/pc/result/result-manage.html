@@ -151,7 +151,7 @@
                         </el-table-column>
                     </template>
                 </el-table>
-                <el-pagination background layout="prev, pager, next, sizes" :total="total" :page-sizes="[10, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage">
+                <el-pagination background v-show="total > 10" layout="prev, pager, next, sizes" :total="total" :page-sizes="[10, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage">
                 </el-pagination>
             </div>
         </div>
@@ -159,17 +159,6 @@
     </div>
 
     <!-------------------------------------------------分割线------------------------------------------------>
-    <!--确认取消报名弹窗-->
-    <div class="dialog-box" v-if="ifCancelPop">
-        <div class="confirm_dialog">
-            <span class="icon"><img src="/static/pc/assets/images/icon-warning.png" th:src="@{/pc/assets/images/icon-warning.png}"></span>
-            <span class="text">确定取消报名吗？</span>
-            <div class="btn">
-                <span class="cancel" @click="ifCancelPop = false">取消</span>
-                <span class="ok">确定</span>
-            </div>
-        </div>
-    </div>
     <!--修改合格状态弹窗-->
     <div class="dialog-box modifyPop" v-if="ifModifyPop">
         <div class="masking" @click="ifModifyPop = false"></div>
@@ -232,7 +221,6 @@
                 // 总记录数
                 total: 0,
                 selectNumber:0, //表格选中的人数
-                ifCancelPop: false,
                 ifModifyPop: false, //修改合格状态弹窗展示
                 bodyHeight: $(window).height(),
                 tbodyHeight: 0
