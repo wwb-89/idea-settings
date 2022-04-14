@@ -271,16 +271,29 @@ public class Activity {
     public enum ActivityTypeEnum {
 
         /** 线上举办 */
-        ONLINE("线上举办", "online"),
-        OFFLINE("线下举办", "offline"),
-        OTHER("线上+线下", "other");
+        ONLINE(1, "线上举办", "online"),
+        OFFLINE(2, "线下举办", "offline"),
+        OTHER(3, "线上+线下", "other");
 
+        /** 虚拟id */
+        private final Integer id;
         private final String name;
         private final String value;
 
-        ActivityTypeEnum(String name, String value) {
+        ActivityTypeEnum(Integer id, String name, String value) {
+            this.id = id;
             this.name = name;
             this.value = value;
+        }
+
+        public static ActivityTypeEnum fromId(Integer id) {
+            ActivityTypeEnum[] values = ActivityTypeEnum.values();
+            for (ActivityTypeEnum activityTypeEnum : values) {
+                if (Objects.equals(activityTypeEnum.getId(), id)) {
+                    return activityTypeEnum;
+                }
+            }
+            return null;
         }
 
         public static ActivityTypeEnum fromValue(String value) {
