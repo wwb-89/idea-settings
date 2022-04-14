@@ -109,6 +109,19 @@
                                 <span style="cursor: pointer; color: #0084FF" @click="previewPage(scope.row)">{{scope.row.name}}</span>
                             </template>
                         </el-table-column>
+                        <!--类型-->
+                        <el-table-column
+                                v-else-if="item.code === 'activityType'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+<!--                                <span>{{scope.row.activityType}}</span>-->
+                                <span>{{scope.row.activityType == 'online' ? '线上举办' : scope.row.activityType == 'offline' ? '线下举办' : '线上+线下'}}</span>
+                            </template>
+                        </el-table-column>
                         <!--签到率-->
                         <el-table-column
                                 v-else-if="item.code === 'signedInRate'"
