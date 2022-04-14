@@ -20,16 +20,6 @@
 <body>
 <div id="vm" v-cloak>
 	<div style="display: block">
-		<div class="header-box">
-			<div class="header header-type-3">
-                <span slot="label" class="menu-item-customize registered_title">
-                    <span class="title">证书发放</span>
-                </span>
-				<div class="top-btns">
-					<el-button class="btn-customize export-btn" round @click="configCertificate">配置模板</el-button>
-				</div>
-			</div>
-		</div>
 		<!-- 选项卡内容 -->
 		<div class="tab-content-box">
 			<div class="tab-item">
@@ -41,6 +31,8 @@
 
 						<el-button class="btn-customize disabled" round disabled v-if="selections.length < 1">发放证书</el-button>
 						<el-button class="btn-customize disabled" round disabled v-if="selections.length < 1">撤回</el-button>
+
+						<el-button class="btn-customize" round @click="configCertificate">配置模板</el-button>
 						<div class="search-Box">
 							<el-input placeholder="搜索"
 							          icon="search"
