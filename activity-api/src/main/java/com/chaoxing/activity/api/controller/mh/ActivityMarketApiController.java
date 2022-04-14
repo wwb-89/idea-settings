@@ -71,6 +71,7 @@ public class ActivityMarketApiController {
 	 * @param wfwfid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@RequestMapping("classify2Type")
 	public RestRespDTO classify2Type(@RequestBody String data, Integer wfwfid) {
 		return index(data, wfwfid, true);
 	}
