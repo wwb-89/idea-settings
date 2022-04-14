@@ -1,0 +1,52 @@
+body, html{
+    text-align: left;
+}
+.code-result{
+    font-size: 0;
+    .top-img{
+        width: 100%;
+    }
+    .text-box{
+        position: relative;
+        margin-top: -0.625rem;
+        background: #FFFFFF;
+        border-radius: .75rem .75rem 0 0;
+        font-size: 1rem;
+        padding: 1rem 1.25rem;
+        color: #333333;
+        h2{
+            font-weight: 500;
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+        ul{
+            margin-top: 1.25rem;
+            padding-bottom: 1.125rem;
+            border-bottom: .0313rem solid #DCDCDC;
+            line-height: 1.5rem;
+            li{
+                margin-bottom: .375rem;
+                font-size: 0;
+            }
+            .label{
+                display: inline-block;
+                width: 5.125rem;
+                color: #999999;
+                font-size: 1rem;
+            }
+            .text{
+                display: inline-block;
+                vertical-align: top;
+                margin-left: 2rem;
+                width: calc(100% - 7.125rem);
+                font-size: 1rem;
+            }
+        }
+        .tips{
+            font-size: .875rem;
+            line-height: 1.25rem;
+            color: #CCCCCC;
+            margin-top: .75rem;
+        }
+    }
+}

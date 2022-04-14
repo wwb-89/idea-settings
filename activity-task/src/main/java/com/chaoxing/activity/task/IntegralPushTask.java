@@ -1,6 +1,9 @@
 package com.chaoxing.activity.task;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.service.manager.IntegralApiService;
+import com.chaoxing.activity.service.queue.IntegralPushQueue;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +17,12 @@ import javax.annotation.Resource;
  * @blame wwb
  * @date 2020-12-24 17:06:33
  */
+@Slf4j
 @Component
 public class IntegralPushTask {
 
+	@Resource
+	private IntegralPushQueue integralPushQueueService;
 	@Resource
 	private IntegralApiService integralApiService;
 
@@ -27,9 +33,20 @@ public class IntegralPushTask {
 	 * @param 
 	 * @return void
 	*/
-	@Scheduled(fixedDelay = 60 * 1000)
-	public void pushData() {
-		integralApiService.handleTask();
+	@Scheduled(fixedDelay = 10L)
+	public void pushData() throws InterruptedException {
+		IntegralPushQueue.IntegralPushDTO integralPush = integralPushQueueService.pop();
+		if (integralPush == null) {
+			return;
+		}
+		try {
+			integralApiService.pushIntegral(integralPush);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("根据参数:{} 处理积分推送任务error:{}", JSON.toJSONString(integralPush), e.getMessage());
+			integralPushQueueService.push(integralPush);
+
+		}
 	}
 
 }

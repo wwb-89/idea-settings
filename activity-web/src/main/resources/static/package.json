@@ -1,5 +1,5 @@
 {
-  "name": "xkbm",
+  "name": "",
   "version": "1.0.0",
   "description": "no",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://192.168.1.20/fed/XKBM.git"
+    "url": ""
   },
   "author": "chenjing",
   "license": "ISC",

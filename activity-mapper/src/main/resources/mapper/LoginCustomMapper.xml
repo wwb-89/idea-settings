@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.LoginCustomMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.LoginCustom">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
+        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="login_url" jdbcType="VARCHAR" property="loginUrl" />
+        <result column="encode_num" jdbcType="VARCHAR" property="encodeNum" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.area_code, t.fid, t.login_url, t.encode_num, t.is_deleted, t.is_deleted, t.create_time, t.update_time
+    </sql>
+</mapper>

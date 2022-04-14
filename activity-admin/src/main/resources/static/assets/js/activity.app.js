@@ -12,6 +12,17 @@
         activityApp.prototype.origin = W.location.origin;
     }
 
+    /** 需要展示线上线下活动类型的市场id列表 */
+    activityApp.prototype.other_activity_type_marketids = [293, 305, 1149, 1267];
+    /** 活动默认封面云盘id库 */
+    activityApp.prototype.default_cover_cloud_id_repo = ['6a7f1229a97f806858f1544f2ff129ab', '71fc74cbb377ec915710f12f92b80d4c', '582ce0dd7f2fbc6fe95792346ecbb842', 'bd9cbef7cbeea52fbe0e013b139dcb2c', 'f4716fd4bcc370bd9d7695cf289f0ede', '4aab8a1b12d50506f6c8fb441e0afb6f', '38b9c9a4f2d17e0de04374758c28a919', '2ba783e9e1ba6d0fa8370b1f30c2b1db', '6918158e10d931e4b34c3a2005843343','cc6747c266990ae4623ee86b3580bdeb','a702ab20586128ee699c5b91be0ef327','334e2e1acc0e93a3e74e06266ef201b0','b13895d9cb4e8843ad73fbc2f98c5c20','b4b218b10d1f5482bb0cb21a04a79720','3c657a3e83e547547875ad77c5e650e7','18845df01f2b31a5230406071a2d26e7','c2f5af53ae71e6ade49b5349c8f3ad34','73c692ca3c6a8c596ac4353c933bdcce','c53deb05881621a5fd2fddd06c734f1f','6aee62c0290e2612d7a46ac90a53da89','776af507967361fb5385caf6c5e699b2','a843483e29c9e00b2bcd596e497838aa','54d1ada2a655689c15e2daa53072e996','9186c33388e760efa803768b3f9acb55','30ccf973c886947804b41da72296b276','bc46ba6f6729296779f41c06ebcaa40f','d42f5899c5f7761e0935c0036fa516d3','65cf2063eac37c48a09d0698da29c357','b4512fc47200ee1488a332d60ee99f32','fa6a3c3180ce04e49fe8835c4dd6c4d7','3431a538652d386e4902b6cab792ffe2'];
+
+    /** 判断是否需要展示线上线下活动类型 */
+    activityApp.prototype.showOtherActivityType = function (marketId) {
+        var $this = this;
+        return $this.other_activity_type_marketids.indexOf(marketId) != -1;
+    }
+
     /**
      * 字符串是否为空
      * @param str
@@ -26,8 +37,9 @@
      * @returns {boolean}
      */
     activityApp.prototype.isMobile = function (phone) {
-        return (/^1(3|4|5|7|8|9)\d{9}$/.test(phone));
+        return (/^1\d{10}$/.test(phone));
     };
+
     /**
      * 获取json对象
      * @param jsonStr
@@ -38,6 +50,7 @@
         }
         return J.parse(jsonStr);
     };
+
     /**
      * 获取json字符串
      * @param jsonObject
@@ -48,6 +61,7 @@
         }
         return J.stringify(jsonObject);
     };
+
     /**
      * 获取请求参数
      * @param name
@@ -57,10 +71,16 @@
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
         var r = window.location.search.substr(1).match(reg);
         if (r != null) {
-            return decodeURL(r[2]);
+            return decodeURI(r[2]);
         }
-        return null;
+        return "";
     }
+
+    /**
+     * 时间戳转换为日期对象
+     * @param millisecond
+     * @returns {string|{month: (*|number), hour: any, year: number, day: any, minute: any, second: any}}
+     */
     activityApp.prototype.millisecond2DateObj = function (millisecond) {
         var $this = this;
         if ($this.isEmpty(millisecond)) {
@@ -94,8 +114,12 @@
     activityApp.prototype.millisecond2DateStr = function (millisecond) {
         var $this = this;
         var dateObj = $this.millisecond2DateObj(millisecond);
+        if ($this.isEmpty(dateObj)) {
+            return "";
+        }
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
     };
+
     /**
      * 填充到指定位数
      * @param origin
@@ -111,9 +135,11 @@
         }
         return origin;
     };
+
     activityApp.prototype.isFunction = function (callback) {
         return typeof (callback) === "function";
     };
+
     /**
      * 获取cookie的值
      * @param key
@@ -124,6 +150,7 @@
         if (arr != null) return unescape(arr[2]);
         return null;
     };
+
     /**
      * 从cookie中获取uid
      * @returns {*}
@@ -132,6 +159,7 @@
         var that = this;
         return that.getCookie("_uid")
     };
+
     /**
      * 将textarea的内容转换为html显示的内容（保留空格回车）
      * @param content
@@ -148,6 +176,7 @@
         content = content.replace(regSpace, "&nbsp;");
         return content;
     };
+
     /**
      * 将html显示的内容转换为textarea的内容（保留空格回车）
      * @param content
@@ -164,73 +193,27 @@
         content = content.replace(regSpace, " ");
         return content;
     };
+
     /**
      * 获取云盘图片的url
-     * @param cloudId
+     * @param activity
+     * @param cloudDomain
      * @returns {string}
      */
-    activityApp.prototype.getCloudImgUrl = function (cloudId) {
-        return "http://d0.ananas.chaoxing.com/download/" + cloudId;
+    activityApp.prototype.getCloudImgUrl = function (activity, cloudDomain) {
+        var $this = this;
+        var coverCloudId = activity.coverCloudId;
+        return $this.buildCloudImgUrl(coverCloudId, cloudDomain);
     };
-    /**
-     * 生成新的签到报名
-     * @returns {{signUpEndTime: string, limitPerson: boolean, signUpFormId: string, createUserName: string, signInStartTime: string, createFid: string, signInFormId: string, signUpStartTime: string, signInEndTime: string, id: null, dimension: string, createUid: string, longitude: string, createOrgName: string, address: string, signUpBtnName: string, publicSignUpList: boolean, partakeForm: null, signInInfoWrite: string, signUpForm: string, signInForm: string, signInBtnName: string, signUpInfoWrite: boolean, personLimit: number, name: string}}
-     */
-    activityApp.prototype.newSign = function () {
-        return {
-            id: null,
-            name: "",
-            // 1：报名。2：签到，3：报名后签到
-            partakeForm: 1,
-            // 报名开始时间
-            signUpStartTime: "",
-            //报名结束时间
-            signUpEndTime: "",
-            // 签到开始时间
-            signInStartTime: "",
-            // 签到结束时间
-            signInEndTime: "",
-            // 是否限制报名人数
-            limitPerson: false,
-            // 限制的人数
-            personLimit: 100,
-            // 报名方式
-            signUpForm: "",
-            // 签到方式
-            signInForm: "1",
-            // 地址
-            address: "",
-            // 经度
-            longitude: "",
-            // 维度
-            dimension: "",
-            // 是否开启报名信息填写
-            signUpInfoWrite: false,
-            // 报名信息填写的表单id
-            signUpFormId: "",
-            // 是否开启签到信息填写
-            signInInfoWrite: false,
-            // 签到信息填写的表单id
-            signInFormId: "",
-            // 是否公开报名名单
-            publicSignUpList: false,
-            // 是否公开签到名单
-            publicSignInList: false,
-            // 报名按钮名称
-            signUpBtnName: "报名",
-            // 签到按钮名称
-            signInBtnName: "签到",
-            // 创建人uid
-            createUid: "",
-            // 创建人姓名
-            createUserName: "",
-            // 创建人fid
-            createFid: "",
-            // 创建人机构名称
-            createOrgName: ""
 
-        };
+    activityApp.prototype.buildCloudImgUrl = function (cloudId, cloudDomain) {
+        return cloudDomain + "/star3/380_160c/" + cloudId;
     };
+
+    activityApp.prototype.buildOriginCloudImgUrl = function (cloudId, cloudDomain) {
+        return cloudDomain + "/star3/origin/" + cloudId;
+    };
+
     /**
      * 获取活动状态说明
      * @param status
@@ -245,21 +228,142 @@
             case 0:
                 return "已删除";
             case 1:
-                return "待发布";
+                return "未发布";
             case 2:
-                return "活动预告";
+                return "未开始";
             case 3:
                 return "进行中";
             default:
                 return "已结束";
         }
     };
+
     /**
      * 获取活动默认封面云盘id
      * @returns {string}
      */
     activityApp.prototype.getDefaultCoverCloudId = function () {
-        return "68065603fbcb805725f7ef5e21cef03c";
+        return "3b16823d7d5fc677d13c042479e3c6d0";
+    };
+    /**
+     * 获取相对路径
+     * @param url
+     * @returns {string}
+     */
+    activityApp.prototype.getRelativeUrl = function (url) {
+        var pathname = document.location.pathname;
+        if (pathname == "/") {
+            pathname = "";
+        }
+        if (!url.startsWith("/")) {
+            url = "/" + url;
+        }
+        return pathname + url;
+    };
+    /**
+     * 生成活动的默认开始时间
+     * @returns {string}
+     */
+    activityApp.prototype.generateActivityDefaultStartTimeStamp = function () {
+        return new Date().getTime();
+    };
+    /**
+     * 生成活动的默认结束时间
+     * @returns {string}
+     */
+    activityApp.prototype.generateActivityDefaultEndTimeStamp = function () {
+        return new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime();
+    };
+    /**
+     * 双选会统计导出地址
+     * @param activityId
+     * @param fid
+     * @param dualSelectDomain
+     * @returns {string}
+     */
+    activityApp.prototype.generateDualSelectStatExportUrl = function (activityId, fid, dualSelectDomain) {
+        return dualSelectDomain + "/export/double/selection/statistics?activityId=" + activityId + "&wfwfid=" + fid;
+    };
+    /**
+     * 禁用滚动
+     */
+    activityApp.prototype.disableScroll = function () {
+        var scrollTop = $(document).scrollTop();
+        $(document).on('scroll.unable', function (e) {
+            $(document).scrollTop(scrollTop);
+        });
+    };
+    /**
+     * 启用滚动
+     */
+    activityApp.prototype.enableScroll = function () {
+        $(document).unbind("scroll.unable");
+    };
+    /**
+     * 初始化滚动条
+     */
+    activityApp.prototype.initScroll = function () {
+        this.scrollTop = $(document).scrollTop();
+        $(document).scrollTop(0);
+        this.disableScroll();
+    };
+    /**
+     * 重置滚动条
+     */
+    activityApp.prototype.resetScroll = function () {
+        this.enableScroll();
+        $(document).scrollTop(this.scrollTop);
+    };
+    /**
+     * 是否在今天以前
+     * @param timestamp
+     */
+    activityApp.prototype.isBeforeToday = function (timestamp) {
+        var now = new Date();
+        var todayStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " 00:00:00";
+        var today = new Date(todayStr);
+        if (!isNaN(today)) {
+            today = new Date(Date.parse(todayStr.replace(/-/g, "/")));
+        }
+        return today.getTime() > timestamp;
+    };
+    /**
+     * 是否被嵌入
+     * @returns {boolean}
+     */
+    activityApp.prototype.isEmbedded = function () {
+        return window.parent !== window;
+    };
+    /**
+     * 手动出发resize
+     */
+    activityApp.prototype.resize = function () {
+        if(document.createEvent) {
+            var event = document.createEvent("HTMLEvents");
+            event.initEvent("resize", true, true);
+            window.dispatchEvent(event);
+        } else if(document.createEventObject) {
+            window.fireEvent("onresize");
+        }
+    };
+    /**
+     * 返回作品征集的管理地址
+     * @param workId
+     * @param workDomain
+     * @returns {string}
+     */
+    activityApp.prototype.getWorkManageUrl = function (workId, workDomain) {
+        return workDomain + "/zj/manage/activity/" + workId + "/new?isHideHeader=false";
+    };
+    /**
+     * 返回阅读书单的管理地址
+     * @param workId
+     * @param moduleId
+     * @param xueyaDomain
+     * @returns {string}
+     */
+    activityApp.prototype.getReadingBookManageUrl = function (readingId, moduleId, xueyaDomain) {
+        return xueyaDomain + "/school-base/school-reading/" + readingId + "/" + moduleId + "/book-list";
     };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
@@ -270,34 +374,110 @@ Array.prototype.remove = function (val) {
     }
 };
 Array.prototype.pushArray = function (array) {
-    var that = this;
+    var $this = this;
     $.each(array, function () {
-        that.push(this);
+        $this.push(this);
     });
 };
-Vue.filter("getCloudImgUrl", function (cloudId) {
-    return activityApp.getCloudImgUrl(cloudId);
+Vue.filter("getCloudImgUrl", function (activity, cloudDomain) {
+    return activityApp.getCloudImgUrl(activity, cloudDomain);
 });
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);
 });
-Vue.filter("timestamp2ChineseYMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日";
+
+
+Vue.filter("activityStatusDescribe", function (status) {
+    if (activityApp.isEmpty(status)) {
+        return "";
+    }
+    switch (status) {
+        case 0:
+            return "已删除";
+        case 1:
+            return "未发布";
+        case 2:
+            return "已发布";
+        case 3:
+            return "进行中";
+        case 4:
+            return "已结束";
+        default:
+            return "";
+    }
 });
-Vue.filter("timestamp2ChineseYMDHM", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日" + " " + dateObj.hour + ":" + dateObj.minute;
+
+Vue.filter("activityStatusFilter", function (status) {
+    if (activityApp.isEmpty(status)) {
+        return status;
+    }
+    switch (status) {
+        case 0:
+            return "已删除";
+        case 1:
+        case 2:
+            return "未开始";
+        case 3:
+            return "进行中";
+        default:
+            return "已结束";
+    }
 });
-Vue.filter("timestamp2ChineseYMDHMS", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日" + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
+
+Vue.filter("timestampFormat", function (timestamp) {
+    if (activityApp.isEmpty(timestamp)) {
+        return "";
+    }
+    var dateObj = moment(timestamp);
+    var year = dateObj.year();
+    if (year == new Date().getFullYear()) {
+        return dateObj.format("MM-DD HH:mm");
+    } else {
+        return dateObj.format("YYYY-MM-DD HH:mm");
+    }
+
 });
-Vue.filter("timestamp2YMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
+Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
+    var thisYear = new Date().getFullYear();
+    var start = "";
+    var startDateObj = null;
+    var end = "";
+    var endDateObj = null;
+    if (!activityApp.isEmpty(startTimestamp)) {
+        startDateObj = moment(startTimestamp);
+    }
+    if (!activityApp.isEmpty(endTimestamp)) {
+        endDateObj = moment(endTimestamp);
+    }
+    var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
+    // 是不是同一天
+    var isSameDay = startDateObj && endDateObj && startDateObj.year() == endDateObj.year() && startDateObj.month() == endDateObj.month() && startDateObj.date() == endDateObj.date();
+    if (isThisYear) {
+        start = startDateObj ? startDateObj.format("MM-DD HH:mm") : "";
+        if (isSameDay) {
+            end = endDateObj ? endDateObj.format("HH:mm") : "";
+        } else {
+            end = endDateObj ? endDateObj.format("MM-DD HH:mm") : "";
+        }
+    } else {
+        start = startDateObj ? startDateObj.format("YYYY-MM-DD HH:mm") : "";
+        if (isSameDay) {
+            end = endDateObj ? endDateObj.format("MM-DD HH:mm") : "";
+        } else {
+            end = endDateObj ? endDateObj.format("YYYY-MM-DD HH:mm") : "";
+        }
+    }
+    var result = start;
+    if (!activityApp.isEmpty(start) && !activityApp.isEmpty(end)) {
+        result += " ~ ";
+    }
+    result += end;
+    return result;
 });
-Vue.filter("timestamp2YMDH", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day +" "+dateObj.hour;
+
+Vue.filter("percentageFormat", function (value) {
+    if (!value || typeof value != "number") {
+        return 0;
+    }
+    return Decimal.mul(value, 100).toNumber() + '%';
 });

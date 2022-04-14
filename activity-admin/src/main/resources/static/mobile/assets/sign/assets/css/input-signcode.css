@@ -1,0 +1,71 @@
+body {
+    background-color: #F8F8F8;
+}
+
+.container {
+    margin-top: 5rem;
+    width: 100%;
+    position: relative;
+}
+
+.container .ipt {
+    width: 21.4375rem;
+    height: 3.125rem;
+    background-color: #fff;
+    -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    margin: 0 auto;
+    padding: .75rem 1.25rem;
+}
+
+.container .ipt input {
+    width: 18.9375rem;
+    height: 1.5625rem;
+    line-height: 1.5625rem;
+}
+
+.container .btn {
+    margin-top: 1.5rem;
+    width: 21.4375rem;
+    height: 2.8125rem;
+    color: #fff;
+    background: -webkit-gradient(linear, left top, left bottom, from(#02c4ff), to(#42a2ff));
+    background: -webkit-linear-gradient(top, #02c4ff, #42a2ff);
+    background: -o-linear-gradient(top, #02c4ff, #42a2ff);
+    background: linear-gradient(180deg, #02c4ff, #42a2ff);
+    border-radius: 1.5625rem;
+}
+
+.container .search {
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
+    margin-top: 2rem;
+}
+
+.container .search img {
+    width: 1.0625rem;
+    height: 1.0625rem;
+    margin-right: .25rem;
+    margin-top: .125rem;
+}
+
+.container .search .writing {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+    margin-left: .625rem;
+    font-size: 1rem;
+    text-align: LEFT;
+    color: #0084ff;
+}

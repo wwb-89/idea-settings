@@ -9,6 +9,8 @@
     function app() {
     }
 
+    app.prototype.activityChangeKey = "activity_changed";
+
     /**
      * get请求
      * @param url
@@ -176,7 +178,7 @@
      * loading
      */
     app.prototype.loading = function () {
-        return layer.load(1, {shade: [0.2, '#000']});
+        return layer.load(1, {shade: [0.7, '#fff']});
     };
 
     app.prototype.closeLayerPop = function (index) {
@@ -203,6 +205,16 @@
                 $("" + dom).html(response);
             }
         });
+    };
+    /**
+     * 绑定活动改变事件
+     * @param callback
+     */
+    app.prototype.bindActivityChangeEvent = function (callback) {
+        var $this = this;
+        window.addEventListener("message", function (e) {
+            console.log(e.origin);
+        }, false);
     };
     W['app'] = new app();
 })(window, jQuery, JSON);

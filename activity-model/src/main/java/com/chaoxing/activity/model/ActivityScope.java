@@ -1,14 +1,21 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * 活动参与范围
+ * 活动发布范围
  * @className: ActivityScope, table_name: t_activity_scope
  * @Description: 
  * @author: mybatis generator
@@ -22,6 +29,9 @@ import lombok.NoArgsConstructor;
 @TableName(value = "t_activity_scope")
 public class ActivityScope {
 
+    /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
     /** 机构id; column: hierarchy_id*/
@@ -46,20 +56,26 @@ public class ActivityScope {
     /** 顺序; column: sort*/
     private Integer sort;
 
-    public static ActivityScope structure(Integer activityId, Integer fid, String orgName) {
-        return ActivityScope.builder()
-                .activityId(activityId)
-                .hierarchyId(0)
-                .name(orgName)
-                .hierarchyPid(0)
-                .code("")
-                .links(orgName)
-                .level(1)
-                .adjustedLevel(1)
-                .fid(fid)
-                .existChild(false)
-                .sort(1)
-                .build();
+    public static List<WfwAreaDTO> convert2WfwRegionalArchitectures(List<ActivityScope> activityScopes) {
+        List<WfwAreaDTO> wfwRegionalArchitectures = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(activityScopes)) {
+            for (ActivityScope activityScope : activityScopes) {
+                WfwAreaDTO wfwRegionalArchitecture = WfwAreaDTO.builder()
+                        .id(activityScope.getHierarchyId())
+                        .name(activityScope.getName())
+                        .pid(activityScope.getHierarchyPid())
+                        .code(activityScope.getCode())
+                        .links(activityScope.getLinks())
+                        .level(activityScope.getLevel())
+                        .fid(activityScope.getFid())
+                        .existChild(activityScope.getExistChild())
+                        .sort(activityScope.getSort())
+                        .activityId(activityScope.getActivityId())
+                        .build();
+                wfwRegionalArchitectures.add(wfwRegionalArchitecture);
+            }
+        }
+        return wfwRegionalArchitectures;
     }
 
 }

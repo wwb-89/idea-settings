@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -20,20 +21,39 @@ public class CookieUtils {
 
     }
 
-    public static String getUid(HttpServletRequest request) {
-        return getValue(request, CookieConstant.UID);
+    public static Integer getUid(HttpServletRequest request) {
+        String uidStr = getValue(request, CookieConstant.UID);
+        if (StringUtils.isNotBlank(uidStr)) {
+            return Integer.parseInt(uidStr);
+        }
+        return null;
     }
 
-    private static String getWfwfid(HttpServletRequest request) {
-        return getValue(request, CookieConstant.WFWFID);
+    private static Integer getWfwfid(HttpServletRequest request) {
+        String wfwfidStr = getValue(request, CookieConstant.WFWFID);
+        if (StringUtils.isNotBlank(wfwfidStr)) {
+            return Integer.parseInt(wfwfidStr);
+        }
+        return null;
     }
 
-    private static String getSpaceFid(HttpServletRequest request) {
-        return getValue(request, CookieConstant.SPACE_FID);
+    private static Integer getSpaceFid(HttpServletRequest request) {
+        String spaceFidStr = getValue(request, CookieConstant.SPACE_FID);
+        if (StringUtils.isNotBlank(spaceFidStr)) {
+            return Integer.parseInt(spaceFidStr);
+        }
+        return null;
     }
 
-    public static String getFid(HttpServletRequest request) {
-        String fid = getWfwfid(request);
+    public static Integer getFid(HttpServletRequest request) {
+        Integer fid = getWfwfid(request);
+        fid = Optional.ofNullable(fid).orElse(getSpaceFid(request));
+        if (fid == null) {
+            String fidStr = getValue(request, CookieConstant.FID);
+            if (StringUtils.isNotBlank(fidStr)) {
+                fid = Integer.parseInt(fidStr);
+            }
+        }
         return fid;
     }
 

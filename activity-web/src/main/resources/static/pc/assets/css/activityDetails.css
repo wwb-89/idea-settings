@@ -2,14 +2,14 @@
     clear: both;
 }
 .container {
-    padding: 74px 65px;
+    /*padding: 74px 65px;*/
 }
 .container .title {
     font-size: 20px;
     font-weight: 600;
     color: #333333;
     line-height: 30px;
-    max-width: 497px;
+    /*max-width: 497px;*/
     margin-bottom: 10px;
 }
 
@@ -57,11 +57,17 @@
     color: #ffffff;
 }
 
+.container .chooseItems ul .btn-disable{
+    background-color:rgba(78,102,167,.5);
+    color:#ffffff
+}
+
 .container .bottom-btns {
     display: none;
 }
 
-@media only screen and (min-width: 1px) and (max-width: 767px) {
+
+@media only screen and (min-width: 1px) and (max-width: 500px) {
     .container {
         padding: .8125rem .875rem;
     }
@@ -80,39 +86,73 @@
 
     .container .bottom-btns {
         display: block;
+        margin-bottom: .3125rem;
     }
 
     .container .bottom-btns .sign-btn {
+        position: relative;
         cursor: pointer;
         height: 2.5625rem;
         background-color: #0099ff;
         border-radius: .3125rem;
         text-align: center;
         color: #ffffff;
-        font-weight: 600;
         line-height: 2.5625rem;
         margin-bottom: 1.21875rem;
     }
     .container .bottom-btns .btn-items ul {
         display: flex;
+        width: 100%;
     }
 
     .container .bottom-btns .btn-items ul li {
+        flex: 1;
         cursor: pointer;
         float: left;
         font-size: .9375rem;
-        font-weight: 550;
         color: #0099ff;
         line-height: 1.3125rem;
         text-align: center;
     }
-    .container .bottom-btns .btn-items ul .left,
-    .container .bottom-btns .btn-items ul .right {
-        flex: 1;
+
+    .container .bottom-btns .btn-items ul li {
+        border-right: 1px solid #b2b2b2
     }
-    .container .bottom-btns .btn-items ul .center {
-        width: 6.875rem;
-        border-left: 1px solid #b2b2b2;
-        border-right: 1px solid #b2b2b2;
+    .container .bottom-btns .btn-items ul :last-child {
+        border-right: 0px;
     }
+
+    .container .bottom-btns .sign-end {
+        background-color: #e7e8eb;
+        color: #a4a7b0;
+    }
+    .container .bottom-btns .sign-unbegin {
+        opacity: 0.44;
+        background-color: #0099ff;
+    }
+    .container .bottom-btns .loading {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .container .bottom-btns .loading-icon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-55%);
+        display: inline-block;
+        width: 1.325rem;
+        height: 1.325rem;
+        background: url("../images/loading.png") center center no-repeat;
+        background-size: 1.325rem 1.325rem;
+    }
+
+    .container .bottom-btns .loading span {
+        margin-left: 1.75rem;
+    }
+
+    .Rotation {
+        transform: rotate(360deg);
+        animation: rotation 4s linear infinite;
+    }
+
 }

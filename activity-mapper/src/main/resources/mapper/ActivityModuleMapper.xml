@@ -59,4 +59,18 @@
             t.activity_id = #{activityId}
     </select>
 
+    <select id="listExternalIdByFids" resultType="java.lang.String">
+        SELECT
+            t.external_id
+        FROM
+            t_activity_module t
+            INNER JOIN t_activity_scope t1 ON t.activity_id = t1.activity_id
+            AND t1.fid IN
+                <foreach collection="fids" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+        WHERE
+            t.type = #{type}
+    </select>
+
 </mapper>

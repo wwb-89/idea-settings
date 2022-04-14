@@ -20,8 +20,8 @@ public enum WfwRoleEnum {
 	MANAGER("管理员", 7);
 
 
-	private String name;
-	private Integer value;
+	private final String name;
+	private final Integer value;
 
 	WfwRoleEnum(String name, Integer value) {
 		this.name = name;

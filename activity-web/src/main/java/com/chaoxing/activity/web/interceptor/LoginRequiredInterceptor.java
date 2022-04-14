@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.web.util.LoginUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -60,7 +61,12 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
 			writer.write(JSON.toJSONString(restResDTO));
 		} else {
 			// 页面
-			response.sendRedirect(UrlConstant.LOGIN_URL + URLEncoder.encode(request.getRequestURL().toString(), StandardCharsets.UTF_8.name()));
+			String url = request.getRequestURL().toString();
+			String queryString = request.getQueryString();
+			if (StringUtils.isNotBlank(queryString)) {
+				url += "?" + queryString;
+			}
+			response.sendRedirect(UrlConstant.LOGIN_URL + URLEncoder.encode(url, StandardCharsets.UTF_8.name()));
 		}
 	}
 

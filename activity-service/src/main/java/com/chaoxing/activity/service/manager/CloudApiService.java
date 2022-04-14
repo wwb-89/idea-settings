@@ -1,6 +1,13 @@
 package com.chaoxing.activity.service.manager;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.manager.cloud.CloudImageDTO;
+import com.chaoxing.activity.util.Base64Utils;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -15,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.IOException;
 
 /**云盘api服务
  * @author wwb
@@ -29,11 +37,15 @@ import java.io.File;
 public class CloudApiService {
 
 	/** 上传url */
-	private static final String UPLOAD_URL = "http://cs.ananas.chaoxing.com/upload?uid=-1&clientip=&prdid=40";
+	private static final String UPLOAD_URL = DomainConstant.CLOUD_API + "/upload?uid=-1&clientip=%s&prdid=40";
 	/** 资源状态url */
-	private static final String GET_CLOUD_RESOURCE_STATUS_URL = "http://cs.ananas.chaoxing.com/status/";
-	/** 云盘图片url */
-	private static final String IMG_URL = "http://d0.ananas.chaoxing.com/download/";
+	private static final String GET_CLOUD_RESOURCE_STATUS_URL = DomainConstant.CLOUD_API + "/status/";
+	/** 云盘图片状态url key */
+	private static final String CLOUD_IMAGE_STATUS_URL_KEY = "http";
+	/** 下载url key */
+	private static final String DOWNLOAD_URL_KEY = "download";
+	/** 图片url前缀 */
+	private static final String IMAGE_URL_SUFFIX = DomainConstant.CLOUD_RESOURCE + "/star3/origin/";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -56,8 +68,7 @@ public class CloudApiService {
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, headers);
 		String url = String.format(UPLOAD_URL, ip);
 		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, httpEntity, String.class);
-		String result = stringResponseEntity.getBody();
-		return result;
+		return stringResponseEntity.getBody();
 	}
 
 	/**上传文件
@@ -76,11 +87,32 @@ public class CloudApiService {
 		FileSystemResource resource = new FileSystemResource(file);
 		MultiValueMap<String, FileSystemResource> data = new LinkedMultiValueMap<>();
 		data.add("file", resource);
-		HttpEntity<MultiValueMap<String, FileSystemResource>> httpEntity = new HttpEntity<>(data);
+		HttpEntity<MultiValueMap<String, FileSystemResource>> httpEntity = new HttpEntity<>(data, headers);
 		String url = String.format(UPLOAD_URL, ip);
 		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, httpEntity, String.class);
-		String result = stringResponseEntity.getBody();
-		return result;
+		return stringResponseEntity.getBody();
+	}
+
+	/**上传文件
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-16 18:09:49
+	 * @param base64
+	 * @param rootPath
+	 * @param ip
+	 * @return java.lang.String
+	*/
+	public String upload(String base64, String rootPath, String ip) throws IOException {
+		String suffixFromBase64Str = Base64Utils.getSuffixFromBase64Str(base64);
+		String base64Data = Base64Utils.getBase64Data(base64);
+		String fileName = System.currentTimeMillis() + suffixFromBase64Str;
+		File file = new File(rootPath + fileName);
+		try {
+			FileUtils.writeByteArrayToFile(file, Base64.decodeBase64(base64Data));
+			return upload(file, ip);
+		} finally {
+			file.delete();
+		}
 	}
 
 	/**获取云盘资源状态
@@ -90,28 +122,83 @@ public class CloudApiService {
 	 * @param cloudId
 	 * @return java.lang.String
 	*/
-	public String getStatus(String cloudId) {
-		StringBuilder urlStringBuilder = new StringBuilder();
-		urlStringBuilder.append(GET_CLOUD_RESOURCE_STATUS_URL);
-		urlStringBuilder.append(cloudId);
-		return restTemplate.getForObject(urlStringBuilder.toString(), String.class);
+	private String getStatus(String cloudId) {
+		String urlStringBuilder = GET_CLOUD_RESOURCE_STATUS_URL + cloudId;
+		return restTemplate.getForObject(urlStringBuilder, String.class);
 	}
 
-	/**获取云盘图片url
-	 * @Description 
+	/**获取excel资源状态
+	 * @Description
 	 * @author wwb
-	 * @Date 2020-11-24 17:50:20
+	 * @Date 2020-11-10 20:08:05
 	 * @param cloudId
 	 * @return java.lang.String
 	*/
-	public String getCloudImgUrl(String cloudId) {
-		if (StringUtils.isBlank(cloudId)) {
-			return "";
+	public String getFileDownloadUrl(String cloudId) {
+		String result = getStatus(cloudId);
+		JSONObject jsonObject = JSON.parseObject(result);
+		if (jsonObject.containsKey(DOWNLOAD_URL_KEY)) {
+			return jsonObject.getString(DOWNLOAD_URL_KEY);
 		}
-		StringBuilder urlStringBuilder = new StringBuilder();
-		urlStringBuilder.append(IMG_URL);
-		urlStringBuilder.append(cloudId);
-		return urlStringBuilder.toString();
+		return null;
+	}
+
+	/**获取图片url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-20 11:03:02
+	 * @param cloudId
+	 * @return java.lang.String
+	*/
+	public String getImageUrl(String cloudId) {
+		String result = getStatus(cloudId);
+		JSONObject jsonObject = JSON.parseObject(result);
+		if (jsonObject.containsKey(CLOUD_IMAGE_STATUS_URL_KEY)) {
+			return jsonObject.getString(CLOUD_IMAGE_STATUS_URL_KEY);
+		}
+		return "";
+	}
+
+	/**构建图片地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-16 17:18:13
+	 * @param cloudId
+	 * @return java.lang.String
+	*/
+	public String buildImageUrl(String cloudId) {
+		return IMAGE_URL_SUFFIX + cloudId;
+	}
+	
+	/**构建用户头像地址
+	 * @Description 
+	 * @author huxiaolong
+	 * @Date 2021-12-09 14:07:17
+	 * @param uid
+	 * @return 
+	 */
+	public String buildUserAvatar(Integer uid) {
+		return DomainConstant.PHOTO + "/p/" + uid +"_80";
+	}
+
+	/**获取图片信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-12-09 17:30:14
+	 * @param cloudId
+	 * @return com.chaoxing.activity.dto.manager.cloud.CloudImageDTO
+	*/
+	public CloudImageDTO getImage(String cloudId) {
+		CloudImageDTO cloudImage = null;
+		try {
+			String result = getStatus(cloudId);
+			if (StringUtils.isNotBlank(result)) {
+				cloudImage = JSON.parseObject(result, CloudImageDTO.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return cloudImage;
 	}
 
 }

@@ -6,16 +6,11 @@
     function app() {}
 
     app.prototype.origin = W.location.origin;
-    /** 专题url */
-    app.prototype.specialSubjectUrl = "https://special.zhexuezj.cn/mobile/mooc/tocourse/";
-    /** 课程url */
-    app.prototype.courseUrl = "http://mooc1-api.chaoxing.com/phone/courseindex?courseid=";
-    /** 移动端期刊模块的地址 */
-    app.prototype.qkUrl = "http://mguide.chaoxing.com/views/guide/zhizhen/mobiletransferpage.jsp?turntype=link&shouquankan=0";
-    /** 移动端图书馆模块的地址 */
-    app.prototype.libraryUrl = "https://xueya.chaoxing.com/micro-library/";
-    /** 图书url */
-    app.prototype.bookUrl = "/m/book/detail/";
+
+    /** "我的"图标的地址 */
+    app.prototype.my_icon_url = W.location.origin + ctx + "/mobile/assets/images/my.png";
+    /** 更多图标的地址 */
+    app.prototype.menu_icon_url = W.location.origin + ctx + "/mobile/assets/images/more.png";
 
     /** 页面刷新标识 */
     app.prototype.pageRefreshFlag = "page_refresh_flag";
@@ -35,16 +30,6 @@
         "course":{"id":"100000002","name":"课程"},
         "magazine":{"id":"100000006","name":"期刊"},
         "webUrl":{"id":"100000015", "name":"网页"}
-    };
-
-    app.prototype.workAnnexSuffixes = {
-        pictureSuffixes: ["png","jpg","jpeg","bmp","gif"],
-        audioSuffixes: ["aac","ac3","aif","amr","ape","asf","flac","m4a","m4r","mid","mmf","mpa","mpc","ogg","pcm","mpc","mp3"],
-        videoSuffixes: ["rmvb","3gp","mpg","mpeg","mov","wmv","avi","mkv","mp4","flv","vob","f4v"],
-        wordSuffixes: ["doc", "docx"],
-        pptSuffixes: ["ppt", "pptx"],
-        excelSuffixes: ["xls", "xlsx"],
-        pdfSuffixes: ["pdf"]
     };
 
     app.prototype.browser = {
@@ -71,8 +56,8 @@
      * @returns {string}
      */
     app.prototype.getChaoxingVersion = function () {
-        var that = this;
-        if (!that.isChaoxingApp()) {
+        var $this = this;
+        if (!$this.isChaoxingApp()) {
             return null;
         }
         var userAgent = navigator.userAgent;
@@ -147,29 +132,29 @@
      * @returns {boolean|*}
      */
     app.prototype.isApp = function(){
-        var that = this;
-        return that.browser.versions.mobile;
+        var $this = this;
+        return $this.browser.versions.mobile;
     };
     /**
      * 判断当前环境是不是安卓
      */
     app.prototype.isAndroid = function(){
-        var that = this;
-        return that.browser.versions.android;
+        var $this = this;
+        return $this.browser.versions.android;
     };
     /**
      * 判断当前环境是不是ios
      */
     app.prototype.isIos = function(){
-        var that = this;
-        return that.browser.versions.iPhone;
+        var $this = this;
+        return $this.browser.versions.iPhone;
     };
     /**
      * 判断当前环境是不是微信
      */
     app.prototype.isWeixin = function () {
-        var that = this;
-        if (that.browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
+        var $this = this;
+        if ($this.browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
             var ua = navigator.userAgent.toLowerCase();//获取判断用的对象
             return ua.match(/MicroMessenger/i) == 'micromessenger';
         } else {
@@ -181,8 +166,8 @@
      * @returns {boolean}
      */
     app.prototype.isQQ = function () {
-        var that = this;
-        if (that.browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
+        var $this = this;
+        if ($this.browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
             var ua = navigator.userAgent.toLowerCase();//获取判断用的对象
             return ua.match(/QQ/i) == "qq";
         } else {
@@ -202,14 +187,14 @@
      */
     app.prototype.isChaoxingApp = function(){
         var ua = navigator.userAgent.toLowerCase();
-        if (ua.match(/ChaoXingStudy/i) == "chaoxingstudy") {
+        if (ua.match(/ChaoXingStudy/i) == "chaoxingstudy" && !activityApp.isEmbedded()) {
             return true;
         }
         return false;
     };
     app.prototype.noAppMsg = function () {
-        var that = this;
-        that.showMsg("请使用学习通客户端");
+        var $this = this;
+        $this.showMsg("请使用学习通客户端");
     };
     /**
      * 通知自己刷新
@@ -235,10 +220,10 @@
      * 通知页面刷新
      */
     app.prototype.noticeRefresh = function () {
-        var that = this;
-        if (that.isChaoxingApp()) {
+        var $this = this;
+        if ($this.isChaoxingApp()) {
             var storage = W.localStorage;
-            storage[that.pageRefreshFlag] = "1";
+            storage[$this.pageRefreshFlag] = "1";
             B.postNotification("CLIENT_REFRESH_STATUS", {"status": "1"});
         }
     };
@@ -247,21 +232,21 @@
      * @returns {boolean}
      */
     app.prototype.isRefresh = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var reflushPageFlag = storage[that.pageRefreshFlag];//页面刷新标识
-        storage.removeItem(that.pageRefreshFlag);//清空刷新标识
+        var reflushPageFlag = storage[$this.pageRefreshFlag];//页面刷新标识
+        storage.removeItem($this.pageRefreshFlag);//清空刷新标识
         return "1" == reflushPageFlag;
     };
     /**
      * 通知修改
      */
     app.prototype.noticeModify = function(id){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             var storage = W.localStorage;
-            storage[that.dataModifyFlag] = "1";
-            storage[that.dataModifyObject] = id;
+            storage[$this.dataModifyFlag] = "1";
+            storage[$this.dataModifyObject] = id;
             B.postNotification("CLIENT_REFRESH_STATUS", {"status":"1"});
         }
     };
@@ -270,10 +255,10 @@
      * @returns {boolean}
      */
     app.prototype.isModify = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var dataModifyFlag = storage[that.dataModifyFlag];//页面修改标识
-        storage.removeItem(that.dataModifyFlag);//清空数据修改标识
+        var dataModifyFlag = storage[$this.dataModifyFlag];//页面修改标识
+        storage.removeItem($this.dataModifyFlag);//清空数据修改标识
         return "1" == dataModifyFlag;
     };
     /**
@@ -281,21 +266,21 @@
      * @returns {any}
      */
     app.prototype.getModifyObject = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var obj = storage[that.dataModifyObject];
-        storage.removeItem(that.dataModifyObject);
+        var obj = storage[$this.dataModifyObject];
+        storage.removeItem($this.dataModifyObject);
         return obj;
     };
     /**
      * 通知删除
      */
     app.prototype.noticeDelete = function(id){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             var storage = W.localStorage;
-            storage[that.dataDeleteFlag] = "1";
-            storage[that.dataDeleteObject] = id;
+            storage[$this.dataDeleteFlag] = "1";
+            storage[$this.dataDeleteObject] = id;
             B.postNotification("CLIENT_REFRESH_STATUS", {"status":"1"});
         }
     };
@@ -304,10 +289,10 @@
      * @returns {boolean}
      */
     app.prototype.isDelete = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var dataDeleteFlag = storage[that.dataDeleteFlag];
-        storage.removeItem(that.dataDeleteFlag);
+        var dataDeleteFlag = storage[$this.dataDeleteFlag];
+        storage.removeItem($this.dataDeleteFlag);
         return "1" == dataDeleteFlag;
     };
     /**
@@ -315,10 +300,10 @@
      * @returns {any}
      */
     app.prototype.getDeleteObject = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var obj = storage[that.dataDeleteObject];
-        storage.removeItem(that.dataDeleteObject);
+        var obj = storage[$this.dataDeleteObject];
+        storage.removeItem($this.dataDeleteObject);
         return obj;
     };
     /**
@@ -333,13 +318,13 @@
      * @param tips 退出时的提示信息
      */
     app.prototype.exit = function(tips){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             B.postNotification("CLIENT_EXIT_WEBAPP", {
                 message: tips || ''
             });
         }else{
-            that.noAppMsg();
+            $this.noAppMsg();
         }
     };
     /**
@@ -347,8 +332,8 @@
      * @param tips
      */
     app.prototype.closeView = function(tips){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             B.postNotification("CLIENT_EXIT_LEVEL", {
                 message: tips || ''
             });
@@ -381,14 +366,14 @@
      * @param title
      */
     app.prototype.replaceUrl = function(url, title){
-        var that = this;
+        var $this = this;
         var option = {
             "title":title,
             "webUrl":url,
             "loadType":0
         };
-        if(that.isChaoxingApp()){
-            that.packageOpenUrl(option);
+        if($this.isChaoxingApp()){
+            $this.packageOpenUrl(option);
         }else{
             window.location.replace(url);
         }
@@ -399,16 +384,17 @@
      * @param title
      */
     app.prototype.openUrl = function(url, title){
-        var that = this;
+        var $this = this;
         var option = {
             "title":title,
             "webUrl":url,
             "loadType":1
         };
-        if(that.isChaoxingApp()){
-            that.packageOpenUrl(option);
+        if($this.isChaoxingApp()){
+            $this.packageOpenUrl(option);
         }else{
-            window.location.href = url;
+            window.open(url);
+            // window.location.href = url;
         }
     };
     /**
@@ -417,14 +403,14 @@
      * @param title
      */
     app.prototype.openUrlByBrower = function(url, title){
-        var that = this;
+        var $this = this;
         var option = {
             "title":title,
             "webUrl":url,
             "loadType":2
         };
-        if(that.isChaoxingApp()){
-            that.packageOpenUrl(option);
+        if($this.isChaoxingApp()){
+            $this.packageOpenUrl(option);
         }else{
             window.location.href = url;
         }
@@ -435,15 +421,15 @@
      * @param title
      */
     app.prototype.openUrlNoBar = function(url, title){
-        var that = this;
+        var $this = this;
         var option = {
             "title":title,
             "webUrl":url,
             "loadType":1,
             "toolbarType":0
         };
-        if(that.isChaoxingApp()){
-            that.packageOpenUrl(option);
+        if($this.isChaoxingApp()){
+            $this.packageOpenUrl(option);
         }else{
             window.location.href = url;
         }
@@ -480,14 +466,26 @@
      * 显示提示信息
      * @param msg
      */
-    app.prototype.showMsg = function(msg){
-        var that = this;
-        if(that.isChaoxingApp()){
-            B.postNotification('CLIENT_DISPLAY_MESSAGE',{
+    app.prototype.showMsg = function (msg, callback) {
+        var $this = this;
+        if ($this.isChaoxingApp()) {
+            B.postNotification('CLIENT_DISPLAY_MESSAGE', {
                 message: msg
             });
-        }else{
-            alert(msg);
+
+        } else {
+            $(document).dialog({
+                type : "notice",
+                infoText: msg,
+                autoClose: 1500,
+                // center: 居中; bottom: 底部
+                position: "center"
+            });
+        }
+        if (activityApp.isFunction(callback)) {
+            setTimeout(function () {
+                callback();
+            }, 500);
         }
     };
     /**
@@ -495,8 +493,8 @@
      * @param callback
      */
     app.prototype.getSelfUserInfo = function(callback){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             var cmd = 'CLIENT_GET_USERINFO';
             B.unbind(cmd);
             callback && B.bind(cmd, callback);
@@ -504,33 +502,23 @@
                 accountKey: ""
             });
         }else{
-            that.noAppMsg();
+            $this.noAppMsg();
         }
-    };
-    /**
-     * 打开专题
-     * @param resId
-     * @param resName
-     */
-    app.prototype.openSpecial = function(resId, resName){
-        var that = this;
-        var url = that.specialSubjectUrl + resId;
-        that.openUrl(url, resName);
     };
     /**
      *打开小组
      * @param groupId
      */
     app.prototype.openGroup = function (groupId) {
-        var that = this;
-        if (that.isChaoxingApp()) {
+        var $this = this;
+        if ($this.isChaoxingApp()) {
             var cmd = 'CLIENT_OPEN_GROUP';
             B.postNotification(cmd, {
                 "GroupId": groupId,
                 "needRecord": "false"
             });
         } else {
-            that.noAppMsg();
+            $this.noAppMsg();
         }
     };
     /**
@@ -538,8 +526,8 @@
      * @param jsonStr
      */
     app.prototype.getJsonObject = function(jsonStr){
-        var that = this;
-        if(that.isEmpty(jsonStr)){
+        var $this = this;
+        if($this.isEmpty(jsonStr)){
             return null;
         }
         return J.parse(jsonStr);
@@ -549,8 +537,8 @@
      * @param jsonObject
      */
     app.prototype.getJsonStr = function(jsonObject){
-        var that = this;
-        if(that.isEmpty(jsonObject)){
+        var $this = this;
+        if($this.isEmpty(jsonObject)){
             return null;
         }
         return J.stringify(jsonObject);
@@ -575,28 +563,28 @@
      * @param logoUrl
      */
     app.prototype.transmitWebUrl = function (title, url, logoUrl) {
-        var that = this;
+        var $this = this;
         var resUid = $.md5(url);
         var content = {"resTitle": title, "resUrl": url, "resLogo": logoUrl, "resUid": resUid, "toolbarType": 2}
-        B.postNotification("CLIENT_TRANSFER_INFO", {"cataid": that.resCategory.webUrl.id, "content": content});
+        B.postNotification("CLIENT_TRANSFER_INFO", {"cataid": $this.resCategory.webUrl.id, "content": content});
     };
     /**
      * 从cookie中获取uid
      * @returns {*}
      */
     app.prototype.getUid = function () {
-        var that = this;
-        return that.getCookie("_uid")
+        var $this = this;
+        return $this.getCookie("_uid")
     };
     /**
      * 直播
      * @param id
      */
     app.prototype.live = function (id) {
-        var that = this;
+        var $this = this;
         var params = {
             "liveId": id,
-            "UID": that.getUid()
+            "UID": $this.getUid()
         };
         $.ajax({
             url : app.liveCourseDomain + "/api/getStartZhiboInfo",
@@ -701,8 +689,8 @@
         $(cloudIds).each(function () {
             urls.push("http://p.ananas.chaoxing.com/star3/origin/" + this);
         });
-        var that = this;
-        if (that.isEmpty(urls)) {
+        var $this = this;
+        if ($this.isEmpty(urls)) {
             return;
         }
         var imageUrls = [];
@@ -711,7 +699,7 @@
                 imageUrl: this
             });
         });
-        if (that.isEmpty(curIndex)) {
+        if ($this.isEmpty(curIndex)) {
             curIndex = 0;
         }
         var option = {
@@ -785,15 +773,15 @@
      * @param option 格式{option: '调用的方法名，需要拼接成字符串'}
      */
     app.prototype.customMenu = function (name, iconUrl, option) {
-        var that = this;
+        var $this = this;
         var cmd = 'CLIENT_CUSTOM_MENU';
         B.postNotification(cmd, $.extend({
             index: 0,
             show: 1, //是否显示  1显示，0不显示
             width: '60',
             height: '25',
-            icon: that.isEmpty(iconUrl) ? '' : iconUrl, //菜单图标，为空或没有此属性，则不显示
-            menu: that.isEmpty(name) ? '' : name, //菜单名称，为空或没有此属性，则不显示
+            icon: $this.isEmpty(iconUrl) ? '' : iconUrl, //菜单图标，为空或没有此属性，则不显示
+            menu: $this.isEmpty(name) ? '' : name, //菜单名称，为空或没有此属性，则不显示
             option: '', //操作，实际类型为js方法，在客户端上调用webapp内的js方法
             children: [] //为子菜单列表，如上述属性
         }, option));
@@ -815,7 +803,7 @@
      */
     app.prototype.textareaToHtml = function (content) {
         var $this = this;
-        if ($this.isEmpty(content)) {
+        if (activityApp.isEmpty(content)) {
             return content;
         }
         var reg = new RegExp("\n", "g");
@@ -831,7 +819,7 @@
      */
     app.prototype.htmlToTextarea = function (content) {
         var $this = this;
-        if ($this.isEmpty(content)) {
+        if (activityApp.isEmpty(content)) {
             return content;
         }
         var reg = new RegExp("<br>", "g");
@@ -839,35 +827,6 @@
         content = content.replace(reg, "\n");
         content = content.replace(regSpace, " ");
         return content;
-    };
-    /**
-     * banner跳转
-     * @param banner
-     */
-    app.prototype.bannerJump = function (banner) {
-        var that = this;
-        if (that.isEmpty(banner)) {
-            return;
-        }
-        var linkContent = banner.linkContent;
-        switch (banner.linkType) {
-            case "void":
-                break;
-            case "special_topic":
-                that.openSpecial(linkContent);
-                break;
-            case "course":
-                break;
-            case "link":
-                that.openUrl(linkContent);
-                break;
-            case "group":
-                that.openGroup(linkContent);
-                break;
-            case "js":
-                eval("(" + linkContent + ")");
-                break;
-        }
     };
     /**
      * 创作专题
@@ -886,34 +845,42 @@
      */
     app.prototype.ajaxPost = function(url, params, success, error, tips){
         var $this = this;
-        $.ajax({
-            url: url,
-            type: "post",
-            data: params,
-            dataType: "json",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function(data){
-                if (!$this.isEmpty(tips)) {
-                    if (data.success) {
-                        $this.showMsg(tips + "成功");
-                        success(data);
-                    } else {
-                        var errorMessage = data.message;
-                        if ($this.isEmpty(errorMessage)) {
-                            errorMessage = tips + "失败";
+        if (activityApp.isEmpty(tips)) {
+            tips = "";
+        }
+        $.post(url, params, function (data) {
+            if (!activityApp.isEmpty(tips)) {
+                if (data.success) {
+                    $this.showMsg(tips + "成功", function () {
+                        if (activityApp.isFunction(success)) {
+                            success(data);
                         }
-                        $this.showMsg(errorMessage);
-                    }
+                    });
                 } else {
+                    var errorMessage = data.message;
+                    if (activityApp.isEmpty(errorMessage)) {
+                        errorMessage = tips + "失败";
+                    }
+                    $this.showMsg(errorMessage, function () {
+                        if (activityApp.isFunction(success)) {
+                            success(data);
+                        }
+                    });
+                }
+            } else {
+                if (activityApp.isFunction(success)) {
                     success(data);
                 }
-            },
-            error:function(){
-                if (!$this.isEmpty(tips)) {
-                    $this.showMsg(tips + "失败");
-                } else {
+            }
+        }).fail(function () {
+            if (!activityApp.isEmpty(tips)) {
+                $this.showMsg(tips + "失败", function () {
+                    if (activityApp.isFunction(error)) {
+                        error(data);
+                    }
+                });
+            }else {
+                if (activityApp.isFunction(error)) {
                     error();
                 }
             }
@@ -921,120 +888,106 @@
     };
     app.prototype.ajaxPostLoading = function(url, params, success, error, tips){
         var $this = this;
-        var object = $this.loading("正在处理");
-        $.ajax({
-            url: url,
-            type: "post",
-            data: params,
-            dataType: "json",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function(data){
-                if (!$this.isEmpty(tips)) {
-                    if (data.success) {
-                        object.close();
-                        $this.showMsg(tips + "成功");
-                        setTimeout(function () {
-                            success(data);
-                        }, 1500);
-                    } else {
-                        var errorMessage = data.message;
-                        if ($this.isEmpty(errorMessage)) {
-                            errorMessage = tips + "失败";
-                        }
-                        object.close();
-                        $this.showMsg(errorMessage);
-                    }
-                }else {
-                    success(data);
+        if (activityApp.isEmpty(tips)) {
+            tips = "";
+        }
+        var object = $this.loading();
+        $.post(url, params, function (data) {
+            if (data.success) {
+                if (!activityApp.isEmpty(tips)) {
+                    tips += "成功";
                 }
-            },
-            error:function(){
-                object.close();
-                if (!$this.isEmpty(tips)) {
-                    $this.showMsg(tips + "失败");
-                } else {
+                $this.loadingEndSuccess(object, tips, function () {
+                    if (activityApp.isFunction(success)) {
+                        success(data);
+                    }
+                });
+            } else {
+                var errorMessage = data.message;
+                if (!activityApp.isEmpty(errorMessage)) {
+                    tips = errorMessage;
+                } else if (!activityApp.isEmpty(tips)) {
+                    tips += "失败";
+                }
+                $this.loadingEndError(object, tips, function () {
+                    if (activityApp.isFunction(error)) {
+                        error();
+                    }
+                });
+            }
+        }).fail(function () {
+            if (!activityApp.isEmpty(tips)) {
+                tips += "失败";
+            }
+            $this.loadingEndError(object, tips, function () {
+                if (activityApp.isFunction(error)) {
                     error();
                 }
-            }
+            });
         });
     };
-    app.prototype.loading = function (tips) {
+    app.prototype.loading = function () {
         var toast = $(document).dialog({
-            type : 'toast',
-            infoIcon: ctx + '/mobile/assets/img/loading.gif',
-            infoText: tips
+            type : 'noticeLoading',
+            infoIcon: ctx + '/mobile/assets/lib/dialog2/images/icon/loading.gif'
         });
         return toast;
     };
     app.prototype.loadingEndSuccess = function (object, tips, callback) {
-        var $this = this;
-        object.update({
-            infoIcon: ctx + '/mobile/assets/img/success.png',
-            infoText: tips,
-            autoClose: 1500,
-            onClosed: function () {
-                if (!$this.isEmpty(callback) && typeof(callback) === "function") {
-                    callback();
+        object.close();
+        if (!activityApp.isEmpty(tips)) {
+            $(document).dialog({
+                type: 'notice',
+                infoText: tips,
+                autoClose: 1500,
+                onClosed: function () {
+                    if (activityApp.isFunction(callback)) {
+                        callback();
+                    }
                 }
+            });
+        } else {
+            if (activityApp.isFunction(callback)) {
+                callback();
             }
-        });
-    };
-    app.prototype.loadingEndError = function (object, tips, callback) {
-        var $this = this;
-        object.update({
-            infoIcon: ctx + '/mobile/assets/img/fail.png',
-            infoText: tips,
-            autoClose: 1500,
-            onClosed: function () {
-                if (!$this.isEmpty(callback) && typeof(callback) === "function") {
-                    callback();
-                }
-            }
-        });
-    };
-    app.prototype.getCloudFileAnnexType = function (suffix) {
-        var $this = this;
-        if ($this.workAnnexSuffixes.pictureSuffixes.includes(suffix)) {
-            return "picture";
-        } else if ($this.workAnnexSuffixes.audioSuffixes.includes(suffix)) {
-            return "audio";
-        } else if ($this.workAnnexSuffixes.videoSuffixes.includes(suffix)) {
-            return "video";
-        } else if ($this.workAnnexSuffixes.wordSuffixes.includes(suffix)) {
-            return "word";
-        } else if ($this.workAnnexSuffixes.pptSuffixes.includes(suffix)) {
-            return "ppt";
         }
-        return "";
     };
     /**
-     * 后退指定层级
-     * @param level
+     * 保存图片到系统相册
+     * @param imageUrl
+     * @param imageData
+     * @param suffix
      */
-    app.prototype.backSpecifiedLevel = function (level) {
-        B.postNotification('CLIENT_EXIT_LEVEL', { "level": level});
-    };
-    app.prototype.isFunction = function (callback) {
-        return typeof (callback) === "function";
-    };
-    app.prototype.confirm = function (title, sure, cancel, sureBtnTitle, cancleBtnTitle) {
+    app.prototype.savePicToSys = function (imageUrl, imageData, suffix){
+        B.postNotification('CLIENT_SAVE_IMAGE', {
+            // imageUrl: "",   //图片路径
+            imageData: imageData, //base64 data数据
+            suffix: suffix //后缀
+        });
+    }
+    app.prototype.loadingEndError = function (object, tips, callback) {
         var $this = this;
-        if ($this.isEmpty(sureBtnTitle)) {
+        $this.loadingEndSuccess(object, tips, callback);
+    };
+    app.prototype.confirm = function (title, content, sure, cancel, sureBtnTitle, cancleBtnTitle) {
+        if (activityApp.isEmpty(title)) {
+            title = "提示";
+        }
+        if (activityApp.isEmpty(sureBtnTitle)) {
             sureBtnTitle = "确定";
         }
-        if ($this.isEmpty(cancleBtnTitle)) {
+        if (activityApp.isEmpty(cancleBtnTitle)) {
             cancleBtnTitle = "取消";
         }
         $(document).dialog({
+            titleText: title,
             type : 'confirm',
-            content: title,
+            content: content,
             buttons: [
                 {
                     name: cancleBtnTitle,
                     callback: function () {
-                        if ($this.isFunction(cancel)) {
+                        if (activityApp.isFunction(cancel)) {
                             cancel();
                         }
                     }
@@ -1042,7 +995,7 @@
                 {
                     name: sureBtnTitle,
                     callback: function () {
-                        if ($this.isFunction(sure)) {
+                        if (activityApp.isFunction(sure)) {
                             sure();
                         }
                     }
@@ -1059,9 +1012,9 @@ Array.prototype.remove = function(val) {
     }
 };
 Array.prototype.pushArray = function (array) {
-    var that = this;
+    var $this = this;
     $.each(array, function () {
-        that.push(this);
+        $this.push(this);
     });
 }
 Array.prototype.contains = function (val) {
@@ -1096,6 +1049,9 @@ $(document).ready(function () {
     } catch (e) {
     }
     if (!app.isChaoxingApp()) {
+        _jsBridgeReady();
+    }else if (activityApp.isEmbedded()) {
+        // iframe嵌入的页面需要手动调用
         _jsBridgeReady();
     }
 });

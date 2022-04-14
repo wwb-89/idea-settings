@@ -15,10 +15,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.chaoxing</groupId>
-			<artifactId>activity-model</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.chaoxing</groupId>
 			<artifactId>activity-service</artifactId>
 		</dependency>
 		<dependency>

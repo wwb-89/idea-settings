@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/poster-new.css">
+    <title>海报app</title>
+
+</head>
+
+<body>
+    <div class="poster-app" id="capture">
+        <div class="capture-box">
+            <div class="poster-box">
+                <div class="img-box js-crop-img">
+                    <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpicb.zhimg.com%2Fv2-fa83d0a3178b8c722b45c755b9d59785_b.jpg&refer=http%3A%2F%2Fpicb.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625382454&t=3ee0622bc98200969d39c483dab88f44" alt="">
+                    <!--<img src="https://img2.baidu.com/it/u=315239622,3439430321&fm=26&fmt=auto" alt="">-->
+                </div>
+                <div class="text-box">
+                    <p class="text-title">书香浙江 云享阅读2020浙江省云阅读计划之“晒书房·荐图书云享阅读2020浙江省云阅读计划之云享阅读2020浙江省云阅读计划之</p>
+                   <dl class="text-list">
+                        <span class="icon icon-time"></span>
+                       <dd class="info"> 2021.03.29 00:00 ~ 2021.03.31 23:59</dd>
+                   </dl>
+                    <dl class="text-list">
+                        <span class="icon icon-addr"></span>
+                        <dd class="info">上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号</dd>
+                    </dl>
+                    <dl class="text-list">
+                        <span class="icon icon-host"></span>
+                        <dd class="info">浙江图书馆</dd>
+                    </dl>
+                </div>
+                <div class="split-line"><span></span></div>
+                <div class="qrcode-box">
+                    <!--<img src="../assets/images/qrcode.png" alt="">-->
+                    <!--<canvas id="canvas" class="qrcode" width="172" height="172"></canvas>-->
+                    <div id="canvas" class="qrcode"></div>
+                </div>
+                <div class="text-tip">扫码访问</div>
+            </div>
+            <img id="canvasImage" src="" alt="">
+        </div>
+        <div class="btn-download"><i class="icon"></i> 下载</div>
+    </div>
+
+    <script src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/qrcode.min.js"></script>
+    <script src="../assets/lib/html2canvas.min.js"></script>
+    <script src="../assets/lib/jqthumb.min.js"></script>
+    <script>
+      // $('.js-crop-img img').jqthumb({
+      //   width:'100%',
+      //   height:'100%'
+      // });
+        /*多行省略  start*/
+        function getHeight(el,lineheight){
+            var heightSome = el.clientHeight;
+            var wareNameText = el.innerHTML;//获取内容
+            console.log(heightSome)
+            if(heightSome>lineheight){ //这个数字是两行的时候的高度，根据你设定的字体大小有关
+                for(var i=0;heightSome>lineheight;i++){
+                    //每次删掉最后一个然后返回
+                    wareNameText = wareNameText.substring(0,wareNameText.length-1);
+                    //重新返回的字符在写在span里面 ，计算新的高度
+                    el.innerHTML = wareNameText;
+                    heightSome = el.clientHeight;
+                }
+                //得到正好符合高度的字符，删除最后一个变为省略号 填充在页面里
+                el.innerHTML = wareNameText.substring(0,wareNameText.length-1)+'...';
+            }
+        }
+        /*多行省略  end*/
+
+      var text = $(".text-list .info");
+      for (var i = 0; i < text.length; i++) {
+          getHeight(text[i], 40);
+      }
+      getHeight($('.text-title')[0], 42);
+
+      var height = $('.img-box img').height();
+      var imgContainerHeight = $(".img-box").height();
+      console.log("heighth" + height);
+      console.log("imgContainerHeight" + imgContainerHeight);
+      if (height > imgContainerHeight) {
+          var top = 0 - parseInt((height - imgContainerHeight) / 2);
+          $('.img-box img').css('margin-top', top);
+      }
+
+
+      new QRCode(document.getElementById('canvas'),{
+            text: "http://www.runoob.com",
+            width: 107.5,
+            height: 107.5,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+        });
+
+
+
+        html2canvas(document.querySelector(".poster-box"),{useCORS: true}).then(canvas => {
+            canvas.width= document.documentElement.clientWidth;
+            canvas.height= document.documentElement.clientHeight;
+            // $(canvas).addClass('captureImg');
+            var imageData = canvas.toDataURL('image/png', 1.0);
+            $('#canvasImage')[0].src = imageData;
+            $('#canvasImage').addClass('hasData');
+        });
+
+
+    </script>
+
+</body>
+</html>

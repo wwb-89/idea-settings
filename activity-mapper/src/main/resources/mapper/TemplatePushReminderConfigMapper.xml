@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.TemplatePushReminderConfigMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TemplatePushReminderConfig">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
+        <result column="is_remind_within_role_scope" jdbcType="BIT" property="remindWithinRoleScope" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.template_component_id, t.is_remind_within_role_scope
+    </sql>
+</mapper>

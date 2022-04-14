@@ -2,1049 +2,2149 @@
 <html lang="en">
 
 <head>
+    <title>创建活动</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="../assets/lib/webuploader/webuploader.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/lib/Swiper-3.4.2/dist/css/swiper.min.css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/create.css">
-    <title>创建活动</title>
+    <script src="../assets/lib/jquery.min.js"></script>
+    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+    <style>
+        body .create-class .layui-layer-btn0{
+            width: 30px;
+            height: 30px;
+            border: 1px solid #82c3ff;
+            border-radius: 15px;
+            font-size: 13px;
+            margin: 5px 10px 0 5px;
+            color: #0084ff;
+            background: #ffffff;
+            line-height: 30px;
+        }
+        body .create-class .layui-layer-btn1{
+            width: 30px !important;
+            height: 30px !important;
+            border: 1px solid #82c3ff !important;
+            border-radius: 15px !important;
+            font-size: 13px;
+            margin: 5px 5px 0 10px;
+            color: #ffffff;
+            background: #0084ff;
+            line-height: 30px;
+        }
+    </style>
+    <script type="text/javascript">
+        RichTextUitl.loadEditorProfile();
+    </script>
 </head>
 
 <body>
-    <div class="page" id="app" v-cloak>
-        <!-- 创建活动头部 -->
-        <div class="top flex box" id="create">
-            <a href="#" class="flex" @click="handleLast">
-                <img src="../assets/images/left.png" alt="" class="left">
-                <span class="create">创建活动</span>
-            </a>
-            <div v-show="!pageShow">
-                <button type="button" class="create-btn" @click="handleNext">下一步</button>
-            </div>
-            <div v-show="pageShow">
-                <button type="button" class="create-btn" @click="handleLast">上一步</button>
-            </div>
+<div class="page special-style" id="app" v-cloak>
+    <!-- 创建活动头部 -->
+    <div class="top flex" id="create">
+        <div class="go-back"><i class="icon-back"></i><span>返回</span></div>
+        <div class="name-txt">字段编辑</div>
+        <button type="button" class="btn-second-normal btn-width-80 margin-left-auto" @click="handleNext">保存</button>
+        <button type="button" class="create-btn btn-width-80">发布</button>
+    </div>
+    <!-- 编辑活动头部 -->
+    <div class="top flex box" id="edit" style="display: none;">
+        <a href="#" class="flex" @click="handleLast">
+            <img src="../assets/images/left.png" alt="" class="left">
+            <span class="create">编辑活动</span>
+        </a>
+        <div>
+            <button type="button" class="cancle-btn">预览</button>
+            <button type="button" class="create-btn">保存</button>
         </div>
-        <!-- 编辑活动头部 -->
-        <div class="top flex box" id="edit" style="display: none;">
-            <a href="#" class="flex" @click="handleLast">
-                <img src="../assets/images/left.png" alt="" class="left">
-                <span class="create">编辑活动</span>
-            </a>
-            <div>
-                <button type="button" class="cancle-btn">预览</button>
-                <button type="button" class="create-btn">保存</button>
+    </div>
+    <!--            下拉框固定底部 在里面-->
+    <div class="info box" v-show="!pageShow">
+        <form action="">
+            <div class="title">基本信息</div>
+            <!--            下拉框固定底部-->
+            <div class="form-item">
+                <label class="label">下拉框固定底部</label>
+                <div class="input-box">
+                    <el-select v-model="value1" placeholder="请选择" popper-class="fixed-select">
+                        <el-option v-for="item in options9" :key="item.value" :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+<!--                        注意这有俩个编辑，一个空的一个有数据的，我已经尽力了，只有这样能实现-->
+                    <div class="setiing-absolute" v-on:click="chooseDialog=true"><i class="icon-setting"></i>编辑</div>
+                    <div slot="empty" class="no-content-self">
+                        <div class="no-con">暂无选项</div>
+                        <div class="setiing-absolute" v-on:click="chooseDialog=true"><i class="icon-setting"></i>编辑</div>
+                    </div>
+                    </el-select>
+                </div>
             </div>
-        </div>
-        <div class="info box" v-show="!pageShow">
-            <form action="">
-                <div class="title">基本信息</div>
-                <div class="form-item">
-                    <label class="label position"><img src="../assets/images/required.png" alt=""
-                            class="required-img">名称</label>
-                    <div class="input-box">
-                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit>
-                        </el-input>
-                    </div>
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png" alt=""
+                                          class="required-img">名称</label>
+                <div class="input-box">
+                    <el-input type="text" placeholder="请填写" v-model="name" maxlength="50" show-word-limit>
+                    </el-input>
                 </div>
-                <div class="form-item">
-                    <label class="label">时间</label>
-                    <div class="input-box">
-                        <el-date-picker v-model="time1" type="daterange" range-separator="至" start-placeholder="开始时间"
-                            end-placeholder="结束时间">
-                        </el-date-picker>
-                    </div>
+            </div>
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png"
+                                          alt="" class="required-img">时间</label>
+                <div class="input-box">
+                    <el-date-picker v-model="time2"
+                                    type="daterange"
+                                    start-placeholder="开始时间"
+                                    end-placeholder="结束时间"
+                                    format="yyyy-MM-dd"
+                                    value-format="yyyy-MM-dd"
+                                    prefix-icon="disable"
+                                    clear-icon="disable"
+                                    unlink-panels>
+                        <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
+                    </el-date-picker>
+                    <span class="date-piker-icon">
+                        <img src="../assets/images/calendar.png">
+                    </span>
                 </div>
-                <div class="form-item">
-                    <label class="label">发放对象</label>
-                    <div class="input-box wrap">
-                        <div class="type-item">一级单位<img src="../assets/images/del-little.png" alt="" class="del-img">
-                        </div>
-                        <div class="type-item">一级单位(1)<img src="../assets/images/del-little.png" alt="" class="del-img">
-                        </div>
-                       
-                        <div class="type-item add" @click="handleRelease">
-                            <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">
-                            添加
-                        </div>
+            </div>
+            <div class="form-item align-start">
+                <label class="label cover"><img src="../assets/images/required.png"
+                                                alt="" class="required-img">封面</label>
+                <div class="input-box">
+                    <div class="img-box">
+                        <img src="../assets/images/img.png" alt="" class="cover-img jqthumbImg">
+                        <div class="clear-cover">清除封面</div>
                     </div>
-                </div>
-                <div class="form-item">
-                    <label class="label position" style="line-height: 100px;"><img src="../assets/images/required.png"
-                            alt="" class="required-img">封面</label>
-                    <div class="input-box">
-                        <div class="img-box">
-                            <img src="../assets/images/img.png" alt="" class="cover-img jqthumbImg">
-                        </div>
-                        <div class="font-box">
-                            <span>建议尺寸：1080x500</span>
-                            <span>大小：小于5M</span>
-                            <span>格式：jpg、png、gif</span>
+                    <div class="font-box">
+                        <span>建议尺寸：1080x500</span>
+                        <span>大小：小于5M</span>
+                        <span>格式：jpg、png、gif</span>
+                        <div class="btn-box">
                             <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
-                                onchange="showImg(this)" />
-                            <div class="cancle-btn upload">上传文件</div>
+                               onchange="showImg(this)"/>
+                            <!--<div class="cancle-btn upload">上传文件</div>-->
+                            <button onclick="uploadImage(this)" class="cancle-btn upload">上传文件</button>
+                            <div class="cancle-btn picture-btn" @click="pictureShow=true">图片库</div>
                         </div>
                     </div>
                 </div>
-                <div class="form-item">
-                    <label class="label">活动类型</label>
-                    <div class="input-box">
-                        <el-radio v-model="radio" label="1" name="active-type">线上活动</el-radio>
-                        <el-radio v-model="radio" label="2" name="active-type">线下活动</el-radio>
-                        <!--
-                            <div class="radio-box"><input type="radio" name="active-type" title="线上活动"
-                                value="0" /><span>线上活动</span>
-                            </div>
-                            <div class="radio-box">
-                                <input type="radio" name="active-type" title="线下活动" value="1" checked /><span>线下活动</span>
-                            </div>
-                        -->
-                    </div>
+            </div>
+            <div class="form-item">
+                <label class="label">活动类型</label>
+                <div class="input-box">
+                    <el-radio v-model="radio" label="1" name="active-type">线上活动</el-radio>
+                    <el-radio v-model="radio" label="2" name="active-type">线下活动</el-radio>
+                    <!--
+                        <div class="radio-box"><input type="radio" name="active-type" title="线上活动"
+                            value="0" /><span>线上活动</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="active-type" title="线下活动" value="1" checked /><span>线下活动</span>
+                        </div>
+                    -->
                 </div>
-                <div class="form-item">
-                    <label class="label">位置</label>
-                    <div class="input-box">
-                        <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
-                            autocomplete="off" class="layui-input name show-addr" @click="handleFocus">
-                        <img src="../assets/images/location.png" alt="" class="length icon">
-                    </div>
+            </div>
+            <div class="form-item">
+                <label class="label">多选框</label>
+                <div class="input-box">
+                    <el-checkbox-group v-model="checkValue">
+                        <el-checkbox label="多选框1" name="type"></el-checkbox>
+                        <el-checkbox label="多选框2" name="type"></el-checkbox>
+                        <el-checkbox label="多选框3" name="type"></el-checkbox>
+                        <el-checkbox label="多选框4" name="type"></el-checkbox>
+                    </el-checkbox-group>
                 </div>
-                <div class="form-item">
-                    <label class="label">活动分类</label>
-                    <div class="input-box wrap">
-                        <div class="type-item active">活动</div>
-                        <div class="type-item">讲座</div>
-                        <div class="type-item">征文</div>
-                        <div class="type-item">自定义选项
-                            <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
+            </div>
+            <div class="form-item">
+                <label class="label">位置</label>
+                <div class="input-box">
+                    <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
+                           autocomplete="off" class="layui-input name show-addr" @click="handleFocus">
+                    <img src="../assets/images/location.png" alt="" class="length icon">
+                    <input type="text" required lay-verify="required" placeholder="详细地址，例：E5栋1308室"
+                           autocomplete="off" class="layui-input name show-addr-detailed">
+                </div>
+            </div>
+            <div class="form-item cancel-margin">
+                <label class="label">活动类型</label>
+                <div class="input-box wrap">
+                    <div class="type-item active">活动</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">征文</div>
+                    <div class="type-item paddingR0">自定义选项
+                        <!-- &lt;!&ndash;<img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">&ndash;&gt; -->
+                        <div class="more-box">
+                            <div class="more-btn"></div>
                             <div class="edit-box">
                                 <div @click="handleEdit">编辑</div>
                                 <div @click="handleDelete">删除</div>
                             </div>
                         </div>
-                        <div class="type-item add" @click="handleAdd">
-                            <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">
-                            新增
-                        </div>
+                    </div>
+                    <div class="type-item add" @click="handleAdd">
+                        <div class="add_btn"></div>
+                        新增
+                    </div>
+                    <div class="select-activity">
+                        <el-select v-model="value7" placeholder="请选择">
+                            <el-option v-for="item in options7" :key="item.value" :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
                     </div>
                 </div>
-            </form>
+            </div>
+            <div class="form-item cancel-margin marginTop16">
+                <label class="label">活动标签</label>
+                <div class="input-box wrap">
+                    <!--添加满3个后，隐藏添加按钮-->
+                    <div class="type-item">讲座<div class="del_btn"></div></div>
+                    <div class="type-item">讲座<div class="del_btn"></div></div>
+                    <div class="type-item">征文<div class="del_btn"></div></div>
+                    <div class="type-item add" @click="handleAdd">
+                        <div class="add_btn"></div>
+                        添加
+                    </div>
+                </div>
+            </div>
+            <div class="form-item last marginTop16">
+                <label class="label"><img src="../assets/images/required.png"
+                                          alt="" class="required-img">参与范围</label>
+                <div class="input-box wrap">
+                    <!--添加范围后-->
+                    <div style="display: block;">
+                        <div class="type-item add" @click="handleRelease">
+                            <div class="add_btn"></div>
+                            添加
+                        </div>
+                    </div>
+                    <!--未添加范围时-->
+                    <div style="display: none;" class="already_add">
+                        <div>
+                            已选择单位（192）
+                        </div>
+                        <img src="../assets/images/edit-3.png">
+                    </div>
+                </div>
+            </div>
+            <div class="form-item align-start">
+                <label class="label">活动说明</label>
+                <div class="input-box">
+                    <!-- 笔记编辑器 -->
+                    <div class="wrap ueditor">
+                        <script type="text/plain" id="container" name="content"></script>
+                    </div>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label"></label>
+                <p class="input-box">这是辅助说明，可能有可能没有。</p>
+            </div>
+            <div class="form-item align-start">
+                <label class="label">展示页面</label>
+                <div class="input-box display-block">
+                    <p class="tips first">请选择你的活动呈现页面</p>
+                    <div class="picture-list" style="background: #F7F8FA;position: relative">
+                        <div class="swiper-container">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide active">
+                                    <div class="img-box">
+                                        <img src="../assets/images/cover.png">
+                                        <div class="check_"></div>
+                                        <div class="zoom"></div>
+                                    </div>
+                                    <p class="overHidden1">活动模板2</p>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="img-box">
+                                        <img src="../assets/images/cover.png">
+                                        <div class="check_"></div>
+                                        <div class="zoom"></div>
+                                    </div>
+                                    <p class="overHidden1">活动模板2</p>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="img-box">
+                                        <img src="../assets/images/cover.png">
+                                        <div class="check_"></div>
+                                        <div class="zoom"></div>
+                                    </div>
+                                    <p class="overHidden1">活动模板2</p>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="img-box">
+                                        <img src="../assets/images/empty.png">
+                                        <div class="check_"></div>
+                                        <div class="zoom"></div>
+                                    </div>
+                                    <p class="overHidden1">活动模板2</p>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-next"><i class="icon-arrows-right"></i></div>
+                        <div class="swiper-prev"><i class="icon-arrows-left"></i></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 报名设置 -->
+    <div class="info box" v-show="!pageShow">
+        <div class="set-box">
+            <div class="title set">报名设置</div>
+            <el-switch v-model="delivery" class="section-switch"></el-switch>
         </div>
-        <!-- 报名设置 -->
-        <div class="info box" v-show="!pageShow">
-            <div class="set-box">
-                <div class="title set">报名设置</div>
-                <el-switch v-model="delivery" class="switch"></el-switch>
+        <form action="" class="setForm" v-show="delivery">
+            <!-- <div class="form-item">
+                <label class="label">参与形式</label>
+                <div class="input-box">
+                    <div class="radio-box">
+                        <input type="radio" name="method" value="1" v-model="radio" /><span>报名</span>
+                    </div>
+                    <div class="radio-box">
+                        <input type="radio" name="method" value="2" v-model="radio" /><span>签到</span>
+                    </div>
+                    <div class="radio-box">
+                        <input type="radio" name="method" value="3" v-model="radio" /><span>报名后签到</span>
+                    </div>
+                </div>
+            </div> -->
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png"
+                                          alt="" class="required-img">报名时间</label>
+                <div class="input-box">
+                    <el-date-picker v-model="time2"
+                                    type="datetimerange"
+                                    start-placeholder="开始时间"
+                                    end-placeholder="结束时间"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="yyyy-MM-dd HH:mm"
+                                    prefix-icon="disable"
+                                    clear-icon="disable"
+                                    el-date-picker
+                                    unlink-panels>
+                        <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
+                    </el-date-picker>
+                    <span class="date-piker-icon">
+                        <img src="../assets/images/time.png">
+                    </span>
+                </div>
             </div>
-            <form action="" class="setForm" v-show="delivery">
-                <!-- <div class="form-item">
-                    <label class="label">参与形式</label>
-                    <div class="input-box">
-                        <div class="radio-box">
-                            <input type="radio" name="method" value="1" v-model="radio" /><span>报名</span>
-                        </div>
-                        <div class="radio-box">
-                            <input type="radio" name="method" value="2" v-model="radio" /><span>签到</span>
-                        </div>
-                        <div class="radio-box">
-                            <input type="radio" name="method" value="3" v-model="radio" /><span>报名后签到</span>
-                        </div>
+            <div class="form-item flexStart">
+                <label class="label">参与范围</label>
+                <div class="join-box">
+                    <div :class="rangeRadio==1?'autoRange':''">
+                        <el-radio v-model="rangeRadio" label="1" name="active-type">不限</el-radio>
+                        <el-radio v-model="rangeRadio" label="2" name="active-type">自定义</el-radio>
                     </div>
-                </div> -->
-                <div class="form-item">
-                    <label class="label">报名时间</label>
-                    <div class="input-box">
-                        <el-date-picker v-model="time2" type="daterange" range-separator="至" start-placeholder="开始时间"
-                            end-placeholder="结束时间">
-                        </el-date-picker>
-                    </div>
-                </div>
-                <div class="form-item">
-                    <label class="label">人数限制</label>
-                    <div class="input-box">
-                        <div class="select-person">
-                            <el-select v-model="value1" placeholder="请选择">
-                                <el-option v-for="item in options1" :key="item.value" :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <input type="number" placeholder="请输入正整数" class="person" v-show="value1 == 2">
-                        <span class="person-span" v-show="value1 == 2">人</span>
-                    </div>
-                </div>
-                <!-- <div class="form-item" v-show="radio==1">
-                    <label class="label">报名方式</label>
-                    <div class="input-box">
-                        <div class="select" style="margin-top: 0;">
-                            <el-select v-model="value2" placeholder="请选择">
-                                <el-option v-for="item in options2" :key="item.value" :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <span class="tips">参与者点击报名即成功</span>
-                    </div>
-                </div>
-                <div class="form-item" v-show="radio==2">
-                    <label class="label">签到方式</label>
-                    <div class="input-box">
-                        <div class="select" style="margin-top: 0;">
-                            <el-select v-model="value4" placeholder="请选择">
-                                <el-option v-for="item in options4" :key="item.value" :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <span class="tips">参与者点击签到即成功</span>
-                    </div>
-                </div>
-                <div class="form-item" v-show="radio==3">
-                    <label class="label">签到方式</label>
-                    <div class="input-box">
-                        <div class="select" style="margin-top: 0;">
-                            <el-select v-model="value5" placeholder="请选择">
-                                <el-option v-for="item in options5" :key="item.value" :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <span class="tips">参与者需要到达指定位置才能进行签到</span>
-                    </div>
-                </div> -->
-                <div class="form-item">
-                    <label class="label" style="line-height: 20px;">信息填写</label>
-                    <div class="input-box column">
-                        <div class="set-box">
-                            <el-switch v-model="delivery2"></el-switch>
-                            <span class="tips">如何创建报名信息表单？</span>
-                        </div>
-                        <div class="select" v-show="delivery2">
-                            <el-select v-model="value3" placeholder="请选择">
-                                <el-option v-for="item in options3" :key="item.value" :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
+                    <div class="join-select" v-show="rangeRadio==2">
+                        <img src="../assets/images/add-circle.png" alt="" class="add-range" @click="handleAddRange">
+                        <span v-if="rangeShow">请选择</span>
+                        <div class="add-tags" v-else>
+                            <span>产品研发<i class="del_btn" @click="handleDelRange"></i></span>
+                            <span>基础教育研发部<i class="del_btn" @click="handleDelRange"></i></span>
+                            <span>市场部<i class="del_btn" @click="handleDelRange"></i></span>
+                            <span>产品研发<i class="del_btn" @click="handleDelRange"></i></span>
                         </div>
                     </div>
                 </div>
-                <div class="form-item">
-                    <label class="label line-h">报名名单公开</label>
-                    <div class="input-box">
-                        <el-switch v-model="delivery3"></el-switch>
+            </div>
+            <div class="form-item flexStart">
+                <label class="label">参与范围</label>
+                <div class="join-box">
+                    <div :class="rangeRadio==1?'autoRange':''">
+                        <el-radio v-model="rangeRadio" label="1" name="active-type">不限</el-radio>
+                        <el-radio v-model="rangeRadio" label="3" name="active-type">仅本单位</el-radio>
+                        <el-radio v-model="rangeRadio" label="2" name="active-type">自定义</el-radio>
+                    </div>
+                    <div class="join-select-new" v-show="rangeRadio==2">
+                        <p class="title-box">
+                            <span class="fl">部门</span>
+                            <span class="fr">分配名额</span>
+                        </p>
+                        <div class="list-box">
+                            <div class="text-box">
+                                <p class="text overHidden2">体育学院</p>
+                                <input type="text" placeholder="不限">
+                                <i class="icon-minus-circle"></i>
+                            </div>
+                            <div class="text-box">
+                                <p class="text overHidden2">文化旅游与体育学院文化旅游与体育学院文化旅游与体育学院文化旅游育学院文化旅游</p>
+                                <input type="text" placeholder="不限">
+                                <i class="icon-minus-circle"></i>
+                            </div>
+                            <div class="text-box">
+                                <p class="text overHidden2">文学院</p>
+                                <input type="text" placeholder="不限">
+                                <i class="icon-minus-circle"></i>
+                            </div>
+                            <div class="text-box">
+                                <p class="text overHidden2">政治学院</p>
+                                <input type="text" placeholder="不限">
+                                <i class="icon-minus-circle"></i>
+                            </div>
+                            <div class="text-box">
+                                <p class="text overHidden2">体育政治学院学院</p>
+                                <input type="text" placeholder="不限">
+                                <i class="icon-minus-circle"></i>
+                            </div>
+                            <div class="text-box">
+                                <p class="text overHidden2">体育政治学院学院</p>
+                                <input type="text" placeholder="不限">
+                                <i class="icon-minus-circle"></i>
+                            </div>
+                        </div>
+                        <div class="btn-box">
+                            <a href="javascript:;" @click="releaseShow=true"><i class="icon-plus-circle"></i>添加范围</a>
+                            <span class="number">当前总和：<span>20人</span></span>
+                        </div>
                     </div>
                 </div>
-                <div class="form-item">
-                    <label class="label">按钮名称</label>
-                    <div class="input-box btn-name">
-                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>
-                        </el-input>
+            </div>
+
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png"
+                                          alt="" class="required-img">人数限制</label>
+                <div class="input-box">
+                    <div class="select-person-radio">
+                        <el-radio v-model="value1" label="1" name="active-type">不限</el-radio>
+                        <el-radio v-model="value1" label="2" name="active-type">自定义</el-radio>
+                    </div>
+                    <!--<div class="select-person">-->
+                    <!--<el-select v-model="value1" placeholder="请选择">-->
+                    <!--<el-option v-for="item in options1" :key="item.value" :label="item.label"-->
+                    <!--:value="item.value">-->
+                    <!--</el-option>-->
+                    <!--</el-select>-->
+                    <!--</div>-->
+                    <input type="number" placeholder="请输入正整数" class="person" v-show="value1 == 2">
+                    <span class="person-span" v-show="value1 == 2">人</span>
+                </div>
+            </div>
+            <div class="form-item sign-info">
+                <label class="label">报名填报信息</label>
+                <div class="input-box">
+                    <div class="set-box">
+                        <el-switch v-model="delivery2"></el-switch>
+                        <span class="tips">开启后，报名者需填写信息</span>
+                    </div>
+                    <div class="radio-box">
+                        <el-radio v-model="value3" label="1" name="active-type">填写表单</el-radio>
+                        <el-radio v-model="value3" label="2" name="active-type">填写表单并审批</el-radio>
+                        <el-select v-model="value8" placeholder="请选择" popper-class="fixed-select">
+                            <el-option v-for="item in options9" :key="item.value" :label="item.label"  :value="item.value">
+                            </el-option>
+                            <!--  注意这有俩个编辑，一个空的一个有数据的 -->
+                            <div class="setiing-absolute" v-on:click="chooseDialog=true"><i class="icon-plus-circle"></i>新建</div>
+                            <div slot="empty" class="no-content-self">
+                                <div class="no-con">暂无选项</div>
+                                <div class="setiing-absolute" v-on:click="chooseDialog=true"><i class="icon-plus-circle"></i>编辑</div>
+                            </div>
+                        </el-select>
+                        <a href="javascript:;" class="set-box configurationForm">
+                            <img src="../assets/images/setting.png">
+                            <span class="tips set-information">配置表单</span>
+                        </a>
+                    </div>
+                    <ul class="form-list">
+                        <li class="item">
+                            <div class="left-box"></div>
+                            <p class="title overHidden2">审批表单1</p>
+                            <a href="javascript:;" class="edit-btn"></a>
+                            <a href="javascript:;" class="del-btn"></a>
+                        </li>
+                        <li class="item">
+                            <div class="left-box type1"></div>
+                            <p class="title lineH20 overHidden2">标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+                            <a href="javascript:;" class="edit-btn"></a>
+                            <a href="javascript:;" class="del-btn"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- <div class="form-item" v-show="radio==1">
+                <label class="label">报名方式</label>
+                <div class="input-box">
+                    <div class="select" style="margin-top: 0;">
+                        <el-select v-model="value2" placeholder="请选择">
+                            <el-option v-for="item in options2" :key="item.value" :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <span class="tips">参与者点击报名即成功</span>
+                </div>
+            </div>
+            <div class="form-item" v-show="radio==2">
+                <label class="label">签到方式</label>
+                <div class="input-box">
+                    <div class="select" style="margin-top: 0;">
+                        <el-select v-model="value4" placeholder="请选择">
+                            <el-option v-for="item in options4" :key="item.value" :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <span class="tips">参与者点击签到即成功</span>
+                </div>
+            </div>
+            <div class="form-item" v-show="radio==3">
+                <label class="label">签到方式</label>
+                <div class="input-box">
+                    <div class="select" style="margin-top: 0;">
+                        <el-select v-model="value5" placeholder="请选择">
+                            <el-option v-for="item in options5" :key="item.value" :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <span class="tips">参与者需要到达指定位置才能进行签到</span>
+                </div>
+            </div> -->
+            <div class="form-item align-start">
+                <label class="label" style="line-height: 20px;">信息填写</label>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch v-model="delivery2"></el-switch>
+                        <span class="tips">如何创建报名信息表单？</span>
+                    </div>
+                    <!--<div class="select" v-show="delivery2">-->
+                    <!--<el-select v-model="value3" placeholder="请选择">-->
+                    <!--<el-option v-for="item in options3" :key="item.value" :label="item.label"-->
+                    <!--:value="item.value">-->
+                    <!--</el-option>-->
+                    <!--</el-select>-->
+                    <!--</div>-->
+                    <div v-show="delivery2" class="set-box configurationForm" @click="openModal">
+                        <img src="../assets/images/setting.png">
+                        <span class="tips set-information">配置填报信息</span>
                     </div>
                 </div>
-            </form>
+            </div>
+            <div class="form-item">
+                <label class="label line-h">报名需审核</label>
+                <div class="input-box">
+                    <el-switch v-model="delivery3"></el-switch>
+                    <span class="tips">开启后，参与需发起人审核</span>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label line-h">报名名单公开</label>
+                <div class="input-box">
+                    <el-switch v-model="delivery4"></el-switch>
+                    <span class="tips">开启后，所有人都能看到报名人员名单</span>
+                </div>
+            </div>
+            <div class="form-item align-start">
+                <label class="label" style="line-height: 20px;">报名成功通知</label>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch v-model="delivery7"></el-switch>
+                        <span class="tips">开启后，可以为报名成功的用户发送特定内容的通知</span>
+                    </div>
+                    <div v-show="delivery7" class="set-box configurationForm" @click="openMessage">
+                        <img src="../assets/images/setting.png">
+                        <span class="tips set-information">编辑通知内容</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-item align-start">
+                <label class="label" style="line-height: 20px;">推送提醒</label>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch v-model="delivery7"></el-switch>
+                        <span class="tips">开启后，可为固定人群发送活动推送</span>
+                    </div>
+                    <div v-show="delivery7" class="set-box configurationForm" @click="openRemind">
+                        <img src="../assets/images/setting.png">
+                        <span class="tips set-information">编辑提醒内容</span>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="form-item">-->
+            <!--<label class="label">按钮名称</label>-->
+            <!--<div class="input-box btn-name">-->
+            <!--<el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>-->
+            <!--</el-input>-->
+            <!--</div>-->
+            <!--</div>-->
+            <div class="bottom-box">
+                <a href="javascript:;" class="add-btn"><i class="icon-plus"></i>添加报名批次</a>
+                <a href="javascript:;" @click="batchManageShow=true"><i class="icon-sort"></i>批量管理</a>
+                <a href="javascript:;"><i class="icon-trash-2"></i> 删除</a>
+            </div>
+        </form>
+    </div>
+    <!-- 签到设置 -->
+    <div class="info box" v-show="!pageShow">
+        <div class="set-box">
+            <div class="title set">签到设置</div>
+            <el-switch v-model="delivery1" class="section-switch"></el-switch>
         </div>
-        <!-- 签到设置 -->
-        <div class="info box" v-show="!pageShow">
-            <div class="set-box">
-                <div class="title set">签到设置</div>
-                <el-switch v-model="delivery1" class="switch"></el-switch>
+        <form action="" class="setForm" v-show="delivery1">
+            <div class="form-item">
+                <label class="label">签到方式</label>
+                <div class="input-box">
+                    <el-radio v-model="radio" label="1">普通签到</el-radio>
+                    <el-radio v-model="radio" label="2">位置签到</el-radio>
+                    <el-radio v-model="radio" label="3">二维码签到</el-radio>
+                </div>
             </div>
-            <form action="" class="setForm" v-show="delivery1">
-                <div class="form-item">
-                    <label class="label">签到方式</label>
-                    <div class="input-box">
-                        <el-radio v-model="radio" label="1">报名</el-radio>
-                        <el-radio v-model="radio" label="2">签到</el-radio>
-                        <el-radio v-model="radio" label="3">报名后签到</el-radio>
-                        <!-- <div class="radio-box">
-                            <input type="radio" name="method" value="1" v-model="radio" /><span>报名</span>
-                        </div>
-                        <div class="radio-box">
-                            <input type="radio" name="method" value="2" v-model="radio" /><span>签到</span>
-                        </div>
-                        <div class="radio-box">
-                            <input type="radio" name="method" value="3" v-model="radio" /><span>报名后签到</span>
-                        </div> -->
-                    </div>
+            <!--普通签到-->
+            <div class="form-item">
+                <label class="label">签到时间</label>
+                <div class="input-box">
+                    <el-date-picker v-model="time3"
+                                    type="datetimerange"
+                                    start-placeholder="开始时间"
+                                    end-placeholder="结束时间"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="yyyy-MM-dd HH:mm"
+                                    prefix-icon="disable"
+                                    clear-icon="disable"
+                                    unlink-panels>
+                        <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
+                    </el-date-picker>
+                    <span class="date-piker-icon">
+                        <img src="../assets/images/time.png">
+                    </span>
                 </div>
-                <div class="form-item">
-                    <label class="label">签到时间</label>
-                    <div class="input-box">
-                        <el-date-picker v-model="time3" type="daterange" range-separator="至" start-placeholder="开始时间"
-                            end-placeholder="结束时间">
-                        </el-date-picker>
-                    </div>
+            </div>
+            <div class="form-item">
+                <label class="label line-h">签到名单公开</label>
+                <div class="input-box">
+                    <el-switch v-model="delivery3"></el-switch>
                 </div>
-                <div class="form-item">
-                    <label class="label">人数限制</label>
-                    <div class="input-box">
-                        <div class="select-person">
-                            <el-select v-model="value1" placeholder="请选择">
-                                <el-option v-for="item in options1" :key="item.value" :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <input type="text" placeholder="请输入正整数" class="person" v-show="value1 == 2">
-                        <span class="person-span" v-show="value1 == 2">人</span>
-                    </div>
+            </div>
+            <!--位置签到-->
+            <div class="form-item">
+                <label class="label">位置</label>
+                <div class="input-box">
+                    <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
+                           autocomplete="off" class="layui-input name show-addr" @click="handleFocus">
+                    <img src="../assets/images/location.png" alt="" class="length icon">
+                    <input type="text" required lay-verify="required" placeholder="详细地址，例：E5栋1308室"
+                           autocomplete="off" class="layui-input name show-addr-detailed">
                 </div>
-                <div class="form-item">
-                    <label class="label" style="line-height: 20px;">信息填写</label>
-                    <div class="input-box column">
-                        <div class="set-box">
-                            <el-switch v-model="delivery2"></el-switch>
-                            <span class="tips">如何创建报名信息表单？</span>
-                        </div>
-                        <div class="select" v-show="delivery2">
-                            <el-select v-model="value3" placeholder="请选择">
-                                <el-option v-for="item in options3" :key="item.value" :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
+            </div>
+            <!--二维码签到-->
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png"
+                                          alt="" class="required-img">扫码方式</label>
+                <div class="input-box">
+                    <div class="select-person">
+                        <el-select v-model="value1" placeholder="请选择">
+                            <el-option v-for="item in options6" :key="item.value" :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
                     </div>
+                    <span class="tips">需管理员扫描参与者的二维码进行签到</span>
                 </div>
-                <div class="form-item">
-                    <label class="label line-h">签到名单公开</label>
-                    <div class="input-box">
-                        <el-switch v-model="delivery3"></el-switch>
-                    </div>
-                </div>
-                <div class="form-item">
-                    <label class="label">按钮名称</label>
-                    <div class="input-box btn-name">
-                        <el-input type="text" placeholder="请输入内容" v-model="btnName2" maxlength="6" show-word-limit>
-                        </el-input>
-                    </div>
-                </div>
-            </form>
+            </div>
+
+        </form>
+    </div>
+    <!-- 签退设置 -->
+    <div class="info box" v-show="!pageShow">
+        <div class="set-box">
+            <div class="title set">签退设置</div>
+            <el-switch v-model="delivery1" class="section-switch"></el-switch>
         </div>
-        <!-- 去掉了 -->
-        <div class="info box" style="display: none;">
-            <div class="set-box">
-                <div class="title">模块配置</div>
-                <span class="tips">按住鼠标左键调整模块的顺序</span>
+        <form action="" class="setForm" v-show="delivery1">
+            <div class="form-item">
+                <label class="label">签退方式</label>
+                <div class="input-box">
+                    <el-radio v-model="radio" label="1">普通签到</el-radio>
+                    <el-radio v-model="radio" label="2">位置签到</el-radio>
+                    <el-radio v-model="radio" label="3">二维码签到</el-radio>
+                </div>
             </div>
-            <div class="item-box">
-                <div class="modle-item" v-for="modular in modularArr" draggable="true"
-                    @dragstart="handleDragStart($event, modular)" @dragover.prevent="handleDragOver($event, modular)"
-                    @dragenter="handleDragEnter($event, modular)" @dragend="handleDragEnd($event, modular)">
-                    <img src="../assets/images/dellete-red.png" alt="" class="dellete">
-                    <img :src="modular.imgSrc" alt="" class="img">
-                    <span>{{modular.title}}</span>
+            <!--普通签到-->
+            <div class="form-item">
+                <label class="label">签退时间</label>
+                <div class="input-box">
+                    <el-date-picker v-model="time2"
+                                    type="datetimerange"
+                                    start-placeholder="开始时间"
+                                    end-placeholder="结束时间"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="yyyy-MM-dd HH:mm"
+                                    prefix-icon="disable"
+                                    clear-icon="disable"
+                                    unlink-panels>
+                        <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
+                    </el-date-picker>
+                    <span class="date-piker-icon">
+                        <img src="../assets/images/time.png">
+                    </span>
                 </div>
-                <div class="modle-item add" id="addModle">
-                    <div><img src="../assets/images/add.png" alt=""></div>
-                    <span>添加模块</span>
+            </div>
+            <div class="form-item">
+                <label class="label line-h">签到名单公开</label>
+                <div class="input-box">
+                    <el-switch v-model="delivery3"></el-switch>
                 </div>
+            </div>
+            <!--位置签到-->
+            <div class="form-item">
+                <label class="label">位置</label>
+                <div class="input-box">
+                    <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
+                           autocomplete="off" class="layui-input name show-addr" @click="handleFocus">
+                    <img src="../assets/images/location.png" alt="" class="length icon">
+                    <input type="text" required lay-verify="required" placeholder="详细地址，例：E5栋1308室"
+                           autocomplete="off" class="layui-input name show-addr-detailed">
+                </div>
+            </div>
+            <!--二维码签到-->
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png"
+                                          alt="" class="required-img">扫码方式</label>
+                <div class="input-box">
+                    <div class="select-person">
+                        <el-select v-model="value1" placeholder="请选择">
+                            <el-option v-for="item in options6" :key="item.value" :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <span class="tips">需管理员扫描参与者的二维码进行签到</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 积分设置 -->
+    <div class="info box">
+        <div class="set-box">
+            <div class="title set">积分设置</div>
+            <el-switch v-model="delivery5" class="section-switch"></el-switch>
+        </div>
+        <form action="" class="setForm" v-show="delivery5">
+            <div class="form-item">
+                <label class="label">分值</label>
+                <div class="input-box">
+                    <input type="number" placeholder="请输入" class="score-input">
+                    <span class="score">分</span>
+                    <span>参与者在活动成绩为合格时，即可获取相应积分</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 评价设置 -->
+    <div class="info box">
+        <div class="set-box">
+            <div class="title set">评价设置</div>
+            <el-switch v-model="delivery5" class="section-switch"></el-switch>
+        </div>
+        <form action="" class="setForm" v-show="delivery5">
+            <div class="form-item">
+                <label class="label">评价需审核</label>
+                <div class="input-box">
+                    <el-switch v-model="delivery6" class="examine-switch"></el-switch>
+                    <span>开启后，审核后的评价才能展示在评价列表</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 去掉了 -->
+    <div class="info box" style="display: none;">
+        <div class="set-box">
+            <div class="title">模块配置</div>
+            <span class="tips">按住鼠标左键调整模块的顺序</span>
+        </div>
+        <div class="item-box">
+            <div class="modle-item" v-for="modular in modularArr" draggable="true"
+                 @dragstart="handleDragStart($event, modular)" @dragover.prevent="handleDragOver($event, modular)"
+                 @dragenter="handleDragEnter($event, modular)" @dragend="handleDragEnd($event, modular)">
+                <img src="../assets/images/dellete-red.png" alt="" class="dellete">
+                <img :src="modular.imgSrc" alt="" class="img">
+                <span>{{modular.title}}</span>
+            </div>
+            <div class="modle-item add" id="addModle">
+                <div><img src="../assets/images/add.png" alt=""></div>
+                <span>添加模块</span>
             </div>
         </div>
-        <div class="info box" v-show="pageShow">
-            <div class="title">选择模板</div>
-            <!-- 创建活动时选择模板 -->
-            <div class="page-show">
-                <div class="page-box">
-                    <div class="page-item">
-                        <div class="mask-box">
-                            <img src="../assets/images/example.jpg" alt="" class="img">
-                            <div class="mask">
-                                <div class="normal-btn preview" @click="preview">预览</div>
-                                <div class="normal-btn after-sure">选择</div>
-                            </div>
-                        </div>
-                        <div class="desc overHidden1">征文活动</div>
-                    </div>
-                    <div class="page-item">
-                        <div class="mask-box">
-                            <img src="../assets/images/example.jpg" alt="" class="img">
-                            <div class="mask">
-                                <div class="normal-btn preview">预览</div>
-                                <div class="normal-btn after-sure">选择</div>
-                            </div>
-                        </div>
-                        <div class="desc overHidden1">暑期教师共读活动</div>
-                    </div>
-                    <div class="page-item">
-                        <div class="mask-box">
-                            <img src="../assets/images/example.jpg" alt="" class="img">
-                            <div class="mask">
-                                <div class="normal-btn preview">预览</div>
-                                <div class="normal-btn after-sure">选择</div>
-                            </div>
-                        </div>
-                        <div class="desc overHidden1">书海拾贝·辰星领航 - 暑期星阅读活动暑期星…</div>
-                    </div>
-                    <div class="page-item">
-                        <div class="mask-box">
-                            <img src="../assets/images/example.jpg" alt="" class="img">
-                            <div class="mask">
-                                <div class="normal-btn preview">预览</div>
-                                <div class="normal-btn after-sure">选择</div>
-                            </div>
-                        </div>
-                        <div class="desc overHidden1">阅往昔·致未来</div>
-                    </div>
-                    <div class="page-item">
-                        <div class="mask-box">
-                            <img src="../assets/images/example.jpg" alt="" class="img">
-                            <div class="mask">
-                                <div class="normal-btn preview">预览</div>
-                                <div class="normal-btn after-sure">选择</div>
-                            </div>
-                        </div>
-                        <div class="desc overHidden1">阅往昔·致未来</div>
-                    </div>
-                </div>
-                <el-pagination background layout="prev, pager, next" :total="1000">
-                </el-pagination>
-            </div>
-            <!-- 编辑活动时预览模板 已取消-->
-            <div class="page-show" style="display: none;">
+    </div>
+    <div class="info box" v-show="pageShow">
+        <!--<div class="title">选择模板</div>-->
+        <!-- 创建活动时选择模板 -->
+        <div class="page-show">
+            <div class="page-box">
                 <div class="page-item">
-                    <img src="../assets/images/example.jpg" alt="" class="img">
-                    <!-- hover时出现 -->
-                    <div class="mask">
-                        <div class="normal-btn preview">预览</div>
-                        <div class="normal-btn after-sure">页面配置</div>
+                    <div class="mask-box add_template">
                     </div>
+                    <div class="desc overHidden1">自定义模板</div>
                 </div>
                 <div class="page-item">
-                    <img src="../assets/images/example.jpg" alt="" class="img">
-                    <div class="mask">
-                        <div class="normal-btn preview">预览</div>
-                        <div class="normal-btn after-sure">页面配置</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 新增活动分类和自定义选项的弹出框 -->
-        <div class="dailog-box1" v-show="fenleiShow">
-            <div class="dailog">
-                <div class="header">
-                    <span>分类名称</span>
-                    <img src="../assets/images/close.png" alt="" @click="close" class="close">
-                </div>
-                <div class="body">
-                    <el-input type="text" class="fenlei-input" placeholder="请输入" v-model="fenlei" maxlength="6"
-                        show-word-limit></el-input>
-                </div>
-                <div class="footer">
-                    <div class="normal-btn cancle" @click="handleCancle">取消</div>
-                    <div class="normal-btn before-sure">确定</div>
-                </div>
-            </div>
-        </div>
-        <!-- 添加模块的弹出框 -->
-        <div class="dailog-box2" style="display: none;">
-            <div class="dailog">
-                <div class="header">
-                    <span>添加模块</span>
-                    <img src="../assets/images/close.png" alt="" class="close">
-                </div>
-                <div class="body">
-                    <!-- 添加模块 -->
-                    <div class="add-modle" style="display: none;">
-                        <div class="add-item">
-                            <img src="../assets/images/selected.png" alt="" class="selected">
-                            <div>
-                                <img src="../assets/images/lizi.png" alt="" class="img">
-                            </div>
-                            <span>作品征集</span>
-                        </div>
-                        <div class="add-item">
-                            <img src="../assets/images/selected.png" alt="" class="selected">
-                            <div>
-                                <img src="../assets/images/lizi.png" alt="" class="img">
-                            </div>
-                            <span>测评</span>
-                        </div>
-                        <div class="add-item">
-                            <img src="../assets/images/selected.png" alt="" class="selected">
-                            <div>
-                                <img src="../assets/images/lizi.png" alt="" class="img">
-                            </div>
-                            <span>打卡</span>
-                        </div>
-                        <div class="add-item">
-                            <img src="../assets/images/selected.png" alt="" class="selected">
-                            <div>
-                                <img src="../assets/images/lizi.png" alt="" class="img">
-                            </div>
-                            <span>地图闯关</span>
-                        </div>
-                        <div class="add-item">
-                            <img src="../assets/images/selected.png" alt="" class="selected">
-                            <div>
-                                <img src="../assets/images/lizi.png" alt="" class="img">
-                            </div>
-                            <span>小组</span>
-                        </div>
-                        <div class="add-item">
-                            <img src="../assets/images/selected.png" alt="" class="selected">
-                            <div>
-                                <img src="../assets/images/lizi.png" alt="" class="img">
-                            </div>
-                            <span>超链接</span>
+                    <div class="mask-box">
+                        <img src="../assets/images/example.jpg" alt="" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview" @click="preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
                         </div>
                     </div>
-                    <!-- 添加或编辑模块详情 点击下一步出现-->
-                    <div class="add-details">
-                        <form action="">
-                            <div class="form-item">
-                                <label class="label">名称</label>
-                                <div class="input-box add-name">
-                                    <el-input type="text" placeholder="请填写名称" v-model="name2" maxlength="10"
-                                        show-word-limit></el-input>
-                                </div>
-                            </div>
-                            <div class="form-item">
-                                <label class="label">图标</label>
-                                <div class="input-box add-name">
-                                    <img src="../assets/images/example.jpg" alt="" class="add-img">
-                                    <div class="font-box">
-                                        <span>尺寸256*256，大小500kb以下图标；格式png、gif、jpg</span>
-                                        <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
-                                            onchange="showImg1(this)" />
-                                        <div class="upload-icon">上传</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-item">
-                                <label class="label">展示终端</label>
-                                <div class="input-box add-name">
-                                    <div class="radio-box"><input type="checkbox" name="method" checked
-                                            value="0" /><span>电脑端</span>
-                                    </div>
-                                    <div class="radio-box">
-                                        <input type="checkbox" name="method" value="1" /><span>移动端</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    <div class="desc overHidden1">征文活动</div>
                 </div>
-                <!-- 上一步按钮 -->
-                <div class="footer">
-                    <div class="normal-btn cancle">取消</div>
-                    <div class="normal-btn after-sure" id="next-step">下一步</div>
-                </div>
-                <!-- 下一步按钮 -->
-                <div class="footer" style="display: none;">
-                    <div class="normal-btn" id="last-step">上一步</div>
-                    <div class="normal-btn after-sure" id="complete">完成</div>
-                </div>
-            </div>
-        </div>
-        <!-- 确认删除模块弹框 -->
-        <div class="dailog-box3" style="display: none;">
-            <div class="dailog delete-dailog">
-                <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
-                <span>删除后，可重新添加。确定删除？</span>
-                <div>
-                    <div class="normal-btn">保留</div>
-                    <div class="normal-btn after-sure">删除</div>
-                </div>
-            </div>
-        </div>
-        <!-- 确认删除分类弹框 -->
-        <div class="dailog-box3" v-show="deleteShow">
-            <div class="dailog delete-dailog">
-                <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
-                <span>确认删除此分类</span>
-                <div>
-                    <div class="normal-btn" @click="handleSave">保留</div>
-                    <div class="normal-btn after-sure" @click="handleSure">删除</div>
-                </div>
-            </div>
-        </div>
-        <!-- 活动创建成功弹框 -->
-        <div class="dailog-box3" style="display: none;">
-            <div class="dailog delete-dailog">
-                <div class="warn"><img src="../assets/images/success.png" alt=""></div>
-                <span>活动创建成功</span>
-                <div>
-                    <div class="normal-btn">配置页面</div>
-                    <div class="normal-btn after-sure">完成</div>
-                </div>
-            </div>
-        </div>
-        <!-- 查看模块详情 -->
-        <div class="dailog-box4" style="display: none;">
-            <div class="dailog details-dailog">
-                <img src="../assets/images/close.png" alt="" class="close">
-                <div class="details-item">
-                    <img src="../assets/images/lizi.png" alt="" class="details-img">
-                    <div>
-                        <div style="display: flex;">
-                            <div class="desc overHidden2">作品征集作品征集作品征集作品征集作品征集作品征集作品征集作品征集征…</div>
-                            <div class="edit-img">
-                                <img src="../assets/images/icon-edit.png" alt="" style="margin-right: 6px;">
-                                <span>编辑</span>
-                            </div>
-                        </div>
-                        <div class="img-flex">
-                            <img src="../assets/images/icon-pc.png" alt="" style="margin-right: 14px;">
-                            <img src="../assets/images/app.png" alt="">
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="../assets/images/example.jpg" alt="" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
                         </div>
                     </div>
+                    <div class="desc overHidden1">暑期教师共读活动</div>
                 </div>
-                <div class="visit">
-                    <span>访问</span>
-                    <div class="normal-btn">PC端</div>
-                    <div class="normal-btn">APP端</div>
-                </div>
-            </div>
-        </div>
-        <!-- 预览弹窗 -->
-        <div class="dailog-box1" v-show="previewShow">
-            <div class="dailog look-dailog">
-                <div class="header">
-                    <span>预览</span>
-                    <img src="../assets/images/close.png" alt="" @click="close" class="close">
-                </div>
-                <div class="body">
-                    <!-- 二维码 -->
-                    <div class="code"><img src="../assets/images/example.jpg" alt=""></div>
-                    <span>使用学习通扫码查看</span>
-                    <div class="link-box">
-                        <span>链接</span>
-                        <input type="text" class="input-link" :value="link">
-                        <a :href="link">访问</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 地图 -->
-        <div class="dailog-box1" v-show="addressShow">
-            <div class="dailog map-dailog">
-                <div class="header">
-                    <span>设置地址</span>
-                    <img src="../assets/images/close.png" alt="" @click="close" class="close">
-                </div>
-                <div class="body">
-                    <div class="body-head">
-                        <div class="input-addr">
-                            <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model="address"
-                                :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" placeholder="请输入地址"
-                                @select="handleSelect" clearable>
-                                <template slot-scope="scope"> <i class="el-icon-search fl mgr10"></i>
-                                    <div class="address-box">
-                                        <div class="title1">{{ scope.item.title }}</div>
-                                        &#45;&#45;
-                                        <span class="address ellipsis">{{ scope.item.address }}</span>
-                                    </div>
-                                </template>
-                            </el-autocomplete>
-                        </div>
-                        <div class="sure-btn">确定</div>
-                    </div>
-                    <div id="map-contain" class="map">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 活添加发放对象弹窗 -->
-        <div class="dailog-box1" v-show="releaseShow">
-            <div class="dailog">
-                <div class="header">
-                    <span>活动发布</span>
-                    <img src="../assets/images/close.png" alt="" @click="close" class="close">
-                </div>
-                <div class="body">
-                    <div class="tree">
-                        <div class="tree-head">
-                            <span>选择发布的范围</span>
-                            <div class="already">已选<span style="margin-left: 5px;">0</span></div>
-                        </div>
-                        <div class="tree-box">
-                            <div id="organizationTree" class="ztree"></div>
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="../assets/images/example.jpg" alt="" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
                         </div>
                     </div>
+                    <div class="desc overHidden1">书海拾贝·辰星领航 - 暑期星阅读活动暑期星…</div>
                 </div>
-                <div class="footer">
-                    <div class="normal-btn cancle" @click="handleCancle">取消</div>
-                    <div class="normal-btn after-sure">发布</div>
-                </div>
-            </div>
-        </div>
-        <!-- 编辑页面 页面设置 -->
-        <div class="info box">
-            <div class="set-box">
-                <div class="title">页面设置</div>
-            </div>
-            <div class="item-box">
-                <div class="page-demo"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
-                <div class="pageset-right">
-                    <div class="copy-box">
-                        <el-input type="text" class="copy-link" placeholder="请输入" v-model="link"></el-input>
-                        <a href="javascript:;" class="copy">复制</a>
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="../assets/images/example.jpg" alt="" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
+                        </div>
                     </div>
-                    <button type="button" class="cancle-btn">页面配置</button>
+                    <div class="desc overHidden1">阅往昔·致未来</div>
+                </div>
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="../assets/images/example.jpg" alt="" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
+                        </div>
+                    </div>
+                    <div class="desc overHidden1">阅往昔·致未来</div>
+                </div>
+            </div>
+            <el-pagination background layout="prev, pager, next" :total="1000">
+            </el-pagination>
+        </div>
+        <!-- 编辑活动时预览模板 已取消-->
+        <div class="page-show" style="display: none;">
+            <div class="page-item">
+                <img src="../assets/images/example.jpg" alt="" class="img">
+                <!-- hover时出现 -->
+                <div class="mask">
+                    <div class="normal-btn preview">预览</div>
+                    <div class="normal-btn after-sure">页面配置</div>
+                </div>
+            </div>
+            <div class="page-item">
+                <img src="../assets/images/example.jpg" alt="" class="img">
+                <div class="mask">
+                    <div class="normal-btn preview">预览</div>
+                    <div class="normal-btn after-sure">页面配置</div>
                 </div>
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3">
-    </script>
-    <script src="../assets/lib/jquery.min.js"></script>
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
-    <script src="../assets/lib/element-ui/lib/index.js"></script>
-    <script src="../assets/js/common.js"></script>
-    <script src="../assets/js/create-active.js"></script>
-    <script src="../assets/lib/jqthumb.min.js"></script>
-    <script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
-    <script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
-    <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
-    <script>
-        // vue
-        var app = new Vue({
-            el: '#app',
-            data: {
-                name: '',
-                btnName1: '报名',
-                btnName2: '签到',
-                name2: '',
-                radio: 3,
-                value1: '1',
-                value2: '',
-                value3: '1',
-                value4: '',
-                value5: '',
-                fenlei: '',
-                delivery: true,
-                delivery1: false,
-                delivery2: true,
-                delivery3: false,
-                time1: ['2020-11-16', '2020-11-17'],
-                time2: '',
-                time3: '',
-                options1: [{
-                    value: "1",
-                    label: "无限制",
+    <!-- 新增活动分类和自定义选项的弹出框 -->
+    <div class="dailog-box1" v-show="fenleiShow">
+        <div class="dailog">
+            <div class="header">
+                <span>标签名称</span>
+                <img src="../assets/images/close.png" alt="" @click="close" class="close">
+            </div>
+            <div class="body">
+                <el-input type="text" class="fenlei-input" placeholder="请输入" v-model="fenlei" maxlength="6"
+                          show-word-limit></el-input>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="handleCancle">取消</div>
+                <div class="normal-btn before-sure">确定</div>
+            </div>
+        </div>
+    </div>
+    <!-- 添加模块的弹出框 -->
+    <div class="dailog-box2" style="display: none;">
+        <div class="dailog">
+            <div class="header">
+                <span>添加模块</span>
+                <img src="../assets/images/close.png" alt="" class="close">
+            </div>
+            <div class="body">
+                <!-- 添加模块 -->
+                <div class="add-modle" style="display: none;">
+                    <div class="add-item">
+                        <img src="../assets/images/selected.png" alt="" class="selected">
+                        <div>
+                            <img src="../assets/images/lizi.png" alt="" class="img">
+                        </div>
+                        <span>作品征集</span>
+                    </div>
+                    <div class="add-item">
+                        <img src="../assets/images/selected.png" alt="" class="selected">
+                        <div>
+                            <img src="../assets/images/lizi.png" alt="" class="img">
+                        </div>
+                        <span>测评</span>
+                    </div>
+                    <div class="add-item">
+                        <img src="../assets/images/selected.png" alt="" class="selected">
+                        <div>
+                            <img src="../assets/images/lizi.png" alt="" class="img">
+                        </div>
+                        <span>打卡</span>
+                    </div>
+                    <div class="add-item">
+                        <img src="../assets/images/selected.png" alt="" class="selected">
+                        <div>
+                            <img src="../assets/images/lizi.png" alt="" class="img">
+                        </div>
+                        <span>地图闯关</span>
+                    </div>
+                    <div class="add-item">
+                        <img src="../assets/images/selected.png" alt="" class="selected">
+                        <div>
+                            <img src="../assets/images/lizi.png" alt="" class="img">
+                        </div>
+                        <span>小组</span>
+                    </div>
+                    <div class="add-item">
+                        <img src="../assets/images/selected.png" alt="" class="selected">
+                        <div>
+                            <img src="../assets/images/lizi.png" alt="" class="img">
+                        </div>
+                        <span>超链接</span>
+                    </div>
+                </div>
+                <!-- 添加或编辑模块详情 点击下一步出现-->
+                <div class="add-details">
+                    <form action="">
+                        <div class="form-item">
+                            <label class="label">名称</label>
+                            <div class="input-box add-name">
+                                <el-input type="text" placeholder="请填写名称" v-model="name2" maxlength="10"
+                                          show-word-limit></el-input>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label class="label">图标</label>
+                            <div class="input-box add-name">
+                                <img src="../assets/images/example.jpg" alt="" class="add-img">
+                                <div class="font-box">
+                                    <span>尺寸256*256，大小500kb以下图标；格式png、gif、jpg</span>
+                                    <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
+                                           onchange="showImg1(this)" />
+                                    <div class="upload-icon">上传</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label class="label">展示终端</label>
+                            <div class="input-box add-name">
+                                <div class="radio-box"><input type="checkbox" name="method" checked
+                                                              value="0" /><span>电脑端</span>
+                                </div>
+                                <div class="radio-box">
+                                    <input type="checkbox" name="method" value="1" /><span>移动端</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- 上一步按钮 -->
+            <div class="footer">
+                <div class="normal-btn cancle">取消</div>
+                <div class="normal-btn after-sure" id="next-step">下一步</div>
+            </div>
+            <!-- 下一步按钮 -->
+            <div class="footer" style="display: none;">
+                <div class="normal-btn" id="last-step">上一步</div>
+                <div class="normal-btn after-sure" id="complete">完成</div>
+            </div>
+        </div>
+    </div>
+    <!-- 确认删除模块弹框 -->
+    <div class="dailog-box3" style="display: none;">
+        <div class="dailog delete-dailog">
+            <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
+            <span>删除后，可重新添加。确定删除？</span>
+            <div>
+                <div class="normal-btn">保留</div>
+                <div class="normal-btn after-sure">删除</div>
+            </div>
+        </div>
+    </div>
+    <!-- 确认删除分类弹框 -->
+    <div class="dailog-box3" v-show="deleteShow">
+        <div class="dailog delete-dailog">
+            <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
+            <span>确认删除此分类</span>
+            <div>
+                <div class="normal-btn" @click="handleSave">保留</div>
+                <div class="normal-btn after-sure" @click="handleSure">删除</div>
+            </div>
+        </div>
+    </div>
+    <!-- 活动创建成功弹框 -->
+    <div class="dailog-box3" style="display: none;">
+        <div class="dailog delete-dailog">
+            <div class="warn"><img src="../assets/images/success.png" alt=""></div>
+            <span>活动创建成功</span>
+            <div>
+                <div class="normal-btn">配置页面</div>
+                <div class="normal-btn after-sure">完成</div>
+            </div>
+        </div>
+    </div>
+    <!-- 查看模块详情 -->
+    <div class="dailog-box4" style="display: none;">
+        <div class="dailog details-dailog">
+            <img src="../assets/images/close.png" alt="" class="close">
+            <div class="details-item">
+                <img src="../assets/images/lizi.png" alt="" class="details-img">
+                <div>
+                    <div style="display: flex;">
+                        <div class="desc overHidden2">作品征集作品征集作品征集作品征集作品征集作品征集作品征集作品征集征…</div>
+                        <div class="edit-img">
+                            <img src="../assets/images/icon-edit.png" alt="" style="margin-right: 6px;">
+                            <span>编辑</span>
+                        </div>
+                    </div>
+                    <div class="img-flex">
+                        <img src="../assets/images/icon-pc.png" alt="" style="margin-right: 14px;">
+                        <img src="../assets/images/app.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="visit">
+                <span>访问</span>
+                <div class="normal-btn">PC端</div>
+                <div class="normal-btn">APP端</div>
+            </div>
+        </div>
+    </div>
+    <!-- 预览弹窗 -->
+    <div class="dailog-box1" v-show="previewShow">
+        <div class="dailog look-dailog">
+            <div class="header">
+                <span>预览</span>
+                <img src="../assets/images/close.png" alt="" @click="close" class="close">
+            </div>
+            <div class="body">
+                <!-- 二维码 -->
+                <div class="code"><img src="../assets/images/example.jpg" alt=""></div>
+                <span>使用学习通扫码查看</span>
+                <div class="link-box">
+                    <span>链接</span>
+                    <input type="text" class="input-link" :value="link">
+                    <a :href="link">访问</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 地图 -->
+    <div class="dailog-box1" v-show="addressShow">
+        <div class="dailog map-dailog">
+            <div class="header">
+                <span>设置地址</span>
+                <img src="../assets/images/close.png" alt="" @click="close" class="close">
+            </div>
+            <div class="body">
+                <div class="body-head">
+                    <div class="input-addr">
+                        <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model="address"
+                                         :fetch-suggestions="querySearchAsync" :trigger-on-focus="true" placeholder="请输入地址"
+                                         @select="handleSelect" clearable>
+                            <template slot-scope="scope"> <i class="el-icon-search fl mgr10"></i>
+                                <div class="address-box">
+                                    <div class="title1">{{ scope.item.title }}</div>
+                                    --
+                                    <span class="address ellipsis">{{ scope.item.address }}</span>
+                                </div>
+                                <i class="el-icon-close" @click.stop="handleDelAddr($event)"></i>
+                            </template>
+                        </el-autocomplete>
+                    </div>
+                    <div class="sure-btn">确定</div>
+                </div>
+                <div id="map-contain" class="map">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 活添加发放对象弹窗 -->
+    <!-- <div class="dailog-box1" v-show="releaseShow" style="z-index: 4;">
+        <div class="dailog">
+            <div class="header">
+                <span>参与范围</span>
+                <img src="../assets/images/close.png" alt="" @click="close" class="close">
+            </div>
+            <div class="body">
+                <div class="tree">
+                    <div class="tree-head">
+                        <span>选择发布的范围</span>
+                        <div class="already">已选<span style="margin-left: 5px;">0</span></div>
+                    </div>
+                    <div class="tree-box">
+                        <div id="organizationTree" class="ztree"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="handleCancle">取消</div>
+                <div class="normal-btn after-sure">发布</div>
+            </div>
+        </div>
+    </div> -->
+    <!-- 组织架构选择器弹窗 -->
+    <div class="dailog-box1" style="display: block;" v-show="releaseShow">
+        <div class="dailog select-dailog">
+            <div class="header">
+                <span>请选择</span>
+                <img src="../assets/images/close.png" alt="" @click="close" class="close">
+            </div>
+            <div class="body">
+                <div class="left-tree">
+                    <div class="search">
+                        <input class="search-ipt" type="text" name="" id="" placeholder="部门名称" v-model="addIptValue" @input="addIptValueHandle">
+                        <i class="icon1 icon-icon-cancel" v-show="closeValue" @click="clearIptValue"></i>
+                        <i class="icon2 icon-icon-search"></i>
+                    </div>
+                    <div class="tree-box">
+                        <div id="organizationTree" class="ztree"></div>
+                    </div>
+                </div>
+                <div class="right-choose">
+                    <div class="top-box">
+                        <span class="number">已选 4 个</span>
+                        <a href="javascript:;" class="clear-btn">清空</a>
+                    </div>
+                    <ul class="choose-list">
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称层级名称层级名称层级名称层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                        <li class="list-item">
+                            <div class="list-photo"><img src="../assets/images/catalog1.png" alt=""></div>
+                            <p class="list-text overHidden1">层级名称</p>
+                            <span class="del"><img src="../assets/images/close.png" alt=""></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="handleCancle">取消</div>
+                <div class="normal-btn after-sure">确定</div>
+            </div>
+        </div>
+    </div>
 
-                }, {
-                    value: "2",
-                    label: "自定义人数"
-                }],
-                options2: [{
-                    value: "1",
-                    label: "直接报名",
 
-                }, {
-                    value: "2",
-                    label: "需扫码进行报名"
-                }],
-                options3: [{
-                    value: "1",
-                    label: "万能表单",
+    <!--    活动展示页-->
+    <div class="info box">
+        <div class="set-box">
+            <div class="title">活动展示页<span>请选择你的活动呈现页面</span></div>
+        </div>
+        <div class="cover-list">
+            <ul>
+                <li class="current">
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+                <li>
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p  class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+                <li>
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p  class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+                <li>
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p  class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+                <li>
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p  class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+            </ul>
+            <div class="clear"></div>
+        </div>
+        <div class="btn-box-margin">
+            <button class="btn-main btn-width-80">保存</button>
+            <button class="btn-second-normal btn-width-80">取消</button>
+        </div>
+    </div>
 
-                }, {
-                    value: "2",
-                    label: "表单名称"
-                }],
-                options4: [{
-                    value: "1",
-                    label: "直接签到",
 
-                }, {
-                    value: "2",
-                    label: "指定位置签到"
-                }, {
-                    value: "3",
-                    label: "需扫码进行签到"
-                }],
-                options5: [{
-                    value: "1",
-                    label: "指定位置签到",
+    <!-- 报名成功通知弹窗 -->
+    <div class="dialog-box5" v-if="messageContentPop">
+        <div class="dailog dialog-wrap edit-prize">
+            <div class="header">
+                <span class="color333">报名成功通知</span>
+                <img src="../assets/images/close.png" class="close" @click="messageContentPop = false">
+            </div>
+            <div class="dialog-content">
+                <iframe src="messageContent.html" frameborder="0"></iframe>
+            </div>
+            <div class="footer">
+                <div class="btn btn-border" @click="messageContentPop = false">取消</div>
+                <div class="btn" :class="notice ? 'btn-normal' : 'btn-forbid'" @click="sendClick">发布</div>
+            </div>
+        </div>
+    </div>
 
-                }, {
-                    value: "2",
-                    label: "需扫码进行签到"
-                }],
-                address: '', //详细地址 
-                addrPoint: {
-                    lng: 0,
-                    lat: 0
-                },
-                map: '', //地图实例 
-                mk: '', //Marker实例
-                // 模块数据
-                modularArr: [{
-                        imgSrc: 'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
-                        title: "作品征集"
-                    },
-                    {
-                        imgSrc: 'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
-                        title: "打卡"
-                    },
-                    {
-                        imgSrc: 'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
-                        title: "打卡1"
-                    },
-                ],
-                dragging: null,
-                pageShow: false,
-                addressShow: false,
-                fenleiShow: false,
-                deleteShow: false,
-                previewShow: false,
-                releaseShow: false,
-                link: "http://xueya.chaoxing.com/school-base/sc-sc-school-base/sc-sc-"
+    <!-- 编辑提醒内容弹窗 -->
+    <div class="dialog-box5" v-if="remindContentPop">
+        <div class="dailog dialog-wrap edit-remind">
+            <div class="header">
+                <span class="color333">编辑提醒内容</span>
+                <img src="../assets/images/close.png" class="close" @click="remindContentPop = false">
+            </div>
+            <div class="dialog-content">
+                <form action="">
+                    <div class="form-items">
+                        <label for="" class="label">接收人</label>
+                        <div class="items receive-box">
+                            <!-- 点击添加弹窗和参与范围弹窗一样 -->
+                            <div class="add-receive" @click="releaseShow = true"><img src="../assets/images/add-circle.png" alt=""></div>
+                            <ul class="add-box">
+                                <li>
+                                    <span>学生</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                                <li>
+                                    <span>产品研发部</span>
+                                    <i class="del-btn"></i>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-items">
+                        <label for="" class="label">发送时间</label>
+                        <div class="items">
+                            <span class="tips-txt">报名开始前</span>
+                            <el-select v-model="value8" placeholder="请选择时间" class="select-time">
+                                <el-option
+                                  v-for="item in options8"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="form-items">
+                        <label for="" class="label">内容</label>
+                        <el-input class="resize-none" type="textarea" :autosize="{ minRows: 5, maxRows: 5}"
+                            placeholder="请输入内容" v-model="textarea" maxlength="500" show-word-limit>
+                        </el-input>
+                    </div>
+                </form>
+            </div>
+            <div class="footer">
+                <div class="btn btn-border" @click="remindContentPop = false">取消</div>
+                <!-- 当前弹窗值不为空时加上 btn-normal 类-->
+                <div class="btn" :class="notice ? 'btn-normal' : 'btn-forbid'" @click="finishClick">完成</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片库弹窗 start -->
+    <div class="dailog-box1" v-show="pictureShow">
+        <div class="dailog picture-dialog">
+            <div class="header">
+                <span>图片库</span>
+                <img src="../assets/images/close.png" alt="" @click="pictureShow=false" class="close">
+            </div>
+            <div class="body">
+                <div class="picture-box">
+                    <!-- 选中的图片加上 current 类名-->
+                    <div class="item-box current">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="handleCancle">取消</div>
+                <div class="normal-btn after-sure">确定</div>
+            </div>
+        </div>
+    </div>
+    <!-- 图片库弹窗 end -->
+
+    <!-- 选择字段弹窗 -->
+    <div class="dailog-box2" v-show="chooseDialog">
+        <div class="dailog choose-field">
+            <div class="header">
+                <span>选择字段</span>
+                <img src="../assets/images/close.png" @click="chooseDialog=false" alt="" class="close">
+            </div>
+            <div class="body">
+                <div class="form">
+                    <div class="choose-box word-drag-inner" id="word-drag-inner">
+                        <div class="sort-item" v-for="(item,index) in option0">
+                            <i class="icon-drag-inner icon-drag"></i>
+                            <label for="" class="label">选项{{index + 1}}</label>
+                            <el-input v-model="item.title" type="text" placeholder="请输入" class="weight318"  maxlength="10" show-word-limit></el-input>
+                            <i class="icon-minus-circle"></i>
+                        </div>
+                    </div>
+                    <div class="add-option" @click="addOption1">
+                        <i class="icon-plus-circle"></i>添加选项
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="chooseDialog=false">取消</div>
+                <div class="normal-btn after-sure">确定</div>
+            </div>
+        </div>
+    </div>
+
+    <!--  切换填报形式提示弹窗 -->
+    <div class="dailog-box1" style="display: none;">
+        <div class="dailog delete-dailog width304">
+            <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
+            <span>切换报名填报形式可能会导致报名数据误差</span>
+            <div>
+                <div class="normal-btn" @click="handleSave">取消</div>
+                <div class="normal-btn after-sure" @click="handleSure">继续切换</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量管理弹窗 start -->
+    <div class="dailog-box1 batch-dialog" v-show="batchManageShow" >
+        <div class="dailog">
+            <div class="header">
+                <span>批量管理</span>
+                <img src="../assets/images/close.png" alt="" @click="batchManageShow=false" class="close">
+            </div>
+            <div class="body">
+                <div class="tree">
+                    <div class="tree-head">
+                        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="checkAllChange">全选</el-checkbox>
+                        <div class="already">批量删除</div>
+                    </div>
+                    <el-checkbox-group v-model="checkedChild" @change="checkedChange">
+                        <div class="tree-box" id="drag-box">
+                            <div class="check-item" v-for="item in checkList">
+                                <el-checkbox :label="item" :key="item" class=""></el-checkbox>
+                                <i class="icon-drag"></i>
+                            </div>
+                        </div>
+                    </el-checkbox-group>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="batchManageShow=false">取消</div>
+                <div class="normal-btn after-sure">确定</div>
+            </div>
+        </div>
+    </div>
+    <!-- 批量管理弹窗  end-->
+
+    <!--音视频播放-start-->
+    <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
+    <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/plugin/smusic/css/smusic.css" />
+    <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
+    <script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
+    <!-- 视频播放容器 -->
+    <div id="videoDiv">
+        <span class="videoCloseBtn"></span>
+        <div id="video"></div>
+    </div>
+    <!-- 音频播放容器 -->
+    <div id="audioDiv" style="z-index: 9000">
+        <div class="headBar"><span class="audioCloseBtn"></span></div>
+        <div class="grid-music-container f-usn">
+            <div class="m-music-play-wrap">
+                <div class="u-cover"></div>
+                <div class="m-now-info">
+                    <h1 class="u-music-title"><strong></strong></h1>
+
+                    <div class="m-now-controls">
+                        <div class="startTime">00:00&nbsp;&nbsp;</div>
+                        <div class="u-control u-process ">
+                            <div class="old-bar"></div>
+                            <span class="buffer-process"></span>
+                            <span class="current-bar"></span>
+                            <span class="current-process"></span>
+                        </div>
+                        <div class="u-control u-time">00:00</div>
+
+                        <div class="u-control u-volume new-volume">
+                            <div class="volume">
+                                <span class="volume-event">
+                                    <div class="volume-process" data-volume="0.50"></div>
+                                    <span class="volume-current"></span>
+                                    <span class="volume-bar"></span>
+                                </span>
+                                <a class="volume-control"></a>
+                            </div>
+                        </div>
+                        <div class="m-play-controls">
+                            <div class="musicOrder">
+                                <a class="u-play-btn mode mode-list  " title="列表循环"></a>
+                                <!-- <a class="u-play-btn mode mode-random  " title="随机播放"></a>
+                                <a class="u-play-btn mode mode-single " title="单曲循环"></a>  -->
+                            </div>
+                            <a class="u-play-btn prev" title="上一曲"></a>
+                            <a class="u-play-btn ctrl-play play" title="暂停"></a>
+                            <a class="u-play-btn next" title="下一曲"></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="f-cb">&nbsp;</div>
+                <div class="m-music-list-wrap"></div>
+                <div class="m-music-lyric-wrap">
+                    <div class="inner">
+                        <ul class="js-music-lyric-content">
+                            <li class="eof">暂无歌词...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--音视频播放-end-->
+
+
+
+
+</div>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
+<script src="../../assets/js/vue.min.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/Swiper-3.4.2/dist/js/swiper.min.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/create-active.js"></script>
+<script src="../assets/lib/jqthumb.min.js"></script>
+<script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
+<script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
+<script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+<script src="../assets/lib/layer/layer.js"></script>
+<script type="text/javascript" src="../assets/lib/webuploader/webuploader.min.js"></script>
+<script src="../assets/lib/drag/sortTable.js"></script>
+<!--<script src="../assets/lib/set-iframe-height-child-min.js"></script>-->
+<script>
+    // vue
+    var app = new Vue({
+        el: '#app',
+        data: {
+            option0:[{
+                title:'',
             },
-            mounted: function () {
-                // this.initMap()
-                this.organizationTreeFun();
+                {
+                    title:'',
+                }],
+            option2:[{
+                title:'',
             },
-            methods: {
-                initMap: function () {
-                    var that = this;
-                    this.map = new BMap.Map("map-contain", {
-                        enableMapClick: false
-                    }) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框 
-                    var point = new BMap.Point(104.10194, 30.65984);
-                    // this.map.addEventListener("mousemove", function (e) {
-                    //     point = new BMap.Point(e.point.lng,e.point.lat)
-                    // })
-                    this.map.centerAndZoom(point, 19);
-                    this.map.enableScrollWheelZoom(true) //启用滚轮放大缩小，默认禁用
-                    this.mk = new BMap.Marker(point)
-                    this.map.addOverlay(this.mk)
-                    this.map.addEventListener('click', function (e) { //给地图绑定点击事件 
-                        that.getAddrByPoint(e.point) //点击后调用逆地址解析函数 
-                    })
-                },
-                //逆地址解析
-                getAddrByPoint: function (point) {
-                    var that = this;
-                    var geco = new BMap.Geocoder();
-                    geco.getLocation(point, function (res) {
-                        console.log(res) //内容见下图 
-                        that.mk.setPosition(point) //重新设置标注的地理坐标 
-                        that.map.panTo(point) //将地图的中心点更改为给定的点 
-                        that.address = res.address; //记录该点的详细地址信息 
-                        that.addrPoint = point; //记录当前坐标点 
-                    })
-                },
-                querySearchAsync: function (str, cb) {
-                    var options = {
-                        onSearchComplete: function (res) { //检索完成后的回调函数 
-                            var s = [];
-                            if (local.getStatus() == BMAP_STATUS_SUCCESS) {
-                                for (var i = 0; i < res.getCurrentNumPois(); i++) {
-                                    s.push(res.getPoi(i));
-                                }
-                                cb(s) //获取到数据时，通过回调函数cb返回到<el-autocomplete>组件中进行显示 
-                            } else {
-                                cb(s)
-                            }
-                        }
-                    }
-                    var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数 
-                    local.search(str) //调用search方法，根据检索词str发起检索
-                },
-                handleSelect: function (item) {
-                    this.address = item.address + item.title; //记录详细地址，含建筑物名 
-                    this.addrPoint = item.point; //记录当前选中地址坐标 
-                    this.map.clearOverlays() //清除地图上所有覆盖物 
-                    this.mk = new BMap.Marker(item.point) //根据所选坐标重新创建Marker 
-                    this.map.addOverlay(this.mk) //将覆盖物重新添加到地图中 
-                    this.map.panTo(item.point) //将地图的中心点更改为选定坐标点 
-                },
-                //拖拽初始化
-                handleDragStart: function (e, item) {
-                    this.dragging = item;
-                },
-                handleDragEnd: function (e, item) {
-                    this.dragging = null
-                },
-                handleDragOver: function (e) {
-                    e.dataTransfer.dropEffect = 'move'
-                },
-                handleDragEnter: function (e, item) {
-                    var $this = this;
-                    e.dataTransfer.effectAllowed = "move"
-                    if (item === this.dragging) {
-                        return
-                    }
-                    var newItems = this.modularArr;
-                    var src = newItems.indexOf(this.dragging);
-                    var dst = newItems.indexOf(item);
-                    newItems.splice(src, 1)
-                    // 替换
-                    newItems.splice(dst, 0, this.dragging);
-                    this.modularArr = newItems;
-                    console.log(this.modularArr)
-                },
-                handleLast: function () {
-                    this.pageShow = false
-                },
-                handleNext: function () {
-                    this.pageShow = true
-                },
-                handleFocus: function () {
-                    this.addressShow = true
-                    this.initMap()
-                    $('body').addClass('scroll')
-                    $(window).scrollTop(0);
-                },
-                close: function () {
-                    this.addressShow = false
-                    this.fenleiShow = false
-                    this.previewShow = false
-                    this.releaseShow = false
-                    $('body').removeClass('scroll')
-                },
-                handleEdit: function () {
-                    this.fenleiShow = true
-                    this.fenlei = '自定义选项'
-                    $('body').addClass('scroll')
-                },
-                handleAdd: function () {
-                    this.fenleiShow = true
-                    $('body').addClass('scroll')
-                },
-                handleRelease: function () {
-                    this.releaseShow = true
-                    $('body').addClass('scroll')
-                },
-                handleDelete: function () {
-                    this.deleteShow = true
-                    $('body').addClass('scroll')
-                },
-                handleCancle: function () {
-                    this.fenlei = ''
-                    this.fenleiShow = false
-                    this.releaseShow = false
-                    $('body').removeClass('scroll')
-                },
-                handleSave: function () {
-                    this.deleteShow = false
-                    $('body').removeClass('scroll')
-                },
-                handleSure: function () {
+                {
+                    title:'',
+                }],
+            delclick: true,
+            name: '',
+            btnName:['1','2','3','4','5','6'],
+            btnName1: '报名',
+            btnName2: '签到',
+            name2: '',
+            radio: 3,
+            value1: '1',
+            value2: '',
+            value3: '1',
+            value4: '',
+            value5: '',
+            value7: '1',
+            value8: '',
+            fenlei: '',
+            chooseDialog: false,
+            delivery: true,
+            delivery1: false,
+            delivery2: true,
+            delivery3: false,
+            delivery4: false,
+            delivery5: true,
+            delivery6: false,
+            delivery7: true,
+            time1: ['2020-11-16', '2020-11-17'],
+            time2: '',
+            time3: '',
+            options1: [{
+                value: "1",
+                label: "无限制",
 
-                },
-                preview: function () {
-                    this.previewShow = true
-                    $('body').addClass('scroll')
-                },
-                organizationTreeFun() {
-                    var setting = {
-                        check: {
-                            enable: true
-                        },
-                        data: {
-                            simpleData: {
-                                enable: true
-                            }
-                        },
-                        callback: {
-                            onCheck: zTreeOnCheck
-                        },
-                        view: {
-                            // showIcon: false,
-                        }
-                    };
-                    var zNodes = [{
-                            id: 1,
-                            pId: 0,
-                            name: "一级",
-                            open: true
-                        },
-                        {
-                            id: 2,
-                            pId: 0,
-                            name: "一级",
-                            open: true
-                        },
-                        {
-                            id: 3,
-                            pId: 0,
-                            name: "一级",
-                            open: false
-                        },
-                        {
-                            id: 10,
-                            pId: 1,
-                            name: "二级"
-                        },
-                        {
-                            id: 10,
-                            pId: 1,
-                            name: "二级"
-                        }, {
-                            id: 13,
-                            pId: 10,
-                            name: "二级"
-                        }, {
-                            id: 14,
-                            pId: 11,
-                            name: "二级"
-                        },
-                        {
-                            id: 12,
-                            pId: 1,
-                            name: "二级"
-                        },
-                        {
-                            id: 4,
-                            pId: 2,
-                            name: "二级"
-                        },
-                        {
-                            id: 5,
-                            pId: 2,
-                            name: "二级"
-                        },
-                        {
-                            id: 6,
-                            pId: 2,
-                            name: "二级"
-                        },
-                        {
-                            id: 7,
-                            pId: 3,
-                            name: "二级"
-                        }
-                    ];
+            }, {
+                value: "2",
+                label: "自定义人数"
+            }],
+            options2: [{
+                value: "1",
+                label: "直接报名",
 
-                    function zTreeOnCheck(event, treeId, treeNode) {
-                        clearCheckedOldNodes();
-                    };
-                    //  清理善后工作
-                    function clearCheckedOldNodes() {
-                        var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
-                            nodes = zTree.getChangeCheckedNodes();
-                        console.log(nodes)
-                        for (var i = 0, l = nodes.length; i < l; i++) {
-                            nodes[i].checkedOld = nodes[i].checked;
-                            console.log(nodes)
-                        }
-                    };
-                    $.fn.zTree.init($("#organizationTree"), setting, zNodes);
-                }
-            }
-        })
-    </script>
-    <script>
-        $(function () {
-            $('.jqthumbImg').jqthumb({
-                width: '100%',
-                height: '100%'
+            }, {
+                value: "2",
+                label: "需扫码进行报名"
+            }],
+            options3: [{
+                value: "1",
+                label: "万能表单",
+
+            }, {
+                value: "2",
+                label: "表单名称"
+            }],
+            options4: [{
+                value: "1",
+                label: "直接签到",
+
+            }, {
+                value: "2",
+                label: "指定位置签到"
+            }, {
+                value: "3",
+                label: "需扫码进行签到"
+            }],
+            options5: [{
+                value: "1",
+                label: "指定位置签到",
+
+            }, {
+                value: "2",
+                label: "需扫码进行签到"
+            }],
+            options6: [{
+                value: "1",
+                label: "参与者扫码",
+
+            }, {
+                value: "2",
+                label: "管理者扫码"
+            }],
+            options7: [{
+                value: "1",
+                label: "展览"
+            }, {
+                value: "2",
+                label: "展览2"
+            }],
+            options8: [{
+                value: "1",
+                label: "时间一"
+            }, {
+                value: "2",
+                label: "时间二"
+            }],
+            options9: [{
+                value: "1",
+                label: "选项1"
+            }, {
+                value: "2",
+                label: "选项2"
+            }, {
+                value: "3",
+                label: "选项2"
+            }, {
+                value: "4",
+                label: "选项2"
+            }, {
+                value: "5",
+                label: "选项2"
+            }, {
+                value: "6",
+                label: "选项2"
+            }, {
+                value: "7",
+                label: "选项2"
+            }, {
+                value: "8",
+                label: "选项2"
+            }, {
+                value: "9",
+                label: "选项2222"
+            }],
+            address: '', //详细地址
+            addrPoint: {
+                lng: 0,
+                lat: 0
+            },
+            map: '', //地图实例
+            mk: '', //Marker实例
+            // 模块数据
+            modularArr: [{
+                imgSrc: 'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
+                title: "作品征集"
+            },
+                {
+                    imgSrc: 'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
+                    title: "打卡"
+                },
+                {
+                    imgSrc: 'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
+                    title: "打卡1"
+                },
+            ],
+            dragging: null,
+            pageShow: false,
+            addressShow: false,
+            fenleiShow: false,
+            deleteShow: false,
+            previewShow: false,
+            releaseShow: false,
+            link: "http://xueya.chaox",
+            rangeRadio: '2',
+            rangeShow: false,
+            messageContentPop: false,
+            notice:'',
+            checkValue:[],
+            pictureShow:false,
+            remindContentPop: false, //编辑提醒内容
+            textarea: '您好！活动即将开始，请尽快报名。',
+            addIptValue: "", // 选择弹框 input 值
+            closeValue: false, // 输入框清空按钮是否显示
+            batchManageShow: false,
+            checkAll: '',
+            checkedChild: [],
+            isIndeterminate: false,
+            checkList: ['报名1','报名2','报名3'],
+        },
+        mounted: function () {
+            // this.initMap()
+            this.organizationTreeFun();
+            // 初始化笔记编辑器
+            RichTextUitl.initUEditor();
+            //文件上传
+            this.initUploader()
+            this.swiperInit()
+            //字段设置拖动
+            $("#word-drag-inner").sortable({
+                scroll: true,
+                axis: "y",
+                dalay: 300,
+                handle: ".icon-drag-inner",
+                start: function () {
+                    // $("#dragBubble").hide()
+                },
             });
-            $('.copy').click(function () {
-                var url = document.querySelector(".copy-link input");
-                url.select();
-                document.execCommand("Copy");
-            })
-            $('.del-img').click(function () {
-                $(this).parent().remove()
-            })
+            $("#drag-box").sortable({
+                scroll: true,
+                axis: "y",
+                dalay: 300,
+                handle: ".icon-drag",
+                start: function () {
+                    // $("#dragBubble").hide()
+                },
+            });
+        },
+        methods: {
+            checkedChange: function(value){
+                var checkedCount = value.length;
+                this.checkAll = checkedCount === this.checkList.length;
+                this.isIndeterminate = checkedCount > 0 && checkedCount < this.checkList.length;
+            },
+            checkAllChange: function(val){
+                this.checkedChild = val ? this.checkList : [];
+                this.isIndeterminate = false;
+            },
+            addOption1: function(){
+                this.option1.push({title: ''})
+            },
+            swiperInit:function (){
+                var mySwiper = new Swiper('.swiper-container', {
+                    slidesPerView: 3,
+                    pagination: '.swiper-pagination',
+                    nextButton: '.swiper-next',
+                    prevButton: '.swiper-prev',
+                    paginationClickable: true,
+                    spaceBetween: 24,
+                })
+            },
+            handleDelAddr:function(e){
+                //删除元素
+            },
+            initMap: function () {
+                var that = this;
+                this.map = new BMap.Map("map-contain", {
+                    enableMapClick: false
+                }) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框
+                var point = new BMap.Point(104.10194, 30.65984);
+                // this.map.addEventListener("mousemove", function (e) {
+                //     point = new BMap.Point(e.point.lng,e.point.lat)
+                // })
+                this.map.centerAndZoom(point, 19);
+                this.map.enableScrollWheelZoom(true) //启用滚轮放大缩小，默认禁用
+                this.mk = new BMap.Marker(point)
+                this.map.addOverlay(this.mk)
+                this.map.addEventListener('click', function (e) { //给地图绑定点击事件
+                    that.getAddrByPoint(e.point) //点击后调用逆地址解析函数
+                })
+            },
+            //逆地址解析
+            getAddrByPoint: function (point) {
+                var that = this;
+                var geco = new BMap.Geocoder();
+                geco.getLocation(point, function (res) {
+                    console.log(res) //内容见下图
+                    that.mk.setPosition(point) //重新设置标注的地理坐标
+                    that.map.panTo(point) //将地图的中心点更改为给定的点
+                    that.address = res.address; //记录该点的详细地址信息
+                    that.addrPoint = point; //记录当前坐标点
+                })
+            },
+            querySearchAsync: function (str, cb) {
+                var options = {
+                    onSearchComplete: function (res) { //检索完成后的回调函数
+                        var s = [];
+                        if (local.getStatus() == BMAP_STATUS_SUCCESS) {
+                            for (var i = 0; i < res.getCurrentNumPois(); i++) {
+                                s.push(res.getPoi(i));
+                            }
+                            cb(s) //获取到数据时，通过回调函数cb返回到<el-autocomplete>组件中进行显示
+                        } else {
+                            cb(s)
+                        }
+                    }
+                }
+                var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数
+                if(!str){
+                    // 获取历史记录
+                    local.search(111)
+                }else{
+                    local.search(str) //调用search方法，根据检索词str发起检索
+                }
+            },
+            handleSelect: function (item) {
+                console.log(item)
+                this.address = item.address + item.title; //记录详细地址，含建筑物名
+                this.addrPoint = item.point; //记录当前选中地址坐标
+                this.map.clearOverlays() //清除地图上所有覆盖物
+                this.mk = new BMap.Marker(item.point) //根据所选坐标重新创建Marker
+                this.map.addOverlay(this.mk) //将覆盖物重新添加到地图中
+                this.map.panTo(item.point) //将地图的中心点更改为选定坐标点
+            },
+            //拖拽初始化
+            handleDragStart: function (e, item) {
+                this.dragging = item;
+            },
+            handleDragEnd: function (e, item) {
+                this.dragging = null
+            },
+            handleDragOver: function (e) {
+                e.dataTransfer.dropEffect = 'move'
+            },
+            handleDragEnter: function (e, item) {
+                var $this = this;
+                e.dataTransfer.effectAllowed = "move"
+                if (item === this.dragging) {
+                    return
+                }
+                var newItems = this.modularArr;
+                var src = newItems.indexOf(this.dragging);
+                var dst = newItems.indexOf(item);
+                newItems.splice(src, 1)
+                // 替换
+                newItems.splice(dst, 0, this.dragging);
+                this.modularArr = newItems;
+                console.log(this.modularArr)
+            },
+            handleLast: function () {
+                this.pageShow = false
+            },
+            handleNext: function () {
+                this.pageShow = true
+            },
+            handleFocus: function () {
+                this.addressShow = true
+                this.initMap()
+                $('body').addClass('scroll')
+                $(window).scrollTop(0);
+            },
+            close: function () {
+                this.addressShow = false
+                this.fenleiShow = false
+                this.previewShow = false
+                this.releaseShow = false
+                $('body').removeClass('scroll')
+            },
+            handleEdit: function () {
+                this.fenleiShow = true
+                this.fenlei = '自定义选项'
+                $('body').addClass('scroll')
+            },
+            handleAdd: function () {
+                this.fenleiShow = true
+                $('body').addClass('scroll')
+            },
+            handleRelease: function () {
+                this.releaseShow = true
+                $('body').addClass('scroll')
+            },
+            handleDelete: function () {
+                this.deleteShow = true
+                $('body').addClass('scroll')
+            },
+            handleCancle: function () {
+                this.fenlei = ''
+                this.fenleiShow = false
+                this.releaseShow = false
+                $('body').removeClass('scroll')
+            },
+            handleSave: function () {
+                this.deleteShow = false
+                $('body').removeClass('scroll')
+            },
+            handleSure: function () {
+
+            },
+            preview: function () {
+                this.previewShow = true
+                $('body').addClass('scroll')
+            },
+            organizationTreeFun() {
+                var setting = {
+                    check: {
+                        enable: true
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    },
+                    callback: {
+                        onCheck: zTreeOnCheck
+                    },
+                    view: {
+                        // showIcon: false,
+                        addDiyDom: addDiyDom
+                    }
+                };
+                var zNodes = [
+                    {
+                        id: 1,
+                        pId: 0,
+                        name: "一级",
+                        open: true
+                    },
+                    {
+                        id: 2,
+                        pId: 0,
+                        name: "一级",
+                        open: true
+                    },
+                    {
+                        id: 3,
+                        pId: 0,
+                        name: "一级",
+                        open: false
+                    },
+                    {
+                        id: 10,
+                        pId: 1,
+                        name: "二级"
+                    },
+                    {
+                        id: 10,
+                        pId: 1,
+                        name: "二级"
+                    }, {
+                        id: 13,
+                        pId: 10,
+                        name: "二级"
+                    }, {
+                        id: 14,
+                        pId: 11,
+                        name: "二级"
+                    },
+                    {
+                        id: 12,
+                        pId: 1,
+                        name: "二级"
+                    },
+                    {
+                        id: 4,
+                        pId: 2,
+                        name: "二级"
+                    },
+                    {
+                        id: 5,
+                        pId: 2,
+                        name: "二级"
+                    },
+                    {
+                        id: 6,
+                        pId: 2,
+                        name: "二级"
+                    },
+                    {
+                        id: 7,
+                        pId: 3,
+                        name: "二级"
+                    }
+                ];
+
+                function zTreeOnCheck(event, treeId, treeNode) {
+                    clearCheckedOldNodes();
+                };
+                //  清理善后工作
+                function clearCheckedOldNodes() {
+                    var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
+                        nodes = zTree.getChangeCheckedNodes();
+                    // console.log(nodes)
+                    for (var i = 0, l = nodes.length; i < l; i++) {
+                        nodes[i].checkedOld = nodes[i].checked;
+                        // console.log(nodes)
+                        if(nodes[i].checked){
+                            //选中项添加类
+                            $('.checkbox_true_full_focus').parent('li').addClass('checked');
+                            $('.checkbox_true_full').parent('li').addClass('checked');
+                        }else{
+                            $('.checkbox_false_full_focus').parent('li').removeClass('checked');
+                            $('.checkbox_true_part').parent('li').removeClass('checked');
+                            $('.checkbox_false_full').parent('li').removeClass('checked');
+                        }
+                    }
+                };
+                // 显示子节点数量
+                function addDiyDom(treeId, treeNode){
+                    var count;
+                    if(treeNode.isParent) {
+                        count = treeNode.children.length ;
+                    } else {
+                        count = 0;
+                    }
+                    var aObj = $("#" + treeNode.tId + "_span");
+                    if(count>0){
+                        var editStr = "<span id='repairtypelist_" +treeNode.tId+ "_count' >("+count+")</span>";
+                        aObj.after(editStr);
+                    }
+                }
+                $.fn.zTree.init($("#organizationTree"), setting, zNodes);
+            },
+            openModal:function() {
+                $('body').addClass('scroll');
+                layer.open({
+                    skin: 'create-class',
+                    type: 2,
+                    content: ['http://baidu.com', 'no'],
+                    area: ['600px','520px'],
+                    btn: ['取消', '完成'],
+                    btnAlign: 'c',
+                    yes: function (index, layero) {
+                        layer.close(index);
+                    },
+                    cancel: function () {
+
+                    },
+                    end: function () {
+                        $('body').removeClass('scroll');
+                    }
+                })
+            },
+            // 添加参与范围
+            handleAddRange:function(){
+                this.releaseShow = true
+                $('body').addClass('scroll')
+            },
+            // 删除参与范围
+            handleDelRange:function(){
+
+            },
+            //报名成功通知内容
+            openMessage: function () {
+                this.messageContentPop = true;
+                this.$nextTick(function(){
+                    this.initUploader()
+                    cropImgFun("body");
+                })
+            },
+            sendClick:function(){
+                this.messageContentPop = false;
+
+            },
+            // 编辑提醒内容
+            openRemind: function () {
+                this.remindContentPop = true;
+            },
+            finishClick: function () {
+                this.remindContentPop = false;
+            },
+            initUploader:function() {
+                var $this = this;
+                $this.uploader = WebUploader.create({
+                    // swf文件路径
+                    swf: "../../assets/lib/webuploader/Uploader.swf",
+                    // 文件接收服务端。
+                    server: "/api/upload/img",
+                    // 选择文件的按钮。可选。
+                    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                    pick: "#upload-btn",
+                    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                    resize: false,
+                    auto: true,
+                    // 只允许选择图片文件。
+                    accept: {
+                        title: 'work',
+                        extensions: 'doc,docx',
+                        mimeTypes: 'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    }
+                });
+            },
+            // 监听添加弹框input
+            addIptValueHandle: function () {
+                if (this.addIptValue.trim() !== "") {
+                    this.closeValue = true
+                } else {
+                    this.closeValue = false
+                }
+            },
+            // 清空输入框的值
+            clearIptValue: function () {
+                this.addIptValue = "";
+                this.closeValue = false;
+            },
+        }
+    })
+</script>
+<script>
+    $(function () {
+        $('.jqthumbImg').jqthumb({
+            width: '100%',
+            height: '100%'
         });
-    </script>
+        $('.copy').click(function () {
+            var url = document.querySelector(".copy-link input");
+            url.select();
+            document.execCommand("Copy");
+        })
+        $('.del-img').click(function () {
+            $(this).parent().remove()
+        })
+    });
+</script>
 </body>
 
 </html>

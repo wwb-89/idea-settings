@@ -1,143 +1,46 @@
 package com.chaoxing.activity.web.controller;
 
-import com.chaoxing.activity.dto.ActivityQueryDateDTO;
-import com.chaoxing.activity.model.Group;
-import com.chaoxing.activity.model.GroupRegionFilter;
-import com.chaoxing.activity.service.ActivityQueryDateService;
-import com.chaoxing.activity.service.GroupRegionFilterService;
-import com.chaoxing.activity.service.GroupService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.util.UserAgentUtils;
-import com.chaoxing.activity.util.annotation.LoginRequired;
-import com.chaoxing.activity.web.util.LoginUtils;
-import com.google.common.collect.Lists;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.Optional;
 
-/**活动
+/**
  * @author wwb
  * @version ver 1.0
  * @className ActivityController
  * @description
  * @blame wwb
- * @date 2020-11-20 10:49:54
+ * @date 2022-03-07 10:41:46
  */
 @Slf4j
 @Controller
-@RequestMapping("")
+@RequestMapping("activity")
 public class ActivityController {
 
 	@Resource
-	private GroupRegionFilterService groupRegionFilterService;
-	@Autowired
-	private ActivityClassifyQueryService activityClassifyQueryService;
-	@Resource
-	private GroupService groupService;
-	@Resource
-	private ActivityQueryDateService activityQueryDateService;
+	private ActivityQueryService activityQueryService;
 
-	/**通用
+	/**活动主页
 	 * @Description 
 	 * @author wwb
-	 * @Date 2020-12-09 10:22:16
-	 * @param request
-	 * @param model
-	 * @return java.lang.String
+	 * @Date 2022-03-07 10:42:26
+	 * @param activityId
+	 * @return org.springframework.web.servlet.view.RedirectView
 	*/
-	@LoginRequired
-	@GetMapping("")
-	public String index(HttpServletRequest request, Model model) {
-		return handleData(request, model, null, null, null);
-	}
-
-	/**图书馆
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-09 10:22:27
-	 * @param request
-	 * @param model
-	 * @param code
-	 * @param fid
-	 * @param pageId
-	 * @return java.lang.String
-	*/
-	@GetMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
-		return handleData(request, model, code, fid, pageId);
-	}
-	
-	/**基础教育
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-09 10:22:36
-	 * @param request
-	 * @param model
-	 * @param code
-	 * @param fid
-	 * @param pageId
-	 * @return java.lang.String
-	*/
-	@LoginRequired
-	@GetMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
-		return handleData(request, model, code, fid, pageId);
-	}
-	
-	/**高校
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-09 10:22:44
-	 * @param request
-	 * @param model
-	 * @param code
-	 * @param fid
-	 * @param pageId
-	 * @return java.lang.String
-	*/
-	@LoginRequired
-	@GetMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
-		return handleData(request, model, code, fid, pageId);
-	}
-
-	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId) {
-		if (fid == null) {
-			fid = LoginUtils.getLoginUser(request).getFid();
-		}
-		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(Lists.newArrayList(fid));
-		model.addAttribute("activityClassifyNames", activityClassifyNames);
-		// 查询地区列表
-		List<GroupRegionFilter> groupRegionFilters;
-		String areaCode = "";
-		if (StringUtils.isNotBlank(code)) {
-			groupRegionFilters = groupRegionFilterService.listByGroupCode(code);
-			Group group = groupService.getByCode(code);
-			if (group != null) {
-				areaCode = group.getAreaCode();
-			}
-		} else {
-			groupRegionFilters = Lists.newArrayList();
-		}
-		model.addAttribute("regions", groupRegionFilters);
-		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
-		model.addAttribute("activityQueryDates", activityQueryDates);
-		model.addAttribute("areaCode", areaCode);
-		model.addAttribute("topFid", fid);
-		model.addAttribute("pageId", pageId);
-		if (UserAgentUtils.isMobileAccess(request)) {
-			return "mobile/index";
-		}
-		return "pc/index";
+	@RequestMapping("{activityId}")
+	public RedirectView index(@PathVariable Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		String url = Optional.ofNullable(activity).map(Activity::getPreviewUrl).filter(StringUtils::isNotBlank).orElseThrow(() -> new BusinessException("地址不存在"));
+		return new RedirectView(url);
 	}
 
 }

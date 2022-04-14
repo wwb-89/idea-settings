@@ -39,4 +39,16 @@ public interface ActivityModuleMapper extends BaseMapper<ActivityModule> {
 	 */
 	int getMaxSequenceByActivityId(@Param("activityId") Integer activityId);
 
+	/**
+	 * 根据fid列表查询外部模块id列表
+	 *
+	 * @param type
+	 * @param fids
+	 * @return java.util.List<java.lang.String>
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-01-13 19:10:42
+	 */
+	List<String> listExternalIdByFids(@Param("type") String type, @Param("fids") List<Integer> fids);
+
 }

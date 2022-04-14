@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成绩权重</title>
+    <link rel="stylesheet" href="../../assets/sign/assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/sign/assets/css/examineManage.css">
+</head>
+<body>
+    <div class="gradeWeight" id="gradeWeight" v-cloak>
+        <div class="content">
+            <div class="white-block header">
+                <p class="title">考核设置</p>
+                <div class="btn-box fr">
+                    <div class="btn-normal-w80px">保存</div>
+                </div>
+            </div>
+            <div class="white-block">
+                <p class="item-name">合格标准</p>
+                <form action="" class="el-form">
+                    <div class="form-item">
+                        <div class="input-box">
+                            <el-radio-group v-model="radio">
+                                <el-radio label="1">手动评审</el-radio>
+                                <el-radio label="2">按名额</el-radio>
+                                <el-radio label="3">按比例</el-radio>
+                                <el-radio label="4">达到积分</el-radio>
+                            </el-radio-group>
+                            <p class="decTips" v-if="radio==1">管理员在成绩管理中手动评审合格状态</p>
+                            <div class="radio-box" v-if="radio==2">
+                                <span class="lineTips">活动结束时，按得分从高到底排序的</span>
+                                <el-input type="text" class="short-input" placeholder="请输入正整数" v-model="number1"></el-input>
+                                <span class="lineTips">人，判定为合格</span>
+                                <p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
+                            </div>
+                            <div class="radio-box" v-if="radio==3">
+                                <span class="lineTips">活动结束时，按得分从高到底排序的前</span>
+                                <el-input type="text" class="short-input" placeholder="请输入正整数" v-model="number1"></el-input>
+                                <span class="lineTips">%，判定为合格</span>
+                                <p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
+                            </div>
+                            <div class="radio-box" v-if="radio==4">
+                                <span class="lineTips">活动积分达到</span>
+                                <el-input type="text" class="short-input" placeholder="请输入正整数" v-model="number1"></el-input>
+                                <span class="lineTips">分，判定为合格</span>
+                                <p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="white-block">
+                <p class="item-name">积分规则</p>
+                <form action="" class="el-form">
+                    <div class="form-item">
+                        <label for="" class="label">签到</label>
+                        <div class="input-box">
+                            <el-switch v-model="valueSwitch1" @change='changeSwitchStatus' class="flex-switch"></el-switch>
+                            <div class="tips-box" v-if="valueSwitch1">
+                                <span class="lineTips">每次签到获得</span>
+                                <el-input type="number" class="input-width80" placeholder="整数" v-model="number2"></el-input>
+                                <span class="lineTips">分，上限</span>
+                                <el-input type="number" class="input-width80" placeholder="无限" v-model="number3"></el-input>
+                                <span class="lineTips">分</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label for="" class="label">评价</label>
+                        <div class="input-box">
+                            <el-switch v-model="valueSwitch2" @change='changeSwitchStatus' class="flex-switch"></el-switch>
+                            <div class="tips-box" v-if="valueSwitch2">
+                                <span class="lineTips">提交评价获得</span>
+                                <el-input type="text" class="input-width56" placeholder="整数" v-model="number2"></el-input>
+                                <span class="lineTips">分</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label for="" class="label">讨论</label>
+                        <div class="input-box">
+                            <el-switch v-model="valueSwitch3" @change='changeSwitchStatus' class="flex-switch"></el-switch>
+                            <div class="tips-box" v-if="valueSwitch3">
+                                <div class="block-box">
+                                    <span class="lineTips">每次发帖获得</span>
+                                    <el-input type="text" class="input-width56" placeholder="整数" v-model="number2"></el-input>
+                                    <span class="lineTips">分，上限</span>
+                                    <el-input type="text" class="input-width56" placeholder="无限" v-model="number3"></el-input>
+                                    <span class="lineTips">分</span>
+                                </div>
+                                <div class="block-box">
+                                    <span class="lineTips">每次回帖获得</span>
+                                    <el-input type="text" class="input-width56" placeholder="整数" v-model="number2"></el-input>
+                                    <span class="lineTips">分，上限</span>
+                                    <el-input type="text" class="input-width56" placeholder="无限" v-model="number3"></el-input>
+                                    <span class="lineTips">分</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label for="" class="label">作品征集</label>
+                        <div class="input-box">
+                            <el-switch v-model="valueSwitch4" @change='changeSwitchStatus' class="flex-switch"></el-switch>
+                            <div class="tips-box" v-if="valueSwitch4">
+                                <span class="lineTips">每次提交获得</span>
+                                <el-input type="text" class="input-width56" placeholder="整数" v-model="number2"></el-input>
+                                <span class="lineTips">分，上限</span>
+                                <el-input type="text" class="input-width56" placeholder="无限" v-model="number3"></el-input>
+                                <span class="lineTips">分</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label for="" class="label">现场评分</label>
+                        <div class="input-box">
+                            <el-switch v-model="valueSwitch5" @change='changeSwitchStatus' class="flex-switch"></el-switch>
+                            <div class="tips-box" v-if="valueSwitch5">
+                                <span class="lineTips">上限</span>
+                                <el-input type="number" class="input-width56" placeholder="整数" v-model="number2"></el-input>
+                                <span class="lineTips">分</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../assets/lib/vue.js"></script>
+    <script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+    <script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#gradeWeight',
+            data: {
+                radio:'1',
+                number1:'',
+                number2:'5',
+                number3:'',
+                valueSwitch1:true,
+                valueSwitch2:true,
+                valueSwitch3:true,
+                valueSwitch4:true,
+                valueSwitch5:true,
+            },
+            methods: {
+                changeSwitchStatus:function(){
+
+                }
+            }
+        })
+    </script>
+</body>
+</html>

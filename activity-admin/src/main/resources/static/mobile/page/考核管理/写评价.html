@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>活动</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../../assets/sign/assets/icomoon/style.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/cssreset.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/public.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/person-list.css" />
+</head>
+<body style="background: #ffffff;">
+    <div class="evaluate-edit" id="vue">
+        <div class="filter-box">
+            <ul class="nav">
+                <li v-for="(nav,index) in navList" :class="{active:navActive==index}" v-on:click="changeNav(index)">{{nav.name}}</li>
+            </ul>
+        </div>
+        <div class="number-list">
+            <ul>
+                <li :value="item" :class="{active:scoreActive==index}"  v-for="(item,index) in scoreList">{{item}}</li>
+            </ul>
+        </div>
+        <div class="evaluate-box">
+            <textarea placeholder="输入评语..." class="textarea" v-model="textareaValue"></textarea>
+            <p class="error-tips" v-show="!(textareaValue.length<20)">已超出20字</p>
+        </div>
+        <div class="bottom-button">
+            <button :class="['button',textareaValue.length==0?'disabled':'']" :disabled="[textareaValue.length==0?'true':'false']">完成</button>
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="../../assets/lib/jquery.1.8.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                navActive:0,
+                navList:[
+                    {
+                        name:'奖励分值'
+                    },{
+                        name:'扣除分值'
+                    }
+                ],
+                scoreActive:0,
+                scoreList:[1,2,3,4,5],
+                textareaValue:'',
+            }
+        },
+        created: function () {
+
+        },
+        mounted: function () {
+        },
+        methods: {
+            changeNav:function (index){
+                this.navActive = index;
+            },
+        }
+    });
+</script>

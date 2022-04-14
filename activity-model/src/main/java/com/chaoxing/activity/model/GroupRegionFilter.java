@@ -32,6 +32,10 @@ public class GroupRegionFilter {
     private Integer groupId;
     /** 地区名称; column: name*/
     private String name;
+    /** 管理机构id; column: manage_fid*/
+    private Integer manageFid;
+    /** 区域编码; column: code*/
+    private String code;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 创建时间; column: create_time*/

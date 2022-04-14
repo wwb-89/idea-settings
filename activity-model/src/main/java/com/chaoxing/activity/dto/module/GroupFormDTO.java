@@ -1,5 +1,10 @@
 package com.chaoxing.activity.dto.module;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * @author wwb
  * @version ver 1.0
@@ -8,5 +13,8 @@ package com.chaoxing.activity.dto.module;
  * @blame wwb
  * @date 2020-11-11 10:15:53
  */
+@Data
+@Builder
+@NoArgsConstructor
 public class GroupFormDTO {
 }

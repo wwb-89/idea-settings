@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>创建活动</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/lib/webuploader/webuploader.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/createActivity.css">
+    <script src="../assets/lib/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="page" id="app" v-cloak>
+    <div class="info box" v-show="!pageShow">
+        <form action="">
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png" alt=""
+                                          class="required-img">名称</label>
+                <div class="input-box">
+                    <el-input type="text" placeholder="请填写" v-model="name" maxlength="50" show-word-limit>
+                    </el-input>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png"
+                                          alt="" class="required-img">时间</label>
+                <div class="input-box">
+                    <el-date-picker v-model="time2"
+                                    type="daterange"
+                                    start-placeholder="开始时间"
+                                    end-placeholder="结束时间"
+                                    format="yyyy-MM-dd"
+                                    value-format="yyyy-MM-dd"
+                                    prefix-icon="disable"
+                                    clear-icon="disable"
+                                    unlink-panels>
+                        <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
+                    </el-date-picker>
+                    <span class="date-piker-icon">
+                        <img src="../assets/images/calendar.png">
+                    </span>
+                </div>
+            </div>
+            <div class="form-item align-start">
+                <label class="label cover"><img src="../assets/images/required.png"
+                                                alt="" class="required-img">封面</label>
+                <div class="input-box">
+                    <div class="img-box">
+                        <img src="../assets/images/img.png" alt="" class="cover-img jqthumbImg">
+                    </div>
+                    <div class="font-box">
+                        <span>建议尺寸：1080x500</span>
+                        <span>大小：小于5M</span>
+                        <span>格式：jpg、png、gif</span>
+                        <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
+                               onchange="showImg(this)"/>
+                        <button onclick="uploadImage(this)" class="cancle-btn upload">上传文件</button>
+                        <button @click="deleteImage(this)" class="delete-btn">清除封面</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-item">
+                <label class="label"><img src="../assets/images/required.png"
+                                          alt="" class="required-img">人数限制</label>
+                <div class="input-box">
+                    <div class="select-person-radio">
+                        <el-radio v-model="value1" label="1" name="active-type">不限</el-radio>
+                        <el-radio v-model="value1" label="2" name="active-type">自定义</el-radio>
+                    </div>
+
+                    <input type="number" placeholder="请输入正整数" class="person" v-show="value1 == 2">
+                    <span class="person-span" v-show="value1 == 2">人</span>
+                </div>
+            </div>
+
+            <div class="form-item align-start">
+                <label class="label" style="line-height: 20px;">信息填写</label>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch v-model="delivery2"></el-switch>
+                        <span class="tips">如何创建报名信息表单？</span>
+                    </div>
+
+                    <div v-show="delivery2" class="set-box configurationForm">
+                        <img src="../assets/images/setting.png">
+                        <span class="tips set-information">配置填报信息</span>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+
+
+</div>
+<script src="../../assets/js/vue.min.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/create-active.js"></script>
+<script src="../assets/lib/jqthumb.min.js"></script>
+<script src="../assets/lib/layer/layer.js"></script>
+<script type="text/javascript" src="../assets/lib/webuploader/webuploader.min.js"></script>
+<script>
+    // vue
+    var app = new Vue({
+        el: '#app',
+        data: {
+            name: '',
+            value1: '1',
+
+
+            delivery2: true,
+
+            time1: ['2020-11-16', '2020-11-17'],
+            time2: '',
+            time3: '',
+            options1: [{
+                value: "1",
+                label: "无限制",
+
+            }, {
+                value: "2",
+                label: "自定义人数"
+            }],
+
+            pageShow: false,
+
+        },
+        mounted: function () {
+
+            //文件上传
+            this.initUploader()
+        },
+        methods: {
+            initUploader:function() {
+                var $this = this;
+                $this.uploader = WebUploader.create({
+                    // swf文件路径
+                    swf: "../../assets/lib/webuploader/Uploader.swf",
+                    // 文件接收服务端。
+                    server: "/api/upload/img",
+                    // 选择文件的按钮。可选。
+                    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                    pick: "#upload-btn",
+                    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                    resize: false,
+                    auto: true,
+                    // 只允许选择图片文件。
+                    accept: {
+                        title: 'work',
+                        extensions: 'doc,docx',
+                        mimeTypes: 'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    }
+                });
+            },
+            deleteImage: function () {
+                document.querySelector(".cover-img").src='';
+            }
+        }
+    })
+</script>
+<script>
+    $(function () {
+        $('.jqthumbImg').jqthumb({
+            width: '100%',
+            height: '100%'
+        });
+    });
+</script>
+</body>
+
+</html>

@@ -1,17 +1,19 @@
 package com.chaoxing.activity.service;
 
-import com.chaoxing.activity.dto.manager.WfwClassDTO;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
-import com.chaoxing.activity.dto.manager.WfwRoleDTO;
+import com.chaoxing.activity.mapper.LoginCustomMapper;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.User;
 import com.chaoxing.activity.service.manager.PassportApiService;
-import com.chaoxing.activity.service.manager.UcApiService;
+import com.chaoxing.activity.service.user.UserService;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.enums.WfwRoleEnum;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,12 +21,12 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-/**
+/**登录服务
  * @author wwb
  * @version ver 1.0
  * @className LoginService
@@ -41,7 +43,7 @@ public class LoginService {
 	@Resource
 	private PassportApiService passportApiService;
 	@Resource
-	private UcApiService ucApiService;
+	private LoginCustomMapper loginCustomMapper;
 
 	@Resource
 	private RedissonClient redissonClient;
@@ -71,38 +73,6 @@ public class LoginService {
 			loginUser.setLoginName(passportUser.getLoginName());
 			loginUser.setMobile(passportUser.getMobile());
 			loginUser.setAffiliations(passportUser.getAffiliations());
-			List<WfwClassDTO> manageClasses;
-			List<WfwRoleDTO> roles;
-			WfwClassDTO clazz = null;
-			UserExtraInfoDTO userExtraInfo = ucApiService.getUserExtraInfoByFidAndUid(fid, uid);
-			if (userExtraInfo == null) {
-				roles = new ArrayList(){{
-					add(WfwRoleDTO.builder()
-							.id(WfwRoleEnum.STUDENT.getValue())
-							.name(WfwRoleEnum.STUDENT.getName())
-							.build());
-				}};
-				manageClasses = new ArrayList<>();
-			} else {
-				roles = userExtraInfo.getRoles();
-				roles = Optional.ofNullable(roles).orElse(new ArrayList<>());
-				if (CollectionUtils.isEmpty(roles)) {
-					roles.add(WfwRoleDTO.builder()
-							.id(WfwRoleEnum.STUDENT.getValue())
-							.name(WfwRoleEnum.STUDENT.getName())
-							.build());
-				}
-
-				clazz = WfwClassDTO.builder()
-						.id(userExtraInfo.getClassId())
-						.name(userExtraInfo.getClassName())
-						.gradeId(userExtraInfo.getGradeId())
-						.gradeName(userExtraInfo.getGradeName())
-						.build();
-
-				manageClasses = userExtraInfo.getClasses();
-				manageClasses = Optional.ofNullable(manageClasses).orElse(new ArrayList<>());
-			}
 
 			loginUser.setUid(uid);
 			loginUser.setFid(fid);
@@ -110,26 +80,6 @@ public class LoginService {
 			String orgName = passportApiService.getOrgName(fid);
 			loginUser.setOrgName(orgName);
 
-			loginUser.setRoles(roles);
-			loginUser.setClazz(clazz);
-			loginUser.setManageClazzes(manageClasses);
-
-			// 设置登录用户的角色
-			loginUser.setStudent(false);
-			loginUser.setTeacher(false);
-			loginUser.setManager(ucApiService.isManager(fid, uid));
-			// 设置角色
-			for (WfwRoleDTO role : roles) {
-				if (WfwRoleEnum.STUDENT.getValue().equals(role.getId())) {
-					loginUser.setStudent(true);
-				}
-				if (WfwRoleEnum.TEACHER.getValue().equals(role.getId())) {
-					loginUser.setTeacher(true);
-				}
-				if (WfwRoleEnum.MANAGER.getValue().equals(role.getId())) {
-					loginUser.setManager(true);
-				}
-			}
 			cacheLoginUser(loginUser);
 			userService.add(User.builder()
 					.uid(loginUser.getUid())
@@ -157,30 +107,80 @@ public class LoginService {
 
 	private LoginUserDTO getLoginUser(Integer uid, Integer fid) {
 		ValueOperations<String, LoginUserDTO> valueOperations = redisTemplate.opsForValue();
-		LoginUserDTO loginUser = valueOperations.get(getLoginUserCacheKey(uid, fid));
-		return loginUser;
+		return valueOperations.get(getLoginUserCacheKey(uid, fid));
+	}
+
+	/**根据活动获取定制的登录数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-21 14:57:49
+	 * @param activity
+	 * @return java.lang.String
+	*/
+	public LoginCustom getLoginCustom(Activity activity) {
+		if (activity == null) {
+			return null;
+		}
+		String createAreaCode = activity.getCreateAreaCode();
+		Integer createFid = activity.getCreateFid();
+		// 查询定制的登录地址
+		List<LoginCustom> loginCustoms = loginCustomMapper.selectList(new QueryWrapper<LoginCustom>()
+				.lambda()
+				.eq(LoginCustom::getDeleted, Boolean.FALSE)
+				.and(wrapper -> wrapper.eq(LoginCustom::getAreaCode, createAreaCode).or().eq(LoginCustom::getFid, createFid))
+		);
+		if (CollectionUtils.isNotEmpty(loginCustoms)) {
+			LoginCustom fidCustomLogin = null;
+			LoginCustom areaCodeCustomLogin = null;
+			for (LoginCustom loginCustom : loginCustoms) {
+				String areaCode = loginCustom.getAreaCode();
+				if (StringUtils.isNotBlank(areaCode)) {
+					fidCustomLogin = loginCustom;
+				}
+				if (loginCustom.getFid() != null) {
+					areaCodeCustomLogin = loginCustom;
+				}
+			}
+			if (fidCustomLogin != null) {
+				return fidCustomLogin;
+			}
+			if (areaCodeCustomLogin != null) {
+				return areaCodeCustomLogin;
+			}
+		}
+		return null;
 	}
 
 	private String getLockKey(Integer uid, Integer fid) {
-		StringBuilder lockKeyStringBuilder = new StringBuilder();
-		lockKeyStringBuilder.append(CacheConstant.LOCK_CACHE_KEY_PREFIX);
-		lockKeyStringBuilder.append("login");
-		lockKeyStringBuilder.append(CacheConstant.LOCK_CACHE_KEY_PREFIX);
-		lockKeyStringBuilder.append(uid);
-		lockKeyStringBuilder.append(CacheConstant.LOCK_CACHE_KEY_PREFIX);
-		lockKeyStringBuilder.append(fid);
-		return lockKeyStringBuilder.toString();
+		return CacheConstant.LOCK_CACHE_KEY_PREFIX +
+				"login" +
+				CacheConstant.LOCK_CACHE_KEY_PREFIX +
+				uid +
+				CacheConstant.LOCK_CACHE_KEY_PREFIX +
+				fid;
 	}
 
 	private String getLoginUserCacheKey(Integer uid, Integer fid) {
-		StringBuilder loginUserCacheKey = new StringBuilder();
-		loginUserCacheKey.append(CacheConstant.CACHE_KEY_PREFIX);
-		loginUserCacheKey.append("login");
-		loginUserCacheKey.append(CacheConstant.CACHE_KEY_PREFIX);
-		loginUserCacheKey.append(uid);
-		loginUserCacheKey.append(CacheConstant.CACHE_KEY_PREFIX);
-		loginUserCacheKey.append(fid);
-		return loginUserCacheKey.toString();
+		return CacheConstant.CACHE_KEY_PREFIX +
+				"login" +
+				CacheConstant.CACHE_KEY_PREFIX +
+				uid +
+				CacheConstant.CACHE_KEY_PREFIX +
+				fid;
+	}
+
+	/**登录信息未变更
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-02-15 16:30:41
+	 * @param fid
+	 * @param loginUserDto
+	 * @return void
+	*/
+	public void loginInfoNotChange(Integer fid, LoginUserDTO loginUserDto) {
+		if (!Objects.equals(fid, Optional.ofNullable(loginUserDto).map(LoginUserDTO::getFid).orElse(null))) {
+			throw new BusinessException("登录信息已变更，请刷新页面");
+		}
 	}
 
 }

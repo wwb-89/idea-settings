@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/activity-assess.css">
+    <title>活动评价</title>
+</head>
+
+<body>
+    <div class="assess-container" id="vue" v-cloak>
+        <div class="assess-header">
+            <div class="assess-title">
+                书香浙江 云享阅读——2020浙江省云阅读云阅读计划云阅读计划云阅读
+            </div>
+            <div class="assess-header-right">
+                <div class="login-container">
+                    <div class="after-login">
+                        <img class="login-tx" src="../assets/images/touxiang.png" alt="">
+                        <span class="user-name">王小明</span>
+                        <i class="icon-down">
+                            <img src="../assets/images/icon-down.png" alt="">
+                        </i>
+                        <ul class="login-downlist-info">
+                            <li class="login-downlist-item">
+                                <a href="#">进入空间</a>
+                            </li>
+                            <li class="login-downlist-item">
+                                <a href="#">退出登录</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="set-container">
+            <div class="set-item">
+                <span class="set-title">开启评价</span>
+                <el-switch v-model="value1"></el-switch>
+                <span class="set-detail">开启后，允许参与者评价活动</span>
+            </div>
+            <div class="set-item">
+                <span class="set-title">评价需审核</span>
+                <el-switch v-model="value2"></el-switch>
+                <span class="set-detail">开启后，审核后的评论才能展示在评论列表</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+</html>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/jquery.min.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                value1: false,
+                value2: false
+            }
+        },
+        created: function () {
+
+        },
+        mounted: function () {
+
+        },
+        methods: {
+
+        }
+    });
+</script>

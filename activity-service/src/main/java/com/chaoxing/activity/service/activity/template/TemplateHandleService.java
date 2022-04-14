@@ -1,0 +1,135 @@
+package com.chaoxing.activity.service.activity.template;
+
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.chaoxing.activity.dto.OperateUserDTO;
+import com.chaoxing.activity.mapper.TemplateMapper;
+import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
+import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**模版处理服务
+ * @author wwb
+ * @version ver 1.0
+ * @className TemplateHandleService
+ * @description
+ * @blame wwb
+ * @date 2021-07-14 16:50:50
+ */
+@Slf4j
+@Service
+public class TemplateHandleService {
+
+	@Resource
+	private TemplateMapper templateMapper;
+	@Resource
+	private TemplateComponentService templateComponentService;
+	@Resource
+	private MarketQueryService marketQueryService;
+	@Resource
+	private TemplateQueryService templateQueryService;
+	@Resource
+	private SignUpConditionService signUpConditionService;
+	@Resource
+	private SignUpFillInfoTypeService signUpFillInfoTypeService;
+
+	/**新增模版
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-14 17:44:00
+	 * @param template
+	 * @param operateUserDto
+	 * @return void
+	*/
+	public void add(Template template, OperateUserDTO operateUserDto) {
+		template.perfectCreator(operateUserDto);
+		templateMapper.insert(template);
+	}
+
+	/**克隆模版
+	 * @Description
+	 * 1、查询模版
+	 * 2、查询模版组件关联并克隆
+	 * 3、查询报名条件并克隆
+	 * 4、查询报名填写信息类型并克隆
+	 * @author wwb
+	 * @Date 2021-07-14 16:52:20
+	 * @param market
+	 * @param originTemplateId
+	 * @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void cloneTemplate(Market market, Integer originTemplateId) {
+		Integer marketId = market.getId();
+		Market activityMarket = marketQueryService.getById(marketId);
+		Template originTemplate = templateQueryService.getById(originTemplateId);
+		Optional.ofNullable(originTemplate).orElseThrow(() -> new BusinessException("模版不存在"));
+
+		List<TemplateComponent> originTemplateComponents = templateComponentService.listTemplateComponentByTemplateId(originTemplateId);
+		// 组件id列表
+		List<Integer> templateComponentIds = Optional.ofNullable(originTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
+		// todo 克隆应该将明细条件也克隆了
+		List<SignUpCondition> originSignUpConditions = signUpConditionService.listWithTemplateDetailsByTplComponentIds(templateComponentIds);
+		List<SignUpFillInfoType> originSignUpFillInfoTypes = signUpFillInfoTypeService.listByTemplateComponentIds(templateComponentIds);
+
+		// 克隆
+		OperateUserDTO operateUserDto = OperateUserDTO.build(activityMarket.getCreateUid());
+		// 克隆模版
+		Template template = originTemplate.cloneToNewMarket(marketId, activityMarket.getFid());
+		add(template, operateUserDto);
+		Integer templateId = template.getId();
+		// 根据市场选择的组织架构需要屏蔽一些组件
+		List<Integer> excludeComponentIds = marketQueryService.listExcludeComponentId(market);
+		// 克隆模版组件列表
+		List<TemplateComponent> parentTemplateComponents = TemplateComponent.cloneToNewTemplateId(originTemplateComponents, templateId, excludeComponentIds);
+		templateComponentService.batchAddTemplateComponents(parentTemplateComponents);
+		// 找到新旧templateComponentId的对应关系
+		List<TemplateComponent> templateComponents = Lists.newArrayList(parentTemplateComponents);
+		parentTemplateComponents.forEach(v -> templateComponents.addAll(v.getChildren()));
+		Map<Integer, Integer> oldNewTemplateComponentIdRelation = templateComponents.stream().collect(Collectors.toMap(TemplateComponent::getOriginId, TemplateComponent::getId));
+		// 克隆报名条件列表
+		List<SignUpCondition> signUpConditions = SignUpCondition.cloneToNewTemplateComponentId(originSignUpConditions, oldNewTemplateComponentIdRelation);
+		signUpConditionService.batchAdd(signUpConditions);
+		// 克隆报名填报信息类型列表
+		List<SignUpFillInfoType> signUpFillInfoTypes = SignUpFillInfoType.cloneToNewTemplateComponentId(originSignUpFillInfoTypes, oldNewTemplateComponentIdRelation);
+		signUpFillInfoTypeService.batchAdd(signUpFillInfoTypes);
+	}
+
+	/**更新模板
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-25 15:35:43
+	* @param template
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+    public void update(Template template) {
+		if (template == null || template.getId() == null) {
+			return;
+		}
+		templateMapper.updateById(template);
+    }
+
+	/**根据marketId删除对应的模板
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-11-01 16:52:35
+	 * @param marketId
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+    public void deleteByMarketId(Integer marketId) {
+		templateMapper.delete(new LambdaUpdateWrapper<Template>().eq(Template::getMarketId, marketId));
+    }
+}

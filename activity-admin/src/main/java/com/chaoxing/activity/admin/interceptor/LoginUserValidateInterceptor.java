@@ -1,10 +1,9 @@
 package com.chaoxing.activity.admin.interceptor;
 
-import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.service.CookieValidationService;
 import com.chaoxing.activity.admin.util.CookieUtils;
 import com.chaoxing.activity.admin.util.LoginUtils;
-import org.apache.commons.lang3.StringUtils;
+import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.service.CookieValidationService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -30,11 +29,11 @@ public class LoginUserValidateInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		if (loginUser != null) {
-			String uid = CookieUtils.getUid(request);
-			if (StringUtils.isNotEmpty(uid)) {
+			Integer uid = CookieUtils.getUid(request);
+			if (uid != null) {
 				long validateTime = CookieUtils.getValidateTime(request);
 				String signature = CookieUtils.getSignature(request);
-				if (!cookieValidationService.isEffective(Integer.parseInt(uid), validateTime, signature)) {
+				if (!cookieValidationService.isEffective(uid, validateTime, signature)) {
 					LoginUtils.logout(request);
 				}
 			}

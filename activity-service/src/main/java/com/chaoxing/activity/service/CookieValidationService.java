@@ -1,6 +1,6 @@
 package com.chaoxing.activity.service;
 
-import com.chaoxing.activity.util.RSAUtils;
+import com.chaoxing.activity.util.RsaUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -33,7 +33,7 @@ public class CookieValidationService {
 	public boolean isEffective(Integer uid, long time, String signature) throws UnsupportedEncodingException {
 		String clearText = getClearText(uid, time);
 		signature = URLDecoder.decode(signature, StandardCharsets.UTF_8.name());
-		return RSAUtils.verifySign(clearText, signature, PUBLIC_KEY);
+		return RsaUtils.verifySign(clearText, signature, PUBLIC_KEY);
 	}
 	/**获取明文
 	 * @Description:

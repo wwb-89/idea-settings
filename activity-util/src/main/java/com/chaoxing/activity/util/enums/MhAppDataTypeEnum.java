@@ -19,13 +19,17 @@ public enum MhAppDataTypeEnum {
 	/** 活动封面 */
 	ACTIVITY_COVER("活动封面", "activity_cover"),
 	ACTIVITY_INFO("活动信息", "activity_info"),
+	ACTIVITY_SIGN_INFO("活动及报名信息", "activity_sign_info"),
 	SIGN_IN_UP("签到报名", "sign_in_up"),
 	ACTIVITY_MODULE("活动模块", "activity_module"),
 	ACTIVITY_MAP("活动地图", "activity_map"),
-	ACTIVITY_LIST("活动列表", "activity_list");
+	ACTIVITY_LIST("活动列表", "activity_list"),
+	DUAL_SELECT("双选会", "dual_select"),
+	// 版本v3
+	activity_brief_info("活动精简信息", "activity_brief_info");
 
-	private String name;
-	private String value;
+	private final String name;
+	private final String value;
 
 	MhAppDataTypeEnum(String name, String value) {
 		this.name = name;

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>创建奖项</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css" />
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/public.css" />
+    <link rel="stylesheet" href="../assets/css/dialog.css">
+    <link rel="stylesheet" href="../assets/css/award-manage.css">
+</head>
+
+<body>
+    <div class="create-award" id="create-award">
+        <input type="text" name="" id="" placeholder="奖项名称(20字以内)" class="ipt-award-name" maxlength="20">
+        <div class="award-intro">
+            <textarea name="" id="" cols="30" rows="5" placeholder="奖项名称(20字以内)" class="ipt-award-intro" maxlength="100"
+                v-model="introModel"></textarea>
+            <span
+                v-bind:class="introModel.length==100 ? 'red writing-num' : 'writing-num'">{{100 - introModel.length}}</span>
+        </div>
+        <div class="award-grade">
+            <span class="grade-t">奖项级别</span>
+            <span class="grade-detail fr">无 <span class="layui-icon layui-icon-right"></span></span>
+        </div>
+        <div class="award-cer-content">
+            <div class="cer-btn">
+                <span class="grade-t">证书</span>
+                <span class="fr switch-btn">
+                    <el-switch v-model="value1"></el-switch>
+                </span>
+            </div>
+            <div class="preview-cer" v-show="value1">
+                <span>预览证书</span>
+                <span class="fr layui-icon layui-icon-right"></span>
+            </div>
+        </div>
+        <!-- 底部按钮 -->
+        <div class="bot-content">
+            <!-- <div class="bot-btn">完成</div> -->
+            <div class="bot-btn un-finished">完成</div>
+        </div>
+    </div>
+
+    <script src="../assets/lib/jquery.1.8.2.min.js"></script>
+    <script src="../assets/lib/jqthumb.min.js"></script>
+    <script src="../assets/lib/vue.js"></script>
+    <script src="../assets/lib/element-ui/lib/index.js"></script>
+    <script src="../assets/lib/layui/layui.js"></script>
+    <script>
+        $(function () {
+
+        })
+
+        var vm = new Vue({
+            el: '#create-award',
+            data: function () {
+                return {
+                    introModel: "",
+                    value1: false
+                }
+            },
+            methods: {
+
+            },
+            watch: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

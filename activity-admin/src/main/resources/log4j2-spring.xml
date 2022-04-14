@@ -39,7 +39,9 @@ shutdownHook：指定在jvm关闭时是否自动关闭log4j，默认开启。
 			<!--
 				onMatch：比定义的level级别高的日志的处理方式。
 				onMismatch：比定义的level级别低的日志的处理方式。
+				取值范围：accept(接受)，deny(拒绝)，neutral(中立)
 			-->
+			<ThresholdFilter level="info" onMatch="deny" onMismatch="accept" />
 			<ThresholdFilter level="debug" onMatch="accept" onMismatch="deny" />
 		</RollingFile>
 		<!-- info级别日志 -->
@@ -62,7 +64,9 @@ shutdownHook：指定在jvm关闭时是否自动关闭log4j，默认开启。
 			<!--
 				onMatch：比定义的level级别高的日志的处理方式。
 				onMismatch：比定义的level级别低的日志的处理方式。
+				取值范围：accept(接受)，deny(拒绝)，neutral(中立)
 			-->
+			<ThresholdFilter level="warn" onMatch="deny" onMismatch="accept" />
 			<ThresholdFilter level="info" onMatch="accept" onMismatch="deny" />
 		</RollingFile>
 		<!-- error级别日志 -->
@@ -81,10 +85,12 @@ shutdownHook：指定在jvm关闭时是否自动关闭log4j，默认开启。
 	</Appenders>
 	<Loggers>
 		<!-- 为具体的包单独指定日志记录级别 -->
-		<Logger name="com.chaoxing" level="debug"/>
+		<Logger name="com.chaoxing.activity.mapper" level="debug" additivity="false">
+			<AppenderRef ref="debug" />
+		</Logger>
 		<!-- 日志的记录级别 -->
 		<Root level="info">
-			<AppenderRef level="debug" ref="console" />
+			<AppenderRef level="warn" ref="console" />
 			<AppenderRef ref="debug" />
 			<AppenderRef ref="info" />
 			<AppenderRef ref="error" />

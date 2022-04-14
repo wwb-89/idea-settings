@@ -3,12 +3,18 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
+import com.chaoxing.activity.dto.manager.uc.ClazzDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwClassDTO;
+import com.chaoxing.activity.util.constant.DomainConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author wwb
@@ -23,9 +29,9 @@ import java.util.Optional;
 public class UcApiService {
 
 	/** 获取用户额外信息url */
-	private static final String USER_EXTRA_INFO_URL = "http://uc.chaoxing.com/userInter/getUserExtraInfo?fid=%d&uid=%d";
+	private static final String USER_EXTRA_INFO_URL = DomainConstant.UC + "/userInter/getUserExtraInfo?fid=%d&uid=%d";
 	/** 判断是不是管理员 */
-	private static final String USER_MANAGER_JUDGE_URL = "http://uc.chaoxing.com/siteInter/checkUserManage?fid=%d&uid=%d";
+	private static final String USER_MANAGER_JUDGE_URL = DomainConstant.UC + "/siteInter/checkUserManage?fid=%d&uid=%d";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -74,4 +80,20 @@ public class UcApiService {
 		}
 	}
 
+	/**查询教师执教班级列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-03 11:18:46
+	 * @param uid
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.uc.ClazzDTO>
+	*/
+	public List<ClazzDTO> listTeacherTeachingClazz(Integer uid, Integer fid) {
+		UserExtraInfoDTO userExtraInfoDto = getUserExtraInfoByFidAndUid(fid, uid);
+		if (userExtraInfoDto != null) {
+			List<WfwClassDTO> classes = userExtraInfoDto.getClasses();
+			return Optional.ofNullable(classes).orElse(Lists.newArrayList()).stream().map(v -> v.buildClazzDTO()).collect(Collectors.toList());
+		}
+		return Lists.newArrayList();
+	}
 }

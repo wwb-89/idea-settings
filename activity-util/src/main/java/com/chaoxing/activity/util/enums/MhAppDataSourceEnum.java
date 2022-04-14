@@ -16,11 +16,12 @@ import java.util.Objects;
 @Getter
 public enum MhAppDataSourceEnum {
 
+	/** 本地数据 */
 	LOCAL("本地数据", 1),
 	EXTERNAL("外部数据", 2);
 
-	private String name;
-	private Integer value;
+	private final String name;
+	private final Integer value;
 
 	MhAppDataSourceEnum(String name, Integer value) {
 		this.name = name;

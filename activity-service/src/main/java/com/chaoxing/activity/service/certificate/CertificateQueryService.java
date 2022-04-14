@@ -1,0 +1,169 @@
+package com.chaoxing.activity.service.certificate;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.UserCertificateDTO;
+import com.chaoxing.activity.dto.query.UserCertificateQueryDTO;
+import com.chaoxing.activity.mapper.CertificateIssueMapper;
+import com.chaoxing.activity.model.CertificateIssue;
+import com.chaoxing.activity.model.TableFieldDetail;
+import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.util.DateUtils;
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**证书查询服务
+ * @author wwb
+ * @version ver 1.0
+ * @className CertificateQueryService
+ * @description
+ * @blame wwb
+ * @date 2021-12-15 15:40:13
+ */
+@Slf4j
+@Service
+public class CertificateQueryService {
+
+    @Resource
+    private CertificateIssueMapper certificateIssueMapper;
+
+    @Resource
+    private TableFieldQueryService tableFieldQueryService;
+
+    /**获取用户在活动activityId下的证书发放信息
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-12-20 16:59:13
+     * @param uid
+     * @param activityId
+     * @return
+     */
+    public UserCertificateDTO getUserCertificateInfo(Integer uid, Integer activityId) {
+        UserCertificateDTO userCertificate = certificateIssueMapper.getUserCertificate(uid, activityId);
+        if (userCertificate != null) {
+            userCertificate.setIssued(userCertificate.getIssueTime() != null);
+            userCertificate.setIssueTimestamp(DateUtils.date2Timestamp(userCertificate.getIssueTime()));
+        }
+        return userCertificate;
+    }
+
+    /**获取活动activityId下的证书发放用户信息列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2022-02-11 14:49:40
+     * @param activityId
+     * @return
+     */
+    public List<UserCertificateDTO> listUserCertificateIssueByActivity(Integer activityId) {
+        if (activityId == null) {
+            return Lists.newArrayList();
+        }
+        return certificateIssueMapper.listUserCertificateIssueByActivity(activityId);
+    }
+
+    /**查询证书发放记录
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-15 15:41:56
+     * @param uid
+     * @param activityId
+     * @return com.chaoxing.activity.model.CertificateIssue
+    */
+    public CertificateIssue getCertificateIssue(Integer uid, Integer activityId) {
+        List<CertificateIssue> certificateIssues = certificateIssueMapper.selectList(new LambdaQueryWrapper<CertificateIssue>()
+                .eq(CertificateIssue::getActivityId, activityId)
+                .eq(CertificateIssue::getUid, uid)
+        );
+        return certificateIssues.stream().findFirst().orElse(null);
+    }
+
+    /**查询证书发放列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-16 15:38:28
+     * @param uids
+     * @param activityId
+     * @return java.util.List<com.chaoxing.activity.model.CertificateIssue>
+    */
+    public List<CertificateIssue> listCertificateIssue(List<Integer> uids, Integer activityId) {
+        return certificateIssueMapper.selectList(new LambdaQueryWrapper<CertificateIssue>()
+                .eq(CertificateIssue::getActivityId, activityId)
+                .in(CertificateIssue::getUid, uids)
+        );
+    }
+
+    /**分页查询
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-16 14:24:20
+     * @param page
+     * @param queryParams
+     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.UserCertificateDTO>
+    */
+    public Page<UserCertificateDTO> pageCertificate(Page<UserCertificateDTO> page, UserCertificateQueryDTO queryParams) {
+        if (queryParams.getOrderFieldId() != null) {
+            TableFieldDetail tableFieldDetail = tableFieldQueryService.getFieldDetailById(queryParams.getOrderFieldId());
+            queryParams.setOrderField(tableFieldDetail.getCode());
+        }
+        page = certificateIssueMapper.pageCertificate1(page, queryParams);
+        List<UserCertificateDTO> records = page.getRecords();
+        records.stream().forEach(v -> {
+            v.setIssued(v.getIssueTime() != null);
+            v.setIssueTimestamp(DateUtils.date2Timestamp(v.getIssueTime()));
+        });
+        return page;
+    }
+
+    /**获取活动证书最大序号
+     * @Description 
+     * @author wwb
+     * @Date 2021-12-16 16:32:35
+     * @param activityId
+     * @return java.lang.Integer
+    */
+    public Integer getActivityMaxSerialNo(Integer activityId) {
+        return certificateIssueMapper.getActivityMaxSerialNo(activityId);
+    }
+
+    /**根据证书编号查询证书
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-10 20:31:40
+     * @param no
+     * @return com.chaoxing.activity.model.CertificateIssue
+    */
+    public CertificateIssue getByNo(String no) {
+        return certificateIssueMapper.selectList(new LambdaQueryWrapper<CertificateIssue>()
+                .eq(CertificateIssue::getNo, no)
+        ).stream().findFirst().orElse(null);
+    }
+
+    /**根据id查询
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-14 10:44:49
+     * @param id
+     * @return com.chaoxing.activity.model.CertificateIssue
+    */
+    public CertificateIssue getById(Integer id) {
+        return certificateIssueMapper.selectById(id);
+    }
+
+    /**查询待生成二维码的证书
+     * @Description 
+     * @author wwb
+     * @Date 2022-03-14 16:25:54
+     * @param 
+     * @return java.util.List<com.chaoxing.activity.model.CertificateIssue>
+    */
+    public List<CertificateIssue> listWaitGenerateQrCode() {
+        return certificateIssueMapper.selectList(new LambdaQueryWrapper<CertificateIssue>()
+                .eq(CertificateIssue::getQrCodeStatus, CertificateIssue.QrCodeStatusEnum.WAIT.getValue())
+        );
+    }
+
+}

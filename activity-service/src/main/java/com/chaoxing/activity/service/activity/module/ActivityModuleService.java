@@ -2,10 +2,10 @@ package com.chaoxing.activity.service.activity.module;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.module.PunchFormDTO;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
 import com.chaoxing.activity.mapper.ActivityModuleMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityModule;
 import com.chaoxing.activity.service.manager.module.PunchApiService;
 import com.chaoxing.activity.service.manager.module.StarApiService;
@@ -140,16 +140,15 @@ public class ActivityModuleService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 10:24:35
-	 * @param activityId
+	 * @param activity
 	 * @param templateId
 	 * @param name
-	 * @param loginUser
 	 * @return com.chaoxing.activity.model.ActivityModule
 	*/
-	public ActivityModule generateTpkModule(Integer activityId, Integer templateId, String name, LoginUserDTO loginUser) {
-		Integer tpkId = tpkApiService.create(name, loginUser);
+	public ActivityModule generateTpkModule(Activity activity, Integer templateId, String name) {
+		Integer tpkId = tpkApiService.create(name, activity.getCreateUid(), activity.getCreateFid());
 		ActivityModule activityModule = ActivityModule.builder()
-				.activityId(activityId)
+				.activityId(activity.getId())
 				.templateAppId(templateId)
 				.externalId(String.valueOf(tpkId))
 				.name(name)
@@ -163,16 +162,15 @@ public class ActivityModuleService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 10:26:30
-	 * @param activityId
+	 * @param activity
 	 * @param templateId
 	 * @param name
-	 * @param loginUser
 	 * @return com.chaoxing.activity.model.ActivityModule
 	*/
-	public ActivityModule generateStarModule(Integer activityId, Integer templateId, String name, LoginUserDTO loginUser) {
-		Integer starId = starApiService.create(loginUser.getUid(), loginUser.getFid());
+	public ActivityModule generateStarModule(Activity activity, Integer templateId, String name) {
+		Integer starId = starApiService.create(activity.getCreateUid(), activity.getCreateFid());
 		ActivityModule activityModule = ActivityModule.builder()
-				.activityId(activityId)
+				.activityId(activity.getId())
 				.templateAppId(templateId)
 				.externalId(String.valueOf(starId))
 				.name(name)
@@ -186,21 +184,20 @@ public class ActivityModuleService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 10:27:11
-	 * @param activityId
+	 * @param activity
 	 * @param templateId
 	 * @param name
-	 * @param loginUser
 	 * @return com.chaoxing.activity.model.ActivityModule
 	*/
-	public ActivityModule generateWorkModule(Integer activityId, Integer templateId, String name, LoginUserDTO loginUser) {
+	public ActivityModule generateWorkModule(Activity activity, Integer templateId, String name) {
 		WorkFormDTO workForm = WorkFormDTO.builder()
 				.name(name)
-				.uid(loginUser.getUid())
-				.wfwfid(loginUser.getFid())
+				.uid(activity.getCreateUid())
+				.wfwfid(activity.getCreateFid())
 				.build();
 		Integer workId = workApiService.create(workForm);
 		ActivityModule activityModule = ActivityModule.builder()
-				.activityId(activityId)
+				.activityId(activity.getId())
 				.templateAppId(templateId)
 				.externalId(String.valueOf(workId))
 				.name(name)
@@ -214,21 +211,20 @@ public class ActivityModuleService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 10:29:29
-	 * @param activityId
+	 * @param activity
 	 * @param templateId
 	 * @param name
-	 * @param loginUser
 	 * @return com.chaoxing.activity.model.ActivityModule
 	*/
-	public ActivityModule generatePunchModule(Integer activityId, Integer templateId, String name, LoginUserDTO loginUser) {
+	public ActivityModule generatePunchModule(Activity activity, Integer templateId, String name) {
 		PunchFormDTO punchForm = PunchFormDTO.builder()
 				.name(name)
 				.needPubDynamic(false)
-				.createUid(loginUser.getUid())
+				.createUid(activity.getCreateUid())
 				.build();
 		Integer punchId = punchApiService.create(punchForm);
 		ActivityModule activityModule = ActivityModule.builder()
-				.activityId(activityId)
+				.activityId(activity.getId())
 				.templateAppId(templateId)
 				.externalId(String.valueOf(punchId))
 				.name(name)

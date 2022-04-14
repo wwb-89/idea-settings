@@ -1,9 +1,9 @@
 Vue.component('vue-map', {
-    props:["mapDomId"],
+    props:["mapDomId", "title"],
     template: "<div class='dailog-box1' v-show='show'>\n" +
         "    <div class='dailog map-dailog'>\n" +
         "        <div class='header'>\n" +
-        "            <span>设置地图</span>\n" +
+        "            <span>{{title}}</span>\n" +
         "            <div @click='show = false'>\n" +
         "                <img :src='closeImgUrl' class='close'>\n" +
         "            </div>\n" +
@@ -35,20 +35,44 @@ Vue.component('vue-map', {
             // 地址
             address: "",
             // 经度
-            longitude: "",
+            lng: null,
             // 维度
-            dimension: "",
+            lat: null,
             // 地图实例
             map: '',
             // Marker实例
-            mk: ''
+            mk: '',
+            inited: false
         }
     },
-    mounted: function () {
-        var $this = this;
-        $this.initMap();
+    watch: {
+        "show": function () {
+            var $this = this;
+            if (!$this.show) {
+                $this.address = "";
+                $this.lng = null;
+                $this.lat = null;
+                activityApp.resetScroll();
+            } else {
+                if (!$this.inited) {
+                    $this.$nextTick(function () {
+                        $this.initMap();
+                    });
+                }
+                activityApp.initScroll();
+            }
+        }
     },
     methods: {
+        showMap: function (lng, lat, address) {
+            var $this = this;
+            if (!activityApp.isEmpty(lng) && !activityApp.isEmpty(lat)) {
+                $this.lng = lng;
+                $this.lat = lat;
+                $this.address = address;
+            }
+            $this.show = true;
+        },
         // 初始化百度地图
         initMap: function () {
             var $this = this;
@@ -56,8 +80,8 @@ Vue.component('vue-map', {
             this.map = new BMap.Map($this.mapDomId, {
                 enableMapClick: false
             });
-            var point = new BMap.Point(104.10194, 30.65984);
-            this.map.centerAndZoom(point, 19);
+            var point = new BMap.Point($this.lng ? $this.lng : 116.41338729034514000, $this.lat ? $this.lat : 39.91092364795759600);
+            this.map.centerAndZoom(point, 11);
             // 启用滚轮放大缩小，默认禁用
             this.map.enableScrollWheelZoom(true);
             this.mk = new BMap.Marker(point);
@@ -67,6 +91,7 @@ Vue.component('vue-map', {
                 // 点击后调用逆地址解析函数
                 $this.getAddrByPoint(e.point);
             });
+            $this.inited = true;
         },
         //逆地址解析
         getAddrByPoint: function (point) {
@@ -80,8 +105,8 @@ Vue.component('vue-map', {
                 // 记录该点的详细地址信息
                 $this.address = res.address;
                 // 记录当前坐标点
-                $this.longitude = point.lng;
-                $this.dimension = point.lat;
+                $this.lng = point.lng;
+                $this.lat = point.lat;
             })
         },
         querySearchAsync: function (str, cb) {
@@ -118,11 +143,17 @@ Vue.component('vue-map', {
             this.map.panTo(item.point);
             // 记录详细地址，含建筑物名
             this.address = item.address + item.title;
-            $this.longitude = item.point.lng;
-            $this.dimension = item.point.lat;
+            $this.lng = item.point.lng;
+            $this.lat = item.point.lat;
         },
         sure: function () {
             var $this = this;
+            if (activityApp.isEmpty($this.address)) {
+                // 地址和经纬度置空
+                $this.lng = null;
+                $this.lat = null;
+                $this.address = "";
+            }
             $this.$emit("callback");
             $this.show = false;
         }

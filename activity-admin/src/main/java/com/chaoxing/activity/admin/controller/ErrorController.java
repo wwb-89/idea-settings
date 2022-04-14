@@ -34,4 +34,20 @@ public class ErrorController {
 		}
 	}
 
+	/**拒绝访问（无权限）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-22 15:56:34
+	 * @param request
+	 * @return java.lang.String
+	*/
+	@RequestMapping("403")
+	public String forbidden(HttpServletRequest request) {
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "/error/mobile/403";
+		} else {
+			return "/error/pc/403";
+		}
+	}
+
 }

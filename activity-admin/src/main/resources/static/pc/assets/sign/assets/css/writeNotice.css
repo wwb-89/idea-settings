@@ -1,0 +1,140 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+.app {
+    padding: 16px 24px 0 24px;
+}
+.header {
+    margin-bottom: 16px;
+    max-width: 1024px;
+}
+.header .title {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 30px;
+    color: #333333;
+}
+.send-btn-disable {
+    width: 80px;
+    height: 30px;
+    background: #0084FF;
+    border-radius: 15px;
+    font-size: 13px;
+    line-height: 30px;
+    text-align: center;
+    color: #FFFFFF;
+    display: block;
+    float: right;
+    cursor: pointer;
+}
+.send-btn {
+    width: 80px;
+    height: 30px;
+    background: rgba(0, 132, 255, 0.3);
+    border-radius: 15px;
+    font-size: 13px;
+    line-height: 30px;
+    text-align: center;
+    color: #FFFFFF;
+    display: block;
+    float: right;
+    cursor: pointer;
+}
+.item {
+    height: 33px;
+    border: 1px solid #E9E9E9;
+    border-radius: 2px;
+    margin-bottom: 16px;
+    padding-top: 9px;
+}
+.item .title {
+    margin-left: 12px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 22px;
+    color: #666666;
+    float: left;
+    margin-right: 8px;
+}
+.item input {
+    border: none;
+    width: calc(100% - 100px);
+    margin-left: 18px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 22px;
+    color: #333333;
+}
+
+.registered {
+    float: left;
+    position: relative;
+    margin-right: 12px;
+}
+.icon_delete {
+    position: absolute;
+    background: url("../images/delete.png") no-repeat;
+    width: 15px;
+    height: 15px;
+    top: -5px;
+    right: -3px;
+    cursor: pointer;
+}
+
+.registered span{
+    padding: 3px 12px;
+    background: rgba(0, 132, 255, 0.08);
+    border-radius: 29px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 22px;
+    color: #333333;
+}
+textarea {
+    border: 1px solid #E9E9E9;
+    border-radius: 2px;
+    max-width: 1024px;
+    width: calc(100% - 26px);
+    height: 680px;
+    max-height: 680px;
+    padding: 11px 12px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #333333;
+    font-family: PingFangSC;
+}
+.content {
+    max-width: 1024px;
+}
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 24px;
+    color: #CCCCCC;
+    outline:none;
+}
+input:-moz-placeholder, textarea:-moz-placeholder {
+    font-size: 14px;
+    line-height: 24px;
+    color: #CCCCCC;
+    outline:none;
+}
+input::-moz-placeholder, textarea::-moz-placeholder {
+    font-size: 14px;
+    line-height: 24px;
+    color: #CCCCCC;
+    outline:none;
+}
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+    font-size: 14px;
+    line-height: 24px;
+    color: #CCCCCC;
+    outline:none;
+}
+input:focus {
+    outline: none;
+}
+textarea:focus {
+    outline: none;
+}

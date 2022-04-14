@@ -31,8 +31,8 @@ public enum ModuleTypeEnum {
 	/** 超链接 */
 	LINK("超链接", "link");
 
-	private String name;
-	private String value;
+	private final String name;
+	private final String value;
 
 	ModuleTypeEnum(String name, String value) {
 		this.name = name;

@@ -28,8 +28,7 @@ public class LoginUtils {
         if (session != null) {
             Object attribute = session.getAttribute(LOGIN_USER_SESSION_KEY);
             if (attribute != null) {
-                LoginUserDTO loginUserDTO = (LoginUserDTO)attribute;
-                return loginUserDTO;
+                return (LoginUserDTO)attribute;
             }
         }
         return null;

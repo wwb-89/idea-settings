@@ -2,7 +2,14 @@ package com.chaoxing.activity.web.resolver;
 
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ExceptionConstant;
+import com.chaoxing.activity.util.constant.HttpRequestHeaderConstant;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.util.exception.LoginRequiredException;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -14,6 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /** 页面类异常处理
  * @author wwb
@@ -23,14 +32,27 @@ import javax.servlet.http.HttpServletResponse;
  * @blame wwb
  * @date 2020-08-21 22:07:40
  */
+@Slf4j
 @Order(-1)
 @Component
 public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 
+	@SneakyThrows
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-		ex.printStackTrace();
+		log.error("请求url:{}, 请求参数:{}, 来源:{}", request.getRequestURI(), request.getQueryString(), request.getHeader(HttpRequestHeaderConstant.REFERER));
+		log.error(ExceptionUtils.getStackTrace(ex));
 		if (isPageRequest(handler)) {
+			if (ex instanceof LoginRequiredException) {
+				// 重定向到登录页面
+				String url = request.getRequestURL().toString();
+				String queryString = request.getQueryString();
+				if (StringUtils.isNotBlank(queryString)) {
+					url += "?" + queryString;
+				}
+				String redirectUrl = UrlConstant.LOGIN_URL + URLEncoder.encode(url, StandardCharsets.UTF_8.name());
+				return new ModelAndView("redirect:" + redirectUrl);
+			}
 			String message = getMessage(ex);
 			ModelAndView modelAndView = new ModelAndView();
 			modelAndView.setViewName(getViewName(request));

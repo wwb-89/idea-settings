@@ -2,8 +2,10 @@ package com.chaoxing.activity.dto;
 
 import com.chaoxing.activity.util.enums.StatusCodeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -17,13 +19,15 @@ import java.util.List;
  */
 @Data
 @Builder
-public class RestRespDTO<T> {
+@NoArgsConstructor
+@AllArgsConstructor
+public class RestRespDTO {
 
 	private Boolean success;
 	private Integer code;
 	private String message;
 
-	private T data;
+	private Object data;
 
 	private String timestamp;
 
@@ -36,7 +40,7 @@ public class RestRespDTO<T> {
 				.build();
 	}
 
-	public static <T> RestRespDTO success(T data) {
+	public static RestRespDTO success(Object data) {
 		return RestRespDTO.builder()
 				.success(StatusCodeEnum.SUCCESS.isSuccess())
 				.code(StatusCodeEnum.SUCCESS.getCode())
@@ -46,7 +50,7 @@ public class RestRespDTO<T> {
 				.build();
 	}
 
-	public static <T> RestRespDTO success(List<T> datas) {
+	public static RestRespDTO success(List<Object> datas) {
 		return RestRespDTO.builder()
 				.success(StatusCodeEnum.SUCCESS.isSuccess())
 				.code(StatusCodeEnum.SUCCESS.getCode())

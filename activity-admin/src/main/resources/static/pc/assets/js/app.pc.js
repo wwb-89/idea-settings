@@ -85,6 +85,27 @@
             }
         });
     };
+    app.prototype.ajaxPostWithPayload = function(url, params, success){
+        $.ajax({
+            url: url,
+            type: "post",
+            data: params,
+            contentType:"application/json;charset=UTF-8",
+            dataType: "json",
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function(data) {
+                success(data);
+            },
+            error:function(){
+
+            },
+            complete:function () {
+            }
+        });
+    };
+
 
     /**
      * 显示信息
@@ -178,7 +199,7 @@
      * loading
      */
     app.prototype.loading = function () {
-        return layer.load(1, {shade: [0.2, '#000']});
+        return layer.load(1, {shade: [0.7, '#fff']});
     };
 
     app.prototype.closeLayerPop = function (index) {
@@ -207,24 +228,61 @@
         });
     };
     /**
-     * 活动改变了
+     * 绑定活动改变事件
+     * @param callback
      */
-    app.prototype.activityChanged = function () {
+    app.prototype.bindActivityChangeEvent = function (callback) {
         var $this = this;
-        window.localStorage.setItem($this.activityChangeKey, "1");
+        window.addEventListener("storage", function () {
+            var activityId = window.localStorage.getItem($this.activityChangeKey);
+            if (!activityApp.isEmpty(activityId)) {
+                if (activityApp.isFunction(callback)) {
+                    callback(activityId);
+                }
+                setTimeout(function () {
+                    window.localStorage.removeItem($this.activityChangeKey);
+                }, 300);
+            }
+        });
     };
     /**
-     * 活动是否改变了
-     * @returns {boolean}
+     * 通知活动改变
+     * @param activityId
      */
-    app.prototype.isActivityChanged = function () {
+    app.prototype.noticeActivityChange = function (activityId) {
         var $this = this;
-        var value = window.localStorage.getItem($this.activityChangeKey);
-        if (1 == value) {
-            window.localStorage.removeItem($this.activityChangeKey);
-            return true;
+        window.localStorage.setItem($this.activityChangeKey, activityId);
+    };
+    /**
+     * 初始化富文本编辑器
+     * @param content
+     */
+    app.prototype.initUEditor = function (content) {
+        if (!content) {
+            content = "";
         }
-        return false;
+        RichTextUitl.initUEditor(250, content, '');
+    };
+    /**
+     * 获取富文本编辑器的内容
+     * @returns {string}
+     */
+    app.prototype.getUEditorContent = function () {
+        if (RichTextUitl.ueditor) {
+            return RichTextUitl.getRichText().rtf_content;
+        }
+        return "";
+    };
+    /**
+     * 销毁富文本编辑器
+     */
+    app.prototype.destroyUEditor = function () {
+        if (RichTextUitl.ueditor) {
+            if (Object.getOwnPropertyNames(RichTextUitl.ueditor).length > 0) {
+                RichTextUitl.ueditor.destroy();
+            }
+            RichTextUitl.ueditor = "";
+        }
     };
     W['app'] = new app();
 })(window, jQuery, JSON);

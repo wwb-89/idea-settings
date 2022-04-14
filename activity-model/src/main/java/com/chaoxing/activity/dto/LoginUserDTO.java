@@ -1,7 +1,5 @@
 package com.chaoxing.activity.dto;
 
-import com.chaoxing.activity.dto.manager.WfwClassDTO;
-import com.chaoxing.activity.dto.manager.WfwRoleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,26 +34,32 @@ public class LoginUserDTO {
 	/** 手机号 */
 	private String mobile;
 
-	/** 角色列表 */
-	private List<WfwRoleDTO> roles;
-	/** 班级 */
-	private WfwClassDTO clazz;
-	/** 分校id */
-	private Integer campusId;
-	/** 分校名称 */
-	private String campusName;
-
-	/** 是否是学生 */
-	private Boolean student;
-	/** 是否是教师 */
-	private Boolean teacher;
-	/** 是否是管理员 */
-	private Boolean manager;
-
-	/** 执教班级列表 */
-	private List<WfwClassDTO> manageClazzes;
-
 	/** 所属机构列表 */
 	private List<OrgDTO> affiliations;
+
+	public static LoginUserDTO buildDefault(Integer uid, Integer fid) {
+		return LoginUserDTO.builder()
+				.uid(uid)
+				.fid(fid)
+				.build();
+	}
+
+	public static LoginUserDTO buildDefault(Integer uid, String realName, Integer fid, String orgName) {
+		return LoginUserDTO.builder()
+				.uid(uid)
+				.realName(realName)
+				.fid(fid)
+				.orgName(orgName)
+				.build();
+	}
+
+	public OperateUserDTO buildOperateUserDTO() {
+		return OperateUserDTO.builder()
+				.uid(getUid())
+				.userName(getRealName())
+				.fid(getFid())
+				.orgName(getOrgName())
+				.build();
+	}
 
 }

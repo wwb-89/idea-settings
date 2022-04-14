@@ -47,5 +47,5 @@ gulp.task('sasslist1', function () {
 gulp.task('watchlist1', function () {
     gulp.watch(['./pc/assets/sass/**/*.scss','./pc/assets/sass/*.scss'],  ['sasslist1']);// 监听的文件
 });
-gulp.task('activity', ['sasslist', 'watchlist','sasslist1', 'watchlist1']);
+gulp.task('default', ['sasslist', 'watchlist','sasslist1', 'watchlist1']);
 

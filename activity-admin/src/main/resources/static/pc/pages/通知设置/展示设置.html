@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>展示设置-活动信息</title>
+  <link rel="stylesheet" href="../../assets/lib/layui/css/layui.css">
+  <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="../../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css">
+  <link rel="stylesheet" href="../../assets/icomoon/style.css">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/moduleSet.css">
+</head>
+<body>
+<div id="vue">
+  <div class="manage-page show-setting">
+    <ul class="tab-ul">
+        <li class="tab-li active">活动信息</li>
+        <li class="tab-li">列表样式</li>
+    </ul>
+    <div class="tab-con">
+        <div class="tab-box ">
+            <p class="tips">活动详情页中需展示的活动信息</p>
+            <div class="sortable-box">
+                <ul class="table-deader fs0">
+                    <li class="li-drag">排序</li>
+                    <li class="li-name">菜单名称</li>
+                    <li class="li-status">开启</li>
+                </ul>
+                <div class="table-body" id="sortDragBox1">
+                  <ul v-for="(item,index) in list1" :key="index" class="table-tr fs0 list-group-item">
+                    <li class="table-td li-drag"><i class="icon-drag"></i></li>
+                    <li class="table-td li-name">{{item.name}}</li>
+                    <li class="table-td li-status">
+                      <el-switch v-model="item.status"></el-switch>
+                    </li>
+                  </ul>
+                </div>
+            </div>
+        </div>
+        <div class="tab-box hide list-style">
+            <h2>电脑端</h2>
+            <div class="list-box pc">
+                <div class="item active">
+                    <div class="img-box">
+                        <i class="check"></i>
+                        <i class="zoom"></i>
+                        <img src="../../assets/images/cover.png" alt="">
+                    </div>
+                    <p class="overHidden1">活动广场1</p>
+                </div>
+                <div class="item">
+                    <div class="img-box">
+                        <i class="check"></i>
+                        <i class="zoom"></i>
+                        <img src="../../assets/images/cover.png" alt="">
+                    </div>
+                    <p class="overHidden1">活动广场2</p>
+                </div>
+                <div class="item">
+                    <div class="img-box">
+                        <i class="check"></i>
+                        <i class="zoom"></i>
+                        <img src="../../assets/images/cover.png" alt="">
+                    </div>
+                    <p class="overHidden1">活动广场3</p>
+                </div>
+                <div class="item">
+                    <div class="img-box">
+                        <i class="check"></i>
+                        <i class="zoom"></i>
+                        <img src="../../assets/images/cover.png" alt="">
+                    </div>
+                    <p class="overHidden1">活动广场4</p>
+                </div>
+            </div>
+            <h2 class="marginTop20">移动端</h2>
+            <div class="list-box app">
+                <div class="item active">
+                    <div class="img-box">
+                        <i class="check"></i>
+                        <i class="zoom"></i>
+                        <img src="../../assets/images/cover.png" alt="">
+                    </div>
+                    <p class="overHidden1">活动广场1</p>
+                </div>
+                <div class="item">
+                    <div class="img-box">
+                        <i class="check"></i>
+                        <i class="zoom"></i>
+                        <img src="../../assets/images/cover.png" alt="">
+                    </div>
+                    <p class="overHidden1">活动广场2</p>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+</body>
+<script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+<script src="../../assets/lib/vue.js"></script>
+<script src="../../assets/lib/layui/layui.js"></script>
+<script src="../../assets/lib/element-ui/lib/index.js"></script>
+<script src="../../assets/lib/jquery.nicescroll.min.js"></script>
+<script src="../../assets/lib/jqthumb.js"></script>
+<script src="../../assets/js/create-active.js"></script>
+<script src="../../assets/js/main.js"></script>
+<script src="../../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
+<script src="../../assets/lib/zTree_v3/js/jquery.ztree.excheck.js"></script>
+<script src="../../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+<script src="../../assets/lib/Sortable.js"></script>
+
+
+<script>
+  var vm = new Vue({
+    el: '#vue',
+    data: function () {
+      return {
+        list1: [
+          {
+            name: '报名管理',
+            status: 0,
+          },
+          {
+            name: '签到管理',
+            status: 1,
+          }
+        ],
+      }
+    },
+    created: function () {
+    },
+    mounted: function () {
+      // cropImgFun("body");
+      this.createSort();
+      this.tabFun();
+      $('.list-style .list-box .item').click(function(){
+          $(this).addClass('active').siblings().removeClass('active')
+      })
+    },
+    methods: {
+      createSort: function () {
+        var _this = this;
+        var dragList1 = document.getElementById('sortDragBox1');
+        var sortable1 = new Sortable(dragList1, {
+          animation: 150,
+          handle: '.icon-drag',
+          group: '.list-group-item',
+        });
+      },
+      tabFun: function () {
+        $('.tab-ul li').click(function(){
+            $(this).addClass('active').siblings().removeClass('active')
+            $('.tab-con .tab-box').eq($(this).index()).removeClass('hide').siblings().addClass('hide')
+        })
+      }
+    }
+  });
+</script>
+
+</html>

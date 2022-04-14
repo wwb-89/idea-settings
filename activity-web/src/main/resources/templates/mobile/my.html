@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<title th:text="${title == null ? '我的活动' : title}">我的活动</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+	<meta name="format-detection" content="telephone=no, email=no">
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+	<link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
+	<link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
+	<link rel="stylesheet" href="/static/mobile/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/mobile/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/mobile/assets/css/activity-list.css" th:href="@{/mobile/assets/css/activity-list.css}"/>
+	<link rel="stylesheet" href="/static/assets/lib/mescroll/mescroll.min.css" th:href="@{/assets/lib/mescroll/mescroll.min.css}"/>
+	<style>
+		[v-cloak] {
+			display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="activity-list" id="activity-vue" v-cloak>
+	<div class="searchDiv" v-show="false">
+		<div class="searchbefore"><i></i><span>搜索</span></div>
+		<div class="searchafter">
+			<input type="text" class="txt" placeholder="搜索">
+			<i class="search"></i>
+			<i class="delete"></i>
+			<div class="cancle">取消</div>
+		</div>
+	</div>
+	<div class="tab" id="road-tab" v-if="tabIndexList.length > 1">
+		<ul>
+			<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)" v-show="showTab('signedUp')">我报名的</li>
+			<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)" v-show="showTab('collected')">收藏</li>
+			<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)" v-show="showTab('managing')">我管理的</li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+	<!--报名的-->
+	<div class="tabContent" v-if="showTab('signedUp')" v-show="activeTabIndex == 0">
+		<div class="card-list">
+			<ul>
+				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)" class="list-item" data-type="0">
+					<div class="inner" @click="signedUpDetail(index)">
+						<div class="img-box border">
+							<div class="tips-box">
+								<p :class="calSignedUpClass(activity)">{{activity | calSignedUpStatusDescription}}</p>
+							</div>
+							<div class="js-crop-img">
+								<img :src="activity | getCloudImgUrl(cloudDomain)">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden2">{{activity.name}}</h2>
+							<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
+							<div class="type-box">
+								<span class="type-item" v-for="(tagName, index) of activity.tagNames" :key="'tag-' + index">{{tagName}}</span>
+							</div>
+							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+						</div>
+					</div>
+					<div class="btn-box border-top">
+						<el-dropdown class="more fl" trigger="click" placement="top-start" v-if="activity.buttons.length > limitBtnNum" @command="dropDownCmd($event, index)">
+                            <span class="el-dropdown-link">
+                              更多
+                            </span>
+							<el-dropdown-menu slot="dropdown" class="mydropdown">
+								<el-dropdown-item v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" :command="btnIndex" v-if="btnIndex > (limitBtnNum - 1)">
+									{{button.name}}
+								</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
+						<button :class="btnIndex == 0 ? 'btn-second' : 'btn-normal'" v-for="(button, btnIndex) in activity.buttons" :key="'activity-btn-' + btnIndex" @click="buttonEventHandle(index, btnIndex)" v-if="btnIndex < limitBtnNum">{{button.name}}</button>
+						<div class="clear"></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!--收藏的-->
+	<div class="tabContent" v-if="showTab('collected')" v-show="activeTabIndex == 1">
+		<div class="card-list">
+			<ul>
+				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
+					<div class="inner">
+						<div class="img-box border">
+							<div class="tips-box">
+								<p :class="calCollectedClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
+							</div>
+							<div class="js-crop-img">
+								<img :src="activity | getCloudImgUrl(cloudDomain)">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden2">{{activity.name}}</h2>
+							<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
+							<div class="type-box">
+								<span class="type-item" v-for="(tagName, index) of activity.tagNames" :key="'tag-' + index">{{tagName}}</span>
+							</div>
+							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+						</div>
+					</div>
+					<div class="handel numTotal1">
+						<a class="cancel1" @click="cancelCollect(index, $event)"><span>取消<br>收藏</span></a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!--管理的-->
+	<div class="tabContent" v-if="showTab('managing')" v-show="activeTabIndex == 2">
+		<div class="card-list">
+			<ul>
+				<li v-for="(activity, index) of managings" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="managingDetail(index)">
+					<div class="inner">
+						<div class="img-box border">
+							<div class="tips-box">
+								<p :class="calManageClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
+							</div>
+							<div class="js-crop-img">
+								<img :src="activity | getCloudImgUrl(cloudDomain)">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden2">{{activity.name}}</h2>
+							<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
+							<div class="type-box">
+								<span class="type-item" v-for="(tagName, index) of activity.tagNames" :key="'tag-' + index">{{tagName}}</span>
+							</div>
+							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+						</div>
+					</div>
+					<div class="handel numTotal2">
+						<a class="delete" @click="toDelete(index, $event)">删除</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div th:replace="mobile/include/common_js :: common_js(~{::script})">
+	<script src="/static/mobile/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
+	<script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
+	<script src="/static/assets/lib/mescroll/mescroll.min.js" th:src="@{/assets/lib/mescroll/mescroll.min.js}"></script>
+	<script th:inline="javascript">
+		Vue.filter("calSignedUpStatusDescription", function (activity) {
+			var userSignUpStatus = activity.userSignUpStatus;
+			if (1 != userSignUpStatus) {
+				// 返回报名的状态
+				return "报名审核中";
+			}
+			// 返回活动的状态
+			return activityApp.getMyActivityStatusInstructions(activity.status);
+		});
+		function ready() {
+			vm = new Vue({
+				el: "#activity-vue",
+				data: {
+					// domain
+					mainDomain: [[${mainDomain}]],
+					adminDomain: [[${adminDomain}]],
+					cloudDomain: [[${cloudDomain}]],
+					// other model params
+					title: [[${title}]],
+					addBtnName: [[${addBtnName}]],
+					addUrl: [[${addUrl}]],
+					// 是否含有管理的活动
+					hasManageActivity: [[${hasManageActivity}]],
+					// 当前激活的tab索引
+					activeTabIndex: null,
+					// 我报名的活动上展示按钮限制数
+					limitBtnNum: 3,
+					// 报名的活动
+					signedUps: [],
+					signedUpQueryParams: {},
+					// 收藏的活动
+					collecteds: [],
+					collectedQueryParams: {},
+					// 管理的活动
+					managings: [],
+					managingQueryParams: {},
+					// 隐藏tab列表
+					hideList: [],
+					// 0: 报名的, 1:收藏的, 2:管理的
+					tabIndexList: [],
+					mescroll: null
+				},
+				created: function () {
+					var $this = this;
+					// 解决跨域
+					document.domain = $this.mainDomain;
+					var hideStr = [[${hide}]];
+					if (!activityApp.isEmpty(hideStr)) {
+						$this.hideList = hideStr.split(',');
+					}
+					if ($this.showTab('signedUp')) {
+						$this.tabIndexList.push(0);
+					}
+					if ($this.showTab('collected')) {
+						$this.tabIndexList.push(1);
+					}
+					if ($this.showTab('managing') && $this.hasManageActivity) {
+						$this.tabIndexList.push(2);
+					}
+					if ($this.tabIndexList.length > 0) {
+						$this.activeTabIndex = $this.tabIndexList[0];
+					}
+					$this.resetData();
+				},
+				mounted: function () {
+					var $this = this;
+					$this.initScroll();
+				},
+				methods: {
+					showTab: function (tabName) {
+						var $this = this;
+						return $this.hideList.indexOf(tabName) == -1;
+					},
+					calSignedUpClass: function (activity) {
+						var userSignUpStatus = activity.userSignUpStatus;
+						if (1 != userSignUpStatus) {
+							return "tips color4";
+						}
+						var status = activity.status;
+						if (3 == status) {
+							return "tips color1";
+						} else if (4 == status) {
+							return "tips color3";
+						} else {
+							return "tips color2";
+						}
+					},
+					calCollectedClass: function (activity) {
+						var status = activity.status;
+						if (3 == status) {
+							return "tips color1";
+						} else if (4 == status) {
+							return "tips color3";
+						} else {
+							return "tips color2";
+						}
+					},
+                    calManageClass: function (activity) {
+                        var status = activity.status;
+                        if (3 == status) {
+                            return "tips color1";
+                        }else if (4 == status) {
+                            return "tips color3";
+                        } else {
+                            return "tips color2";
+                        }
+                    },
+					initScroll: function () {
+						var $this = this;
+						if ($this.mescroll) {
+							return
+						}
+						$this.mescroll = new MeScroll("body", {
+							isBounce: false,
+							down: {
+								use: false
+							},
+							up: {
+								page: {
+									num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+									size: 10 //每页数据条数,默认10
+								},
+								noMoreSize: 2,
+								loadFull: {
+									use: true,
+									delay: 500
+								},
+								callback: function () {
+									$this.loadActivities();
+								},
+								htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>'
+							}
+						});
+					},
+					loadActivities: function () {
+						var $this = this;
+						var activeTabIndex = $this.activeTabIndex;
+						if (activeTabIndex == 0) {
+							// 报名的
+							$this.loadSignedUp();
+						} else if (activeTabIndex == 1) {
+							// 收藏的
+							$this.loadCollected();
+						} else {
+							// 管理的
+							$this.loadManaging();
+						}
+					},
+					changeTab: function (index) {
+						var $this = this;
+						if ($this.activeTabIndex == index) {
+							return;
+						}
+						// 清空数据并重置
+						$this.activeTabIndex = index;
+						$this.resetData();
+					},
+					//滑动
+					touchStart: function (e) {
+						this.startX = e.touches[0].clientX;
+					},
+					//滑动结束
+					touchEnd: function (e) {
+						var currentElement = e.currentTarget;
+						this.endX = e.changedTouches[0].clientX;
+						// 左滑
+						if (currentElement.dataset.type == 0 && this.startX - this.endX > 30) {
+							this.restSlide();
+							if (currentElement.lastChild.className.indexOf('numTotal2') > -1) {
+								currentElement.dataset.type = 2;
+							} else {
+								currentElement.dataset.type = 1;
+							}
+						}
+						// 右滑
+						if ((currentElement.dataset.type == 1 || currentElement.dataset.type == 2) && this.startX - this.endX < -30) {
+							this.restSlide();
+							currentElement.dataset.type = 0;
+						}
+						this.startX = 0;
+						this.endX = 0;
+					},
+					//判断当前是否有滑块处于滑动状态
+					checkSlide: function () {
+						let listItems = document.querySelectorAll('.list-item');
+						for (let i = 0; i < listItems.length; i++) {
+							if (listItems[i].dataset.type == 1) {
+								return true;
+							}
+						}
+						return false;
+					},
+					//复位滑动状态
+					restSlide: function () {
+						let listItems = document.querySelectorAll('.list-item');
+						for (let i = 0; i < listItems.length; i++) {
+							listItems[i].dataset.type = 0;
+						}
+					},
+					resetSignedUpQueryParams: function () {
+						var $this = this;
+						$this.signedUps = [];
+						$this.signedUpQueryParams = {
+							pageNum: 1,
+							pageSize: 10,
+							flag: [[${flag}]],
+							fid: [[${fid}]],
+							loadWaitAudit: true
+						};
+					},
+					resetCollectedQueryParams: function () {
+						var $this = this;
+						$this.collecteds = [];
+						$this.collectedQueryParams = {
+							pageNum: 1,
+							pageSize: 10,
+							flag: [[${flag}]],
+							fid: [[${fid}]]
+						};
+					},
+					resetManagingQueryParams: function () {
+						var $this = this;
+						$this.managings = [];
+						$this.managingQueryParams = {
+							pageNum: 1,
+							pageSize: 10,
+							flag: [[${flag}]],
+							fid: [[${fid}]]
+						};
+					},
+					resetData: function () {
+						var $this = this;
+						$this.resetSignedUpQueryParams();
+						$this.resetCollectedQueryParams();
+						$this.resetManagingQueryParams();
+						if ($this.mescroll) {
+							$this.mescroll.resetUpScroll();
+						}
+					},
+					loadSignedUp: function () {
+						var $this = this;
+						var url = ctx + "/api/activity/signed-up";
+						app.ajaxPost(url, $this.signedUpQueryParams, function (data) {
+							if (data.success) {
+								data = data.data;
+								$this.signedUpQueryParams.loadWaitAudit = false;
+								$this.signedUps.pushArray(data.records);
+								$this.$nextTick(function () {
+									$this.signedUpQueryParams.pageNum++;
+									$this.mescroll.endBySize(data.size, data.total);
+									cropImgFun("body");
+								});
+							} else {
+								var errorMessage = data.message;
+								if (activityApp.isEmpty(errorMessage)) {
+									errorMessage = "加载已报名的活动失败";
+								}
+								app.showMsg(errorMessage);
+							}
+						}, function () {
+							app.showMsg("加载已报名的活动失败");
+						});
+					},
+					loadCollected: function () {
+						var $this = this;
+						var url = ctx + "/api/activity/collected";
+						app.ajaxPost(url, $this.collectedQueryParams, function (data) {
+							if (data.success) {
+								data = data.data;
+								$this.collecteds.pushArray(data.records);
+								$this.$nextTick(function () {
+									$this.collectedQueryParams.pageNum++;
+									$this.mescroll.endBySize(data.size, data.total);
+									cropImgFun("body");
+								});
+							} else {
+								var errorMessage = data.message;
+								if (activityApp.isEmpty(errorMessage)) {
+									errorMessage = "加载管理的的活动失败";
+								}
+								app.showMsg(errorMessage);
+							}
+						}, function () {
+							app.showMsg("加载管理的活动失败");
+						});
+					},
+					loadManaging: function () {
+						var $this = this;
+						var url = ctx + "/api/manage/activity/list";
+						app.ajaxPost(url, $this.managingQueryParams, function (data) {
+							if (data.success) {
+								data = data.data;
+								$this.managings.pushArray(data.records);
+								$this.$nextTick(function () {
+									$this.managingQueryParams.pageNum++;
+									$this.mescroll.endBySize(data.size, data.total);
+									cropImgFun("body");
+								});
+							} else {
+								var errorMessage = data.message;
+								if (activityApp.isEmpty(errorMessage)) {
+									errorMessage = "加载管理的的活动失败";
+								}
+								app.showMsg(errorMessage);
+							}
+						}, function () {
+							app.showMsg("加载管理的活动失败");
+						});
+					},
+					dropDownCmd: function (btnIndex, activityIndex) {
+						var $this = this;
+						$this.buttonEventHandle(activityIndex, btnIndex);
+					},
+					buttonEventHandle: function (activityIndex, buttonIndex) {
+						var $this = this;
+						var buttons = ($this.signedUps[activityIndex] && $this.signedUps[activityIndex].buttons) || [];
+						var button = buttons[buttonIndex];
+						if (button.ajax) {
+							app.ajaxPostLoading(button.url, {}, function () {
+								window.location.reload();
+							}, function () {}, "操作失败");
+						} else {
+							app.openUrl(button.url);
+						}
+					},
+					// 取消报名
+					cancelSignUp: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						$this.restSlide();
+						app.confirm("确定取消报名？", "确认取消报名吗？", function () {
+							var activity = $this.signedUps[index];
+							var url = ctx + "/api/sign-up/" + activity.signUpId + "/cancel";
+							app.ajaxPostLoading(url, {}, function (data) {
+								if (data.success) {
+									// 删除这条数据
+									var signedUps = $this.signedUps;
+									signedUps.splice(index, 1);
+									$this.signedUps = signedUps;
+								} else {
+									var message = data.message;
+									if (activityApp.isEmpty(message)) {
+										message = "取消报名失败";
+									}
+									app.showMsg(message);
+								}
+							}, function () {
+								app.showMsg("取消报名失败");
+							}, "取消报名");
+						}, function () {
+
+						});
+					},
+					// 撤销申请
+					revocationSignUp: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						$this.restSlide();
+						app.confirm("确定撤销申请？", "撤销申请后需要重新报名才能参与活动", function () {
+							var activity = $this.signedUps[index];
+							var url = ctx + "/api/sign-up/" + activity.signUpId + "/revocation";
+							app.ajaxPostLoading(url, {}, function (data) {
+								if (data.success) {
+									// 删除这条数据
+									var signedUps = $this.signedUps;
+									signedUps.splice(index, 1);
+									$this.signedUps = signedUps;
+								} else {
+									var message = data.message;
+									if (activityApp.isEmpty(message)) {
+										message = "撤销申请失败";
+									}
+									app.showMsg(message);
+								}
+							}, function () {
+								app.showMsg("撤销申请失败");
+							}, "撤销申请");
+						}, function () {
+						});
+					},
+					// 取消收藏
+					cancelCollect: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.collecteds[index];
+						var url = ctx + "/api/activity/" + activity.id + "/cancel-collect";
+						$this.restSlide();
+						app.ajaxPostLoading(url, {}, function (data) {
+							if (data.success) {
+								// 删除这条数据
+								var collecteds = $this.collecteds;
+								collecteds.splice(index, 1);
+								$this.collecteds = collecteds;
+							} else {
+								var message = data.message;
+								if (activityApp.isEmpty(message)) {
+									message = "取消收藏失败";
+								}
+								app.showMsg(message);
+							}
+						}, function () {
+							app.showMsg("取消收藏失败");
+						}, "取消收藏");
+					},
+					// 发布
+					release: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.managings[index];
+						var url = ctx + "/api/manage/activity/" + activity.id + "/release";
+						$this.restSlide();
+						app.confirm("", "确认发布？", function () {
+							app.ajaxPostLoading(url, {}, function (data) {
+								if (data.success) {
+									$this.resetData();
+								} else {
+									var message = data.message;
+									if (activityApp.isEmpty(message)) {
+										message = "发布失败";
+									}
+									app.showMsg(message);
+								}
+							}, function () {
+								app.showMsg("发布失败");
+							}, "发布");
+						}, function () {
+						});
+					},
+					// 下架
+					cancelRelease: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.managings[index];
+						var url = ctx + "/api/manage/activity/" + activity.id + "/release/cancel";
+						$this.restSlide();
+						app.confirm("", "确认下架？", function () {
+							app.ajaxPostLoading(url, {}, function () {
+								$this.resetData();
+							}, function () {
+
+							}, "下架");
+						}, function () {
+						});
+					},
+					toDelete: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.managings[index];
+						var url = ctx + "/api/manage/activity/" + activity.id + "/delete";
+						$this.restSlide();
+						app.confirm("", "确认删除？", function () {
+							app.ajaxPostLoading(url, {}, function (data) {
+								if (data.success) {
+									$this.resetData();
+								} else {
+									var message = data.message;
+									if (activityApp.isEmpty(message)) {
+										message = "删除失败";
+									}
+									app.showMsg(message);
+								}
+							}, function () {
+								app.showMsg("删除失败");
+							}, "删除");
+						}, function () {
+						});
+					},
+					// 已报名的活动详情
+					signedUpDetail: function (index) {
+						var $this = this;
+						var activity = $this.signedUps[index];
+						$this.detail(activity);
+					},
+					// 收藏的活动详情
+					collectedDetail: function (index) {
+						var $this = this;
+						var activity = $this.collecteds[index];
+						$this.detail(activity);
+					},
+					// 管理的活动详情
+					managingDetail: function (index) {
+						var $this = this;
+						var activity = $this.managings[index];
+						var url = activityApp.getActivityManageIndexUrl(activity.id, $this.adminDomain);
+						if (!activityApp.isEmpty(url)) {
+							app.openUrl(url);
+						}
+					},
+					// 活动详情
+					detail: function (activity) {
+						var url = activity.previewUrl;
+						if (!activityApp.isEmpty(url)) {
+							app.openUrl(url);
+						}
+					}
+				}
+			});
+		}
+	</script>
+</div>
+</body>
+</html>

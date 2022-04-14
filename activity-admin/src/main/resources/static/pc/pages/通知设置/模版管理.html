@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模版管理</title>
+    <link rel="stylesheet" href="../../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
+    <link rel="stylesheet" href="../../assets/css/moduleSet.css">
+</head>
+
+<body>
+<div class="module-manage write-module">
+    <div class="top-title">
+        <div class="btn normal-btn-blue" onclick="createModule()"><i class="icon-plus"></i>新建模板</div>
+    </div>
+    <ul class="module-list" id="sortDragBox">
+        <!-- 自建模板可删除可编辑 系统模板不可以 -->
+        <li class="module-item">
+            <i class="icon-drag"></i>
+            <div class="img-box">
+                <img src="../../assets/images/example.jpg" alt="">
+                <div class="preview-mask"><a href="javascript:;" class="preview">预览</a></div>
+            </div>
+            <div class="edit-info">
+                <div class="disable">
+                    <span class="name">活动模板1</span>
+                    <span class="icon-edit"></span>
+                </div>
+                <div class="editing">
+                    <input type="text" class="name-ipt" value="">
+                    <span class="btn icon-finish btn-edit-save"></span>
+                    <span class="btn icon-cancel btn-edit-cancel"></span>
+                </div>
+            </div>
+            <a href="javascript:;" class="edit-btn">编辑</a>
+            <a href="javascript:;" class="delete-btn"><i class="icon-trash-2"></i></a>
+        </li>
+        <li class="module-item">
+            <i class="icon-drag"></i>
+            <div class="img-box">
+                <img src="../../assets/images/example.jpg" alt="">
+                <div class="preview-mask"><a href="javascript:;" class="preview">预览</a></div>
+            </div>
+            <div class="edit-info">
+                <div class="disable">
+                    <span class="name">活动模板2</span>
+                    <span class="icon-edit"></span>
+                </div>
+                <div class="editing">
+                    <input type="text" class="name-ipt" value="">
+                    <span class="btn icon-finish btn-edit-save"></span>
+                    <span class="btn icon-cancel btn-edit-cancel"></span>
+                </div>
+            </div>
+            <a href="javascript:;" class="delete-btn"><i class="icon-trash-2"></i></a>
+        </li>
+        <li class="module-item">
+            <i class="icon-drag"></i>
+            <div class="img-box">
+                <img src="../../assets/images/example.jpg" alt="">
+                <div class="preview-mask"><a href="javascript:;" class="preview">预览</a></div>
+            </div>
+            <div class="edit-info">
+                <div class="disable">
+                    <span class="name">活动模板3</span>
+                    <span class="icon-edit"></span>
+                </div>
+                <div class="editing">
+                    <input type="text" class="name-ipt" value="">
+                    <span class="btn icon-finish btn-edit-save"></span>
+                    <span class="btn icon-cancel btn-edit-cancel"></span>
+                </div>
+            </div>
+            <a href="javascript:;" class="delete-btn"><i class="icon-trash-2"></i></a>
+        </li>
+    </ul>
+    <!--确认取消报名弹窗-->
+    <div class="dialog-box delete-dailog" style="display: none;">
+        <div class="masking"></div>
+        <div class="confirm_dialog">
+          <span class="icon"><img src="../../assets/images/icon-warning.png"></span>
+          <span class="text">确定删除吗？</span>
+          <div class="btn">
+            <span class="cancel" onclick="delClick()">保留</span>
+            <span class="ok" onclick="delClick()">删除</span>
+          </div>
+        </div>
+    </div>
+    <!-- 选择模板弹窗 -->
+    <div class="dialog-box choose-module" style="display: none;">
+        <div class="dialog-wrap">
+            <div class="header">
+                <span class="color333">选择模板</span>
+                <img src="../../assets/images/close.png" onclick="cancelClick()">
+            </div>
+            <div class="dialog-content">
+                <ul class="module-exp">
+                    <li>
+                        <div class="img-box">
+                            <img src="../../assets/images/example.jpg" alt="">
+                            <div class="mask">
+                                <a href="javascript:;" class="preview">预览</a>
+                                <a href="javascript:;" class="choose">选择</a>
+                            </div>
+                        </div>
+                        <p class="text">活动模版1</p>
+                    </li>
+                    <li>
+                        <div class="img-box">
+                            <img src="../../assets/images/example.jpg" alt="">
+                            <div class="mask">
+                                <a href="javascript:;" class="preview">预览</a>
+                                <a href="javascript:;" class="choose">选择</a>
+                            </div>
+                        </div>
+                        <p class="text">活动模版2</p>
+                    </li>
+                    <li>
+                        <div class="img-box">
+                            <img src="../../assets/images/example.jpg" alt="">
+                            <div class="mask">
+                                <a href="javascript:;" class="preview">预览</a>
+                                <a href="javascript:;" class="choose">选择</a>
+                            </div>
+                        </div>
+                        <p class="text">活动模版3</p>
+                    </li>
+                    <li>
+                        <div class="img-box">
+                            <img src="../../assets/images/example.jpg" alt="">
+                            <div class="mask">
+                                <a href="javascript:;" class="preview">预览</a>
+                                <a href="javascript:;" class="choose">选择</a>
+                            </div>
+                        </div>
+                        <p class="text">活动模版4</p>
+                    </li>
+                    <li>
+                        <div class="img-box">
+                            <img src="../../assets/images/example.jpg" alt="">
+                            <div class="mask">
+                                <a href="javascript:;" class="preview">预览</a>
+                                <a href="javascript:;" class="choose">选择</a>
+                            </div>
+                        </div>
+                        <p class="text">活动模版5</p>
+                    </li>
+                    <li>
+                        <div class="img-box">
+                            <img src="../../assets/images/example.jpg" alt="">
+                            <div class="mask">
+                                <a href="javascript:;" class="preview">预览</a>
+                                <a href="javascript:;" class="choose">选择</a>
+                            </div>
+                        </div>
+                        <p class="text">活动模版6</p>
+                    </li>
+                    <li>
+                        <div class="img-box">
+                            <img src="../../assets/images/example.jpg" alt="">
+                            <div class="mask">
+                                <a href="javascript:;" class="preview">预览</a>
+                                <a href="javascript:;" class="choose">选择</a>
+                            </div>
+                        </div>
+                        <p class="text">活动模版7</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer">
+                <span class="btn btn-border" onclick="cancelClick()">取消</span>
+                <span class="btn btn-normal" onclick="cancelClick()">完成</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../../assets/lib/jquery.min.js"></script>
+<script src="../../assets/lib/Sortable.js"></script>
+<script>
+    $(function(){
+        $('.edit-info .icon-edit').click(function(){
+            $(this).parent().hide()
+            $(this).parent().siblings('.editing').show()
+            $(this).parent().siblings('.editing').find('input').focus()
+        })
+        $('.btn-edit-save').click(function(){
+            $(this).parent().hide()
+            $(this).parent().siblings('.disable').show()
+        })
+        $('.btn-edit-cancel').click(function(){
+            $(this).parent().hide()
+            $(this).parent().siblings('.disable').show()
+        })
+        $('.delete-btn').click(function(){
+            $('.delete-dailog').show()
+        })
+        createSort()
+    })
+    function createSort(){
+        var _this = this;
+        var dragList1 = document.getElementById('sortDragBox');
+            var sortable1 = new Sortable(dragList1, {
+            animation: 150,
+            handle: '.icon-drag',
+            group: '.module-item',
+        });
+    }
+    function delClick(){
+        $('.delete-dailog').hide()
+    }
+    function createModule(){
+        $('.choose-module').show()
+    }
+    function cancelClick(){
+        $('.choose-module').hide()
+    }
+</script>
+</html>
