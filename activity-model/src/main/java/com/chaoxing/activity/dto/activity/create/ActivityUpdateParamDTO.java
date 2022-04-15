@@ -248,7 +248,7 @@ public class ActivityUpdateParamDTO {
 
 		return ActivityUpdateParamDTO.builder()
 				.id(activity.getId())
-				.name(activity.getName())
+				.name(Optional.ofNullable(waitUpdateInfo.getName()).filter(StringUtils::isNotBlank).orElse(activity.getName()))
 				.startTimeStamp(startTime)
 				.endTimeStamp(endTime)
 				.coverCloudId(Optional.ofNullable(waitUpdateInfo.getCoverCloudId()).filter(StringUtils::isNotBlank).orElse(activity.getCoverCloudId()))

@@ -151,11 +151,12 @@ public class RedirectController {
      * @return org.springframework.web.servlet.view.RedirectView
      */
     @RequestMapping("activity/add-index")
-    public RedirectView redirectActivityCreateView(HttpServletRequest request, Integer marketId, String flag) {
+    public RedirectView redirectActivityCreateView(HttpServletRequest request, Integer marketId, String flag, String areaCode) {
+        areaCode = Optional.ofNullable(areaCode).filter(StringUtils::isNotBlank).orElse("");
         flag = Optional.ofNullable(flag).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
         marketId = getOrCreateMarketByFlag(request, marketId, flag);
         if (marketId != null) {
-            String redirectUrl = DomainConstant.ADMIN + "/activity/add" + "?marketId=" + marketId + "&flag=" + flag;
+            String redirectUrl = DomainConstant.ADMIN + "/activity/add" + "?marketId=" + marketId + "&flag=" + flag + "&areaCode=" + areaCode;
             return new RedirectView(UrlUtils.handleRedirectUrl(redirectUrl, request));
         }
         return new RedirectView();
