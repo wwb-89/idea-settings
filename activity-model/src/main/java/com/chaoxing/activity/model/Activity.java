@@ -451,7 +451,7 @@ public class Activity {
     }
 
     public void coverCloudIdChange(String cloudId) {
-        if (!Objects.equals(cloudId, this.getCoverCloudId())) {
+        if (!Objects.equals(cloudId, getCoverCloudId())) {
             setCoverUrl("");
         }
     }
