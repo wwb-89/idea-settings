@@ -193,24 +193,25 @@ public class BlacklistHandleService {
      * @author wwb
      * @Date 2021-07-27 19:56:06
      * @param marketId
-     * @return void
+     * @return java.util.List<com.chaoxing.activity.model.Blacklist>
     */
     @Transactional(rollbackFor = Exception.class)
-    public void autoAddBlacklist(Integer marketId) {
+    public List<Blacklist> autoAddBlacklist(Integer marketId) {
+        List<Blacklist> blacklists = Lists.newArrayList();
         BlacklistRule blacklistRule = blacklistQueryService.getBlacklistRuleByMarketId(marketId);
         if (blacklistRule == null) {
             // 市场没有配置黑名单规则（当一个市场创建后可能没有黑名单规则数据）
-            return;
+            return blacklists;
         }
         Integer notSignInUpperLimit = blacklistRule.getNotSignInUpperLimit();
         if (notSignInUpperLimit == null) {
-            return;
+            return blacklists;
         }
-        // 查询匹配上的黑名单记录
+        // 查询匹配的黑名单记录
         List<BlacklistRecord> blacklistRecords = blacklistQueryService.listUnHandledBlacklistRecordGroupByUid(marketId);
         List<BlacklistRecord> matchBlacklistRecords = blacklistRecords.stream().filter(v -> v.getNotSignedInNum() >= notSignInUpperLimit).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(matchBlacklistRecords)) {
-            return;
+            return blacklists;
         }
         List<Integer> uids = matchBlacklistRecords.stream().map(BlacklistRecord::getUid).collect(Collectors.toList());
         // 已经手动添加的忽略，其他的新增
@@ -218,7 +219,7 @@ public class BlacklistHandleService {
         uids.removeAll(manualAddedUids);
         // 删除已经加入黑名单中的数据
         removeBlacklist(marketId, uids);
-        List<Blacklist> blacklists = BlacklistRecord.buildbuildBlacklist(matchBlacklistRecords.stream().filter(v -> uids.contains(v.getUid())).collect(Collectors.toList()));
+        blacklists = BlacklistRecord.buildbuildBlacklist(matchBlacklistRecords.stream().filter(v -> uids.contains(v.getUid())).collect(Collectors.toList()));
         Integer autoRemoveHours = blacklistRule.getAutoRemoveHours();
         if (CollectionUtils.isNotEmpty(blacklists)) {
             blacklists.forEach(v -> v.setEffectiveHours(autoRemoveHours));
@@ -235,6 +236,7 @@ public class BlacklistHandleService {
         for (Blacklist blacklist : blacklists) {
             blacklistAutoRemoveQueueService.push(new BlacklistAutoRemoveQueue.QueueParamDTO(blacklist.getMarketId(), blacklist.getUid(), removeTime));
         }
+        return blacklists;
     }
 
     /**自动移除黑名单
@@ -257,17 +259,18 @@ public class BlacklistHandleService {
      * @author wwb
      * @Date 2021-07-27 20:17:01
      * @param activityId
-     * @return void
+     * @return java.util.List<com.chaoxing.activity.model.Blacklist>
     */
     @Transactional(rollbackFor = Exception.class)
-    public void activityEndHandleBlacklist(Integer activityId) {
+    public List<Blacklist> activityEndHandleBlacklist(Integer activityId) {
+        List<Blacklist> blacklists = Lists.newArrayList();
         Activity activity = activityQueryService.getById(activityId);
         if (activity == null) {
-            return;
+            return blacklists;
         }
         Integer marketId = activity.getMarketId();
         if (marketId == null) {
-            return;
+            return blacklists;
         }
         List<UserNotSignedInNumStatDTO> userNotSignedInNumStatDtos = signApiService.statUserNotSignedInNum(activity.getSignId());
         if (CollectionUtils.isNotEmpty(userNotSignedInNumStatDtos)) {
@@ -277,7 +280,7 @@ public class BlacklistHandleService {
         if (CollectionUtils.isNotEmpty(blacklistRecords)) {
             blacklistRecordMapper.batchAdd(blacklistRecords);
         }
-        autoAddBlacklist(marketId);
+        return autoAddBlacklist(marketId);
     }
 
     /**批量保存违约记录

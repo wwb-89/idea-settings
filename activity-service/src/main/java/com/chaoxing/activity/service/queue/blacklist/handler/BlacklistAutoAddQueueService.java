@@ -1,11 +1,13 @@
 package com.chaoxing.activity.service.queue.blacklist.handler;
 
+import com.chaoxing.activity.model.Blacklist;
 import com.chaoxing.activity.service.blacklist.BlacklistHandleService;
 import com.chaoxing.activity.service.queue.notice.handler.BlacklistUserNoticeHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author wwb
@@ -25,9 +27,9 @@ public class BlacklistAutoAddQueueService {
     private BlacklistUserNoticeHandleService blacklistUserNoticeHandleService;
 
     public void handle(Integer activityId) {
-        blacklistHandleService.activityEndHandleBlacklist(activityId);
+        List<Blacklist> blacklists = blacklistHandleService.activityEndHandleBlacklist(activityId);
         // 添加黑名单
-        blacklistUserNoticeHandleService.handleAutoAddBlackListNotice(activityId);
+        blacklistUserNoticeHandleService.handleAutoAddBlackListNotice(blacklists, activityId);
     }
 
 }
