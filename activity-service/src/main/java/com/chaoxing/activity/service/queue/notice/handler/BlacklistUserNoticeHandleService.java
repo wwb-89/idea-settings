@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -102,7 +103,10 @@ public class BlacklistUserNoticeHandleService {
      * @param activityId
      * @return
      */
-    public void handleAutoAddBlackListNotice(Integer activityId) {
+    public void handleAutoAddBlackListNotice(List<Blacklist> blacklists, Integer activityId) {
+        if (CollectionUtils.isEmpty(blacklists)) {
+            return;
+        }
         LocalDateTime addBlacklistTime = LocalDateTime.now();
         Activity activity = activityQueryService.getById(activityId);
         if (activity == null) {
@@ -110,10 +114,6 @@ public class BlacklistUserNoticeHandleService {
         }
         Integer marketId = activity.getMarketId();
         if (marketId == null) {
-            return;
-        }
-        List<Integer> uids = blacklistQueryService.listNeedNoticeAutoAddBlacklistUids(marketId, activityId);
-        if (CollectionUtils.isEmpty(uids)) {
             return;
         }
         // 封装通知模板字段值对象
@@ -133,7 +133,8 @@ public class BlacklistUserNoticeHandleService {
         }
         String defaultTitle = generateAutoAddBlacklistTitle(organisers);
         String defaultContent = generateAutoAddBlacklistContent(activityName, activityTime, enableAutoRemove, autoRemoveHours);
-        pushNoticeInQueue(defaultTitle, defaultContent, noticeTemplateField, noticeTemplate, uids);
+        Set<Integer> uids = blacklists.stream().map(Blacklist::getUid).collect(Collectors.toSet());
+        pushNoticeInQueue(defaultTitle, defaultContent, noticeTemplateField, noticeTemplate, Lists.newArrayList(uids));
     }
 
     /**处理黑名单自动移除通知，将通知放入黑名单通知队列
