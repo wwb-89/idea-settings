@@ -86,7 +86,7 @@ public class UserStatSummaryHandleService {
         if (userSignStatSummary.getSignUpNum() > 0) {
             isValid = userSignStatSummary.getSignedUpNum() > 0;
         }else {
-            isValid = userSignStatSummary.getSignedInNum() > 0;
+            isValid = userSignStatSummary.getSignedInNum() > 0 || userSignStatSummary.getSignedUpNum() > 0;
         }
         Integer signInNum = userSignStatSummary.getSignInNum();
         Integer signedInNum = userSignStatSummary.getSignedInNum();
