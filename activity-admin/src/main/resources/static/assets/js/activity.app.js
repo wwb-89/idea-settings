@@ -365,6 +365,24 @@
     activityApp.prototype.getReadingBookManageUrl = function (readingId, moduleId, xueyaDomain) {
         return xueyaDomain + "/school-base/school-reading/" + readingId + "/" + moduleId + "/book-list";
     };
+    /**
+     * 协议统一
+     * @param url
+     * @returns {*}
+     */
+    activityApp.prototype.protocolUnify = function (url) {
+        var protocol = window.location.protocol;
+        if (url.indexOf(protocol) > -1) {
+            // 协议统一
+            return url;
+        } else {
+            if (protocol == "https:") {
+                return url.replace("http:", protocol)
+            } else {
+                return url.replace("https:", protocol)
+            }
+        }
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
