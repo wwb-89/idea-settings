@@ -15,8 +15,10 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +45,8 @@ public class ActivityApiController {
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private LoginService loginService;
+	@Resource
+	private SignApiService signApiService;
 
 	/**创建活动
 	 * @Description 需要活动对象
@@ -217,6 +221,20 @@ public class ActivityApiController {
 	@PostMapping("{activityId}/signed-up/users")
 	public RestRespDTO signedUpUsers(@PathVariable Integer activityId) {
 		return RestRespDTO.success(activityQueryService.listSignedUpUsers(activityId));
+	}
+
+	/**活动报名的人数
+	 * @Description 
+	 * @author wwb
+	 * @Date 2022-04-19 17:26:44
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/num/signed-up")
+	public RestRespDTO signedUpNum(@PathVariable Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		Integer signedUpNum = signApiService.statSignedUpNum(Lists.newArrayList(activity.getSignId()));
+		return RestRespDTO.success(signedUpNum);
 	}
 
 }

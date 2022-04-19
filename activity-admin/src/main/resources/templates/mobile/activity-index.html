@@ -23,7 +23,7 @@
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList" v-show="menuShow('sign_up')">
             <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
             <p class="flTxt">{{(signActivityManageIndex.signUpKeyword || '报名') + (signActivityManageIndex.signUpIds.length > 1 ? '项目' : '名单')}}</p>
-            <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已{{signActivityManageIndex.signUpKeyword || '报名'}} {{signActivityManageIndex.signUpNum}}</p>
+            <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已{{signActivityManageIndex.signUpKeyword || '报名'}} {{signedUpNum}}</p>
             <i :class="{'icon-arrow-r': true, 'marginAuto': (signActivityManageIndex.signUpIds.length > 1)}"></i>
         </div>
         <div class="item" @click="signInManage" v-show="menuShow('sign_in')">
@@ -76,7 +76,8 @@
                     userActivityMenus: [[${userActivityMenus}]],
                     activityMenus: [],
                     signActivityManageIndex: [[${signActivityManageIndex}]],
-                    loaded: true
+                    loaded: true,
+                    signedUpNum: 0
                 },
                 created: function () {
                     var $this = this;
@@ -85,6 +86,11 @@
                         if (this.dataOrigin == 'system' && !$this.activityMenus.includes(this.code)) {
                             $this.activityMenus.push(this.code);
                         }
+                    });
+                    $this.countSignedUpNum();
+                    app.bindRefresh(function () {
+                        // 刷新报名人数
+                        $this.countSignedUpNum();
                     });
                 },
                 methods: {
@@ -125,6 +131,17 @@
                         }
                         var url = $this.signWebDomain + "/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
                         app.openUrl(url);
+                    },
+                    countSignedUpNum: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/" + $this.activity.id + "/num/signed-up";
+                        app.ajaxPost(url, {}, function (data) {
+                            if (data.success) {
+                                $this.signedUpNum = data.data;
+                            }
+                        }, function () {
+
+                        });
                     }
                 }
             });

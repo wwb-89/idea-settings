@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -85,7 +86,8 @@ public class UserSignedUpEventQueueService {
         userSignStatSummaryQueue.push(new UserSignStatSummaryQueue.QueueParamDTO(uid, activityId));
         // 如果班级互动需要通知将用户加入班级
         Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
-        if (openClazzInteraction && activity.getClazzId() != null) {
+        String createAreaCode = activity.getCreateAreaCode();
+        if (openClazzInteraction && activity.getClazzId() != null && !Objects.equals("0183", createAreaCode)) {
             clazzInteractionAddUserQueue.push(new ClazzInteractionAddUserQueue.QueueParamDTO(uid, activityId));
         }
         // 记录用户行为

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -56,7 +57,8 @@ public class UserCancelSignUpEventQueueService {
         userSignStatSummaryQueue.push(new UserSignStatSummaryQueue.QueueParamDTO(uid, activityId));
         // 如果班级互动需要通知将用户移除班级
         Boolean openClazzInteraction = Optional.ofNullable(activity.getOpenClazzInteraction()).orElse(false);
-        if (openClazzInteraction) {
+        String createAreaCode = activity.getCreateAreaCode();
+        if (openClazzInteraction && activity.getClazzId() != null && !Objects.equals("0183", createAreaCode)) {
             clazzInteractionRemoveUserQueue.push(new ClazzInteractionRemoveUserQueue.QueueParamDTO(uid, activityId));
         }
         // 记录用户行为
