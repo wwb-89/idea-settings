@@ -326,20 +326,14 @@
                 },
                 loadUrl: function (url, openBlank) {
                     var $this = this;
-                    if (url.indexOf("?") != -1) {
-                        url += "&";
-                    } else {
-                        url += "?";
-                    }
-                    url += "time=" + new Date().getTime();
                     if (openBlank) {
                         window.open(url);
-                        return;
+                    } else {
+                        $("#content")[0].src = activityApp.protocolUnify(url);
+                        $("#content")[0].onload = function() {
+                            $this.resizePageHeight();
+                        };
                     }
-                    $("#content")[0].src = url;
-                    $("#content")[0].onload = function() {
-                        $this.resizePageHeight();
-                    };
                 },
                 resizePageHeight: function () {
                     // container的最小高度
