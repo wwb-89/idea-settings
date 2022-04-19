@@ -556,6 +556,7 @@
                                                 <el-radio v-for="(wfwFormFillInfoType, index) of wfwFormFillInfoTypes" :key="'wfw-form-fill-info-type-' + index" v-model="signUpMap[item.id].formType" :label="wfwFormFillInfoType.value" name="active-type" @change="signUpFormTypeChange(item.id)">{{wfwFormFillInfoType.name}}</el-radio>
                                                 <!-- 万能表单 -->
                                                 <el-select v-if="signUpMap[item.id].formType == 'wfw_form' && showWfwFormSelect(item.id, it.signUpFillInfoType)"
+                                                           :ref="'sign-up-form-template-select-' + item.id"
                                                         v-model="signUpMap[item.id].wfwFormTemplateId"
                                                         placeholder="请选择"
                                                         popper-class="fixed-select"
@@ -577,6 +578,7 @@
                                                 </el-select>
                                                 <!-- 审批 -->
                                                 <el-select v-else-if="signUpMap[item.id].formType == 'approval' && showWfwFormSelect(item.id, it.signUpFillInfoType)"
+                                                           :ref="'sign-up-form-template-select-' + item.id"
                                                         v-model="signUpMap[item.id].wfwFormTemplateId"
                                                         placeholder="请选择"
                                                         popper-class="fixed-select"
@@ -2605,6 +2607,8 @@
                 },
                 createFormFromNormal: function (signUpTplComponentId) {
                     var $this = this;
+                    // 隐藏报名表单/审批模板选择下拉框
+                    $this.$refs[`sign-up-form-template-select-${signUpTplComponentId}`][0].blur();
                     $this.fillInfoConfig(signUpTplComponentId, true);
                 },
                 // 配置报名填报信息
