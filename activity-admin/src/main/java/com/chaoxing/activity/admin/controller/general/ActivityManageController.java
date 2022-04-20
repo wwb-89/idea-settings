@@ -136,9 +136,9 @@ public class ActivityManageController {
 		} else {
 			style = Optional.ofNullable(style).orElse(1);
 			if (style == 2) {
-				return "pc/activity-index-2";
+				return "pc/activity/index-2";
 			}
-			return "pc/activity-index-1";
+			return "pc/activity/index-1";
 		}
 	}
 

@@ -197,7 +197,7 @@ public class ActivityMenuQueryService {
      * @return 
      */
     public List<ActivityMenuDTO> listActivityEnableBackendMenus(Integer activityId) {
-        List<ActivityMenuDTO> result = convertMenu2DTO(activityId, listActivityEnableMenuConfigs(activityId));
+        List<ActivityMenuDTO> result = convertMenu2Dto(activityId, listActivityEnableMenuConfigs(activityId));
         return result.stream().filter(v -> Objects.equals(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue(), v.getType())).collect(Collectors.toList());
     }
 
@@ -239,7 +239,7 @@ public class ActivityMenuQueryService {
      */
     private List<ActivityMenuDTO> convertMenuConfig2DTO(Integer activityId, List<ActivityMenuConfig> activityMenus, Boolean isMobile) {
         isMobile = Optional.ofNullable(isMobile).orElse(false);
-        List<ActivityMenuDTO> result = convertMenu2DTO(activityId, activityMenus).stream()
+        List<ActivityMenuDTO> result = convertMenu2Dto(activityId, activityMenus).stream()
                 .filter(v ->
                         Objects.equals(ActivityMenuConfig.UrlTypeEnum.BACKEND.getValue(), v.getType())
                 ).collect(Collectors.toList());
@@ -282,7 +282,7 @@ public class ActivityMenuQueryService {
      * @param activityMenuConfigs
      * @return
      */
-    private List<ActivityMenuDTO> convertMenu2DTO(Integer activityId, List<ActivityMenuConfig> activityMenuConfigs) {
+    private List<ActivityMenuDTO> convertMenu2Dto(Integer activityId, List<ActivityMenuConfig> activityMenuConfigs) {
         if (CollectionUtils.isEmpty(activityMenuConfigs)) {
             return Lists.newArrayList();
         }
@@ -301,14 +301,12 @@ public class ActivityMenuQueryService {
         // 遍历菜单， 进行相关地址和图标属性进行填充
         for (ActivityMenuConfig menuConfig : activityMenuConfigs) {
             String menu = menuConfig.getMenu();
-            //  seq以活动配置了的为准
-            Integer seq = Optional.ofNullable(menuConfig.getSequence()).orElse(sequence++);
-            ActivityMenuDTO menuDTO = Optional.ofNullable(systemModuleMap.get(menu))
+            ActivityMenuDTO menuDto = Optional.ofNullable(systemModuleMap.get(menu))
                     .orElse(Optional.ofNullable(customAppMap.get(menu))
                             .orElse(activityCustomMenuMap.get(menu)));
-            if (menuDTO != null) {
-                menuDTO.setSequence(seq);
-                result.add(menuDTO);
+            if (menuDto != null) {
+                menuDto.setSequence(Optional.ofNullable(menuConfig.getSequence()).orElse(sequence++));
+                result.add(menuDto);
             }
         }
         return result.stream().sorted(Comparator.comparing(ActivityMenuDTO::getSequence)).collect(Collectors.toList());

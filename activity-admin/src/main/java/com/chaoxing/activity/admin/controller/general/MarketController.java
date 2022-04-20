@@ -61,7 +61,7 @@ public class MarketController {
 		model.addAttribute("photoDomain", DomainConstant.PHOTO);
 		model.addAttribute("mainDomain", DomainConstant.MAIN);
 		model.addAttribute("strict", strict);
-		return "pc/market/market-index-new";
+		return "pc/market/market-index";
 	}
 
 	/**微服务创建微服务应用页面
