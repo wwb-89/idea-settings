@@ -41,6 +41,8 @@ public class WfwAreaApiService {
 
 	@Resource
 	private RestTemplate restTemplate;
+	@Resource(name = "longTimeRestTemplate")
+	private RestTemplate longTimeRestTemplate;
 	@Resource
 	private PassportApiService passportApiService;
 
@@ -166,7 +168,7 @@ public class WfwAreaApiService {
 	public List<WfwAreaDTO> listByCode(String code) {
 		List<WfwAreaDTO> regionalArchitectures = Lists.newArrayList();
 		String url = String.format(GET_AREA_BY_CODE_URL, code, Integer.MAX_VALUE);
-		String result = restTemplate.getForObject(url, String.class);
+		String result = longTimeRestTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean status = jsonObject.getBooleanValue("status");
 		status = Optional.ofNullable(status).orElse(Boolean.FALSE);
