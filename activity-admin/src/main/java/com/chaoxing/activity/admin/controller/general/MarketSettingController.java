@@ -59,21 +59,21 @@ public class MarketSettingController {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
         model.addAttribute("market", market);
-        return "pc/market/setting-new";
+        return "pc/market/setting";
     }
 
     /**规则配置主页
     * @Description
     * @author huxiaolong
     * @Date 2021-07-26 16:09:36
-    * @param
+    * @param model model
+    * @param marketId 市场id
     * @return java.lang.String
     */
     @RequestMapping("rule")
-    public String rule(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
+    public String rule(Model model, @PathVariable Integer marketId) {
         BlacklistRule blacklistRule = blacklistQueryService.getBlacklistRuleByMarketId(marketId);
         BlacklistRuleDTO blacklistRuleDto = Optional.ofNullable(blacklistRule).map(BlacklistRuleDTO::buildFromBlacklistRule).orElse(BlacklistRuleDTO.buildDefault(marketId));
-        Market market = marketQueryService.getById(marketId);
         model.addAttribute("blacklistRule", blacklistRuleDto);
         model.addAttribute("marketId", marketId);
         // 黑名单的人数
@@ -84,7 +84,7 @@ public class MarketSettingController {
         // 报名按钮列表
         List<SignUpBtnDTO> signUpBtns = SignUpBtnDTO.list();
         model.addAttribute("signUpBtns", signUpBtns);
-        return "pc/market/setting";
+        return "pc/market/rule";
     }
 
     /**字段配置主页

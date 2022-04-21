@@ -305,18 +305,13 @@
                     $this.loadUrl(url, openBlank);
                 },
                 loadUrl: function (url, openBlank) {
-                    var $this = this;
-                    if (url.indexOf("?") != -1) {
-                        url += "&";
-                    } else {
-                        url += "?";
-                    }
-                    url += "time=" + new Date().getTime();
                     if (openBlank) {
                         window.open(url);
                         return;
+                    } else {
+                        // iframe嵌入的时候协议要保持一致
+                        $("#content")[0].src = activityApp.protocolUnify(url);
                     }
-                    $("#content")[0].src = url;
                 },
                 showActivityHomeQrcode: function () {
                     var $this = this;

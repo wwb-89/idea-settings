@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/set.css" th:href="@{/pc/assets/css/set.css}">
 
-    <style type="text/css">
+    <style>
         body .create-class .layui-layer-btn0{
             width: 30px;
             height: 30px;
@@ -199,30 +199,23 @@
             </template>
             <div class="form-item cancel-margin" v-else-if="item.code == 'activity_classify'">
                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
-                <div class="input-box wrap">
-                    <div class="select-activity" v-if="strict == 1">
-                        <el-select v-model="activity.activityClassifyId" placeholder="请选择">
-                            <el-option v-for="item in activityClassifies" :key="item.id" :label="item.name"
-                                       :value="item.id">
-                            </el-option>
-                        </el-select>
-                    </div>
-                    <template v-if="strict != 1">
-                        <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                            <div class="more-box" v-if="!activityClassify.system">
-                                <div class="more-btn"></div>
-                                <div class="edit-box">
-                                    <div @click="toEditActivityClassify(index, $event)">编辑</div>
-                                    <div @click="toDeleteActivityClassify(index, $event)">删除</div>
-                                </div>
-                            </div>
+                <div class="input-box">
+                    <el-select v-model="activity.activityClassifyId" placeholder="请选择" v-if="strict != 1" popper-class="fixed-select">
+                        <el-option v-for="(classify, index) of activityClassifies" :key="'classify-' + index" :label="classify.name" :value="classify.id"></el-option>
+                        <!-- 注意这有俩个编辑，一个空的一个有数据的，我已经尽力了，只有这样能实现-->
+                        <div v-if="activityClassifies.length > 0" class="setiing-absolute" @click="toConfigClassify()"><i class="icon-setting"></i>编辑</div>
+                        <div v-else slot="empty" class="no-content-self">
+                            <div class="no-con">暂无{{item.name}}</div>
+                            <div class="setiing-absolute" @click="toConfigClassify()"><i class="icon-setting"></i>编辑</div>
                         </div>
-                        <div class="type-item add" @click="toAddActivityClassify">
-                            <div class="add_btn"></div>
-                            新增
+                    </el-select>
+                    <el-select v-model="activity.activityClassifyId" placeholder="请选择" v-else>
+                        <el-option v-for="(classify, index) of activityClassifies" :key="'classify-' + index" :label="classify.name" :value="classify.id"></el-option>
+                        <!-- 注意这有俩个编辑，一个空的一个有数据的，我已经尽力了，只有这样能实现-->
+                        <div v-if="activityClassifies.length < 1" slot="empty" class="no-content-self">
+                            <div class="no-con">暂无{{item.name}}</div>
                         </div>
-                    </template>
-                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                    </el-select>
                 </div>
             </div>
 
@@ -414,24 +407,6 @@
         </div>
     </form>
 
-    <!-- 新增活动分类和自定义选项的弹出框 -->
-    <div class="dailog-box1" v-show="addEditActivityClassifyWindowShow">
-        <div class="dailog">
-            <div class="header">
-                <span>分类</span>
-                <div @click="addEditActivityClassifyWindowShow = false">
-                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
-                </div>
-            </div>
-            <div class="body">
-                <el-input type="text" class="fenlei-input" v-model.trim="addEditActivityClassify.name" placeholder="请输入" maxlength="10" show-word-limit></el-input>
-            </div>
-            <div class="footer">
-                <div class="normal-btn cancle" @click="addEditActivityClassifyWindowShow = false">取消</div>
-                <div :class="{'normal-btn': true, 'before-sure': !addEditActivityClassify.name, 'after-sure': addEditActivityClassify.name}" @click="addEditActivityClassifySubmit">确定</div>
-            </div>
-        </div>
-    </div>
     <!-- 图片库弹窗 start -->
     <div class="dailog-box1" v-show="pictureShow">
         <div class="dailog picture-dialog">
@@ -457,9 +432,36 @@
         </div>
     </div>
     <!-- 图片库弹窗 end -->
-
+    <!--分类组件弹窗-->
+    <div class="dailog-box2" v-show="classifyWindowShow">
+        <div class="dailog choose-field">
+            <div class="header">
+                <span>{{activityClassifyTitle}}</span>
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close" @click="classifyWindowShow = false">
+            </div>
+            <div class="body" style="max-height: 400px;">
+                <div class="form">
+                    <div class="choose-box word-drag-inner" id="word-drag-inner">
+                        <div class="sort-item" name="classify" :data-id="classify.id" v-for="(classify, index) of sortActivityClassifies" :key="'edit-classify-' + index">
+                            <i class="icon-drag-inner icon-drag"></i>
+                            <label class="label">{{activityClassifyTitle}}{{index + 1}}</label>
+                            <el-input v-model.trim="classify.name" type="text" :disabled="!classify.owner" placeholder="请输入" class="weight318" maxlength="10" show-word-limit @blur="addEditClassifySubmit(index)"></el-input>
+                            <i class="icon-minus-circle" v-if="classify.owner" @click="toDeleteClassify(index)"></i>
+                        </div>
+                    </div>
+                    <div class="add-option" style="display: inline-block;">
+                        <span @click="toAddClassify"><i class="icon-plus-circle"></i>添加{{activityClassifyTitle}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="classifyWindowShow = false">取消</div>
+                <div class="normal-btn after-sure" @click="classifyWindowShow = false">确定</div>
+            </div>
+        </div>
+    </div>
     <!-- 删除分类弹窗 -->
-    <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此分类'" :cancel="'保留'" :sure="'删除'" @callback="deleteActivityClassifySubmit"></vue-confirm>
+    <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此' + activityClassifyTitle" :cancel="'保留'" :sure="'删除'" @callback="deleteClassifySubmit"></vue-confirm>
     <!-- 活动地图弹窗 -->
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
     <!-- 活动发布范围弹窗 -->
@@ -483,6 +485,7 @@
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script src="/static/pc/assets/lib/drag/sortTable.js" th:src="@{/pc/assets/lib/drag/sortTable.js}"></script>
     <script th:inline="javascript">
         vm = new Vue({
             el: "#activity-vue",
@@ -501,6 +504,7 @@
                 tags: [[${tags}]],
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
+                sortActivityClassifies: [[${activityClassifies}]],
                 // 文件上传
                 uploader: null,
                 // 新增修改活动分类弹窗的显示
@@ -531,7 +535,10 @@
                 pictureCloudIds: activityApp.default_cover_cloud_id_repo,
                 pictureShow: false,
                 // 需要显示其他类型的活动市场id列表
-                showOtherActivityType: activityApp.showOtherActivityType([[${activity.marketId}]])
+                showOtherActivityType: activityApp.showOtherActivityType([[${activity.marketId}]]),
+                // 分类
+                classifyWindowShow: false,
+                activityClassifyTitle: "分类"
             },
             created: function () {
                 var $this = this;
@@ -608,10 +615,55 @@
             },
             mounted: function () {
                 var $this = this;
-                // 初始化笔记便假期
+                // 初始化笔记编辑器
                 if ($this.needInitEditor) {
                     app.initUEditor($this.activity.introduction);
                 }
+                $("#word-drag-inner").sortable({
+                    scroll: true,
+                    axis: "y",
+                    dalay: 300,
+                    handle: ".icon-drag-inner",
+                    update: function (event, ui) {
+                        var changedClassifyIds = [];
+                        $("div[name='classify']").each(function () {
+                            var id = $(this).data("id");
+                            if (id) {
+                                changedClassifyIds.push(id);
+                            }
+                        });
+                        var url = ctx + "/api/market/" + $this.marketId + "/classify/sort";
+                        if (!$this.marketId) {
+                            url = ctx + "/api/market/" + $this.fid + "/classify/sort";
+                        }
+                        var params = {
+                            classifyIds: changedClassifyIds
+                        };
+                        app.ajaxPostWithLoading(url, params, function (data) {
+                            if (data.success) {
+                                // 重新调整activityClassifies
+                                var activityClassifies = [];
+                                $(changedClassifyIds).each(function () {
+                                    var classifyId = this;
+                                    $($this.activityClassifies).each(function () {
+                                        if (this.id == classifyId) {
+                                            activityClassifies.push(this);
+                                        }
+                                    });
+                                });
+                                $this.activityClassifies = activityClassifies;
+                            } else {
+                                var message = data.message;
+                                if (activityApp.isEmpty(message)) {
+                                    message = "排序失败";
+                                }
+                                app.showMsg(message);
+                            }
+                        }, function () {
+                            app.showMsg("排序失败");
+                        });
+                    },
+                });
                 $this.initUploader();
                 $this.handleImg();
                 // $this.initWfwGroups();
@@ -845,126 +897,6 @@
                     $this.activity.longitude = $this.$refs.activityMap.lng;
                     $this.activity.dimension = $this.$refs.activityMap.lat;
                 },
-                selectActivityClassify: function (index) {
-                    var $this = this;
-                    $($this.activityClassifies).each(function (i) {
-                        if (i == index) {
-                            $this.$set($this.activityClassifies[i], "selected", true);
-                            $this.activity.activityClassifyId = this.id;
-                        } else {
-                            $this.$set($this.activityClassifies[i], "selected", false);
-                        }
-                    });
-                },
-                toAddActivityClassify: function () {
-                    var $this = this;
-                    $this.addEditActivityClassify = $this.marketId ? {
-                        marketId: $this.marketId,
-                        name: ""
-                    } : {
-                        fid: $this.fid,
-                        name: ""
-                    };
-                    $this.addEditActivityClassifyWindowShow = true;
-                },
-                toEditActivityClassify: function (index, e) {
-                    e.stopPropagation();
-                    var $this = this;
-                    var activityClassify = $this.activityClassifies[index];
-                    $this.addEditActivityClassifyIndex = index;
-                    $this.addEditActivityClassify = $this.marketId ? {
-                        classifyId: activityClassify.id,
-                        name: activityClassify.name,
-                        marketId: $this.marketId
-                    } : {
-                        classifyId: activityClassify.id,
-                        name: activityClassify.name,
-                        fid: $this.fid,
-                    };
-                    $this.addEditActivityClassifyWindowShow = true;
-                },
-                addEditActivityClassifySubmit: function () {
-                    var $this = this;
-                    if (activityApp.isEmpty($this.addEditActivityClassify.name)) {
-                        return;
-                    }
-                    var isAdd = activityApp.isEmpty($this.addEditActivityClassify.classifyId);
-                    var tips = "新增";
-                    var orgUrl = ctx + "/api/org/" + $this.fid + "/classify/add";
-                    var marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/add";
-                    if (!isAdd) {
-                        orgUrl = ctx + "/api/org/" + $this.fid + "/classify/edit";
-                        marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/update";
-                        tips = "修改";
-                    }
-                    var url = $this.marketId ? marketUrl : orgUrl;
-                    var params = $this.marketId ? {
-                        classifyId: $this.addEditActivityClassify.classifyId,
-                        name: $this.addEditActivityClassify.name,
-                        marketId: $this.marketId
-                    } : {
-                        classifyId: $this.addEditActivityClassify.classifyId,
-                        name: $this.addEditActivityClassify.name,
-                        fid: $this.fid
-                    };
-                    app.ajaxPostWithLoading(url, params, function (data) {
-                        if (data.success) {
-                            var data = data.data;
-                            if (isAdd) {
-                                data.selected = false;
-                                $this.activityClassifies.push(data);
-                            } else {
-                                data.selected = this.selected;
-                                $this.activityClassifies.splice($this.addEditActivityClassifyIndex, 1, data);
-                                $this.addEditActivityClassifyIndex = null;
-                            }
-                            $this.addEditActivityClassifyWindowShow = false;
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = tips + "分类失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg(tips + "分类失败");
-                    });
-                },
-                toDeleteActivityClassify: function (index, e) {
-                    e.stopPropagation();
-                    var $this = this;
-                    var activityClassify = $this.activityClassifies[index];
-                    $this.deleteActivityClassifyId = activityClassify.id;
-                    $this.$refs.deleteClassifyWindow.show = true;
-                },
-                deleteActivityClassifySubmit: function () {
-                    var $this = this;
-                    var orgUrl = ctx + "/api/org/" + $this.fid + "/classify/" + $this.deleteActivityClassifyId + "/delete";
-                    var marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/" + $this.deleteActivityClassifyId + "/delete";
-                    var url = $this.marketId ? marketUrl : orgUrl;
-                    app.ajaxPostWithLoading(url, {}, function (data) {
-                        if (data.success) {
-                            $this.$refs.deleteClassifyWindow.show = false;
-                            $($this.activityClassifies).each(function (i) {
-                                if (this.id == $this.deleteActivityClassifyId) {
-                                    if (this.selected) {
-                                        $this.activity.activityClassifyId = null;
-                                    }
-                                    $this.activityClassifies.splice(i, 1);
-                                    return false;
-                                }
-                            });
-                        } else {
-                            var errorMessage = data.errorMessage;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "删除分类失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("删除分类失败");
-                    });
-                },
                 // 添加标签
                 toAddTag: function () {
                     var $this = this;
@@ -1126,6 +1058,125 @@
                     } else if (type == 'decimal') {
                         $this.activityComponentValueMap[tplComponentId].value = parseFloat(value);
                     }
+                },
+                toConfigClassify: function () {
+                    var $this = this;
+                    var activityClassifies = []
+                    $($this.activityClassifies).each(function () {
+                        if (this.id) {
+                            activityClassifies.push(this);
+                        }
+                    });
+                    if (activityClassifies < 1) {
+                        // 默认添加一个
+                        activityClassifies.push({
+                            classifyId: null,
+                            name: "",
+                            owner: true
+                        });
+                    }
+                    $this.activityClassifies = activityClassifies;
+                    $this.classifyWindowShow = true;
+                },
+                toAddClassify: function () {
+                    var $this = this;
+                    var classify = {
+                        classifyId: null,
+                        name: "",
+                        owner: true
+                    };
+                    $this.sortActivityClassifies.push(classify);
+                },
+                addEditClassifySubmit: function (index) {
+                    var $this = this;
+                    var addEditClassify = $this.sortActivityClassifies[index];
+                    if (activityApp.isEmpty(addEditClassify.name)) {
+                        app.showMsg("名称不能为空");
+                        return;
+                    }
+                    $this.operateClassifyIndex = index;
+                    var isAdd = activityApp.isEmpty(addEditClassify.id);
+                    var tips = "新增";
+                    var url = ctx + "/api/market/" + $this.marketId + "/classify/add";
+                    if (!$this.marketId) {
+                        url = ctx + "/api/org/" + $this.fid + "/classify/add";
+                    }
+                    if (!isAdd) {
+                        tips = "修改";
+                        url = ctx + "/api/market/" + $this.marketId + "/classify/update";
+                        if (!$this.marketId) {
+                            url = ctx + "/api/org/" + $this.fid + "/classify/edit";
+                        }
+                    }
+                    var params = {
+                        classifyId: addEditClassify.id,
+                        name: addEditClassify.name,
+                        marketId: $this.marketId
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            var data = data.data;
+                            data.owner = true;
+                            $this.activityClassifies.splice($this.operateClassifyIndex, 1, data);
+                            $($this.sortActivityClassifies).each(function (i) {
+                                if (!this.id) {
+                                    $this.$set($this.sortActivityClassifies[i], "id", data.id);
+                                    return false;
+                                }
+                            });
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = tips + $this.addEditItem.name + "失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg(tips + $this.addEditItem.name + "失败");
+                    });
+                },
+                toDeleteClassify: function (index) {
+                    var $this = this;
+                    $this.operateClassifyIndex = index;
+                    $this.$refs.deleteClassifyWindow.show = true;
+                },
+                deleteClassifySubmit: function () {
+                    var $this = this;
+                    var classify = $this.sortActivityClassifies[$this.operateClassifyIndex];
+                    if (!classify.id) {
+                        // 直接删除
+                        $this.sortActivityClassifies.splice($this.operateClassifyIndex, 1);
+                        return;
+                    }
+                    var url = ctx + "/api/market/" + $this.marketId + "/classify/" + classify.id + "/delete";
+                    if (!$this.marketId) {
+                        url = ctx + "/api/org/" + $this.fid + "/classify/" + classify.id + "/delete";
+                    }
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.$refs.deleteClassifyWindow.show = false;
+                            // 如果删除的是当前选中的
+                            if ($this.activity.activityClassifyId == $this.activityClassifies[$this.operateClassifyIndex].id) {
+                                $this.$set($this.activity, "activityClassifyId", null);
+                            }
+                            var deleteId = $this.sortActivityClassifies[$this.operateClassifyIndex].id;
+                            $this.sortActivityClassifies.splice($this.operateClassifyIndex, 1);
+                            $($this.activityClassifies).each(function (i) {
+                                if (this.id == deleteId) {
+                                    $this.activityClassifies.splice(i, 1);
+                                    return false;
+                                }
+                            });
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "删除" + $this.addEditItem.name + "失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("删除" + $this.addEditItem.name + "失败");
+                    });
                 }
             }
         });

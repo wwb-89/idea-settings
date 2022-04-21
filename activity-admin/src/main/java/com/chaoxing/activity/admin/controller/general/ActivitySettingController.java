@@ -4,6 +4,7 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.ConditionDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
@@ -11,20 +12,21 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.MarketSignUpConfig;
 import com.chaoxing.activity.model.SignUpCondition;
 import com.chaoxing.activity.model.Tag;
-import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.IconQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
+import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.market.MarketSignupConfigService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuQueryService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
-import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
+import com.chaoxing.activity.service.auth.ActivityAuthService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwGroupApiService;
 import com.chaoxing.activity.service.tag.TagQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.DomainConstant;
@@ -88,6 +90,8 @@ public class ActivitySettingController {
     private IconQueryService iconQueryService;
     @Resource
     private ActivityAuthService activityAuthService;
+    @Resource
+    private ActivityCreatePermissionService activityCreatePermissionService;
 
     @LoginRequired
     @RequestMapping("index")
@@ -118,7 +122,8 @@ public class ActivitySettingController {
     @RequestMapping("basic-info/edit")
     public String basicInfoEdit(HttpServletRequest request, Model model, @PathVariable Integer activityId, @RequestParam(defaultValue = "0") Integer strict) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
+        Integer uid = loginUser.getUid();
+        Activity activity = activityValidationService.manageAble(activityId, uid);
         ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
         model.addAttribute("signId", activity.getSignId());
         model.addAttribute("activity", createParamDTO);
@@ -126,11 +131,8 @@ public class ActivitySettingController {
         // 活动类型列表
         model.addAttribute("activityTypes", activityQueryService.listActivityType());
         // 活动分类列表范围
-        if (activity.getMarketId() == null) {
-            model.addAttribute("activityClassifies", classifyQueryService.listOrgClassifies(activity.getCreateFid()));
-        } else {
-            model.addAttribute("activityClassifies", classifyQueryService.listMarketClassifies(activity.getMarketId()));
-        }
+        ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(activity.getCreateFid(), activity.getMarketId(), activity.getCreateUid());
+        model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(activity.getActivityFlag(), activity.getCreateAreaCode(), permission.getClassifies()));
         // 活动发布范围
         List<WfwAreaDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
         model.addAttribute("participatedOrgs", wfwRegionalArchitectures);

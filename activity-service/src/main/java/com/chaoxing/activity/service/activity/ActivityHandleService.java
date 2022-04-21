@@ -1274,7 +1274,7 @@ public class ActivityHandleService {
 			sign = signApiService.getCreateById(signId);
 		}
 		ActivityUpdateParamDTO activityUpdateParam = ActivityUpdateParamDTO.buildActivityUpdateParam(activity, activityParam);
-		this.edit(activityUpdateParam, sign, wfwAreaApiService.listByFid(activityCreateDTO.getFid()), loginUser);
+		edit(activityUpdateParam, sign, wfwAreaApiService.listByFid(activityCreateDTO.getFid()), loginUser);
 	}
 
 	/**删除万能表单关联的活动

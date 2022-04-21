@@ -27,7 +27,7 @@
                 </el-form-item>
                 <template v-else-if="code == 'activity_type'">
                     <el-form-item label="形式">
-                        <div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div>
+                        <div class="txt">{{activity.activityType == "offline" ? "线下举办" : (activity.activityType == "online" ? "线上举办" : "线上+线下")}}</div>
                     </el-form-item>
                     <el-form-item v-show="activity.activityType != 'online'" label="位置">
                         <div class="txt">{{activity.address || ""}}{{activity.detailAddress || ""}}</div>
@@ -42,19 +42,12 @@
             <template v-if="templateComponents.length > 0" v-for="item in templateComponents">
                 <template v-if="item.code == 'activity_type'">
                     <el-form-item :label="item.name">
-                        <div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div>
+                        <div class="txt">{{activity.activityType == "offline" ? "线下举办" : (activity.activityType == "online" ? "线上举办" : "线上+线下")}}</div>
                     </el-form-item>
                     <el-form-item v-show="activity.activityType != 'online'" label="位置">
                         <div class="txt">{{activity.address || ""}}{{activity.detailAddress || ""}}</div>
                     </el-form-item>
                 </template>
-                <el-form-item v-else-if="item.code == 'introduction'" v-show="isNotEmpty(activity.introduction)" :label="item.name">
-                    <div class="input-box">
-                        <div class="txt">
-                            <div class="width640 overHidden2" th:utext="${activity.introduction}">活动简介</div>
-                        </div>
-                    </div>
-                </el-form-item>
                 <el-form-item :label="item.name" v-else-if="item.code == 'activity_name'">
                     <div class="txt">
                         {{activity.name}}
@@ -73,11 +66,6 @@
                 <el-form-item :label="item.name" v-else-if="item.code == 'activity_organisers'" v-show="isNotEmpty(activity.organisers)">
                     <div class="txt">
                         {{activity.organisers}}
-                    </div>
-                </el-form-item>
-                <el-form-item :label="item.name" v-else-if="item.code == 'activity_classify'" v-show="isNotEmpty(activity.activityClassifyName)">
-                    <div class="txt">
-                        {{activity.activityClassifyName}}
                     </div>
                 </el-form-item>
                 <el-form-item :label="item.name" v-else-if="item.code == 'integral'" v-show="isNotEmpty(activity.integral)">
@@ -127,7 +115,7 @@
             <div class="footer" th:if="${isCreator}">
                 <div class="btn-box">
                     <button class="btn-main btn-width-80 edit-btn" style="margin-right: 24px;" @click="toEditPage">编辑</button>
-                    <button class="btn-second-normal btn-width-80" @click="toWebTemplateConfig">页面配置</button>
+                    <button class="btn-second-normal btn-width-80" th:if="${session._login_user_.uid eq activity.createUid}" @click="toWebTemplateConfig">页面配置</button>
                 </div>
             </div>
         </el-form>
@@ -141,6 +129,7 @@
         <script src="/static/pc/assets/js/create-active.js" th:src="@{/pc/assets/js/create-active.js}"></script>
         <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
         <script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
+        <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
         <script th:inline="javascript">
             Vue.filter("releaseScopeFormat", function (value) {
                 if (!value) {

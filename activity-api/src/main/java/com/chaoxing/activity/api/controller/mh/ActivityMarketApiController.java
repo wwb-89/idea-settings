@@ -60,6 +60,23 @@ public class ActivityMarketApiController {
 	*/
 	@RequestMapping
 	public RestRespDTO index(@RequestBody String data, Integer wfwfid) {
+		return index(data, wfwfid, false);
+	}
+
+	/**活动市场数据源
+	 * @Description 接收的分类当作类型查询
+	 * @author wwb
+	 * @Date 2022-04-14 16:49:14
+	 * @param data
+	 * @param wfwfid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("classify2Type")
+	public RestRespDTO classify2Type(@RequestBody String data, Integer wfwfid) {
+		return index(data, wfwfid, true);
+	}
+
+	private RestRespDTO index(String data, Integer wfwfid, boolean classify2Type) {
 		JSONObject params = JSON.parseObject(data);
 		if (wfwfid == null) {
 			wfwfid = params.getInteger("wfwfid");
@@ -92,8 +109,15 @@ public class ActivityMarketApiController {
 				.statusList(statusList)
 				.marketId(marketId)
 				.flag(flag)
-				.activityClassifyId(activityClassifyId)
 				.build();
+		if (classify2Type) {
+			Activity.ActivityTypeEnum activityType = Activity.ActivityTypeEnum.fromId(activityClassifyId);
+			if (activityType != null) {
+				activityQuery.setActivityType(activityType.getValue());
+			}
+		} else {
+			activityQuery.setActivityClassifyId(activityClassifyId);
+		}
 		List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
 		activityQuery.setFids(fids);
 		Page<Activity> page = new Page(pageNum, pageSize);
@@ -340,7 +364,7 @@ public class ActivityMarketApiController {
 	 * @param marketId
 	 * @return com.alibaba.fastjson.JSONObject
 	 */
-	private  JSONObject searchAndPackageClassifies(Integer fid, Integer marketId) {
+	private JSONObject searchAndPackageClassifies(Integer fid, Integer marketId) {
 		List<Classify> classifies;
 		if (marketId != null) {
 			classifies = classifyQueryService.listMarketClassifies(marketId);
@@ -360,6 +384,31 @@ public class ActivityMarketApiController {
 			}
 		}
 		return jsonObject;
+	}
+
+	/**查询活动类型
+	 * @Description
+	 * @author wwb
+	 * @Date 2022-04-14 16:53:16
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("type")
+	public RestRespDTO listType() {
+		Activity.ActivityTypeEnum[] values = Activity.ActivityTypeEnum.values();
+		JSONObject jsonObject = new JSONObject();
+		JSONArray activityClassifyJsonArray = new JSONArray();
+		jsonObject.put("classifies", activityClassifyJsonArray);
+		if (values.length > 0) {
+			for (Activity.ActivityTypeEnum value : values) {
+				JSONObject item = new JSONObject();
+				item.put("id", value.getId());
+				item.put("name", value.getName());
+				activityClassifyJsonArray.add(item);
+			}
+			// 排除线上 + 线下
+			activityClassifyJsonArray.remove(activityClassifyJsonArray.size() - 1);
+		}
+		return RestRespDTO.success(jsonObject);
 	}
 
 }

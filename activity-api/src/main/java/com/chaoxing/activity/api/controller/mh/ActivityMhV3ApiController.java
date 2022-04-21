@@ -291,20 +291,6 @@ public class ActivityMhV3ApiController {
         if (StringUtils.isNotBlank(activity.getOrganisers())) {
             MhDataBuildUtil.buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), fieldCodeNameMap.getOrDefault("activity_organisers", "主办方"), activity.getOrganisers(), mainFields);
         }
-        // 地址
-        String address = "";
-        // 经纬度不为空时才显示地址
-        String activityAddressLink = "";
-        if (activity.getLongitude() != null && activity.getDimension() != null) {
-            activityAddressLink = DomainConstant.API +  "/redirect/activity/"+ activity.getId() +"/address";
-        }
-        if (!Objects.equals(Activity.ActivityTypeEnum.ONLINE.getValue(), activity.getActivityType())) {
-            address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
-        }
-        if (StringUtils.isNotBlank(address)) {
-            MhDataBuildUtil.buildFieldWithOsrUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, activityAddressLink, mainFields);
-
-        }
         // 报名时间
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());

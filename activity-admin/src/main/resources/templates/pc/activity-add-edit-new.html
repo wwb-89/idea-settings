@@ -556,6 +556,7 @@
                                                 <el-radio v-for="(wfwFormFillInfoType, index) of wfwFormFillInfoTypes" :key="'wfw-form-fill-info-type-' + index" v-model="signUpMap[item.id].formType" :label="wfwFormFillInfoType.value" name="active-type" @change="signUpFormTypeChange(item.id)">{{wfwFormFillInfoType.name}}</el-radio>
                                                 <!-- 万能表单 -->
                                                 <el-select v-if="signUpMap[item.id].formType == 'wfw_form' && showWfwFormSelect(item.id, it.signUpFillInfoType)"
+                                                           :ref="'sign-up-form-template-select-' + item.id"
                                                         v-model="signUpMap[item.id].wfwFormTemplateId"
                                                         placeholder="请选择"
                                                         popper-class="fixed-select"
@@ -577,6 +578,7 @@
                                                 </el-select>
                                                 <!-- 审批 -->
                                                 <el-select v-else-if="signUpMap[item.id].formType == 'approval' && showWfwFormSelect(item.id, it.signUpFillInfoType)"
+                                                           :ref="'sign-up-form-template-select-' + item.id"
                                                         v-model="signUpMap[item.id].wfwFormTemplateId"
                                                         placeholder="请选择"
                                                         popper-class="fixed-select"
@@ -2109,13 +2111,6 @@
                         app.showMsg(tips + $this.activityClassifyTitle + "失败");
                     });
                 },
-                toDeleteActivityClassify: function (index, e) {
-                    e.stopPropagation();
-                    var $this = this;
-                    var activityClassify = $this.activityClassifies[index];
-                    $this.deleteActivityClassifyId = activityClassify.id;
-                    $this.$refs.deleteClassifyWindow.show = true;
-                },
                 getSingleTemplateComponentByCode: function (code) {
                     var $this = this;
                     var templateComponet = null;
@@ -2249,7 +2244,6 @@
                                     return false;
                                 }
                             }
-
                             if (signUp.fillInfo) {
                                 var approvalNum = 0, wfwFormNum = 0;
                                 $(templateOptions).each(function () {
@@ -2268,24 +2262,7 @@
                                         return false;
                                     }
                                 }
-                                // if (activityApp.isEmpty(signUp.fillInfoFormId)) {
-                                //     app.showMsg("请配置" + signUp.name + "填报信息");
-                                //     return false;
-                                // }
-                            } /*else {
-                                // 给没有开启报名填报信息的报名设置万能表单
-                                if (activityApp.isEmpty(signUp.fillInfoFormId) && signUp.formType != "form") {
-                                    var wfwFormInfo = $this.signUpFillInfoDefaultWfwFormMap[originId];
-                                    if (wfwformInfo) {
-                                        $this.$set($this.signUpMap[originId], "formType", "wfw_form");
-                                        $this.$set($this.signUpMap[originId], "openAddr", wfwFormInfo.openAddr);
-                                        $this.$set($this.signUpMap[originId], "pcUrl", wfwFormInfo.pcUrl);
-                                        $this.$set($this.signUpMap[originId], "wechatUrl", wfwFormInfo.wechatUrl);
-                                        $this.$set($this.signUpMap[originId], "fillInfoFormId", wfwFormInfo.fillInfoFormId);
-                                    }
-                                }
-                            }*/
-
+                            }
                             if (activityApp.isEmpty(signUp.btnName)) {
                                 app.showMsg(signUp.name + "按钮名称不能为空");
                                 return false;
@@ -2630,6 +2607,8 @@
                 },
                 createFormFromNormal: function (signUpTplComponentId) {
                     var $this = this;
+                    // 隐藏报名表单/审批模板选择下拉框
+                    $this.$refs[`sign-up-form-template-select-${signUpTplComponentId}`][0].blur();
                     $this.fillInfoConfig(signUpTplComponentId, true);
                 },
                 // 配置报名填报信息
@@ -3181,6 +3160,12 @@
                             var data = data.data;
                             data.owner = true;
                             $this.activityClassifies.splice($this.operateClassifyIndex, 1, data);
+                            $($this.sortActivityClassifies).each(function (i) {
+                                if (!this.id) {
+                                    $this.$set($this.sortActivityClassifies[i], "id", data.id);
+                                    return false;
+                                }
+                            });
                         } else {
                             var message = data.message;
                             if (activityApp.isEmpty(message)) {
@@ -3203,6 +3188,7 @@
                     if (!classify.id) {
                         // 直接删除
                         $this.activityClassifies.splice($this.operateClassifyIndex, 1);
+                        return;
                     }
                     var url = ctx + "/api/market/" + $this.marketId + "/classify/" + classify.id + "/delete";
                     if (!$this.marketId) {
@@ -3215,7 +3201,14 @@
                             if ($this.activity.activityClassifyId == $this.activityClassifies[$this.operateClassifyIndex].id) {
                                 $this.$set($this.activity, "activityClassifyId", null);
                             }
-                            $this.activityClassifies.splice($this.operateClassifyIndex, 1);
+                            var deleteId = $this.sortActivityClassifies[$this.operateClassifyIndex].id;
+                            $this.sortActivityClassifies.splice($this.operateClassifyIndex, 1);
+                            $($this.activityClassifies).each(function (i) {
+                                if (this.id == deleteId) {
+                                    $this.activityClassifies.splice(i, 1);
+                                    return false;
+                                }
+                            });
                         } else {
                             var message = data.message;
                             if (activityApp.isEmpty(message)) {

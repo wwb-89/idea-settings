@@ -9,11 +9,9 @@ import com.chaoxing.activity.model.InspectionConfigDetail;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
-import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
@@ -43,7 +41,6 @@ public class InspectionController {
 			return toConfigIndexByActivityId(request, model, activityId, isClone);
 		}
 		return toConfigIndexByConfigId(request, model, configId);
-
 	}
 
 	/**

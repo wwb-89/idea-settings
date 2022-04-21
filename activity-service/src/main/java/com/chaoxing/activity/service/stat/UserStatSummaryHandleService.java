@@ -82,11 +82,9 @@ public class UserStatSummaryHandleService {
                 .eq(UserStatSummary::getActivityId, activityId)
         );
         // 是否有效, 报名数>0的时候报名成功数必须>0 否则签到成功数必须>0
-        boolean isValid;
+        boolean isValid = true;
         if (userSignStatSummary.getSignUpNum() > 0) {
             isValid = userSignStatSummary.getSignedUpNum() > 0;
-        }else {
-            isValid = userSignStatSummary.getSignedInNum() > 0;
         }
         Integer signInNum = userSignStatSummary.getSignInNum();
         Integer signedInNum = userSignStatSummary.getSignedInNum();

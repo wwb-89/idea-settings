@@ -20,16 +20,6 @@
 <body>
 <div id="vm" v-cloak>
     <div style="display: block">
-        <div class="header-box">
-            <div class="header header-type-3">
-                <span slot="label" class="menu-item-customize registered_title">
-                    <span class="title">考核管理</span>
-                </span>
-                <div class="top-btns">
-                    <el-button class="btn-customize export-btn" round @click="toInspectionConfig">考核设置</el-button>
-                </div>
-            </div>
-        </div>
         <!-- 选项卡内容 -->
         <div class="tab-content-box">
             <div class="tab-item">
@@ -40,6 +30,7 @@
 <!--                        <el-button class="btn-customize" round>颁奖</el-button>-->
                         <el-button class="btn-customize" round @click="exportData">导出</el-button>
                         <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
+                        <el-button class="btn-customize" round @click="toInspectionConfig">考核设置</el-button>
                         <div class="search-Box">
                             <el-input placeholder="搜索"
                                       icon="search"
@@ -119,36 +110,6 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                                v-else-if="item.code === 'qualifiedStatus'"
-                                class-name="th-dropdwon-radio"
-                                :fixed="item.defaultTop"
-                                column-key="qualifiedStatus"
-                                :label="item.name"
-                                :ifCenter="item.align"
-                                :min-width="item.minWidth"
-                                :filters="filterStatus"
-                                :filter-multiple="false"
-                                filter-placement="bottom"
-                        >
-                            <template slot-scope="scope">
-                                <template v-if="(!scope.row.qualifiedStatus && scope.row.qualifiedStatus !== 0) || scope.row.qualifiedStatus === 2">
-                                    <el-button type="text" @click="qualified(scope.row)" style="padding-right: 5px">合格</el-button>
-                                    <el-button type="text" @click="unQualified(scope.row)">不合格</el-button>
-                                </template>
-                                <template v-else>
-                                    <el-dropdown class="status-dropdown" @command="command => dropDownCmd(command, scope.row)">
-                                      <span class="el-dropdown-link">
-                                        {{ scope.row.qualifiedStatus === 0 ? '不合格' : '合格' }}<i class="el-icon-arrow-down el-icon--right"></i>
-                                      </span>
-                                        <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item command="qualified">合格</el-dropdown-item>
-                                            <el-dropdown-item command="unQualified">不合格</el-dropdown-item>
-                                        </el-dropdown-menu>
-                                    </el-dropdown>
-                                </template>
-                            </template>
-                        </el-table-column>
-                        <el-table-column
                                 v-else
                                 :prop="item.code"
                                 :fixed="item.defaultTop"
@@ -159,26 +120,42 @@
                         >
                         </el-table-column>
                     </template>
+                    <el-table-column
+                            class-name="th-dropdwon-radio"
+                            fixed="right"
+                            column-key="qualifiedStatus"
+                            label="状态"
+                            min-width="120"
+                            :filters="filterStatus"
+                            :filter-multiple="false"
+                            filter-placement="bottom"
+                    >
+                        <template slot-scope="scope">
+                            <template v-if="(!scope.row.qualifiedStatus && scope.row.qualifiedStatus !== 0) || scope.row.qualifiedStatus === 2">
+                                <el-button type="text" @click="qualified(scope.row)" style="padding-right: 5px">合格</el-button>
+                                <el-button type="text" @click="unQualified(scope.row)">不合格</el-button>
+                            </template>
+                            <template v-else>
+                                <el-dropdown class="status-dropdown" @command="command => dropDownCmd(command, scope.row)">
+                                      <span class="el-dropdown-link">
+                                        {{ scope.row.qualifiedStatus === 0 ? '不合格' : '合格' }}<i class="el-icon-arrow-down el-icon--right"></i>
+                                      </span>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item command="qualified">合格</el-dropdown-item>
+                                        <el-dropdown-item command="unQualified">不合格</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
+                            </template>
+                        </template>
+                    </el-table-column>
                 </el-table>
-                <el-pagination background layout="prev, pager, next, sizes" :total="total" :page-sizes="[10, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage">
+                <el-pagination background v-show="total > 10" layout="prev, pager, next, sizes" :total="total" :page-sizes="[10, 20, 50, 100]" :page-size="queryParams.pageSize" @size-change="sizeChangeHandle" :current-page="queryParams.pageNum" @current-change="changePage">
                 </el-pagination>
             </div>
         </div>
         <!-- 表格内容 -->
     </div>
 
-    <!-------------------------------------------------分割线------------------------------------------------>
-    <!--确认取消报名弹窗-->
-    <div class="dialog-box" v-if="ifCancelPop">
-        <div class="confirm_dialog">
-            <span class="icon"><img src="/static/pc/assets/images/icon-warning.png" th:src="@{/pc/assets/images/icon-warning.png}"></span>
-            <span class="text">确定取消报名吗？</span>
-            <div class="btn">
-                <span class="cancel" @click="ifCancelPop = false">取消</span>
-                <span class="ok">确定</span>
-            </div>
-        </div>
-    </div>
     <!--修改合格状态弹窗-->
     <div class="dialog-box modifyPop" v-if="ifModifyPop">
         <div class="masking" @click="ifModifyPop = false"></div>
@@ -241,7 +218,6 @@
                 // 总记录数
                 total: 0,
                 selectNumber:0, //表格选中的人数
-                ifCancelPop: false,
                 ifModifyPop: false, //修改合格状态弹窗展示
                 bodyHeight: $(window).height(),
                 tbodyHeight: 0

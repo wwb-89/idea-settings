@@ -37,7 +37,6 @@ public class ResultsController {
 	@Resource
 	private UserResultQueryService userResultQueryService;
 
-
 	/**考核管理主页
 	* @Description
 	* @author huxiaolong

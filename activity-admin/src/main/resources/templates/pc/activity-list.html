@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/commonTable.css" th:href="@{/pc/assets/sign/assets/css/commonTable.css}">
     <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/confirm_dialog.css" th:href="@{/pc/assets/sign/assets/css/confirm_dialog.css}">
-
     <style>
         [v-cloak] {
             display: none;
@@ -108,6 +107,19 @@
                         >
                             <template slot-scope="scope">
                                 <span style="cursor: pointer; color: #0084FF" @click="previewPage(scope.row)">{{scope.row.name}}</span>
+                            </template>
+                        </el-table-column>
+                        <!--类型-->
+                        <el-table-column
+                                v-else-if="item.code === 'activityType'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+<!--                                <span>{{scope.row.activityType}}</span>-->
+                                <span>{{scope.row.activityType == 'online' ? '线上举办' : scope.row.activityType == 'offline' ? '线下举办' : '线上+线下'}}</span>
                             </template>
                         </el-table-column>
                         <!--签到率-->
