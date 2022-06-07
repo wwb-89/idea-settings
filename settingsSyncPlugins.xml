@@ -91,6 +91,7 @@
                   <option value="com.intellij.spring" />
                 </set>
               </option>
+              <option name="enabled" value="false" />
             </PluginData>
           </value>
         </entry>
