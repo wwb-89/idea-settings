@@ -1,0 +1,139 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?bm3npn');
+  src:  url('fonts/icomoon.eot?bm3npn#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?bm3npn') format('truetype'),
+    url('fonts/icomoon.woff?bm3npn') format('woff'),
+    url('fonts/icomoon.svg?bm3npn#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-delete:before {
+  content: "\e915";
+  color: #999;
+}
+.icon-star-empty:before {
+  content: "\e916";
+  color: #e4e2db;
+}
+.icon-star-full:before {
+  content: "\e917";
+  color: #ffb503;
+}
+.icon-chevron-down:before {
+  content: "\e914";
+  color: #0084ff;
+}
+.icon-chevron-right:before {
+  content: "\e913";
+  color: #999;
+}
+.icon-sort-2:before {
+  content: "\e912";
+  color: #ccc;
+}
+.icon-Union:before {
+  content: "\e902";
+  color: #666;
+}
+.icon-Spinner .path1:before {
+  content: "\e903";
+  color: rgb(153, 153, 153);
+  opacity: 0.3;
+}
+.icon-Spinner .path2:before {
+  content: "\e904";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+  opacity: 0.4;
+}
+.icon-Spinner .path3:before {
+  content: "\e905";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+  opacity: 0.5;
+}
+.icon-Spinner .path4:before {
+  content: "\e906";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+  opacity: 0.6;
+}
+.icon-Spinner .path5:before {
+  content: "\e907";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+  opacity: 0.7;
+}
+.icon-Spinner .path6:before {
+  content: "\e908";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+  opacity: 0.8;
+}
+.icon-Spinner .path7:before {
+  content: "\e909";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+  opacity: 0.9;
+}
+.icon-Spinner .path8:before {
+  content: "\e90a";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+}
+.icon-Spinner .path9:before {
+  content: "\e90b";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+}
+.icon-Spinner .path10:before {
+  content: "\e90c";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+}
+.icon-Spinner .path11:before {
+  content: "\e90d";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+  opacity: 0.1;
+}
+.icon-Spinner .path12:before {
+  content: "\e90e";
+  margin-left: -1em;
+  color: rgb(153, 153, 153);
+  opacity: 0.2;
+}
+.icon-Shape:before {
+  content: "\e90f";
+  color: #0084ff;
+}
+.icon-icon-search:before {
+  content: "\e910";
+}
+.icon-icon-cancel:before {
+  content: "\e911";
+}
+.icon-minus-square:before {
+  content: "\e900";
+}
+.icon-plus-square:before {
+  content: "\e901";
+}

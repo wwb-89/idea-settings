@@ -1,0 +1,61 @@
+/* 报名名单页面样式 */
+body {
+    height: 100%;
+    /* background: #DBDBDB !important; */
+    background: #F2F4F7;
+}
+
+.sign-container {
+    width: 1000px;
+    margin: 16px auto;
+}
+
+.sign-header {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 24px;
+    font-size: 18px;
+    line-height: 21px;
+    color: #333333;
+    font-weight: bold;
+    text-align: left;
+}
+
+.sign-list {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 16px;
+    min-height: 544px;
+}
+
+.sign-list .sign-list-item {
+    border-bottom: 1px solid #F0F2F7;
+    font-size: 14px;
+    /* line-height: 16px; */
+    color: #333333;
+    text-align: left;
+}
+
+.sign-list .sign-list-item>img {
+    display: inline-block;
+    vertical-align: middle;
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    margin: 10px 14px 10px 0;
+}
+
+.loading-container {
+    margin-top: 16px;
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    line-height: 32px;
+    color: #999999;
+}
+
+.loading-container>img {
+    display: inline-block;
+    vertical-align: middle;
+}

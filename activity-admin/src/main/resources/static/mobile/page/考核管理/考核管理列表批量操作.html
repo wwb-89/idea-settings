@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>活动</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../../assets/sign/assets/icomoon/style.css" />
+    <link rel="stylesheet" href="../../assets/lib/swiper/css/swiper.min.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/cssreset.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/public.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/person-list.css" />
+</head>
+<body>
+    <div class="person-list padding-bottom" id="vue">
+        <div class="searchDiv">
+            <div class="searchbefore" v-show="!inputShowStatus" v-on:click="inputShow"><i></i><span>搜索</span></div>
+            <div class="searchafter" v-show="inputShowStatus">
+                <input type="text" class="txt" placeholder="姓名/账号" v-model="inputValue" v-on:input="wacthInput"
+                       v-on:focus="modelShow(true)" v-on:focus="modelShow(false)">
+                <i class="search"></i>
+                <i class="delete" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
+                <div class="cancle" v-on:click="inputShow">取消</div>
+            </div>
+        </div>
+        <div class="filter-box">
+            <div class="tabRank">
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <div v-for="(filter,index) in filterList" :class="['swiper-slide',index==filterActiveNum ?'active':'']"   v-on:click="filterChange(index)">{{filter.name}}{{filter.num}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-box" v-on:click="orderStatus=true">
+                <span>排序</span><i class="icon-sort-2"></i>
+            </div>
+        </div>
+        <!-- 有内容 列表格式1-->
+        <div class="list-style1 handel-list-style" v-show="filterActiveNum==0">
+            <ul>
+                <li>
+                    <div class="check-box">
+                        <i class="check-icon"></i>
+                    </div>
+                   <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                           <span class="txt1">不合格</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="check-box">
+                        <i class="check-icon"></i>
+                    </div>
+                   <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                           <span class="txt1">不合格</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="check-box">
+                        <i class="check-icon"></i>
+                    </div>
+                   <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                           <span class="txt1">不合格</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="check-box">
+                        <i class="check-icon"></i>
+                    </div>
+                   <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                           <span class="txt1">不合格</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="check-box">
+                        <i class="check-icon"></i>
+                    </div>
+                   <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                           <span class="txt1">不合格</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="check-box">
+                        <i class="check-icon"></i>
+                    </div>
+                   <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                           <span class="txt1">不合格</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="check-box">
+                        <i class="check-icon"></i>
+                    </div>
+                   <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                           <span class="txt1">不合格</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="check-box">
+                        <i class="check-icon"></i>
+                    </div>
+                   <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                           <span class="txt1">不合格</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="check-box active">
+                        <i class="check-icon"></i>
+                    </div>
+                    <img src="../../assets/images/Vector.png">
+                     <div class="info border-bottom">
+                         <h2 class="name">高晓青</h2>
+                         <a href="#" class="flex-box">
+                             <p class="score">积分 5</p>
+                             <i class="icon-chevron-right"></i>
+                         </a>
+                         <div class="handel-style">
+                            <span class="txt1">合格</span>
+                         </div>
+                     </div>
+                 </li>
+                <li>
+                    <div class="check-box active">
+                        <i class="check-icon"></i>
+                    </div>
+                    <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                            <span class="txt1">未评审</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="bottom-operation">
+                <div class="checkAll">
+                    <div class="check-box active">
+                        <i class="check-icon"></i>
+                    </div>
+                    <span class="txt">全选</span> 
+                </div>
+                <div class="btn-box">
+                    <button class="btn-secondary disabled" disabled>不合格</button>
+                    <button class="btn-secondary">合格</button>
+                </div>
+            </div>
+        </div>
+        <div class="list-style1" v-show="filterActiveNum==1">
+            <ul>
+                <li>
+                    <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                            <span class="txt">合格</span><i class="icon-chevron-down"></i>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                            <span class="txt">合格</span><i class="icon-chevron-down"></i>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="list-style1" v-show="filterActiveNum==2">
+            <ul>
+                <li>
+                    <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                            <span class="txt">不合格</span><i class="icon-chevron-down"></i>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <img src="../../assets/images/Vector.png">
+                    <div class="info border-bottom">
+                        <h2 class="name">高晓青</h2>
+                        <a href="#" class="flex-box">
+                            <p class="score">积分 5</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style">
+                            <span class="txt">不合格</span><i class="icon-chevron-down"></i>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- 无内容 -->
+        <div class="no-content">
+            暂无内容
+        </div>
+        <!--  加载中  -->
+        <div class="loading"><img src="../../assets/images/loading-icon.png">加载中…</div>
+        <div class="model" v-show="modelShowStatus"></div>
+<!--        排序弹窗-->
+        <div class="model z-index-high" v-show="orderStatus"></div>
+        <div class="my-dialog" v-show="orderStatus">
+            <div class="list">
+                <h2 class="border-bottom">选择排序方式</h2>
+                <ul class="order-list">
+                    <li class="border-bottom">积分从高到低</li>
+                    <li>积分从低到高</li>
+                </ul>
+            </div>
+            <div class="cancle" v-on:click="orderStatus=false">取消</div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="../../assets/lib/jquery.1.8.2.min.js"></script>
+<script src="../../assets/lib/swiper/js/swiper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                inputShowStatus: false,
+                inputValue: '',
+                modelShowStatus: false,
+                filterList:[{
+                    name:"待审核",
+                    num:12
+                },{
+                    name:"合格",
+                    num:12
+                },{
+                    name:"不合格",
+                    num:12
+                },{
+                    name:"不合格",
+                    num:12
+                },{
+                    name:"不合格",
+                    num:12
+                },{
+                    name:"不合格",
+                    num:12
+                }],
+                filterActiveNum:0,
+                orderStatus:false,
+            }
+        },
+        created: function () {
+
+        },
+        mounted: function () {
+            this.swiperInit()
+        },
+        methods: {
+            wacthInput: function () {
+                if (this.inputValue != "") {
+                    this.inputDeleteShow = true;
+                } else {
+                    this.inputDeleteShow = false;
+                }
+            },
+            // input触发
+            inputShow: function () {
+                this.inputShowStatus = !this.inputShowStatus;
+                this.modelShowStatus = false;
+            },
+            modelShow: function (bool) {
+                this.modelShowStatus = bool;
+            },
+            //输入框的交互
+            inputDeleteFun: function () {
+                this.inputValue = "";
+                this.inputDeleteShow = false;
+            },
+            filterChange:function (index){
+                this.filterActiveNum = index;
+            },
+            //swiper初始化
+            swiperInit:function (){
+                var swiper = new Swiper('.tabRank .swiper-container', {
+                    slidesPerView: "auto",
+                });
+                var startScroll, touchStart, touchCurrent;
+                swiper.slides.on('touchstart', function (e) {
+                    startScroll = this.scrollLeft;
+                    touchStart = e.targetTouches[0].pageX;
+                }, true);
+                swiper.slides.on('touchmove', function (e) {
+                    touchCurrent = e.targetTouches[0].pageX;
+                    var touchesDiff = touchCurrent - touchStart;
+                    var slide = this;
+                    var onlyScrolling =
+                        ( slide.scrollWidth > slide.offsetWidth ) && //allow only when slide is scrollable
+                        (
+                            ( touchesDiff < 0 && startScroll === 0 ) || //start from left edge to scroll right
+                            ( touchesDiff > 0 && startScroll === ( slide.scrollWidth - slide.offsetWidth ) ) || //start from right edge to scroll left
+                            ( startScroll > 0 && startScroll < ( slide.scrollWidth - slide.offsetWidth ) ) //start from the middle
+                        );
+                    if (onlyScrolling) {
+                        e.stopPropagation();
+                    }
+                }, true);
+            },
+        //    弹窗
+        }
+    });
+</script>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityStatMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityStat">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="stat_date" jdbcType="DATE" property="statDate" />
+        <result column="pv" jdbcType="INTEGER" property="pv" />
+        <result column="pv_increment" jdbcType="INTEGER" property="pvIncrement" />
+        <result column="signed_up_num" jdbcType="INTEGER" property="signedUpNum" />
+        <result column="signed_up_increment" jdbcType="INTEGER" property="signedUpIncrement" />
+        <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
+        <result column="signed_in_increment" jdbcType="INTEGER" property="signedInIncrement" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        t.id, t.activity_id, t.stat_date, t.pv, t.pv_increment, t.signed_up_num, t.signed_up_increment, t.signed_in_num, t.signed_in_increment, t.create_time
+    </sql>
+
+    <select id="listActivityStat" resultType="com.chaoxing.activity.model.ActivityStat">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM t_activity_stat t
+        <where>
+            t.activity_id IN
+            <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="startDate != null and startDate != ''">
+                AND t.stat_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND t.stat_date &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY t.stat_date
+    </select>
+
+    <select id="listTopActivity" resultType="com.chaoxing.activity.model.ActivityStat">
+        SELECT
+            t.name AS activityName,
+            t.id AS activityId,
+            SUM(t1.pv_increment) AS pv,
+            SUM(t1.signed_up_increment) AS signedUpNum
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_stat t1 ON t.id = t1.activity_id
+            AND t1.activity_id IN
+            <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="queryParams.startDate != null and queryParams.startDate != ''">
+                AND t1.stat_date &gt;= #{queryParams.startDate}
+            </if>
+            <if test="queryParams.endDate != null and queryParams.endDate != ''">
+                AND t1.stat_date &lt;= #{queryParams.endDate}
+            </if>
+        WHERE
+            t.id IN
+            <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            AND t.`status` IN ( 1, 2, 3, 4 )
+            AND t.is_released = 1
+        GROUP BY t.id
+            <if test="orderField != null and orderField != ''">
+                ORDER BY ${orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
+            </if>
+            LIMIT 0, 10
+    </select>
+
+    <select id="activityStatList" resultType="com.chaoxing.activity.model.ActivityStat">
+        SELECT
+            t.name AS activityName,
+            t.id AS activityId,
+            sum(t1.pv_increment) AS pv,
+            sum(t1.signed_up_increment) AS signedUpNum
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_stat t1 ON t.id = t1.activity_id
+            AND t1.activity_id IN
+            <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="queryParams.startDate != null and queryParams.startDate != ''">
+                AND t1.stat_date &gt;= #{queryParams.startDate}
+            </if>
+            <if test="queryParams.endDate != null and queryParams.endDate != ''">
+                AND t1.stat_date &lt;= #{queryParams.endDate}
+            </if>
+        WHERE
+            t.id IN
+            <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        GROUP BY t.id
+        <if test="orderField != null and orderField != ''">
+            ORDER BY ${orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
+        </if>
+    </select>
+
+    <select id="listActivityStatByFids" resultType="com.chaoxing.activity.model.ActivityStat">
+        SELECT
+            t.id AS activityId,
+            t.name AS activityName,
+            t.create_fid AS fid,
+            SUM(t1.pv_increment) AS pv,
+            SUM(t1.signed_up_increment) AS signedUpNum,
+            SUM(t1.signed_in_increment) AS signedInNum
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_stat t1 ON t.id = t1.activity_id
+            <trim prefix="AND" prefixOverrides="AND">
+                <if test="startDate != null and startDate != ''">
+                    and t1.stat_date &gt;= #{startDate}
+                </if>
+                <if test="endDate != null and endDate != ''">
+                    and t1.stat_date &lt;= #{endDate}
+                </if>
+            </trim>
+        WHERE
+            t.create_fid IN
+            <foreach collection="fids" item="fid" open="(" close=")" separator=",">
+                #{fid}
+            </foreach>
+            AND t.`status` IN ( 1, 2, 3, 4 )
+            AND t.is_released = 1
+        GROUP BY t.id
+    </select>
+    <select id="listActivityPvByActivityIds" resultType="com.chaoxing.activity.model.ActivityStat">
+        SELECT
+            t.activity_id as activityId,
+            MAX( t.pv ) AS pv
+        FROM
+            t_activity_stat t
+        WHERE
+            t.activity_id in
+            <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        GROUP BY
+            t.activity_id
+    </select>
+
+
+</mapper>

@@ -1,0 +1,115 @@
+.container {
+    overflow: hidden;
+    overflow-y: auto;
+    overflow-scrolling: touch;
+}
+.container .item {
+    overflow: hidden;
+    padding: .32rem .3rem;
+}
+.container .item h3 {
+    font-size: .32rem;
+    color: #928e8e;
+    float: left;
+}
+.container .item-addressee {
+    overflow: hidden;
+    position: relative;
+    min-height: 1.2rem;
+    padding-bottom: .12rem;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.container .item-addressee:after {
+    content: "";
+    position: absolute;
+    left: .3rem;
+    right: .3rem;
+    bottom: 0;
+    width: 92%;
+    height: 1px;
+    background: #d9d7d7;
+    -webkit-transform: scaleY(0.5);
+    -moz-transform: scaleY(0.5);
+    -ms-transform: scaleY(0.5);
+    -o-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+}
+.container .item-addressee ul {
+    float: left;
+    width: 80%;
+}
+.container .item-addressee ul li {
+    display: block;
+    position: relative;
+    float: left;
+    padding: .1rem .2rem;
+    background: #cfe6fc;
+    border-radius: .3rem;
+    margin-right: .2rem;
+    margin-bottom: .2rem;
+    font-size: .24rem;
+    color: #333333;
+}
+.container .item-addressee ul li:first-child {
+    background: #ebebeb;
+}
+.container .item-addressee ul li span {
+    display: block;
+}
+.container .item-addressee ul li img {
+    display: block;
+    width: .28rem;
+    height: .28rem;
+    position: absolute;
+    right: -0.1rem;
+    top: -0.1rem;
+}
+.container .item-title {
+    overflow: hidden;
+    position: relative;
+    min-height: 1.2rem;
+    padding-bottom: .12rem;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.container .item-title:after {
+    content: "";
+    position: absolute;
+    left: .3rem;
+    right: .3rem;
+    bottom: 0;
+    width: 92%;
+    height: 1px;
+    background: #d9d7d7;
+    -webkit-transform: scaleY(0.5);
+    -moz-transform: scaleY(0.5);
+    -ms-transform: scaleY(0.5);
+    -o-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+}
+.container .item-title .title-con {
+    float: left;
+    width: 80%;
+    min-height: .4rem;
+    outline: none;
+    font-size: .3rem;
+    margin-bottom: .3rem;
+    line-height: .5rem;
+}
+.container .item-title .title-con input {
+    border: none;
+    width: 100%;
+    font-size: .3rem;
+}
+.container .item-con {
+    overflow: hidden;
+    min-height: 2rem;
+    width: 92%;
+    margin: 0 auto;
+    outline: none;
+    font-size: .3rem;
+    line-height: .5rem;
+}

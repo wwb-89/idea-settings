@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>活动市场</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/public.css" />
+    <link rel="stylesheet" href="../assets/css/index.css" />
+    <style type="text/css">
+        .webuploader-element-invisible {
+            display: none;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="index" id="vue" v-cloak>
+        <!-- 搜索 -->
+        <div class="topFixed">
+            <div class="searchbefore" @click="handleInput" v-show="searchShow"><i></i><span>搜索</span></div>
+            <div :class="['searchDiv',inputShow?'searchDivFocus':'']" v-show="!searchShow">
+                <i class="searchIcon"></i>
+                <i class="delete" v-show="inputValue.length!=0"></i>
+                <input type="text" placeholder="搜索"  @focus="getFocus"  v-model="inputValue" @input="inputFun">
+            </div>
+            <!-- 已选状态 添加active -->
+            <div class="filter" @click="popShow" v-show="!inputShow">
+                <i class="filterIcon"></i>筛选
+            </div>
+            <span class="Scancel" @click="ScancelFun" v-show="inputShow">取消</span>
+        </div>
+        <div class="activity-list" >
+            <ul>
+                <div v-for="(item,index) in list" :key="index">
+                    <li>
+                        <div class="img-box">
+                            <div class="mask"></div>
+                            <img :src="item.coverCloudId" class="jqthumbImg">
+                            <div class="status-box">
+                                <span class="status status5 sign" v-if="item.isSign==true"><span class="sign-dot"></span>报名中</span>
+                                <span class="status status1" v-if="item.status==0">未开始</span>
+                                <span class="status status2" v-if="item.status==1">即将开始</span>
+                                <span class="status status3" v-if="item.status==2">进行中</span>
+                                <span class="status status4" v-if="item.status==3">已结束</span>
+                            </div>
+                            <p class="num"><i class="icon-user"></i>0/50</p>
+                        </div>
+                        <div class="info">
+                            <h2 class="title"><span class="info-top" v-if="item.istop==true">置顶</span>{{item.name}}</h2>
+                            <div class="time">
+                                <span>{{item.time}}</span>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="type-box">
+                                <span class="type-item" v-for="(item,index) in item.typeList" :key="index">{{item}}</span>
+                            </div>
+                            <p class="dec">{{item.createOrgName}}</p>
+                            <p class="address" >{{item.address}}</p>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+        </div>
+<!--        加载中-->
+        <div class="loading"><i class="loading-icon"></i>加载中…</div>
+<!--        没有更多-->
+        <div class="noMore"><span class="line"></span><span>没有更多了</span><span class="line"></span></div>
+        <!-- 无结果 -->
+        <div class="noContent" style="display: none;">
+            <p>无搜索结果</p>
+        </div>
+        <!-- 遮盖层 -->
+        <div class="fixedBg"  v-show="inputShow"></div>
+        <!-- 弹出层 -->
+        <div class="pop" v-show="popStatus">
+            <div class="popInner">
+                <div class="switch-box border-bottom">
+                    <p class="fl">只看我能参与</p>
+                    <div class="fr">
+                        <el-switch
+                                v-model="switch1Value"
+                                active-color="#0084FF"
+                                inactive-color="#AAB9C2">
+                        </el-switch>
+                    </div>
+                </div>
+                <div class="popList">
+                    <div class="list-item">
+                        <div class="title">类型</div>
+                        <ul>
+                            <li class="active">全部</li>
+                            <li>展览</li>
+                            <li>演出</li>
+                            <li>讲座</li>
+                            <li>培训</li>
+                            <li>阅读推广</li>
+                            <li>其它</li>
+                        </ul>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="list-item">
+                        <div class="title">时间</div>
+                    <ul>
+                        <li class="active">全部</li>
+                        <li>近一个月</li>
+                        <li>近三个月</li>
+                        <li>近半年</li>
+                        <li>近一年</li>
+                        <li>更早</li>
+                    </ul>
+                    <div class="clear"></div>
+                    </div>
+                    <div class="list-item">
+                        <div class="title">地区</div>
+                        <ul>
+                            <li class="active">全部</li>
+                            <li>杭州</li>
+                            <li>宁波</li>
+                            <li>温州</li>
+                        </ul>
+                        <div class="clear"></div>
+                    </div>
+                    
+                </div>
+                <div class="btn">
+                    <a href="#" class="btn-a btn-0">确定</a>
+                    <a href="#" class="btn-a btn-1" @click="popCancel">取消</a>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="floating-window">
+            <el-popover
+                    placement="top-end"
+                    popper-class='fixed-pop'
+                    trigger="click">
+                <ul>
+                    <li>积分规则</li>
+                    <li>批量操作</li>
+                    <li>导出</li>
+                </ul>
+                <el-button class="more-circle" slot="reference"><i class="icon-more-horizontal"></i></el-button>
+            </el-popover>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
+<script src="../assets/lib/jquery.1.8.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="../assets/lib/jqthumb.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                inputValue:"",
+                inputShow:false,
+                searchShow:true,
+                searchstatus:false,
+                popStatus:false,
+                list:[{
+                    coverCloudId:"https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg",
+                    istop:true,
+                    isSign:true,
+                    name:"浙江图书馆2020年11月读者活动",
+                    time:"2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    typeList:["绘画","艺术","学校活动"],
+                    status:0,
+                    createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
+                    address:"四川农业大学雅安校区",
+                },{
+                    coverCloudId:"https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg",
+                    istop:true,
+                    isSign:false,
+                    name:"浙江图书馆2020年11月读者活动",
+                    time:"2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    typeList:["绘画","艺术"],
+                    status:1,
+                    createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
+                    address:"四川农业大学雅安校区",
+                },{
+                    coverCloudId:"https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg",
+                    istop:false,
+                    isSign:false,
+                    name:"浙江图书馆2020年11月读者活动",
+                    time:"2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    typeList:["绘画"],
+                    status:2,
+                    createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
+                    address:"四川农业大学雅安校区",
+                },{
+                    coverCloudId:"https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg",
+                    istop:false,
+                    isSign:false,
+                    name:"浙江图书馆2020年11月读者活动",
+                    time:"2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    typeList:["绘画","艺术"],
+                    status:3,
+                    createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
+                    address:"四川农业大学雅安校区",
+                }],
+                switch1Value:false,
+            }
+        },
+        created: function () {
+            this.getAllShowMsg();
+        },
+        mounted: function () {
+            $('.jqthumbImg').jqthumb({
+                width: '100%',
+                height: '100%'
+            });
+        },
+        methods: {
+            handleInput(){
+                this.searchShow = false
+            },
+            getFocus(){
+                this.inputShow = true;
+                $("body").addClass("overhidden");
+            },
+            ScancelFun() {
+                this.inputShow = false;
+                this.inputValue = '';
+                $("body").removeClass("overhidden");
+            },
+            popShow(){
+                this.popStatus = true;
+                $("body").addClass("overhidden");
+            },
+            popCancel(){
+                this.popStatus = false;
+                $("body").removeClass("overhidden");
+            },
+            // 搜索输入方法
+            inputFun(e){
+                this.inputValue = e.target.value;
+            },
+            //获取到所有活动展示页面的信息，分页展示
+            getAllShowMsg(){
+                axios({
+                    method: 'get',
+                    url: 'http://127.0.0.1:8080/pageshow/msg/1/10',
+                    responseType: 'json'
+                })
+                    .then(response =>{
+
+                   this.list = response.data
+                    console.log(this.list)
+                    }
+                ).catch( error =>{
+                    console.log(error)
+                });
+            }
+        }
+    });
+</script>

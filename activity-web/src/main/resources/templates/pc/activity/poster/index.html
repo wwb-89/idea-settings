@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>海报</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/poster.css" th:href="@{/pc/assets/css/poster.css}">
+</head>
+
+<body>
+    <div class="poster-pc" id="poster-pc" v-cloak>
+        <div class="btn-download" @click="download">下载</div>
+        <div id="capture">
+            <div class="poster-box">
+                <div class="img-box">
+                    <img :src="activity.coverCloudId | imgUrlFilter" class="jqthumbImg">
+                </div>
+                <div class="text-box">
+                    <p class="text-title marginb6">{{activity.name}}</p>
+                    <dl class="text-list marginb6" v-if="fieldCodeNameRelation['activity_time_scope']">
+                       <dt class="label">{{fieldCodeNameRelation['activity_time_scope']}}&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                       <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
+                    </dl>
+                    <dl class="text-list marginb6" v-if="openedSignUp">
+                        <dt class="label">报名时间&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info"> {{ signUp.startTime | timestampScopeFormat(signUp.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
+                    </dl>
+                    <dl class="text-list marginb6" v-show="activityAddress">
+                        <dt class="label">活动地点&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info">{{activityAddress}}</dd>
+                    </dl>
+                    <dl class="text-list marginb6" v-if="fieldCodeNameRelation['activity_organisers'] && activity.organisers">
+                        <dt class="label">{{fieldCodeNameRelation['activity_organisers']}}&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info">{{activity.organisers}}</dd>
+                    </dl>
+                    <dl class="text-list marginb6" v-if="openedSignUp">
+                        <dt class="label">报名容量&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info" v-if="signUp.limitPerson">{{signUp.personLimit}}</dd>
+                        <dd class="info" v-else>不限</dd>
+                    </dl>
+                </div>
+                <div class="qrcode-box">
+                    <div id="canvas" class="qrcode"></div>
+                </div>
+                <div class="text-tip">扫码访问活动</div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <script src="/static/pc/assets/lib/qrcode.min.js"  th:src="@{/pc/assets/lib/qrcode.min.js}"></script>
+        <script src="/static/pc/assets/lib/html2canvas.min.js" th:src="@{/pc/assets/lib/html2canvas.min.js}"></script>
+        <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+        <script th:inline="javascript">
+            Vue.filter("imgUrlFilter", function (cloudId) {
+                return ctx + '/cloud-proxy/image/' + cloudId;
+            });
+            vm = new Vue({
+                el: "#poster-pc",
+                data: {
+                    mainDomain: [[${mainDomain}]],
+                    webDomain: [[${webDomain}]],
+                    activity: [[${activity}]],
+                    signUp: [[${signUp}]],
+                    fieldCodeNameRelation: [[${fieldCodeNameRelation}]],
+                    canvasUrl: '',
+                    ctx: ctx
+                },
+                created: function () {
+                    var $this = this;
+                    document.domain = $this.mainDomain;
+                },
+                computed: {
+                    openedSignUp: function () {
+                        var $this = this;
+                        return !activityApp.isEmpty($this.signUp) && !$this.signUp.deleted;
+                    },
+                    activityAddress: function () {
+                        var $this = this;
+                        var address = '';
+                        if ($this.activity) {
+                            address += $this.activity.address || '';
+                            address += $this.activity.detailAddress || '';
+                        }
+                        return address;
+                    }
+                },
+                mounted: function () {
+                    var $this = this;
+                    $this.init();
+                    $this.handleImg();
+                },
+                methods: {
+                    init: function () {
+                        var $this = this;
+                        var text = $(".text-list .info");
+                        for (var i = 0; i < text.length; i++) {
+                            $this.getHeight(text[i], 40);
+                        }
+                        $this.getHeight($('.text-title')[0], 60);
+                        //    canvas
+                        var activityUrl = $this.webDomain + "/activity/" + $this.activity.id;
+                        new QRCode('canvas', {
+                            text: activityUrl,
+                            width: 128,
+                            height: 128,
+                            colorDark : "#000000",
+                            colorLight : "#ffffff",
+                        });
+                    },
+                    handleImg: function () {
+                        $('.jqthumbImg').jqthumb({
+                            width: '100%',
+                            height: '100%'
+                        });
+                    },
+                    getHeight: function (el, lineHeight) {
+                        var heightSome = el.clientHeight;
+                        var wareNameText = el.innerHTML;//获取内容
+                        if(heightSome> lineHeight){ //这个数字是两行的时候的高度，根据你设定的字体大小有关
+                            for(var i = 0; heightSome > lineHeight; i++){
+                                //每次删掉最后一个然后返回
+                                wareNameText = wareNameText.substring(0,wareNameText.length-1);
+                                //重新返回的字符在写在span里面 ，计算新的高度
+                                el.innerHTML = wareNameText;
+                                heightSome = el.clientHeight;
+                            }
+                            //得到正好符合高度的字符，删除最后一个变为省略号 填充在页面里
+                            el.innerHTML = wareNameText.substring(0, wareNameText.length - 1) + '...';
+                        }
+                    },
+                    download: function () {
+                        var $this = this;
+                        var domId = "a-download";
+                        var downloadA = document.getElementById(domId);
+                        if (!downloadA) {
+                            html2canvas(document.querySelector("#capture"), {useCORS: true}).then(canvas => {
+                                var imageData = canvas.toDataURL('image/png', 1);
+                                // 放到一个a标签里面
+                                downloadA = document.createElement('a');
+                                downloadA.id = domId;
+                                downloadA.href = imageData;
+                                downloadA.download = $this.activity.name + ".png";
+                                document.body.appendChild(downloadA);
+                                downloadA.click();
+                            });
+                        } else {
+                            downloadA.click();
+                        }
+                    }
+                }
+            })
+        </script>
+    </div>
+</body>
+</html>

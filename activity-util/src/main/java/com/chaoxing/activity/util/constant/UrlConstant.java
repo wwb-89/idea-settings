@@ -1,0 +1,78 @@
+package com.chaoxing.activity.util.constant;
+
+/**
+ * @author wwb
+ * @version ver 1.0
+ * @className UrlConstant
+ * @description
+ * @blame wwb
+ * @date 2020-12-21 16:48:30
+ */
+public class UrlConstant {
+
+
+    private UrlConstant() {
+
+	}
+
+	/** 登录地址 */
+	public static final String LOGIN_URL = DomainConstant.PASSPORT + "/login?loginType=4&newversion=true&refer=";
+	/** 管理端登录地址 */
+	public static final String MANAGE_LOGIN_URL = DomainConstant.WFW + "/backSchool/toLogin?refer=";
+	/** 发通知logo地址 */
+	public static final String NOTICE_LOGO_URL = DomainConstant.CLOUD_RESOURCE + "/star3/380_160c/b4d171e29d3c60e97c594e4d2b816bbe.png";
+	/** 活动管理地址 */
+	public static final String ACTIVITY_MANAGE_URL = DomainConstant.ADMIN + "/activity/%s";
+	/** 活动评价的地址 */
+	public static final String ACTIVITY_RATING_URL = DomainConstant.WEB + "/activity/%d/rating";
+	/** 门户报名ajax接口地址 */
+	public static final String MH_AJAX_SIGN_UP = DomainConstant.API + "/mh/v3/sign-up";
+	/** 阅读测评的地址 */
+	public static final String READING_TEST_URL = DomainConstant.XUEYA + "/school-base/school-reading/%d/%d/book-list";
+	/** 证书认证地址 */
+	public static final String CERTIFICATE_ANTI_FAKE_URL = DomainConstant.WEB + "/certificate/%s/anti-fake";
+
+	/** 双选会 */
+	/** 双选会主页url */
+	public static final String DUAL_SELECT_INDEX_URL = DomainConstant.DUAL_SELECT + "/pc/double/election?activityId=%s&wfwfid=%s";
+
+	/** 作品征集主页 */
+	public static final String WORK_INDEX_URL = DomainConstant.WORK + "/zj/activity/forward/%s";
+
+	public static String getWorkManageUrl(Integer workId) {
+		return DomainConstant.WORK + "/zj/manage/activity/" + workId + "/new?isHideHeader=false";
+	}
+
+	public static String getPosterUrl(Integer activityId) {
+		return DomainConstant.WEB + "/activity/" + activityId + "/poster";
+	}
+
+	public static String getGroupUrl(String bbsid) {
+		return DomainConstant.API + "/redirect/group/" + bbsid;
+	}
+
+	/**获取双选会主页地址
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-02 16:48:20
+	 * @param activityId
+	 * @param fid
+	 * @return java.lang.String
+	 */
+	public static String getDualSelectIndexUrl(Integer activityId, Integer fid) {
+		return String.format(DUAL_SELECT_INDEX_URL, activityId, fid);
+	}
+
+	/**阅读测评的地址
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-12-28 15:18:08
+	 * @param readingId
+	 * @param readingModuleId
+	 * @return java.lang.String
+	 */
+	public static String getReadingTestUrl(Integer readingId, Integer readingModuleId) {
+		return String.format(UrlConstant.READING_TEST_URL, readingId, readingModuleId);
+	}
+
+}

@@ -1,0 +1,1214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Activity">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+        <result column="start_date" jdbcType="DATE" property="startDate" />
+        <result column="end_date" jdbcType="DATE" property="endDate" />
+        <result column="cover_cloud_id" jdbcType="VARCHAR" property="coverCloudId" />
+        <result column="cover_url" jdbcType="VARCHAR" property="coverUrl" />
+        <result column="organisers" jdbcType="VARCHAR" property="organisers" />
+        <result column="activity_type" jdbcType="VARCHAR" property="activityType" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="detail_address" jdbcType="VARCHAR" property="detailAddress" />
+        <result column="longitude" jdbcType="DECIMAL" property="longitude" />
+        <result column="dimension" jdbcType="DECIMAL" property="dimension" />
+        <result column="activity_classify_id" jdbcType="INTEGER" property="activityClassifyId" />
+        <result column="period" jdbcType="DECIMAL" property="period" />
+        <result column="credit" jdbcType="DECIMAL" property="credit" />
+        <result column="time_length_upper_limit" jdbcType="INTEGER" property="timeLengthUpperLimit" />
+        <result column="sign_id" jdbcType="INTEGER" property="signId" />
+        <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
+        <result column="website_id" jdbcType="INTEGER" property="websiteId" />
+        <result column="page_id" jdbcType="INTEGER" property="pageId" />
+        <result column="preview_url" jdbcType="VARCHAR" property="previewUrl" />
+        <result column="edit_url" jdbcType="VARCHAR" property="editUrl" />
+        <result column="is_timing_release" jdbcType="BIT" property="timingRelease" />
+        <result column="timing_release_time" jdbcType="TIMESTAMP" property="timingReleaseTime" />
+        <result column="is_released" jdbcType="BIT" property="released" />
+        <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
+        <result column="release_uid" jdbcType="INTEGER" property="releaseUid" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="create_user_name" jdbcType="INTEGER" property="createUserName" />
+        <result column="create_fid" jdbcType="INTEGER" property="createFid" />
+        <result column="create_area_code" jdbcType="VARCHAR" property="createAreaCode" />
+        <result column="create_org_name" jdbcType="INTEGER" property="createOrgName" />
+        <result column="tags" jdbcType="INTEGER" property="tags" />
+        <result column="is_open_rating" jdbcType="BIT" property="openRating" />
+        <result column="is_rating_need_audit" jdbcType="BIT" property="ratingNeedAudit" />
+        <result column="integral" jdbcType="DECIMAL" property="integral" />
+        <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
+        <result column="is_open_work" jdbcType="BIT" property="openWork" />
+        <result column="work_id" jdbcType="VARCHAR" property="workId" />
+        <result column="is_open_reading" jdbcType="BIT" property="openReading" />
+        <result column="reading_id" jdbcType="INTEGER" property="readingId" />
+        <result column="reading_module_id" jdbcType="INTEGER" property="readingModuleId" />
+        <result column="origin_type" jdbcType="VARCHAR" property="originType" />
+        <result column="origin" jdbcType="VARCHAR" property="origin" />
+        <result column="origin_form_user_id" jdbcType="INTEGER" property="originFormUserId" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="is_signed_up_notice" jdbcType="BIT" property="signedUpNotice" />
+        <result column="origin_activity_id" jdbcType="BIT" property="originActivityId" />
+        <result column="is_open_group" jdbcType="BIT" property="openGroup" />
+        <result column="group_bbsid" jdbcType="VARCHAR" property="groupBbsid" />
+        <result column="is_archived" jdbcType="BIT" property="archived" />
+        <result column="is_open_clazz_interaction" jdbcType="BIT" property="openClazzInteraction" />
+        <result column="course_id" jdbcType="INTEGER" property="courseId" />
+        <result column="clazz_id" jdbcType="INTEGER" property="clazzId" />
+        <result column="certificate_template_id" jdbcType="INTEGER" property="certificateTemplateId" />
+        <result column="is_open_push_reminder" jdbcType="BIT" property="openPushReminder" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
+        t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
+        t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
+        t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.status, t.create_time, t.update_time, t.is_signed_up_notice, t.origin_activity_id,
+        t.is_open_group, t.group_bbsid, t.is_archived, t.is_open_clazz_interaction, t.course_id, t.clazz_id, t.certificate_template_id, t.is_open_push_reminder
+    </sql>
+    <sql id="Base_Market_Column_List">
+        t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
+        t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
+        t.is_timing_release, t.timing_release_time, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
+        t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.create_time, t.update_time, t.is_open_group, t.group_bbsid, t.is_archived,
+        t.is_open_clazz_interaction, t.course_id, t.clazz_id, t.certificate_template_id, t.is_open_push_reminder
+    </sql>
+
+    <select id="pageParticipate" resultMap="BaseResultMap">
+        SELECT
+            <choose>
+                <when test="params.marketId != null">
+                    <include refid="Base_Market_Column_List"></include>,
+                    t4.is_released,
+                    t4.status,
+                    t4.is_top top
+                </when>
+                <otherwise>
+                    <include refid="Base_Column_List"></include>
+                </otherwise>
+            </choose>
+            ,t3.name activityClassifyName
+        FROM
+            t_activity t
+            <if test="params.marketId == null">
+                INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+                <if test="params.fids != null and params.fids.size() != 0">
+                    AND t1.fid IN
+                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                        #{value}
+                    </foreach>
+                </if>
+            </if>
+            <!--类型-->
+            LEFT JOIN t_classify t3 ON t.activity_classify_id = t3.id
+            <if test="params.marketId != null">
+                INNER JOIN t_activity_market t4 ON t4.activity_id = t.id
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                LEFT JOIN t_activity_scope t5 ON t.id = t5.activity_id
+                LEFT JOIN t_activity_tag t8 ON t.id = t8.activity_id
+                LEFT JOIN t_tag t9 ON t8.tag_id = t9.id
+            </if>
+            <if test="params.tagIds != null and params.tagIds.size() != 0">
+                INNER JOIN t_activity_tag t6 ON t.id = t6.activity_id AND t6.tag_id IN
+                <foreach collection="params.tagIds" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+            </if>
+            <!--关联组件值-->
+            <if test="params.activityComponentValue != null ">
+                INNER JOIN t_activity_component_value t7 ON t.id = t7.activity_id
+                AND t7.component_id = #{params.activityComponentValue.componentId}
+                AND t7.`value` = #{params.activityComponentValue.value}
+            </if>
+        WHERE
+            <!--状态-->
+            <choose>
+                <when test="params.status != null">
+                    t.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="params.statusList != null and params.statusList.size() != 0">
+                            t.`status` IN
+                            <foreach collection="params.statusList" index="key" item="value" open="(" close=")" separator=",">
+                                #{value}
+                            </foreach>
+                        </when>
+                        <otherwise>
+                            <choose>
+                                <when test="params.signUpAble">
+                                    t.`status` IN ( 2, 3 )
+                                </when>
+                                <otherwise>
+                                    t.`status` IN ( 2, 3, 4 )
+                                </otherwise>
+                            </choose>
+                        </otherwise>
+                    </choose>
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="params.marketId != null">
+                    AND t.market_id = #{params.marketId}
+                </when>
+                <otherwise>
+                    <if test="params.flag != null and params.flag != ''">
+                        AND t.activity_flag = #{params.flag}
+                    </if>
+                </otherwise>
+            </choose>
+            <!--时间-->
+            <choose>
+                <when test="(params.minTimeStr != null and params.minTimeStr != '') or (params.maxTimeStr != null and params.maxTimeStr != '')">
+                    <choose>
+                        <when test="params.minTimeStr != null and params.minTimeStr != '' and params.maxTimeStr != null and params.maxTimeStr != ''">
+                            <!--都不为空-->
+                            AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
+                            AND t.end_time >= #{params.minTimeStr}
+                        </when>
+                        <otherwise>
+                            <choose>
+                                <when test="params.minTimeStr != null and params.minTimeStr != ''">
+                                    AND #{params.minTimeStr} BETWEEN t.start_time AND t.end_time
+                                </when>
+                                <otherwise>
+                                    AND #{params.maxTimeStr} > t.end_time
+                                </otherwise>
+                            </choose>
+                        </otherwise>
+                    </choose>
+                </when>
+                <otherwise>
+                    <if test="params.date != null and params.date != ''">
+                        AND #{params.date} BETWEEN t.start_date AND t.end_date
+                    </if>
+                </otherwise>
+            </choose>
+            <!--分类-->
+            <choose>
+                <when test="params.activityClassifyId != null">
+                    AND t3.id = #{params.activityClassifyId}
+                </when>
+                <otherwise>
+                    <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
+                        AND t3.name = #{params.activityClassifyName}
+                    </if>
+                </otherwise>
+            </choose>
+            <if test="params.activityType != null and params.activityType != ''">
+                AND t.activity_type = #{params.activityType}
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                    t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                    OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                    OR t5.name LIKE CONCAT('%', #{params.sw}, '%')
+                    OR t9.name LIKE CONCAT('%', #{params.sw}, '%')
+                )
+            </if>
+            AND t.is_archived = 0
+        GROUP BY
+            t.id
+        ORDER BY
+            <trim suffixOverrides=",">
+                <if test="params.marketId != null">
+                    t4.is_top DESC,
+                </if>
+                FIELD( t.`status`, 2, 3, 4 ),
+                <if test="params.marketId == null and params.topFid != null and (params.areaCode == null or params.areaCode == '')">
+                    t1.fid <![CDATA[<>]]> #{params.topFid},
+                </if>
+                CASE WHEN t.`status` = 2 THEN t.start_time END ASC,
+                CASE WHEN t.`status` = 3 OR t.`status` = 4 THEN t.start_time END DESC
+            </trim>
+    </select>
+
+    <select id="pageFlag" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+            ,t3.name activityClassifyName
+        FROM
+            t_activity t
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            <if test="params.fids != null and params.fids.size() != 0">
+                AND t1.fid IN
+                <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+            </if>
+            <!--类型-->
+            LEFT JOIN t_classify t3 ON t.activity_classify_id = t3.id
+        WHERE
+            <!--状态-->
+            <choose>
+                <when test="params.status != null">
+                    t.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="params.statusList != null and params.statusList.size() != 0">
+                            t.`status` IN
+                            <foreach collection="params.statusList" index="key" item="value" open="(" close=")" separator=",">
+                                #{value}
+                            </foreach>
+                        </when>
+                        <otherwise>
+                            <choose>
+                                <when test="params.signUpAble">
+                                    t.`status` IN ( 2, 3 )
+                                </when>
+                                <otherwise>
+                                    t.`status` IN ( 2, 3, 4 )
+                                </otherwise>
+                            </choose>
+                        </otherwise>
+                    </choose>
+                </otherwise>
+            </choose>
+            <if test="params.flag != null and params.flag != ''">
+                AND t.activity_flag = #{params.flag}
+            </if>
+            <!--时间-->
+            <if test="(params.minTimeStr != null and params.minTimeStr != '') or (params.maxTimeStr != null and params.maxTimeStr != '')">
+                <choose>
+                    <when test="params.minTimeStr != null and params.minTimeStr != '' and params.maxTimeStr != null and params.maxTimeStr != ''">
+                        <!--都不为空-->
+                        AND t.start_time <![CDATA[<=]]> #{params.maxTimeStr}
+                        AND t.end_time >= #{params.minTimeStr}
+                    </when>
+                    <otherwise>
+                        <choose>
+                            <when test="params.minTimeStr != null and params.minTimeStr != ''">
+                                AND #{params.minTimeStr} BETWEEN t.start_time AND t.end_time
+                            </when>
+                            <otherwise>
+                                AND #{params.maxTimeStr} > AND t.end_time
+                            </otherwise>
+                        </choose>
+                    </otherwise>
+                </choose>
+            </if>
+            <!--分类-->
+            <choose>
+                <when test="params.activityClassifyId != null">
+                    AND t3.id = #{params.activityClassifyId}
+                </when>
+                <otherwise>
+                    <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
+                        AND t3.name = #{params.activityClassifyName}
+                    </if>
+                </otherwise>
+            </choose>
+            <if test="params.activityType != null and params.activityType != ''">
+                AND t.activity_type = #{params.activityType}
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                )
+            </if>
+            AND t.is_archived = 0
+        GROUP BY
+            t.id
+        ORDER BY
+            FIELD( t.`status`, 2, 3, 4 ),
+            <if test="params.marketId == null and params.topFid != null and (params.areaCode == null or params.areaCode == '')">
+                t1.fid <![CDATA[<>]]> #{params.topFid},
+            </if>
+            CASE WHEN t.`status` = 2 THEN t.start_time END ASC,
+            CASE WHEN t.`status` = 3 OR t.`status` = 4 THEN t.start_time END DESC
+    </select>
+
+    <!-- 活动分类join过滤条件 -->
+    <sql id="classifyJoinConditionSql">
+        <!--类型-->
+        <choose>
+            <when test="params.activityClassifyId != null">
+                INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
+                AND t3.id = #{params.activityClassifyId}
+            </when>
+            <otherwise>
+                <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
+                    INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
+                    AND t3.name = #{params.activityClassifyName}
+                </if>
+            </otherwise>
+        </choose>
+    </sql>
+
+    <!-- 活动查询where过滤条件 -->
+    <sql id="erdosConditionSql">
+        WHERE
+            t.`status` IN ( 2, 3, 4 )
+            <if test="params.flags != null and params.flags.size() != 0">
+                AND t.activity_flag IN
+                <foreach collection="params.flags" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+            </if>
+            <if test="params.levelType != null and params.levelType != ''">
+                AND t.activity_flag = #{params.levelType}
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                )
+            </if>
+    </sql>
+
+    <!-- 鄂尔多斯班级查询sql -->
+    <sql id="erdosClazzSql">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        INNER JOIN
+            t_activity_class t1 ON t.id = t1.activity_id
+            AND t1.class_id = #{params.userClassId}
+        <include refid="classifyJoinConditionSql"></include>
+        <include refid="erdosConditionSql"></include>
+        GROUP BY t.id
+    </sql>
+
+    <!-- 鄂尔多斯区域查询sql -->
+    <sql id="erdosRegionSql">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+        <if test="params.fids != null and params.fids.size() != 0">
+            AND t1.fid IN
+            <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        </if>
+        <include refid="classifyJoinConditionSql"></include>
+        <include refid="erdosConditionSql"></include>
+        GROUP BY t.id
+    </sql>
+
+    <select id="pageErdosParticipate" resultMap="BaseResultMap">
+        SELECT
+            *
+        FROM
+        (
+             <if test="params.levelType == null || params.levelType == ''">
+                <if test="params.userClassId != null">
+                    <include refid="erdosClazzSql"></include>
+                    UNION
+                </if>
+                 <include refid="erdosRegionSql"></include>
+             </if>
+            <if test="params.levelType == 'class'">
+                <include refid="erdosClazzSql"></include>
+            </if>
+            <if test="params.levelType == 'school' || params.levelType == 'region'">
+                <include refid="erdosRegionSql"></include>
+            </if>
+        ) t
+        WHERE
+            ISNULL(t.origin_activity_id)
+        GROUP BY t.id
+        ORDER BY
+            FIELD( t.`status`, 2, 3, 4 ),
+        <if test="params.topFid != null">
+            t.create_fid <![CDATA[<>]]> #{params.topFid},
+        </if>
+        CASE WHEN t.`status` = 2 THEN t.start_time END ASC,
+        CASE WHEN t.`status` = 3 OR t.`status` = 4 THEN t.start_time END DESC
+        </select>
+
+    <select id="erdosMhDatacenterPage" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t.start_time as startTime, t.end_Time as endTime
+        FROM
+            t_activity t
+        <include refid="classifyJoinConditionSql"></include>
+        WHERE
+            t.is_open_work = 1 AND t.work_id IS NOT NULL
+            AND
+            (
+                (
+                      t.create_fid IN
+                      <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                          #{value}
+                      </foreach>
+                      AND t.is_released = 1
+                 )
+                 OR t.create_fid = #{params.topFid}
+            )
+            <choose>
+                <when test="params.status != null">
+                    AND t.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="params.statusList != null and params.statusList.size() != 0">
+                            AND t.`status` IN
+                            <foreach collection="params.statusList" index="key" item="value" open="(" close=")" separator=",">
+                                #{value}
+                            </foreach>
+                        </when>
+                        <otherwise>
+                            AND t.`status` IN ( 2, 3, 4 )
+                        </otherwise>
+                    </choose>
+
+                </otherwise>
+            </choose>
+            <if test="params.flag != null and params.flag != ''">
+                AND t.activity_flag = #{params.flag}
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            t.create_time DESC
+    </select>
+    <!--查询管理的活动-->
+    <select id="pageManaging" resultMap="BaseResultMap">
+        SELECT
+            <choose>
+                <when test="params.marketId != null">
+                    <include refid="Base_Market_Column_List"></include>,
+                    t.start_time as startTime, t.end_Time as endTime,
+                    t1.is_released,
+                    t1.status,
+                    t1.is_top top
+                </when>
+                <otherwise>
+                    <include refid="Base_Column_List"></include>,
+                    t.start_time as startTime, t.end_Time as endTime
+                </otherwise>
+            </choose>
+            , t2.name activityClassifyName
+        FROM
+            t_activity t
+            <if test="params.marketId != null">
+                INNER JOIN t_activity_market t1 ON t1.activity_id = t.id
+            </if>
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
+            <if test="params.customFilterMap != null">
+                <foreach collection="params.customFilterMap" index="key" item="value" open="" close="" separator="">
+                    <if test="value != null and value != ''">
+                        INNER JOIN t_activity_component_value t${key} ON t${key}.component_id = #{key} AND t${key}.activity_id = t.id AND t${key}.`value` = #{value}
+                    </if>
+                </foreach>
+            </if>
+        WHERE
+        <choose>
+            <when test="params.marketId != null">
+                t1.market_id = #{params.marketId}
+            </when>
+            <otherwise>
+            (
+                (
+                    t.create_fid IN
+                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                        #{value}
+                    </foreach>
+                    AND t.is_released = 1
+                )
+                OR t.create_fid = #{params.topFid}
+            )
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="params.status != null">
+                AND t.`status` = #{params.status}
+            </when>
+            <otherwise>
+                AND t.`status` > 0
+            </otherwise>
+        </choose>
+        <if test="params.activityClassifyId != null">
+            AND t.activity_classify_id = #{params.activityClassifyId}
+        </if>
+        <if test="params.sw != null and params.sw != ''">
+            AND (
+                t.name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
+            )
+        </if>
+        GROUP BY
+            t.id
+        ORDER BY
+        <trim suffixOverrides=",">
+            <if test="params.marketId != null">
+                t1.is_top DESC,
+            </if>
+            <if test="params.orderField != null and params.orderField != ''">
+                ${params.orderField} ${params.orderType},
+            </if>
+            <if test="params.orderField == null or params.orderField == ''">
+                t.create_time DESC,
+            </if>
+            <if test="params.marketId == null">
+                t.create_fid <![CDATA[<>]]> #{params.topFid},
+            </if>
+        </trim>
+    </select>
+
+    <!--查询创建的活动-->
+    <select id="pageCreated" resultMap="BaseResultMap">
+        SELECT
+            <choose>
+                <when test="params.marketId != null">
+                    <include refid="Base_Market_Column_List"></include>,
+                    t.start_time as startTime, t.end_Time as endTime,
+                    t1.is_released,
+                    t1.status,
+                    t1.is_top top
+                </when>
+                <otherwise>
+                    <include refid="Base_Column_List"></include>,
+                    t.start_time as startTime, t.end_Time as endTime
+                </otherwise>
+            </choose>
+            , t2.name activityClassifyName
+        FROM
+            t_activity t
+            <if test="params.marketId != null">
+                INNER JOIN t_activity_market t1 ON t1.activity_id = t.id
+            </if>
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
+        WHERE
+            t.create_uid = #{params.createUid}
+            <choose>
+                <when test="params.marketId != null">
+                    AND t1.market_id = #{params.marketId}
+                </when>
+                <otherwise>
+                    AND t.create_fid = #{params.createWfwfid}
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="params.status != null">
+                    AND t.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    AND t.`status` > 0
+                </otherwise>
+            </choose>
+            <if test="params.activityClassifyId != null">
+                AND t.activity_classify_id = #{params.activityClassifyId}
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
+                )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+        <trim suffixOverrides=",">
+            <if test="params.marketId != null">
+                t1.is_top DESC,
+            </if>
+            <if test="params.orderField != null and params.orderField != ''">
+                ${params.orderField} ${params.orderType},
+            </if>
+            <if test="params.orderField == null or params.orderField == ''">
+                t.create_time DESC,
+            </if>
+        </trim>
+    </select>
+
+    <!--查询机构创建的-->
+    <select id="listOrgParticipatedOrCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            AND t1.fid = #{fid}
+        WHERE
+            <!--状态-->
+            t.`status` IN ( 2, 3, 4 )
+        GROUP BY
+            t.id
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 ),
+            t1.fid <![CDATA[<>]]> #{fid},
+            t.start_time DESC
+    </select>
+
+    <select id="listMarketCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            <!--状态-->
+            t.market_id = #{marketId}
+            AND t.`status` IN ( 2, 3, 4 )
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 ),
+            t.start_time DESC
+    </select>
+
+    <!--查询用户创建的-->
+    <select id="pageUserCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.create_uid = #{uid}
+            <if test="sw != null and sw != ''">
+                AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
+            </if>
+            AND t.`status` IN ( 1, 2, 3, 4 )
+        ORDER BY
+            t.create_time DESC
+    </select>
+
+    <!--查询用户管理的-->
+    <select id="pageUserManaged" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+            INNER JOIN t_activity_manager t1 ON t.id = t1.activity_id
+            AND t1.uid = #{uid}
+        WHERE
+            t.`status` IN ( 1, 2, 3, 4 )
+            <if test="fid != null">
+                AND t.create_fid = #{fid}
+            </if>
+            <if test="flag != null and flag != ''">
+                AND t.activity_flag = #{flag}
+            </if>
+            <if test="sw != null and sw != ''">
+                AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            t.create_time DESC
+    </select>
+
+    <!--  统计用户管理的  -->
+    <select id="countUserManaged" resultType="java.lang.Integer">
+        SELECT count(1) FROM (
+            SELECT
+                t.id
+            FROM
+                t_activity t
+            INNER JOIN
+                t_activity_manager t1 ON t.id = t1.activity_id AND t1.uid = #{uid}
+            WHERE
+                t.`status` IN ( 1, 2, 3, 4 )
+                <if test="fid != null">
+                    AND t.create_fid = #{fid}
+                </if>
+                <if test="flag != null and flag != ''">
+                    AND t.activity_flag = #{flag}
+                </if>
+            GROUP BY
+                t.id
+        ) tmp
+    </select>
+
+
+    <select id="pageActivityCalendarParticipate" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t2.`name` activityClassifyName
+        FROM
+            t_activity t
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            AND t1.fid IN
+            <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
+        WHERE
+            <!--状态-->
+            t.`status` IN ( 2, 3, 4 )
+            <choose>
+                <when test="params.marketId != null">
+                    AND t.market_id = #{params.marketId}
+                </when>
+                <otherwise>
+                    <if test="params.flag != null and params.flag != ''">
+                        AND t.activity_flag = #{params.flag}
+                    </if>
+                </otherwise>
+            </choose>
+            <if test="params.classifyId != null">
+                AND t.activity_classify_id = #{params.classifyId}
+            </if>
+            <if test="params.date != null and params.date != ''">
+                AND #{params.date} BETWEEN t.start_date AND t.end_date
+            </if>
+            <if test="params.startDate != null and params.startDate != ''">
+                AND (
+                    ( #{params.startDate} BETWEEN t.start_date AND t.end_date )
+                    OR (#{params.endDate} BETWEEN t.start_date AND t.end_date )
+                    OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
+                )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 )
+            <if test="params.topFid != null">
+                , t1.fid <![CDATA[<>]]> #{params.topFid}
+            </if>
+            ,t.start_time DESC
+    </select>
+
+    <select id="pageActivityCalendarCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t1.`name` activityClassifyName
+        FROM
+            t_activity t
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
+        WHERE
+            <!--状态-->
+            t.create_fid = #{params.topFid}
+            <choose>
+                <when test="params.marketId != null">
+                    AND t.market_id = #{params.marketId}
+                </when>
+                <otherwise>
+                    <if test="params.flag != null and params.flag != ''">
+                        AND t.activity_flag = #{params.flag}
+                    </if>
+                </otherwise>
+            </choose>
+            <if test="params.classifyId != null">
+                AND t.activity_classify_id = #{params.classifyId}
+            </if>
+            AND t.`status` IN ( 2, 3, 4 )
+            <if test="params.date != null and params.date != ''">
+                AND #{params.date} BETWEEN t.start_date AND t.end_date
+            </if>
+            <if test="params.startDate != null and params.startDate != ''">
+                AND (
+                ( #{params.startDate} BETWEEN t.start_date AND t.end_date )
+                OR (#{params.endDate} BETWEEN t.start_date AND t.end_date )
+                OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
+                )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 )
+            ,t.start_time DESC
+    </select>
+
+    <select id="listOrgParticipatedActivityPageId" resultType="java.lang.Integer">
+        SELECT
+            t.page_id
+        FROM
+            t_activity t
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            AND t1.fid IN
+                <foreach collection="fids" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+        WHERE
+            t.`status` <![CDATA[<>]]> 0
+    </select>
+
+    <select id="listBySignIds" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            AND t.`status` IN (1, 2, 3, 4)
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 1, 4 )
+            ,t.start_time DESC
+    </select>
+
+  <select id="listByMarketSignIds" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        <if test="marketIds != null and marketIds.size() > 0">
+        LEFT JOIN
+            t_activity_market t1 ON t1.activity_id = t.id
+        </if>
+        <if test="activityClassifyId != null">
+        LEFT JOIN
+            t_classify t2 ON t.activity_classify_id = t2.id
+        </if>
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="marketIds != null and marketIds.size() > 0">
+                AND t1.market_id IN
+                <foreach collection="marketIds" index="key" item="marketId" open="(" close=")" separator=",">
+                    #{marketId}
+                </foreach>
+            </if>
+            <if test="activityClassifyId != null">
+                AND t.activity_classify_id = #{activityClassifyId}
+            </if>
+            AND t.`status` IN (1, 2, 3, 4)
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 1, 4 )
+            ,t.start_time DESC
+    </select>
+
+    <select id="mhPageSignedUpActivities" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        <if test="marketIds != null and marketIds.size() > 0">
+        LEFT JOIN
+            t_activity_market t1 ON t1.activity_id = t.id
+        </if>
+        <if test="activityClassifyId != null">
+        LEFT JOIN
+            t_classify t2 ON t.activity_classify_id = t2.id
+        </if>
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="marketIds != null and marketIds.size() > 0">
+                AND t1.market_id IN
+                <foreach collection="marketIds" index="key" item="marketId" open="(" close=")" separator=",">
+                    #{marketId}
+                </foreach>
+            </if>
+            <if test="activityClassifyId != null">
+                AND t.activity_classify_id = #{activityClassifyId}
+            </if>
+            <if test="flag != null and flag != ''">
+                AND t.activity_flag = #{flag}
+            </if>
+            AND t.`status` IN (1, 2, 3, 4)
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 1, 4 )
+            ,t.start_time DESC
+    </select>
+
+    <select id="pageSignedUpActivities" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="flag != null and flag != ''">
+                AND t.activity_flag = #{flag}
+            </if>
+            AND t.`status` IN (1, 2, 3, 4)
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 1, 4 )
+            ,t.start_time DESC
+    </select>
+
+    <!-- 统计signIds下的活动数量 -->
+    <select id="countSignedUpActivity" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            t_activity t
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="flag != null and flag != ''">
+                AND t.activity_flag = #{flag}
+            </if>
+            AND t.`status` IN (1, 2, 3, 4)
+    </select>
+
+    <select id="pageCollectedActivityId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        INNER JOIN t_activity_collection t1 ON t.id = t1.activity_id
+            AND t1.uid = #{params.uid}
+            AND t1.is_deleted = 0
+        WHERE
+            t.`status` IN ( 1, 2, 3, 4 )
+            <if test="params.fid != null">
+                AND t.create_fid = #{params.fid}
+            </if>
+            <if test="params.flag != null and params.flag != ''">
+                AND t.activity_flag = #{params.flag}
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND t.`name` LIKE CONCAT( '%', #{params.sw}, '%' )
+            </if>
+        ORDER BY
+            t1.create_time DESC
+    </select>
+
+    <select id="getBySignId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t1.`name` activityClassifyName
+        FROM
+            t_activity t
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
+        WHERE
+            t.sign_id = #{signId}
+        LIMIT 1
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t1.`name` activityClassifyName
+        FROM
+            t_activity t
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
+        WHERE
+            t.id = #{id}
+    </select>
+
+    <select id="listOrgCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.create_fid = #{fid}
+            <choose>
+                <when test="marketId != null">
+                    AND t.market_id = #{marketId}
+                </when>
+                <otherwise>
+                    <if test="activityFlag != null and activityFlag != ''">
+                        AND t.activity_flag = #{activityFlag}
+                    </if>
+                </otherwise>
+            </choose>
+            AND t.`status` IN ( 2, 3, 4 )
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 ),
+            t.start_time DESC
+    </select>
+
+    <select id="listByActivityDate" resultType="java.lang.Integer">
+        SELECT
+            t.id
+        FROM
+            t_activity t
+        WHERE
+            t.start_date &lt;= #{activityDate}
+            AND t.end_date &gt;= #{activityDate}
+            AND t.`status` > 0
+    </select>
+
+    <select id="listActivityGroupByClassifyId" resultType="com.chaoxing.activity.dto.stat.ActivityClassifyDTO">
+        SELECT
+            t.activity_classify_id AS classifyId,
+            tac.NAME AS typeName,
+            count( 1 ) AS typeNum
+        FROM
+            t_activity t
+            LEFT JOIN t_classify tac ON t.activity_classify_id = tac.id
+        WHERE
+            t.id in
+            <foreach collection="activityIds" item="activityId" open="(" close=")" separator=",">
+                #{activityId}
+            </foreach>
+        GROUP BY
+            t.activity_classify_id
+    </select>
+
+    <select id="listOrgReleasedActivityIds" resultType="java.lang.Integer">
+        SELECT
+            t.id
+        FROM
+            t_activity t
+        <where>
+            t.create_fid = #{fid}
+            <if test="(startDate != null and startDate != '') or (endDate != null and endDate != '')">
+                AND
+                <trim prefix="(" suffix=")" prefixOverrides="OR">
+                    <if test="startDate != null and startDate != ''">
+                        OR ( t.start_date &gt;= #{startDate} AND t.start_date &lt;= #{endDate} )
+                    </if>
+                    <if test="endDate != null and endDate != ''">
+                        OR (t.end_date &gt;= #{startDate} AND t.end_date &lt;= #{endDate})
+                    </if>
+                </trim>
+            </if>
+            AND t.`status` IN ( 1, 2, 3, 4 )
+            AND t.is_released = 1
+        </where>
+    </select>
+
+    <select id="listOrgsReleasedActivityId" resultType="java.lang.Integer">
+        SELECT
+            t.id
+        FROM
+            t_activity t
+        <where>
+            t.create_fid in
+            <foreach collection="fids" item="fid" open="(" close=")" separator=",">
+                #{fid}
+            </foreach>
+            <if test="(startDate != null and startDate != '') or (endDate != null and endDate != '')">
+                AND
+                <trim prefix="(" suffix=")" prefixOverrides="OR">
+                    <if test="startDate != null and startDate != ''">
+                        OR ( t.start_date &gt;= #{startDate} AND t.start_date &lt;= #{endDate} )
+                    </if>
+                    <if test="endDate != null and endDate != ''">
+                        OR (t.end_date &gt;= #{startDate} AND t.end_date &lt;= #{endDate})
+                    </if>
+                </trim>
+            </if>
+            AND t.`status` IN ( 1, 2, 3, 4 )
+            AND t.is_released = 1
+        </where>
+    </select>
+
+    <select id="listErdosCustomOrgCreatedWorkId" resultType="java.lang.Integer">
+        SELECT
+            t.work_id
+        FROM
+            t_activity t
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            AND t1.fid = #{participateFid}
+        WHERE
+            t.create_fid = #{createFid}
+            AND t.`status` IN ( 1, 2, 3, 4 )
+            <if test="activityFlag != null and activityFlag != ''">
+                AND t.activity_flag = #{activityFlag}
+            </if>
+            AND t.work_id IS NOT NULL
+            <if test="activityClassifyId != null">
+                AND t.activity_classify_id = #{activityClassifyId}
+            </if>
+        GROUP BY
+            t.work_id
+        ORDER BY
+            t.id DESC
+    </select>
+
+    <select id="createParticipateActivityPage" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t2.`name` activityClassifyName
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            <!--类型-->
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
+        WHERE
+            t.activity_flag = #{params.flag}
+            AND (
+                t.create_fid = #{params.fid} OR t1.fid in (
+                    <foreach collection="params.fids" item="fid" separator=",">
+                        #{fid}
+                    </foreach>
+                )
+            )
+            <!--状态-->
+            AND t.is_archived = #{params.archived}
+            <choose>
+                <when test="params.status != null">
+                    AND t.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    AND t.`status` IN ( 1, 2, 3, 4 )
+                </otherwise>
+            </choose>
+            <!--搜索关键字-->
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                    t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                    OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                )
+            </if>
+            <!--时间-->
+            <choose>
+                <when test="params.startTime != null and params.startTime != '' and params.endTime != null and params.endTime != ''">
+                    AND ((t.start_time BETWEEN #{params.startTime} AND #{params.endTime}) OR (t.end_time between #{params.startTime} AND #{params.endTime}))
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="params.startTime != null and params.startTime != ''">
+                            AND t.end_time &gt;= #{params.startTime}
+                        </when>
+                        <otherwise>
+                            <if test="params.endTime != null and params.endTime != ''">
+                                AND t.start_time &lt;= #{params.endTime}
+                            </if>
+                        </otherwise>
+                    </choose>
+                </otherwise>
+            </choose>
+        GROUP BY
+            t.id
+        ORDER BY
+            <choose>
+                <when test="params.orderField == null or params.orderField == ''">
+                    FIELD( t.`status`, 3, 2, 1, 4 ),
+                    t.start_time DESC
+                </when>
+                <otherwise>
+                    t.${params.orderField} <choose><when test="params.orderType != null and params.orderType != ''">${params.orderType}</when><otherwise>DESC</otherwise></choose>
+                </otherwise>
+            </choose>
+    </select>
+
+    <select id="listActivityIdsByMarketIdOrFid" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM
+            t_activity t
+        WHERE
+        <choose>
+            <when test="marketId != null">
+                t.market_id = #{marketId}
+            </when>
+            <otherwise>
+                t.create_fid = #{fid}
+            </otherwise>
+        </choose>
+        AND t.status != 0
+    </select>
+
+</mapper>

@@ -1,0 +1,294 @@
+.activity-container {
+    background-color: #F6F7FB;
+    height: 100%;
+}
+
+.activity-container .top-content {
+    position: relative;
+    width: 100%;
+    height: 12.155313rem;
+}
+
+.activity-container .top-content>img {
+    width: 100%;
+    height: 100%;
+}
+
+.activity-container .top-content .icon-collect,
+.activity-container .top-content .icon-detail {
+    display: flex;
+    align-items: center;
+    height: 1.21875rem;
+    font-size: .875rem;
+    line-height: 1.03125rem;
+    color: #fff;
+}
+
+.activity-container .top-content .icon-collect {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+}
+
+.activity-container .top-content .icon-detail {
+    position: absolute;
+    bottom: 1rem;
+    right: 6.375rem;
+}
+
+.activity-container .top-content .icon-collect>img,
+.activity-container .top-content .icon-detail>img {
+    width: .875rem;
+    height: .875rem;
+    margin-right: .34375rem;
+}
+
+/* 中间部分样式 */
+.activity-container .detail-content {
+    width: 100%;
+    background-color: #FFFFFF;
+}
+
+.activity-container .detail-content .detail-container {
+    background-color: #FFFFFF;
+    /* max-height: 4.875rem; */
+    max-height: 5.1875rem;
+    overflow: hidden;
+}
+
+.activity-container .detail-content .detail-title {
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+    width: 100%;
+    padding: .75rem 1rem 0 1rem;
+    font-size: 1.0625rem;
+    line-height: 1.5rem;
+    color: #333333;
+    font-weight: bold;
+}
+
+.activity-container .detail-content .activity-details {
+    padding: .6875rem 1rem 0;
+}
+
+.activity-container .detail-content .activity-details>ul {
+    width: 100%;
+}
+
+.activity-container .detail-content .activity-details .detail-item {
+    width: 100%;
+    display: flex;
+    /* align-items: center; */
+    margin-top: .625rem;
+    font-size: .875rem;
+    line-height: 1.03125rem;
+    color: #666;
+}
+
+.activity-container .detail-content .activity-details .detail-item .item-title {
+    width: 3.875rem;
+    color: #999;
+    margin-right: .5rem;
+}
+
+.activity-container .detail-content .activity-details .detail-item  .people-number {
+    color: #0084ff;
+}
+
+.activity-container .detail-content .activity-details .detail-item .item-position {
+    word-break: break-all;
+    display: inline-block;
+    /* max-width: 100%; */
+    max-width: 68%;
+    overflow: hidden; 
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+}
+
+.activity-container .detail-content .activity-details .detail-item .icon-position {
+    width: .875rem;
+    height: .875rem;
+    margin-right: 1.0625rem;
+    margin-left: .375rem;
+}
+
+.activity-container .detail-content .activity-details .detail-item .activity-content {
+    /* max-width: 100%; */
+    max-width: calc(100% - 4.375rem);
+    overflow: hidden; 
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+}
+
+.activity-container .detail-content .activity-details .detail-more,
+.activity-container .detail-content .activity-details .detail-less {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.15625rem;
+    line-height: 2.15625rem;
+    font-size: .875rem;
+    color: #999;
+}
+
+.activity-container .detail-content .activity-details .detail-more>img,
+.activity-container .detail-content .activity-details .detail-less>img {
+    margin-left: .28125rem;
+    width: .4375rem;
+    height: .25rem;
+}
+
+.activity-container .detail-content .sign-content {
+    width: 100%;
+    padding: .78125rem 1.5rem 1rem;
+    border-top: 1px solid #E9E9E9;
+}
+
+.activity-container .detail-content .sign-content .btn-sign {
+    cursor: pointer;
+    width: calc(100% - 3rem);
+    height: 2.5rem;
+    border-radius: 1.40625rem;
+    background: linear-gradient(90deg, #02C4FF 0%, #43A3FF 100%);
+    font-size: 1rem;
+    line-height:  2.5rem;
+    color: #fff;
+    text-align: center;
+}
+/*  参与者的按钮禁用样式  */
+.activity-container .detail-content .sign-content .btn-disable {
+    width: calc(100% - 3rem);
+    height: 2.5rem;
+    border-radius: 1.40625rem;
+    font-size: 1rem;
+    line-height:  2.5rem;
+    color: #fff;
+    text-align: center;
+    background: linear-gradient(90deg, rgba(2, 196, 255, 0.3) 0%, rgba(67, 163, 255, 0.3) 100%);
+}
+/* 管理员的报名活动按钮 */
+.activity-container .detail-content .sign-content-manage {
+    width: 100%;
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+    padding: .78125rem 1.5rem 1rem;
+    border-top: 1px solid #E9E9E9;
+}
+
+.activity-container .detail-content .sign-content-manage .btn-item {
+    display: inline-block;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    text-align: center;
+    font-size: 1rem;
+    border-radius: 1.40625rem;
+    width:  calc(50% - .75rem);
+}
+
+.activity-container .detail-content .sign-content-manage .btn-manage {
+    cursor: pointer;
+    border: .03125rem solid #0084ff;
+    color: #0084FF;
+}
+
+.activity-container .detail-content .sign-content-manage .btn-sign {
+    cursor: pointer;
+    background: linear-gradient(90deg, #02C4FF 0%, #43A3FF 100%);
+    color: #fff;
+    margin-left: 1rem;
+}
+
+.activity-container .detail-content .sign-content-manage .btn-sign-disable {
+    background: linear-gradient(90deg, rgba(2, 196, 255, 0.3) 0%, rgba(67, 163, 255, 0.3) 100%);
+    color: #fff;
+    margin-left: 1rem;
+}
+/* 只有管理按钮 */
+.activity-container .detail-content .sign-content-manage .btn-manage-one {
+    width: 100%;
+}
+
+.activity-container .icons-content {
+    width: 100%;
+    margin-top: .625rem;
+    background-color: #fff;
+}
+
+.activity-container .icons-content>ul {
+    width: 100%;
+}
+
+.activity-container .icons-content .choose-item {
+    position: relative;
+    float: left;
+    height: 7.4375rem;
+    /* width: 49%; */
+    width: calc(50% - .03125rem);
+}
+
+.activity-container .icons-content .choose-item:first-child,
+.activity-container .icons-content .choose-item:nth-child(2) {
+    border-bottom: .03125rem solid #E9E9E9;
+}
+
+.activity-container .icons-content .choose-item:first-child,
+.activity-container .icons-content .choose-item:nth-child(3) {
+    border-right: .03125rem solid #E9E9E9;
+}
+
+.activity-container .icons-content .choose-item .icon-item {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    text-align: center;
+}
+
+.activity-container .icons-content .choose-item .icon-item>img {
+    width: 2.625rem;
+    height: 2.625rem;
+    margin-bottom: .75rem;
+}
+
+.activity-container .icons-content .choose-item .icon-item .writing {
+    max-width: 8.6875rem;
+    overflow: hidden; 
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    font-size: .9375rem;
+    color: #333;
+}
+
+.activity-container .footer-content {
+    margin-top: .625rem;
+    background-color: #fff;
+    padding: 1rem;
+    color: #333;
+}
+
+.activity-container .footer-content .footer-img {
+    width: 100%;
+    height: 10.125rem;
+}
+
+.activity-container .footer-content .activity-detail {
+    text-indent:2em;
+    font-size: .875rem;
+    line-height: 1.5625rem;
+}
+
+.activity-container .footer-content .activity-item {
+    margin: .625rem 0;
+    font-size: .875rem;
+    line-height: 1.5625rem;
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+<!--    用弹窗，以下css必须都引入-->
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+</head>
+<body>
+    <div id="dialog">
+        <!-- 警告类弹框 -->
+        <el-dialog
+                title="配置条件"
+                :visible.sync="DialogVisible"
+                :center=true
+                width="456px"
+                class="normal-dialog">
+            <el-form ref="form" :model="form" class="set-form">
+                <div class="form-item">
+                    <el-select v-model="form.optionsValue" size="medium" class="width120px" placeholder="请选择">
+                        <el-option
+                                v-for="item in form.options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-select v-model="form.optionsValue1" size="medium" class="width100px" placeholder="请选择">
+                        <el-option
+                                v-for="item in form.options1"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-select v-model="form.optionsValue3" size="medium" class="width120px" placeholder="请选择">
+                        <el-option
+                                v-for="item in form.options3"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <div class="icon-minus-circle delete-icon-style"></div>
+                </div>
+                <div class="form-item">
+                    <el-select v-model="form.optionsValue" size="medium" class="width120px" placeholder="请选择">
+                        <el-option
+                                v-for="item in form.options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-select v-model="form.optionsValue1" size="medium" class="width100px" placeholder="请选择">
+                        <el-option
+                                v-for="item in form.options1"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-input v-model="form.input" size="medium" placeholder="请输入内容"  class="width120px"></el-input>
+                    <div class="icon-minus-circle delete-icon-style"></div>
+                </div>
+                <div class="form-item">
+                    <div class="plus-circle"><i class="icon-plus-circle"></i>添加条件</div>
+                </div>
+            </el-form>
+            <span slot="footer" class="dialog-footer center-footer">
+                <el-button class="btn-second-normal" @click="DialogVisible = false">取消</el-button>
+                <el-button class="btn-main"  @click="DialogVisible = false">完成</el-button>
+            </span>
+        </el-dialog>
+    </div>
+</body>
+</html>
+<script src="../assets/lib/jquery.min.js"></script>
+<script src="../../assets/js/vue.min.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/js/common.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#dialog',
+        data: function () {
+            return {
+                DialogVisible:true,
+                form: {
+                    name: '',
+                    region: '',
+                    date1: '',
+                    date2: '',
+                    delivery: false,
+                    type: [],
+                    resource: '',
+                    desc: '',
+                    optionsValue:'',
+                    options:[{
+                        value: '1',
+                        label: '审核状态1'
+                    }, {
+                        value: '2',
+                        label: '审核状态2'
+                    }, {
+                        value: '3',
+                        label: '审核状态3'
+                    }],
+                    optionsValue1:'',
+                    options1:[{
+                        value: '1',
+                        label: '等于'
+                    }, {
+                        value: '2',
+                        label: '大于'
+                    }, {
+                        value: '3',
+                        label: '大于等于'
+                    }],
+                    optionsValue2:'',
+                    options21:[{
+                        value: '1',
+                        label: '值1'
+                    }, {
+                        value: '2',
+                        label: '值2'
+                    }, {
+                        value: '3',
+                        label: '值3'
+                    }],
+                    input:'',
+                },
+            }
+        },
+        created: function () {
+
+
+        },
+        mounted: function () {
+        },
+        methods: {
+        }
+    });
+</script>

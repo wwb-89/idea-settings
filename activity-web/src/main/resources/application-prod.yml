@@ -1,0 +1,15 @@
+spring:
+  redis:
+    redisson:
+      config:
+        single_server_config:
+          address: redis://10.0.23.238:6379
+          database: 15
+          password: be
+  datasource:
+    druid:
+      url: jdbc:mysql://10.0.17.34/activity_engine?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+      username: master
+      password: master
+server:
+  port: 9102

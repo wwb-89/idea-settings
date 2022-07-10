@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.TemplateComponentMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TemplateComponent">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="pid" jdbcType="INTEGER" property="pid" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
+        <result column="component_id" jdbcType="INTEGER" property="componentId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="introduction" jdbcType="VARCHAR" property="introduction" />
+        <result column="is_required" jdbcType="BIT" property="required" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="is_deleted" jdbcType="INTEGER" property="deleted" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="data_origin" jdbcType="VARCHAR" property="dataOrigin" />
+        <result column="origin_identify" jdbcType="VARCHAR" property="originIdentify" />
+        <result column="field_flag" jdbcType="VARCHAR" property="fieldFlag" />
+        <result column="is_show" jdbcType="BIT" property="show" />
+        <result column="is_disabled" jdbcType="BIT" property="disabled" />
+        <result column="is_open" jdbcType="BIT" property="open" />
+        <result column="is_not_match_show_tips" jdbcType="BIT" property="notMatchShowTips" />
+        <result column="not_match_tips" jdbcType="VARCHAR" property="notMatchTips" />
+        <result column="is_not_match_jump" jdbcType="BIT" property="notMatchJump" />
+        <result column="not_match_jump_url" jdbcType="VARCHAR" property="notMatchJumpUrl" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence, is_deleted, t.type, t.data_origin,
+        t.origin_identify, t.field_flag, t.is_show, t.is_disabled, t.is_open, t.is_not_match_show_tips, t.not_match_tips, t.is_not_match_jump, t.not_match_jump_url
+    </sql>
+
+    <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence`, `type`,
+                                  data_origin, origin_identify, field_flag, is_show, is_disabled, is_open, is_not_match_show_tips, not_match_tips, is_not_match_jump, not_match_jump_url  )
+        VALUES
+        <foreach collection="templateComponents" item="item" open="" close="" separator=",">
+            (
+                #{item.templateId},
+                #{item.pid},
+                #{item.componentId},
+                #{item.name},
+                #{item.introduction},
+                #{item.required},
+                #{item.sequence},
+                #{item.type},
+                #{item.dataOrigin},
+                #{item.originIdentify},
+                #{item.fieldFlag},
+                #{item.show},
+                #{item.disabled},
+                #{item.open},
+                #{item.notMatchShowTips},
+                #{item.notMatchTips},
+                #{item.notMatchJump},
+                #{item.notMatchJumpUrl}
+            )
+        </foreach>
+    </insert>
+    <select id="listTemplateComponentInfo" resultType="com.chaoxing.activity.dto.engine.TemplateComponentDTO">
+        SELECT
+            t.id,
+            t.pid,
+            t.component_id as componentId,
+            t.template_id as templateId,
+            t.name,
+            t.introduction,
+            t.is_required as required,
+            t.type,
+            t.data_origin as dataOrigin,
+            t.origin_identify as originIdentify,
+            t.field_flag as fieldFlag,
+            t.is_show as `show`,
+            t.is_disabled as disabled,
+            t.is_open as `open`,
+            t1.is_switch_btn as switchBtn,
+            t1.code,
+            t.is_not_match_show_tips notMatchShowTips,
+            t.not_match_tips,
+            t.is_not_match_jump notMatchJump,
+            t.not_match_jump_url
+        FROM
+            t_template_component t
+            INNER JOIN t_component t1 ON t.component_id = t1.id
+        where
+            t.template_id = #{templateId}
+            and t.is_deleted = 0
+        ORDER BY
+            t.sequence
+    </select>
+    <select id="countTemplateSignUp" resultType="java.lang.Integer">
+        SELECT
+            count( 1 )
+        FROM
+            t_template_component t
+        LEFT JOIN t_component t1 ON t1.id = t.component_id
+        WHERE
+            t.template_id = #{templateId}
+            AND t.is_deleted = 0
+            AND t1.CODE = 'sign_up';
+    </select>
+
+    <select id="countTemplateComponentByCode" resultType="java.lang.Integer">
+        SELECT
+            count( 1 )
+        FROM
+            t_template_component t
+        LEFT JOIN t_component t1 ON t1.id = t.component_id
+        WHERE
+            t.template_id = #{templateId}
+            AND t.is_deleted = 0
+            AND t1.CODE = #{componentCode};
+    </select>
+
+    <select id="listTemplateComponentByCode" resultType="com.chaoxing.activity.model.TemplateComponent">
+        SELECT
+            t.*
+        FROM
+            t_template_component t
+                LEFT JOIN t_component t1 ON t1.id = t.component_id
+        WHERE
+            t.template_id = #{templateId}
+          AND t.is_deleted = 0
+          AND t1.CODE = #{componentCode};
+    </select>
+
+
+</mapper>

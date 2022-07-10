@@ -1,0 +1,496 @@
+@charset "UTF-8";
+* {
+  margin: 0;
+  padding: 0;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+fieldset,
+img {
+  border: 0 !important;
+}
+
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+  font-style: normal;
+}
+
+li {
+  list-style: none;
+}
+
+caption,
+th {
+  text-align: left;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+}
+
+q:after,
+q:before {
+  content: '';
+}
+
+abbr,
+acronym {
+  border: 0;
+  font-variant: normal;
+}
+
+sup {
+  vertical-align: text-top;
+}
+
+sub {
+  vertical-align: text-bottom;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+button,
+input,
+select {
+  outline: medium none;
+  vertical-align: middle;
+}
+
+input {
+  -webkit-appearance: none;
+}
+
+legend {
+  color: #000;
+}
+
+article,
+aside,
+dialog,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body,
+html {
+  width: 100%;
+  text-align: center;
+  font-family: "SF Pro Display","Helvetica Neue",Helvetica,Tahoma,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+a:hover,
+a:link,
+a:visited {
+  text-decoration: none;
+}
+
+.clear {
+  clear: both;
+}
+
+.tc {
+  text-align: center;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+.mui-ellipsis-5 {
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: normal !important;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
+  word-wrap: break-word;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+
+/*媒体查询*/
+@media screen and (min-width: 212px) {
+  html {
+    font-size: 9.088px;
+  }
+}
+
+@media screen and (min-width: 319px) {
+  html {
+    font-size: 13.6533px;
+  }
+}
+
+@media screen and (min-width: 359px) {
+  html {
+    font-size: 15.36px;
+  }
+}
+
+@media screen and (min-width: 374px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media screen and (min-width: 383px) {
+  html {
+    font-size: 16.384px;
+  }
+}
+
+@media screen and (min-width: 399px) {
+  html {
+    font-size: 17.0667px;
+  }
+}
+
+@media screen and (min-width: 414px) {
+  html {
+    font-size: 17.7067px;
+  }
+}
+
+@media screen and (min-width: 423px) {
+  html {
+    font-size: 18.0907px;
+  }
+}
+
+@media screen and (min-width: 479px) {
+  html {
+    font-size: 20.48px;
+  }
+}
+
+@media screen and (min-width: 539px) {
+  html {
+    font-size: 23.04px;
+  }
+}
+
+@media screen and (min-width: 639px) {
+  html {
+    font-size: 27.3067px;
+  }
+}
+
+.msgDialog.layui-layer-msg {
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+}
+
+.msgDialog.layui-layer-msg .layui-layer-content {
+  line-height: 1.40625rem;
+  padding: .5rem 1rem;
+}
+
+.msgDialog.layui-layer {
+  border-radius: 1.0625rem;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: #CCCCCC;
+  font-weight: 100;
+}
+
+input:-moz-placeholder, textarea:-moz-placeholder {
+  color: #CCCCCC;
+  font-weight: 100;
+}
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  color: #CCCCCC;
+  font-weight: 100;
+}
+
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+  color: #CCCCCC;
+  font-weight: 100;
+}
+
+.overHidden1 {
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.overHidden2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+input {
+  caret-color: #0099FF;
+}
+
+.noMore {
+  text-align: center;
+  margin: 1.125rem 0;
+}
+
+.noMore span {
+  display: inline-block;
+  color: rgba(0, 0, 0, 0.2);
+  font-size: .8125rem;
+  line-height: .9375rem;
+  height: .9375rem;
+}
+
+.noMore span:nth-child(2) {
+  margin: 0 .9375rem;
+}
+
+.noMore .line {
+  position: relative;
+  top: -0.1875rem;
+  display: inline-block;
+  width: 2.5rem;
+  height: .0625rem;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+  margin: 1.125rem 0;
+  line-height: 1.25rem;
+  color: #999999;
+  font-size: 0.8125rem;
+}
+
+.loading .loading-icon {
+  position: relative;
+  top: 0.125rem;
+  margin-right: 0.3125rem;
+  display: inline-block;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  background: url("../images/loading-icon.png") no-repeat;
+  background-size: 100%;
+}
+
+.loading img {
+  margin-right: 0.3125rem;
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
+.border-top {
+  border-top: 1px solid #E9E9E9;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #E9E9E9;
+}
+
+.border {
+  border: 1px solid #E9E9E9;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .border-top {
+    border-top: 0.5px solid #E9E9E9;
+  }
+  .border-bottom {
+    border-bottom: 0.5px solid #E9E9E9;
+  }
+  .border {
+    border: 0.5px solid #E9E9E9;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 3) {
+  .border-top {
+    border-top: 0.333333px solid #E9E9E9;
+  }
+  .border-bottom {
+    border-bottom: 0.333333px solid #E9E9E9;
+  }
+  .border {
+    border: 0.333333px solid #E9E9E9;
+  }
+}
+
+.btn-normal {
+  border: 1px solid #DDDDDD;
+  background: #ffffff;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 1.25rem;
+  height: 1.75rem;
+  color: #666666;
+  font-size: .8125rem;
+  padding: 0 .75rem;
+  box-sizing: border-box;
+}
+
+.btn-second {
+  border: 1px solid #82C3FF;
+  background: #ffffff;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 1.25rem;
+  height: 1.75rem;
+  color: #0084FF;
+  font-weight: 500;
+  font-size: .8125rem;
+  padding: 0 .75rem;
+  box-sizing: border-box;
+}
+
+.textSkin.layui-layer {
+  width: 18.75rem;
+  border-radius: 0.625rem;
+}
+
+.textSkin.layui-layer .layui-layer-btn {
+  padding: 0;
+}
+
+.textSkin.layui-layer .layui-layer-btn a {
+  height: 3.4375rem;
+  line-height: 3.4375rem;
+  margin: 0;
+  padding: 0;
+  width: 50%;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  text-align: center;
+  border-radius: 0;
+  font-size: 1.125rem;
+}
+
+.textSkin.layui-layer .layui-layer-btn a.layui-layer-btn0 {
+  border-color: #e9e9e9;
+  background-color: #ffffff;
+  color: #0084FF;
+  font-weight: 400;
+  border-radius: 0 0 0 0.625rem;
+}
+
+.textSkin.layui-layer .layui-layer-btn a.layui-layer-btn1 {
+  border-color: #e9e9e9;
+  background-color: #ffffff;
+  color: #0084FF;
+  border-left: none;
+  font-weight: 600;
+  border-radius: 0 0 0.625rem 0;
+}
+
+.textSkin .text {
+  font-size: 1.125rem;
+  line-height: 1.5625rem;
+  margin: 0.625rem 0;
+}
+
+.textSkin .input-text {
+  width: 100%;
+  border: 1px solid #dddddd;
+  font-size: 1.0625rem;
+  color: #333333;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 3.125rem;
+  line-height: 1.5625rem;
+  padding: 0.78125rem 0.9375rem;
+  margin-bottom: 0.625rem;
+}
+
+.tipsDialog {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.tipsDialog .inner-content {
+  position: fixed;
+  bottom: .5rem;
+  left: 0;
+  right: 0;
+  padding: 0 .5rem;
+}
+
+.tipsDialog .inner-content ul {
+  background: #FFFFFF;
+  border-radius: .78125rem;
+  margin-bottom: .5rem;
+}
+
+.tipsDialog .inner-content ul li {
+  line-height: 1.5625rem;
+  padding: 1rem 1.5rem;
+  font-size: 1.25rem;
+}
+
+.tipsDialog .inner-content ul li.tips {
+  color: #666666;
+  font-size: .9375rem;
+}
+
+.tipsDialog .inner-content ul li.colorRed {
+  color: #FF666D;
+}
+
+.tipsDialog .inner-content ul li.colorBlue {
+  color: #0084FF;
+}
+
+.tipsDialog .inner-content .cancle {
+  background: #FFFFFF;
+  border-radius: .78125rem;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.5625rem;
+  padding: 1rem;
+  color: #0084FF;
+}
+
+[v-cloak] {
+  display: none;
+}

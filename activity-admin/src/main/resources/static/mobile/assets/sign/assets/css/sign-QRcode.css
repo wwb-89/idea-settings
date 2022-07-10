@@ -1,0 +1,126 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+body {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+        -moz-box-pack: center;
+            -ms-flex-pack: center;
+                justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: #F8F8F8;
+}
+
+.page-container {
+    width: 20.9375rem;
+    height: 24.375rem;
+    padding: 2.25rem 2.65625rem;
+    background: #FFFFFF;
+    border-radius: .625rem;
+    box-sizing: border-box;
+}
+
+.page-container .title {
+    height: 1.21875rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    line-height: 1.03125rem;
+    color: #666666;
+}
+.page-container .image {
+    margin-top: .75rem;
+    width: 15.625rem;
+    height: 15.625rem;
+    box-sizing: border-box;
+    padding: .5625rem;
+}
+
+.page-container .image .code{
+    width: 14.5rem;
+    height: 14.5rem;
+}
+
+.page-container .image .code canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.page-container .footer {
+    position: relative;
+    margin-top: .75rem;
+    height: 1.5625rem;
+}
+
+.page-container .footer .footer-content {
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    transform: translateX(-50%);
+    line-height: 1.5625rem;
+}
+
+.page-container .footer .writing {
+    float: left;
+    font-size: 1rem;
+    color: #666666;
+}
+
+.page-container .footer .number {
+    float: left;
+    margin-left: .625rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: #0084FF;
+}
+/* 二维码过期样式 */
+.page-container .footer-refresh .footer-content {
+    display: flex;
+    align-items: center;
+}
+
+.page-container .footer-refresh .writing {
+    display: flex;
+    align-items: center;
+}
+
+.page-container .footer-refresh .writing>img {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.page-container .footer-refresh  .number {
+    margin-left: .5rem;
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+.qrcode-refresh .qrcode-writing {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+     -ms-transform: translate(-50%,-50%);
+      -o-transform: translate(-50%,-50%);
+         transform: translate(-50%,-50%);
+    font-size: 1.125rem;
+    font-weight: bold;
+    height: 1.5625rem;
+    line-height: 1.5625rem;
+    color: #333333;
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.WebTemplateAppDataMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.WebTemplateAppData">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="web_template_app_id" jdbcType="INTEGER" property="webTemplateAppId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.web_template_app_id, t.name, t.type, t.sequence
+    </sql>
+</mapper>

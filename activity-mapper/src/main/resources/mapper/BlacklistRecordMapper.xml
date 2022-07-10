@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.BlacklistRecordMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.BlacklistRecord">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="account" jdbcType="VARCHAR" property="account" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="not_signed_in_num" jdbcType="INTEGER" property="notSignedInNum" />
+        <result column="is_handled" jdbcType="BIT" property="handled" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.market_id, t.uid, t.user_name, t.account, t.activity_id, t.not_signed_in_num, t.is_handled, t.create_time,
+        t.update_time
+    </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_blacklist_record ( market_id, uid, user_name, account, activity_id, not_signed_in_num )
+        VALUES
+            <foreach collection="blacklistRecords" index="key" item="value" open="" close="" separator=",">
+                ( #{value.marketId}, #{value.uid}, #{value.userName}, #{value.account}, #{value.activityId}, #{value.notSignedInNum} )
+            </foreach>
+    </insert>
+
+</mapper>

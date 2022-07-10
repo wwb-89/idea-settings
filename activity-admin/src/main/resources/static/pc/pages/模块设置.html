@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>模块设置</title>
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/set.css">
+</head>
+<body>
+<div id="vue">
+    <el-form class="basic-set"  ref="form">
+        <div class="form-item">
+            <label class="label">导航模块</label>
+            <div class="input-box">
+                <div class="check-list">
+                    <el-checkbox-group
+                            v-model="checkedTypes" class="fl">
+                        <el-checkbox v-for="item in checkList" :label="item" :key="item">{{item}}</el-checkbox>
+                    </el-checkbox-group>
+                </div>
+
+            </div>
+
+        </div>
+
+    </el-form>
+
+</div>
+</div>
+</body>
+<script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/jquery.nicescroll.min.js"></script>
+<script src="../assets/lib/jqthumb.js"></script>
+<script src="../assets/js/create-active.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
+<script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.js"></script>
+<script src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                checkedTypes:[],
+                checkList: ['概况', '报名', '签到', '考核', '奖项', '评价', '统计'],
+            }
+        },
+        created: function () {
+
+
+        },
+        mounted: function () {
+            cropImgFun("body");
+        },
+        methods: {
+        }
+    });
+</script>
+
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title th:text="${activity.name}">活动</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.mobile.css" th:href="@{/mobile/assets/lib/layui/css/layui.mobile.css}">
+    <link rel="stylesheet" href="/static/mobile/assets/css/cssreset.css" th:href="@{/mobile/assets/css/cssreset.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/administrators.css" th:href="@{/mobile/assets/css/administrators.css}" />
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="administrators" id="activity-vue" v-cloak>
+    <div class="index-list">
+        <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList" v-show="menuShow('sign_up')">
+            <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
+            <p class="flTxt">{{(signActivityManageIndex.signUpKeyword || '报名') + (signActivityManageIndex.signUpIds.length > 1 ? '项目' : '名单')}}</p>
+            <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已{{signActivityManageIndex.signUpKeyword || '报名'}} {{signedUpNum}}</p>
+            <i :class="{'icon-arrow-r': true, 'marginAuto': (signActivityManageIndex.signUpIds.length > 1)}"></i>
+        </div>
+        <div class="item" @click="signInManage" v-show="menuShow('sign_in')">
+            <img src="/static/mobile/assets/images/admin/sign-in.png" th:src="@{/mobile/assets/images/admin/sign-in.png}">
+            <p class="flTxt">签到管理</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
+        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage" v-show="menuShow('results_manage')">
+            <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
+            <p class="flTxt">考核管理</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
+        <div class="item" th:if="${isCreator}" @click="stat" v-show="menuShow('stat')">
+            <img src="/static/mobile/assets/images/admin/statistics.png" th:src="@{/mobile/assets/images/admin/statistics.png}">
+            <p class="flTxt">统计</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
+        <div class="item" v-if="signActivityManageIndex.signUpExist && menuShow('notice')" @click="sendNotice">
+            <img src="/static/mobile/assets/images/admin/notice.png" th:src="@{/mobile/assets/images/admin/notice.png}">
+            <p class="flTxt">发通知</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
+    </div>
+</div>
+<div th:replace="mobile/include/common_js :: common_js(~{::script})">
+    <script src="/static/mobile/assets/lib/layui/layui.all.js" th:src="@{/mobile/assets/lib/layui/layui.all.js}"></script>
+    <script th:inline="javascript">
+        Vue.filter("activityStatusDescribe", function (status) {
+            if (activityApp.isEmpty(status)) {
+                return "";
+            }
+            switch (status) {
+                case 0:
+                    return "已删除";
+                case 3:
+                    return "进行中";
+                case 4:
+                    return "已结束";
+                default:
+                    return "未开始";
+            }
+        });
+        function ready() {
+            vm = new Vue({
+                el: "#activity-vue",
+                data: {
+                    mainDomain: [[${mainDomain}]],
+                    signWebDomain: [[${signWebDomain}]],
+                    activity: [[${activity}]],
+                    userActivityMenus: [[${userActivityMenus}]],
+                    activityMenus: [],
+                    signActivityManageIndex: [[${signActivityManageIndex}]],
+                    loaded: true,
+                    signedUpNum: 0
+                },
+                created: function () {
+                    var $this = this;
+                    var userActivityMenus = $this.userActivityMenus || [];
+                    $(userActivityMenus).each(function () {
+                        if (this.dataOrigin == 'system' && !$this.activityMenus.includes(this.code)) {
+                            $this.activityMenus.push(this.code);
+                        }
+                    });
+                    $this.countSignedUpNum();
+                    app.bindRefresh(function () {
+                        // 刷新报名人数
+                        $this.countSignedUpNum();
+                    });
+                },
+                methods: {
+                    menuShow: function (menu) {
+                        return this.activityMenus.indexOf(menu) != -1;
+                    },
+                    // 报名名单
+                    signUpList: function () {
+                        var $this = this;
+                        var url = $this.signWebDomain + "/m/manage/sign-up/" + $this.signActivityManageIndex.signUpIds[0] + "/user-list";
+                        if ($this.signActivityManageIndex.signUpIds.length > 1) {
+                            url = $this.signWebDomain + "/m/manage/sign/" + $this.signActivityManageIndex.signId + "/sign-up-list";
+                        }
+                        app.openUrl(url);
+                    },
+                    // 签到管理
+                    signInManage: function () {
+                        var $this = this;
+                        var url = $this.signWebDomain + "/m/manage/sign/" + $this.signActivityManageIndex.signId + "/sign-in-list";
+                        app.openUrl(url);
+                    },
+                    // 考核管理
+                    resultsManage: function () {
+                        var url = ctx + "/activity/" + [[${activity.id}]] + "/results/manage"
+                        app.openUrl(url);
+                    },
+                    // 统计
+                    stat: function () {
+                        var $this = this;
+                        var url = ctx + "/activity/" + $this.activity.id + "/stat"
+                        app.openUrl(url);
+                    },
+                    // 发通知
+                    sendNotice: function () {
+                        var $this = this;
+                        if (!$this.loaded) {
+                            return;
+                        }
+                        var url = $this.signWebDomain + "/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
+                        app.openUrl(url);
+                    },
+                    countSignedUpNum: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/" + $this.activity.id + "/num/signed-up";
+                        app.ajaxPost(url, {}, function (data) {
+                            if (data.success) {
+                                $this.signedUpNum = data.data;
+                            }
+                        }, function () {
+
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+</body>
+
+</html>

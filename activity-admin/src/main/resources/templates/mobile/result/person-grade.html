@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>个人成绩</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/icomoon/style.css" th:href="@{/mobile/assets/sign/assets/icomoon/style.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/cssreset.css" th:href="@{/mobile/assets/sign/assets/css/cssreset.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/public.css" th:href="@{/mobile/assets/sign/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/person-list.css" th:href="@{/mobile/assets/sign/assets/css/person-list.css}" />
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+        .layui-inline {
+            padding: 0px !important;
+        }
+        ul .layui-rate {
+            padding: 0px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 有底部按钮才添加 padding-bottom-->
+    <div class="single-score padding-bottom" id="m-person-grade" v-cloak>
+        <div class="modular">
+            <p class="title">活动得分</p>
+            <h2 class="integral">{{userGrade.totalScore || 0}}</h2>
+        </div>
+        <div class="modular min-height">
+            <p class="title">全部记录</p>
+            <div class="timeline">
+                <ul>
+                    <li v-for="(action, index) in userGrade.userActionRecords">
+                        <img class="left-icon" :src="ctx + '/mobile/assets/images/' + getActionIcon(action)">
+                        <div class="left-line"></div>
+                        <div class="info">
+                            <p class="time">{{ action.createTime | timestampFormat }}</p>
+                            <div class="name">
+                                <p v-if="action.actionType !== 'rating'">{{action.name}}</p>
+                                <span :class="{'color-red': ('leave_signed_in' == action.action)}">{{action.actionDescription}}</span>
+                            </div>
+                            <template v-if="action.actionType === 'rating' && action.ratingDetail">
+                                <div class="star-box" data-name="star-box" :data-index="index"></div>
+                                <p class="dec">{{action.ratingDetail.comment}}</p>
+                                <span class="slide" @click="showDetailComment"></span>
+                            </template>
+                            <template v-else-if="action.actionType === 'performance'">
+                                <div class="dec" v-if="action.remark" v-html="action.remark"></div>
+                            </template>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- 无内容 -->
+            <div class="no-content" v-show="userGrade && userGrade.userActionRecords && userGrade.userActionRecords.length === 0">
+                暂无内容
+            </div>
+        </div>
+        <!--  加载中  -->
+        <div class="loading" v-show="!userGrade || !userGrade.userActionRecords"><img src="/static/mobile/assets/images/loading-icon.png" th:src="@{/mobile/assets/images/loading-icon.png}">加载中…</div>
+<!--        <div class="bottom-operation">-->
+<!--            <button class="btn-secondary">添加活动表现</button>-->
+<!--        </div>-->
+<!--        删除弹窗-->
+        <div class="model z-index-high" v-show="deleteStatus"></div>
+        <div class="my-dialog" v-show="deleteStatus">
+            <div class="list">
+                <h2 class="border-bottom">确定删除吗？</h2>
+                <ul class="delete">
+                    <li>删除</li>
+                </ul>
+            </div>
+            <div class="cancle" @click="deleteStatus=false">取消</div>
+        </div>
+    </div>
+
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script src="/static/mobile/assets/lib/layui/layui.js" th:src="@{/mobile/assets/lib/layui/layui.js}"></script>
+        <script th:inline="javascript">
+            Vue.filter("timestampFormat", function (timestamp) {
+                if (activityApp.isEmpty(timestamp)) {
+                    return "";
+                }
+                var dateObj = moment(timestamp);
+                return dateObj.format("YYYY-MM-DD HH:mm");
+            });
+            var personGrade = new Vue({
+                el: '#m-person-grade',
+                data: function () {
+                    return {
+                        ctx: ctx,
+                        uid: [[${uid}]],
+                        activityId: [[${activityId}]],
+                        userGrade: {},
+                        deleteStatus:false,
+                    }
+                },
+                mounted: function () {
+                    var $this = this;
+                    $this.loadData();
+                    // $this.decInit();
+                },
+                methods: {
+                    loadData: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/results/manage/person-grade";
+                        var param = {
+                            uid: $this.uid,
+                            activityId: $this.activityId
+                        }
+                        app.ajaxPost(url, param, function (res) {
+                            if (res.success) {
+                                $this.userGrade = res.data;
+                                $this.$nextTick(function () {
+                                    this.rateList();
+                                })
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载数据失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("加载数据失败");
+                        });
+                    },
+                    getActionIcon: function (action) {
+                        var actionType = action.actionType;
+                        switch (actionType) {
+                            case 'sign_up':
+                                return 'sign-up.png';
+                            case 'sign_in':
+                                if (action.way === 2) {
+                                    return 'sign-in.png';
+                                } else if (action.way === 3) {
+                                    return 'sign-in-code.png';
+                                } else {
+                                    return 'sign-in-normal.png';
+                                }
+                            case 'rating':
+                                return 'evaluation.png';
+                            case 'work':
+                                return 'works.png';
+                            case 'performance':
+                                return 'recommend.png';
+                            case 'discuss':
+                                return 'discuss.png'
+                            default:
+                                return 'evaluation.png'
+                        }
+                    },
+                    //    超出高度计算
+                    decInit:function (){
+                        let winWidth = ($(document).width() / 750) * 32;
+                        let dec_vh = winWidth*4*1.40625;
+                        $(".dec").each(function (){
+                            let thisHight = $(this).height();
+                            if(thisHight > dec_vh){
+                                $(this).siblings(".slide").show();
+                                $(this).addClass("overHidden4")
+                            }
+                        })
+                    },
+                    // 遍历每个li中星星
+                    rateList: function () {
+                        var $this = this;
+                        var rates = $("div[data-name='star-box']");
+                        rates.each(function (i, n) {
+                            var dataIndex = $(n).attr('data-index');
+                            if (!dataIndex) {
+                                return;
+                            }
+                            var ratingItem = $this.userGrade.userActionRecords[parseInt(dataIndex)].ratingDetail;
+                            var score = ratingItem.score;
+
+                            $(n).addClass("testX");
+                            layui.use(['rate'], function () {
+                                var rate = layui.rate;
+                                rate.render({
+                                    elem: $(n),
+                                    value: score,
+                                    readonly: true,
+                                })
+                            })
+                        })
+                        var slide = $(".slide")
+                        let winWidth = ($(document).width() / 750) * 32;
+                        let dec_vh = winWidth * 4 * 1.40625;
+                        slide.each(function (i, n) {
+                            if ($(n).prev().height() >= dec_vh && !$(n).text()) {
+                                $(n).prev().addClass("overHidden4")
+                                $(n).html("展开")
+                            }
+                        });
+                    },
+                    showDetailComment: function (e) {
+                        var rateDom = e.target
+                        if ($(rateDom).prev($('.info .desc')).hasClass('overHidden4')) {
+                            $(rateDom).html('收起')
+                            $(rateDom).prev($('.info .desc')).removeClass('overHidden4')
+                        } else {
+                            $(rateDom).html('展开')
+                            $(rateDom).prev($('.info .desc')).addClass('overHidden4')
+                        }
+                    },
+                    //    展开更多
+                    showMore:function (obj){
+                        $(obj.target).hide().siblings(".dec").removeClass("overHidden4");
+                    },
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
+
+

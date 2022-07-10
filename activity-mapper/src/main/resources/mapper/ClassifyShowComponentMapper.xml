@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ClassifyShowComponentMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ClassifyShowComponent">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
+        <result column="classify_id" jdbcType="INTEGER" property="classifyId" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.market_id, t.template_id, t.classify_id, t.template_component_id, t.create_time, 
+        t.update_time
+    </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_classify_show_component ( market_id, template_id, classify_id, template_component_id )
+        VALUES
+            <foreach collection="classifyShowComponents" index="key" item="value" open="" close="" separator=",">
+                ( #{value.marketId}, #{value.templateId}, #{value.classifyId}, #{value.templateComponentId} )
+            </foreach>
+    </insert>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.MarketMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Market">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="icon_cloud_id" jdbcType="VARCHAR" property="iconCloudId" />
+        <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
+        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="is_enable_contacts" jdbcType="BIT" property="enableContacts" />
+        <result column="is_enable_organization" jdbcType="BIT" property="enableOrganization" />
+        <result column="is_enable_regional" jdbcType="BIT" property="enableRegional" />
+        <result column="origin_type" jdbcType="VARCHAR" property="originType" />
+        <result column="origin" jdbcType="VARCHAR" property="origin" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.name, t.icon_cloud_id, t.icon_url, t.fid, t.is_enable_contacts, t.is_enable_organization, t.is_enable_regional,
+        t.origin_type, t.origin, t.sequence, t.is_deleted, t.create_time, t.create_uid, t.update_time, t.update_uid
+    </sql>
+
+    <select id="getMaxSequence" resultType="java.lang.Integer">
+        SELECT
+            CASE WHEN ISNULL( MAX( t.sequence ) ) THEN 1 ELSE MAX( t.sequence ) + 1 END
+        FROM
+            t_market t
+        WHERE
+            t.fid = #{fid}
+    </select>
+
+    <select id="listOrgAssociatedActivityMarketId" resultType="java.lang.Integer">
+        SELECT
+            t.id
+        FROM
+            t_market t
+            INNER JOIN t_activity_market t1 ON t.id = t1.market_id
+            AND t1.activity_id = #{activityId}
+        WHERE
+            t.fid = #{fid}
+            AND t.is_deleted = 0
+    </select>
+
+    <select id="listOrgSpecifiedFlag" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_market t
+            INNER JOIN t_template t1 ON t.id = t1.market_id
+            AND t1.activity_flag = #{flag}
+        WHERE
+            t.fid = #{fid}
+    </select>
+
+</mapper>

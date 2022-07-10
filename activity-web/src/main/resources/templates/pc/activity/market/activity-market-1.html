@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<title th:text="${market == null ? '活动市场' : market.name}">活动市场</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/activity-market.css" th:href="@{/pc/assets/css/activity-market.css}">
+	<style>
+        [v-cloak] {
+            display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="activity-market1" id="activity-vue" v-cloak>
+	<div class="header-con">
+		<div class="header-inner-content">
+			<div class="searchDiv fl">
+				<input type="text" id="search-input" placeholder="请输入关键词" v-model.trim="sw" class="inputValue" @keyup.enter="search">
+				<i class="icon-delete1" v-show="sw" @click="clearSearch"></i>
+				<i class="icon-search1" @click="search"></i>
+			</div>
+			<div class="user fr" th:if="${session._login_user_ != null}" v-if="showFilter('my')">
+				<i class="icon-user"></i>
+				<a href="javascript:" @click="my">我的活动</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="inner-content">
+		<div class="filter">
+			<div class="item" v-if="showFilter('activityType') && activityTypes.length > 0">
+				<label>类型</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of activityTypes" v-if="item.value != 'other' || showOtherActivityType" @click="changeActivityTypesSelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item" v-if="showFilter('activityClassify') && classifies.length > 1">
+				<label>分类</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of classifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item" v-if="showFilter('time')">
+				<label>时间</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected, 'date-li': (item.value == 'specified')}" v-for="(item, index) of activityQueryDates" @click="changeActivityTimeSelected(index)">
+							{{item.value == 'specified' ? queryParams.date ? queryParams.date : "选择日期" : item.name}}
+							<template v-if="item.value == 'specified'">
+								<el-date-picker
+										class="select-time"
+										v-model="queryParams.date"
+										size="mini"
+										prefix-icon="false"
+										type="date"
+										placeholder="选择日期"
+										format="yyyy-MM-dd"
+										value-format="yyyy-MM-dd"
+										@change="selectChange">
+								</el-date-picker>
+							</template>
+						</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item" v-if="showFilter('region') && regions.length > 0">
+				<label>地区</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of regions" @click="changeActivityRegionsSelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="switch-box">
+			<p class="list-total fl">共 {{total}} 个</p>
+			<div class="fr" v-show="loginUser && showFilter('my')">
+				<el-checkbox :label="'只看我能' + signUpKeyword" name="type" v-model="signUpAble" @change="changeSignUpAbleCheckedStatus"></el-checkbox>
+			</div>
+		</div>
+		<div class="card-list">
+			<ul>
+				<li v-for="(item, index) of activities" :key="'item-' + index" style="cursor: pointer;" @click="detail(index)">
+					<div class="inner">
+						<div class="img-box">
+							<div class="tips-box">
+								<!--报名状态-->
+								<p style="margin-right: .25rem" :class="{'tips': true, 'color5': (item.status == 2), 'color1': (item.status == 3), 'color3': (item.status == 4)}">{{item.status | activityStatusInstructions}}</p>
+								<p v-if="item.hasSignUp && signUpAble && item.signUpStatus == 2 && item.status == 2" class="tips sign color6">{{signUpKeyword}}中</p>
+							</div>
+							<p class="num" v-if="item.openSignUp"><i class="icon-user"></i>{{item.signedUpNum + (!item.personLimit ? '' : ('/' + item.personLimit))}}</p>
+							<div class="js-crop-img">
+								<img :src="item | getCloudImgUrl(cloudDomain)">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden1" @click="detail(index)"><span class="info-top" v-show="item.top">置顶</span>{{item.name}}</h2>
+							<p class="time" v-if="flag == 'preach_online'">{{item.startTime | timestampScopeFormatForPreachOnline(item.endTime)}}</p>
+							<p class="time" v-else>{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
+							<div class="type-box">
+								<span class="type-item" v-for="(tagName, index) of item.tagNames" :key="'tag-name-' + index">{{tagName}}</span>
+							</div>
+							<p class="address">{{item.organisers}}</p>
+							<p class="address" v-show="item.address">{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<!-- 无数据 -->
+		<div class="noContent" v-show="total < 1 && loaded">
+			<p>无结果</p>
+		</div>
+		<el-pagination style="text-align: center;" v-if="!signUpAble" v-show="pages > 1 && loaded" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+	<script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
+	<script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+	<script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
+	<script src="/static/pc/assets/lib/iframeResizer.contentWindow.min.js" th:src="@{/pc/assets/lib/iframeResizer.contentWindow.min.js}"></script>
+	<script th:inline="javascript">
+		vm = new Vue({
+			el: '#activity-vue',
+			data: {
+                mainDomain: [[${mainDomain}]],
+                cloudDomain: [[${cloudDomain}]],
+				loginUser: [[${session._login_user_}]],
+				fids: [[${fids}]],
+				flag: [[${flag}]],
+				signUpKeyword: [[${signUpKeyword}]],
+				classifyNames: [[${classifyNames}]],
+                activityQueryDates: [[${activityQueryDates}]],
+				classifies: [],
+				activityTypes: [],
+				regions: [[${regions}]],
+				areaCode: [[${areaCode}]],
+				statuses: [],
+				pages: 0,
+				sw: [[${sw == null ? "" : sw}]],
+				//筛选查询参数对象
+				queryParams: {},
+				activities: [],
+				loaded: false,
+				searchShow: false,
+				total: 0,
+				hideFilter: [[${hideFilter}]],
+				topFid: [[${topFid}]],
+                // 是否查询能报名的活动
+                signUpAble: [[${signUpAble}]],
+				showOtherActivityType: activityApp.showOtherActivityType([[${marketId}]])
+			},
+			created: function () {
+				var $this = this;
+                // 解决跨域
+                document.domain = $this.mainDomain;
+				$this.classifies.push({name: "全部",value: "", selected: true});
+				$($this.classifyNames).each(function () {
+					$this.classifies.push({name: this,value: this,selected: false});
+				});
+				$($this.activityQueryDates).each(function (i) {
+					$this.$set($this.activityQueryDates[i], "selected", i == 0);
+				});
+				//地区
+				var regions = [];
+				if($this.regions.length >0){
+					$($this.regions).each(function () {
+						var region = this;
+						region.value = this.code;
+						region.selected = false;
+						regions.push(region);
+					});
+					regions.splice(0, 0, {
+						name: "全部",
+						value: "",
+						selected: true
+					});
+					$this.regions = regions;
+				}
+				//状态
+				$this.statuses = [
+					{name: "全部", value: "", selected: true},
+					{name: "即将开始", value: "2", selected: false},
+					{name: "进行中", value: "3", selected: false},
+					{name: "已结束", value: "4", selected: false}
+				];
+				$this.resetQueryParams();
+			},
+			mounted:function() {
+				var $this = this;
+				$this.resetQueryParams();
+				// 如果topFid符合regions的manageFid那么选中
+				if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {
+					var exist = false;
+					var index = 0;
+                    $($this.regions).each(function (i) {
+                        if (this.manageFid == $this.topFid && $this.topFid != 2120) {
+                            exist = true;
+                            index = i;
+                            return false;
+                        }
+                    });
+					if (exist) {
+						$this.changeActivityRegionsSelected(index);
+						return;
+					}
+				}
+				// 活动类型
+				$this.activityTypes = [
+					{name: '全部', value: '', selected: true},
+					{name: '线上', value: 'online', selected: false},
+					{name: '线下', value: 'offline', selected: false},
+					{name: '线上+线下', value: 'other', selected: false}
+				];
+				$this.loadData();
+			},
+			methods: {
+				changeSignUpAbleCheckedStatus: function (value) {
+					var $this = this;
+					$this.queryParams.signUpAble = value;
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				//改变选中状态
+				changeActivityClassifySelected: function(index){
+					var $this = this;
+					$($this.classifies).each(function (i) {
+						$this.$set($this.classifies[i], "selected", i == index);
+					});
+					$this.queryParams.activityClassifyName = $this.classifies[index].value;
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				changeActivityTimeSelected: function(index){
+					var $this = this;
+					$($this.activityQueryDates).each(function (i) {
+						$this.$set($this.activityQueryDates[i], "selected", i == index);
+					});
+                    var value = $this.activityQueryDates[index].value;
+                    if (value != 'specified') {
+                        $this.queryParams.dateScope = value;
+                        $this.$set($this.queryParams, "date", "");
+                        $this.queryParams.pageNum = 1;
+                        $this.loadData();
+                    }
+				},
+				changeActivityRegionsSelected: function(index){
+					var $this = this;
+					$($this.regions).each(function (i) {
+						$this.$set($this.regions[i], "selected", i == index);
+					});
+					$this.queryParams.areaCode = $this.regions[index].value;
+					if (activityApp.isEmpty($this.queryParams.areaCode)) {
+						$this.queryParams.areaCode = $this.areaCode;
+					}
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				changeActivityTypesSelected: function(index){
+					var $this = this;
+					$($this.activityTypes).each(function (i) {
+						$this.$set($this.activityTypes[i], "selected", i == index);
+					});
+					$this.queryParams.activityType = $this.activityTypes[index].value;
+					$this.activities = [];
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				changeActivityStatusSelected: function(index){
+					var $this = this;
+					$($this.statuses).each(function (i) {
+						$this.$set($this.statuses[i], "selected", i == index);
+					});
+					$this.queryParams.status = $this.statuses[index].value;
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				showFilter: function (type) {
+					var $this = this;
+					return activityApp.isEmpty($this.hideFilter) || $this.hideFilter.indexOf(type) == -1;
+				},
+				//重置查询条件
+				resetQueryParams: function (){
+					var $this = this;
+					$this.queryParams = {
+						pageNum: 1,
+						pageSize: 6,
+						style: 1,
+						sw: [[${sw == null ? "" : sw}]],
+						activityClassifyName: "",
+						date: "",
+						status: "",
+						areaCode: $this.areaCode,
+						topFid: [[${topFid}]],
+						marketId: [[${marketId}]],
+						activityType: "",
+						scope: [[${scope}]],
+						flag: [[${flag}]],
+                        // 是否只查询能报名的，如果是则不分页
+                        signUpAble: [[${signUpAble}]]
+					};
+				},
+				//数据加载渲染
+				loadData: function () {
+					var $this = this;
+					var url = ctx + "/api/activity/list/participate";
+					var params = $this.queryParams;
+					$this.loaded = false;
+					$this.searchShow = false;
+					$this.activities = [];
+					app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
+						$this.loaded = true;
+						if (data.success) {
+							$this.loaded = true;
+							$this.activities = data.data.records;
+							$this.$nextTick(function () {
+								cropImgFun("body");
+							});
+							$this.pages = data.data.pages;
+							$this.total = data.data.total;
+						} else {
+							var errorMessage = data.message;
+							if (activityApp.isEmpty(errorMessage)) {
+								errorMessage = "加载活动列表失败";
+							}
+							app.showMsg(errorMessage);
+						}
+					}, function () {
+						$this.loaded = true;
+						app.showMsg("加载活动列表失败");
+					});
+				},
+				clearSearch: function () {
+					var $this = this;
+					$this.sw = "";
+					if ($this.sw != $this.queryParams.sw) {
+						$this.search();
+					}
+				},
+				search: function () {
+					var $this = this;
+					$this.queryParams.sw = $this.sw;
+					$("#search-input").blur();
+					$this.queryParams.pageNum = 1;
+					$this.activities = [];
+					$this.loadData();
+				},
+				currenClick:function (currentPage) {
+					var $this = this;
+					$this.queryParams.pageNum = currentPage;
+					$this.loadData();
+				},
+				detail: function (index) {
+					var $this = this;
+					var activity = $this.activities[index];
+					var previewUrl = activity.previewUrl;
+					if (!activityApp.isEmpty(previewUrl)) {
+						// 回收积分
+						activityApp.integralPush(activity.id, activity.name);
+						window.open(previewUrl);
+					}
+				},
+				// 我的活动
+				my: function () {
+					var url = ctx + "/my";
+					window.open(url);
+				},
+                selectChange: function (){
+                    var $this = this;
+                    $('.option-list .date-li').siblings().removeClass('active');
+                    $('.option-list .date-li').addClass('active');
+                    $this.queryParams.dateScope = "specified";
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                }
+			}
+		})
+	</script>
+</div>
+</body>
+</html>

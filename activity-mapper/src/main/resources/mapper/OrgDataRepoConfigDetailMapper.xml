@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.OrgDataRepoConfigDetailMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.OrgDataRepoConfigDetail">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="config_id" jdbcType="INTEGER" property="configId" />
+        <result column="repo_type" jdbcType="VARCHAR" property="repoType" />
+        <result column="repo" jdbcType="VARCHAR" property="repo" />
+        <result column="data_type" jdbcType="VARCHAR" property="dataType" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.config_id, t.repo_type, t.repo, t.data_type, t.is_deleted, t.create_time, 
+        t.update_time
+    </sql>
+    <select id="listParticipateTimeConfigDetail" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM
+            t_org_data_repo_config_detail t
+            INNER JOIN t_org_data_repo_config t1 ON t.config_id = t1.id
+            AND t1.fid = #{fid}
+        WHERE
+            t.data_type = #{dataType}
+            AND t.is_deleted = 0
+    </select>
+</mapper>

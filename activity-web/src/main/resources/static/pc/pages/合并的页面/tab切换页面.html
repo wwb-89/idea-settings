@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tab页面</title>
+    <link rel="stylesheet" href="../../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/new-style.css">
+</head>
+<style>
+    body,html{
+        background: #F2F4F7;
+    }
+</style>
+<body>
+    <div class="tab-page" id="index" v-cloak>
+        <div class="page-header">
+            <div class="name-txt">成都市图书馆线下阅读活动</div>
+        </div>
+        <div class="main-container">
+           <ul class="tab-ul">
+               <li class="tab-li" v-for="(item,index) in menulist" :class="{'active':active===index}" @click="menuFunc(index)"><i :class="item.icon"></i>{{item.name}}</li>
+            </ul>
+            <div class="iframe-box">
+                <iframe :src="iframelink" id="externalIframe" frameborder="0" border="0"></iframe>
+            </div>
+        </div>
+        <div class="bottom-circle"><i></i></div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../../assets/lib/vue.js"></script>
+<script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#index',
+        data: function () {
+            return {
+                menulist:[
+                    {id: 1, name:'签到',icon: 'icon-sign-in'},
+                    {id: 2, name:'问卷',icon: 'icon-collection'},
+                    {id: 3, name:'评价',icon: 'icon-score'},
+                    {id: 4, name:'成员',icon: 'icon-user2'},
+                    {id: 5, name:'证书',icon: 'icon-certificate'},
+                ],
+                active: 0,
+                iframelink: '',
+            }
+        },
+        created: function () {
+        },
+        mounted: function () {
+            var _this=this;
+
+            this.$nextTick(function (){
+
+            });
+            window.onload = function () {
+                _this.setIframeHeight(document.getElementById('externalIframe'));
+            };
+        },
+        methods: {
+            menuFunc: function (index) {
+                this.active = index;
+                if(index===0){
+                    this.iframelink = ''
+                }else if(index===1){
+                    this.iframelink = ''
+                }else if(index===2){
+                    this.iframelink = ''
+                }else if(index===3){
+                  this.iframelink = './成员.html'
+                }else if(index===4){
+                    this.iframelink = './证书.html'
+                }
+            },
+            setIframeHeight: function (iframe) {
+                if (iframe) {
+                    var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                    if (iframeWin.document.body) {
+                        iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                    }
+                }
+            }
+        }
+    });
+</script>
