@@ -1,10 +1,10 @@
 <application>
   <component name="CodotaSettings">
     <option name="methodCompletionsPercentageSet" value="true" />
-    <option name="id" value="9d2aa72e-0d8f-4cd0-9ad0-bf2091322208" />
+    <option name="id" value="5319671d-c506-4fd9-b089-2afac4b9284f" />
     <option name="wasRunBefore" value="true" />
-    <option name="firstRun" value="1657471345745" />
-    <option name="generation" value="129" />
+    <option name="firstRun" value="1594406555816" />
+    <option name="generation" value="110" />
     <option name="updateGeneration" value="1" />
     <option name="isInJSBeta" value="YES" />
     <option name="isMethodCompletionsPercentageActive" value="true" />
@@ -24,5 +24,13 @@
         <option value="deep-completions" />
       </set>
     </option>
+    <option name="usedLanguages">
+      <set>
+        <option value="java" />
+        <option value="javascript" />
+        <option value="kotlin" />
+      </set>
+    </option>
+    <option name="lastTabnineRecommendationDisplayDate" value="1653984623871" />
   </component>
 </application>

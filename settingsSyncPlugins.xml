@@ -25,15 +25,20 @@
             </PluginData>
           </value>
         </entry>
-        <entry key="cn.yiiguxing.plugin.translate">
+        <entry key="cn.haojiyou.CodeGlance3">
           <value>
             <PluginData>
               <option name="dependencies">
                 <set>
-                  <option value="com.intellij.modules.platform" />
+                  <option value="com.intellij.modules.lang" />
                 </set>
               </option>
             </PluginData>
+          </value>
+        </entry>
+        <entry key="cn.yiiguxing.plugin.translate">
+          <value>
+            <PluginData />
           </value>
         </entry>
         <entry key="com.alibaba.p3c.smartfox">
@@ -79,7 +84,35 @@
             <PluginData />
           </value>
         </entry>
-        <entry key="com.nasller.CodeGlancePro">
+        <entry key="com.intellij.zh">
+          <value>
+            <PluginData>
+              <option name="dependencies">
+                <set>
+                  <option value="com.intellij.modules.platform" />
+                </set>
+              </option>
+              <option name="enabled" value="false" />
+            </PluginData>
+          </value>
+        </entry>
+        <entry key="com.tianlei.plugin.mybatis">
+          <value>
+            <PluginData>
+              <option name="dependencies">
+                <set>
+                  <option value="com.intellij.database" />
+                  <option value="com.intellij.java" />
+                  <option value="com.intellij.modules.platform" />
+                  <option value="com.intellij.modules.xml" />
+                  <option value="com.intellij.spring" />
+                </set>
+              </option>
+              <option name="enabled" value="false" />
+            </PluginData>
+          </value>
+        </entry>
+        <entry key="com.xiuyukeji.plugin.translation">
           <value>
             <PluginData>
               <option name="dependencies">
@@ -87,6 +120,18 @@
                   <option value="com.intellij.modules.lang" />
                 </set>
               </option>
+            </PluginData>
+          </value>
+        </entry>
+        <entry key="io.zhile.research.ide-eval-resetter">
+          <value>
+            <PluginData>
+              <option name="dependencies">
+                <set>
+                  <option value="com.intellij.modules.platform" />
+                </set>
+              </option>
+              <option name="enabled" value="false" />
             </PluginData>
           </value>
         </entry>
