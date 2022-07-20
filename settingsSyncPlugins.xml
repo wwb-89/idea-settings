@@ -134,6 +134,17 @@
             </PluginData>
           </value>
         </entry>
+        <entry key="de.netnexus.camelcaseplugin">
+          <value>
+            <PluginData>
+              <option name="dependencies">
+                <set>
+                  <option value="com.intellij.modules.lang" />
+                </set>
+              </option>
+            </PluginData>
+          </value>
+        </entry>
         <entry key="io.zhile.research.ide-eval-resetter">
           <value>
             <PluginData>
