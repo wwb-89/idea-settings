@@ -75,6 +75,7 @@
                   <option value="com.intellij.modules.java" />
                 </set>
               </option>
+              <option name="enabled" value="false" />
             </PluginData>
           </value>
         </entry>
@@ -104,6 +105,17 @@
                 </set>
               </option>
               <option name="enabled" value="false" />
+            </PluginData>
+          </value>
+        </entry>
+        <entry key="com.nasller.CodeGlancePro">
+          <value>
+            <PluginData>
+              <option name="dependencies">
+                <set>
+                  <option value="com.intellij.modules.lang" />
+                </set>
+              </option>
             </PluginData>
           </value>
         </entry>
