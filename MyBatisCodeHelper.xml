@@ -3,13 +3,14 @@
     <option name="profile">
       <Profile>
         <option name="disableCompleteWithJdbcType" value="true" />
-        <option name="useD1" value="1659064179571" />
+        <option name="useD1" value="1659168503984" />
         <option name="usejava8LocalDateTimeEct" value="true" />
         <option name="userMacSet">
           <set>
             <option value="B8-09-8A-50-CC-B1" />
           </set>
         </option>
+        <option name="valid" value="true" />
       </Profile>
     </option>
   </component>
