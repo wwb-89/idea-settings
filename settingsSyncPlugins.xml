@@ -92,7 +92,9 @@
         </entry>
         <entry key="com.codota.csp.intellij">
           <value>
-            <PluginData />
+            <PluginData>
+              <option name="enabled" value="false" />
+            </PluginData>
           </value>
         </entry>
         <entry key="com.intellij.zh">
@@ -108,6 +110,17 @@
           </value>
         </entry>
         <entry key="com.nasller.CodeGlancePro">
+          <value>
+            <PluginData>
+              <option name="dependencies">
+                <set>
+                  <option value="com.intellij.modules.lang" />
+                </set>
+              </option>
+            </PluginData>
+          </value>
+        </entry>
+        <entry key="com.tabnine.TabNine">
           <value>
             <PluginData>
               <option name="dependencies">
