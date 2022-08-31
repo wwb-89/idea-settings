@@ -11,11 +11,12 @@
     <mask>*.jsp</mask>
     <mask>*.properties</mask>
     <mask>*mapper.xml</mask>
-    <mask>*.yml</mask>
     <mask>*.json</mask>
+    <mask>*.sql</mask>
     <mask>*.js</mask>
-    <mask>*.html</mask>
+    <mask>*.yml</mask>
     <mask>*.xml</mask>
+    <mask>*.html</mask>
     <mask>*.java</mask>
   </component>
 </application>

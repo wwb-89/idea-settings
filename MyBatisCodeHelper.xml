@@ -2,6 +2,8 @@
   <component name="MyBatisCodeHelper">
     <option name="profile">
       <Profile>
+        <option name="disableCompleteWithJdbcType" value="true" />
+        <option name="useD1" value="1661736878216" />
         <option name="usejava8LocalDateTimeEct" value="true" />
         <option name="userMacSet">
           <set>
