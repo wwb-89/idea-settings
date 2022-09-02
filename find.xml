@@ -16,7 +16,7 @@
     <mask>*.js</mask>
     <mask>*.yml</mask>
     <mask>*.xml</mask>
-    <mask>*.html</mask>
     <mask>*.java</mask>
+    <mask>*.html</mask>
   </component>
 </application>
