@@ -1,5 +1,6 @@
 <application>
   <component name="NotificationConfiguration">
     <notification groupId="mybatisCodeHelper" displayType="NONE" shouldLog="false" />
+    <notification groupId="Translation Plugin" shouldLog="false" />
   </component>
 </application>
