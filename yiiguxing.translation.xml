@@ -46,6 +46,11 @@
     </option>
   </component>
   <component name="Translation.Cache">
-    <option name="lastTrimTime" value="1671445138211" />
+    <option name="lastTrimTime" value="1672021475058" />
+  </component>
+  <component name="Translation.States">
+    <histories>
+      <item value="current processors amount" />
+    </histories>
   </component>
 </application>
